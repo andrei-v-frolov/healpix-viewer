@@ -8,15 +8,183 @@
 import SwiftUI
 
 struct Menus: Commands {
+    // data source and projection
+    @AppStorage("dataSource") var dataSource = DataSource.temperature
+    @AppStorage("convolution") var convolution = DataConvolution.none
+    @AppStorage("projection") var projection = Projection.mollweide
+    
+    // colorbar properties
+    @AppStorage("colorScheme") var colorScheme = ColorScheme.planck
+    @AppStorage("dataTransform") var dataTransform = DataTransform.linear
+    @AppStorage("dataBounds") var dataBounds = DataBounds.range
+    @AppStorage("boundsModifier") var boundsModifier = BoundsModifier.none
+    
+    // render colorbar?
+    @AppStorage("showColorBar") var showColorBar = true
+    
+    // menu commands
     var body: some Commands {
         CommandMenu("Data") {
-        }
-        CommandMenu("Projection") {
-        }
-        CommandMenu("Color Bar") {
+            Picker("Source", selection: $dataSource) {
+                ForEach(DataSource.allCases, id: \.self) {
+                    Text($0.rawValue).tag($0)
+                }
+                Divider()
+                Button("Channel") {}
+            }
+            Picker("Convolution", selection: $convolution) {
+                ForEach(DataConvolution.allCases, id: \.self) {
+                    Text($0.rawValue).tag($0)
+                }
+                Divider()
+                Button("Kernel Length") {}
+            }
+            Picker("Projection", selection: $projection) {
+                ForEach(Projection.allCases, id: \.self) {
+                    Text($0.rawValue).tag($0)
+                }
+                Divider()
+                Button("View Point") {}
+            }
+            Divider()
+            Picker("Color Scheme", selection: $colorScheme) {
+                ForEach(ColorScheme.allCases, id: \.self) {
+                    Text($0.rawValue).tag($0)
+                }
+                Divider()
+                Button("Below Minimum") {}
+                Button("Above Maximum") {}
+                Button("Invalid Data") {}
+                Divider()
+                Button("Background") {}
+            }
+            Picker("Transform", selection: $dataTransform) {
+                ForEach(DataTransform.allCases, id: \.self) {
+                    Text($0.rawValue).tag($0)
+                }
+                Divider()
+                Picker("Apply...", selection: $dataTransform) {
+                    Text("After Convolving")
+                    Text("Before Convolving")
+                }
+            }
+            Picker("Bounds", selection: $dataBounds) {
+                ForEach(DataBounds.allCases, id: \.self) {
+                    Text($0.rawValue).tag($0)
+                }
+                Divider()
+                ForEach(BoundsModifier.allCases, id: \.self) {
+                    Text($0.rawValue).tag($0)
+                }
+            }
+            Divider()
+            Toggle(isOn: $showColorBar) {
+                Text("Show Color Bar")
+            }
         }
         
         SidebarCommands()
         ToolbarCommands()
+    }
+}
+
+// scalar data sources
+enum DataSource: String, CaseIterable {
+    case temperature = "Temperature"
+    case polarization = "Polarization"
+    case vector = "Vector Field"
+    case random = "Random Field"
+    
+    static func change(to source: DataSource) {
+        @AppStorage("dataSource") var dataSource = DataSource.temperature
+        
+        dataSource = source
+    }
+}
+
+// line convolution direction to be applied
+enum DataConvolution: String, CaseIterable {
+    case none = "None"
+    case polarization = "Polarization"
+    case vector = "Vector Field"
+    
+    static func change(to direction: DataConvolution) {
+        @AppStorage("convolution") var convolution = DataConvolution.none
+        
+        convolution = direction
+    }
+}
+
+// spherical projection to be used
+enum Projection: String, CaseIterable {
+    case mollweide = "Mollweide"
+    case gnomonic = "Gnomonic"
+    case lambert = "Lambert"
+    case isometric = "Isometric"
+    
+    static func change(to kind: Projection) {
+        @AppStorage("projection") var projection = Projection.mollweide
+        
+        projection = kind
+    }
+}
+
+// color scheme
+enum ColorScheme: String, CaseIterable {
+    case planck = "Planck"
+    case cmb = "HEALPix CMB"
+    case grey = "Greyscale"
+    case hot = "Hot"
+    case cold = "Cold"
+    case diff = "Difference Map"
+    case freq = "Frequency Map"
+    case grv = "GRV"
+    case bgry = "BGRY"
+    
+    static func change(to scheme: ColorScheme) {
+        @AppStorage("colorScheme") var colorScheme = ColorScheme.planck
+        
+        colorScheme = scheme
+    }
+}
+
+// color scheme
+enum DataTransform: String, CaseIterable {
+    case linear = "Linear"
+    case log = "Logarithmic"
+    case asinh = "asinh scaling"
+    case equalize = "Equalize"
+    case normalize = "Normalize"
+    
+    static func change(to transform: DataTransform) {
+        @AppStorage("dataTransform") var dataTransform = DataTransform.linear
+        
+        dataTransform = transform
+    }
+}
+
+// data bounds to be mapped to color bar
+enum DataBounds: String, CaseIterable {
+    case range = "Range"
+    case percentile = "Percentile"
+    
+    static func change(to kind: DataBounds) {
+        @AppStorage("dataBounds") var dataBounds = DataBounds.range
+        
+        dataBounds = kind
+    }
+}
+
+// data bounds modifier
+enum BoundsModifier: String, CaseIterable {
+    case none = "Full"
+    case symmetric = "Symmetric"
+    case positive = "Positive"
+    case negative = "Negative"
+    
+    static func change(to kind: BoundsModifier) {
+        @AppStorage("boundsModifier") var boundsModifier = BoundsModifier.none
+        
+        boundsModifier = kind
     }
 }
