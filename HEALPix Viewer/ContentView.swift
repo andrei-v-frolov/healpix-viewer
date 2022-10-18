@@ -22,7 +22,7 @@ struct ContentView: View {
             minWidth:  800, idealWidth: 1280, maxWidth:  .infinity,
             minHeight: 600, idealHeight: 800, maxHeight: .infinity
         )
-        .toolbar {
+        .toolbar(id: "mainToolbar") {
             Toolbar()
         }
     }
