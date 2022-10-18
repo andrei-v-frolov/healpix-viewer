@@ -9,13 +9,22 @@ import SwiftUI
 
 struct ContentView: View {
     var body: some View {
-        VStack {
-            Image(systemName: "globe")
-                .imageScale(.large)
-                .foregroundColor(.accentColor)
-            Text("Hello, world!")
+        NavigationView {
+            VStack {
+                Image(systemName: "globe")
+                    .imageScale(.large)
+                    .foregroundColor(.accentColor)
+                Text("Hello, world!")
+            }
+            .padding()
         }
-        .padding()
+        .frame(
+            minWidth:  800, idealWidth: 1280, maxWidth:  .infinity,
+            minHeight: 600, idealHeight: 800, maxHeight: .infinity
+        )
+        .toolbar {
+            Toolbar()
+        }
     }
 }
 

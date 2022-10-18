@@ -15,6 +15,7 @@
 		508BBAA728FF2765004B1A9C /* HEALPix_ViewerUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 508BBAA628FF2765004B1A9C /* HEALPix_ViewerUITests.swift */; };
 		508BBAA928FF2765004B1A9C /* HEALPix_ViewerUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 508BBAA828FF2765004B1A9C /* HEALPix_ViewerUITestsLaunchTests.swift */; };
 		50ECD2B028FF2A9C0008F915 /* Menus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50ECD2AF28FF2A9C0008F915 /* Menus.swift */; };
+		50ECD2B228FF31260008F915 /* Toolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50ECD2B128FF31260008F915 /* Toolbar.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -47,6 +48,7 @@
 		508BBAA628FF2765004B1A9C /* HEALPix_ViewerUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HEALPix_ViewerUITests.swift; sourceTree = "<group>"; };
 		508BBAA828FF2765004B1A9C /* HEALPix_ViewerUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HEALPix_ViewerUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		50ECD2AF28FF2A9C0008F915 /* Menus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Menus.swift; sourceTree = "<group>"; };
+		50ECD2B128FF31260008F915 /* Toolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Toolbar.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -99,6 +101,7 @@
 			children = (
 				508BBA8A28FF2764004B1A9C /* HEALPix_ViewerApp.swift */,
 				508BBA8C28FF2764004B1A9C /* ContentView.swift */,
+				50ECD2B128FF31260008F915 /* Toolbar.swift */,
 				50ECD2AF28FF2A9C0008F915 /* Menus.swift */,
 				508BBA8E28FF2765004B1A9C /* Assets.xcassets */,
 				508BBA9328FF2765004B1A9C /* HEALPix_Viewer.entitlements */,
@@ -265,6 +268,7 @@
 				508BBA8D28FF2764004B1A9C /* ContentView.swift in Sources */,
 				508BBA8B28FF2764004B1A9C /* HEALPix_ViewerApp.swift in Sources */,
 				50ECD2B028FF2A9C0008F915 /* Menus.swift in Sources */,
+				50ECD2B228FF31260008F915 /* Toolbar.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
