@@ -9,7 +9,7 @@ import SwiftUI
 
 struct Menus: Commands {
     // data source and projection
-    @AppStorage("dataSource") var dataSource = DataSource.temperature
+    @AppStorage("dataSource") var dataSource = DataSource.i
     @AppStorage("convolution") var convolution = DataConvolution.none
     @AppStorage("projection") var projection = Projection.mollweide
     
@@ -26,11 +26,25 @@ struct Menus: Commands {
     var body: some Commands {
         CommandMenu("Data") {
             Picker("Source", selection: $dataSource) {
-                ForEach(DataSource.allCases, id: \.self) {
+                ForEach(DataSource.temperature, id: \.self) {
                     Text($0.rawValue).tag($0)
                 }
                 Divider()
-                Button("Channel") {}
+                ForEach(DataSource.polarization, id: \.self) {
+                    Text($0.rawValue).tag($0)
+                }
+                Divider()
+                ForEach(DataSource.vector, id: \.self) {
+                    Text($0.rawValue).tag($0)
+                }
+                Divider()
+                ForEach(DataSource.special, id: \.self) {
+                    Text($0.rawValue).tag($0)
+                }
+                Divider()
+                ForEach([DataSource.channel], id: \.self) {
+                    Text($0.rawValue).tag($0)
+                }
             }
             Picker("Convolution", selection: $convolution) {
                 ForEach(DataConvolution.allCases, id: \.self) {
@@ -91,13 +105,26 @@ struct Menus: Commands {
 
 // scalar data sources
 enum DataSource: String, CaseIterable {
-    case temperature = "Temperature"
-    case polarization = "Polarization"
-    case vector = "Vector Field"
+    case i = "Temperature I"
+    case q = "Polarization Q"
+    case u = "Polarization U"
+    case e = "Polarization E"
+    case b = "Polarization B"
+    case p = "Polarization P"
+    case x = "Vector Field X"
+    case y = "Vector Field Y"
+    case v = "Vector Field V"
     case random = "Random Field"
+    case channel = "Channel"
+    
+    // collections
+    static let temperature: [Self] = [.i]
+    static let polarization: [Self] = [.q, .u, .e, .b, .p]
+    static let vector: [Self] = [.x, .y, .v]
+    static let special: [Self] = [.random]
     
     static func change(to source: DataSource) {
-        @AppStorage("dataSource") var dataSource = DataSource.temperature
+        @AppStorage("dataSource") var dataSource = DataSource.i
         
         dataSource = source
     }
