@@ -16,7 +16,7 @@ struct Menus: Commands {
     // colorbar properties
     @AppStorage("colorScheme") var colorScheme = ColorScheme.planck
     @AppStorage("dataTransform") var dataTransform = DataTransform.linear
-    @AppStorage("dataBounds") var dataBounds = DataBounds.range
+    @AppStorage("dataBounds") var dataBounds = DataBounds.values
     @AppStorage("boundsModifier") var boundsModifier = BoundsModifier.none
     
     // render colorbar?
@@ -58,6 +58,11 @@ struct Menus: Commands {
                 Divider()
                 Button("Background") {}
             }
+            Picker("Data Range", selection: $boundsModifier) {
+                ForEach(BoundsModifier.allCases, id: \.self) {
+                    Text($0.rawValue).tag($0)
+                }
+            }
             Picker("Transform", selection: $dataTransform) {
                 ForEach(DataTransform.allCases, id: \.self) {
                     Text($0.rawValue).tag($0)
@@ -70,10 +75,6 @@ struct Menus: Commands {
             }
             Picker("Bounds", selection: $dataBounds) {
                 ForEach(DataBounds.allCases, id: \.self) {
-                    Text($0.rawValue).tag($0)
-                }
-                Divider()
-                ForEach(BoundsModifier.allCases, id: \.self) {
                     Text($0.rawValue).tag($0)
                 }
             }
@@ -165,11 +166,11 @@ enum DataTransform: String, CaseIterable {
 
 // data bounds to be mapped to color bar
 enum DataBounds: String, CaseIterable {
-    case range = "Range"
+    case values = "Values"
     case percentile = "Percentile"
     
     static func change(to kind: DataBounds) {
-        @AppStorage("dataBounds") var dataBounds = DataBounds.range
+        @AppStorage("dataBounds") var dataBounds = DataBounds.values
         
         dataBounds = kind
     }
