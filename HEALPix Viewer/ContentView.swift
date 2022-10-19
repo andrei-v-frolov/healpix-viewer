@@ -16,7 +16,10 @@ struct ContentView: View {
                     .foregroundColor(.accentColor)
                 Text("Hello, world!")
             }
-            .padding()
+            ZStack {
+                Text("Fake viewport background")
+                MapView()
+            }
         }
         .frame(
             minWidth:  800, idealWidth: 1280, maxWidth:  .infinity,

@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		503C675E28FF89C1002D4314 /* MapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 503C675D28FF89C1002D4314 /* MapView.swift */; };
 		508BBA8B28FF2764004B1A9C /* HEALPix_ViewerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 508BBA8A28FF2764004B1A9C /* HEALPix_ViewerApp.swift */; };
 		508BBA8D28FF2764004B1A9C /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 508BBA8C28FF2764004B1A9C /* ContentView.swift */; };
 		508BBA8F28FF2765004B1A9C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 508BBA8E28FF2765004B1A9C /* Assets.xcassets */; };
@@ -36,6 +37,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
+		503C675D28FF89C1002D4314 /* MapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapView.swift; sourceTree = "<group>"; };
 		508BBA8728FF2764004B1A9C /* HEALPix Viewer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "HEALPix Viewer.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		508BBA8A28FF2764004B1A9C /* HEALPix_ViewerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HEALPix_ViewerApp.swift; sourceTree = "<group>"; };
 		508BBA8C28FF2764004B1A9C /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -101,6 +103,7 @@
 			children = (
 				508BBA8A28FF2764004B1A9C /* HEALPix_ViewerApp.swift */,
 				508BBA8C28FF2764004B1A9C /* ContentView.swift */,
+				503C675D28FF89C1002D4314 /* MapView.swift */,
 				50ECD2B128FF31260008F915 /* Toolbar.swift */,
 				50ECD2AF28FF2A9C0008F915 /* Menus.swift */,
 				508BBA8E28FF2765004B1A9C /* Assets.xcassets */,
@@ -267,6 +270,7 @@
 			files = (
 				508BBA8D28FF2764004B1A9C /* ContentView.swift in Sources */,
 				508BBA8B28FF2764004B1A9C /* HEALPix_ViewerApp.swift in Sources */,
+				503C675E28FF89C1002D4314 /* MapView.swift in Sources */,
 				50ECD2B028FF2A9C0008F915 /* Menus.swift in Sources */,
 				50ECD2B228FF31260008F915 /* Toolbar.swift in Sources */,
 			);
