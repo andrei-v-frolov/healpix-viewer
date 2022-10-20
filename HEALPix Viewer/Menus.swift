@@ -12,6 +12,7 @@ struct Menus: Commands {
     @AppStorage("dataSource") var dataSource = DataSource.i
     @AppStorage("convolution") var convolution = DataConvolution.none
     @AppStorage("projection") var projection = Projection.mollweide
+    @AppStorage("orientation") var orientation = Orientation.equator
     
     // colorbar properties
     @AppStorage("colorScheme") var colorScheme = ColorScheme.planck
@@ -25,71 +26,88 @@ struct Menus: Commands {
     // menu commands
     var body: some Commands {
         CommandMenu("Data") {
-            Picker("Source", selection: $dataSource) {
-                ForEach(DataSource.temperature, id: \.self) {
-                    Text($0.rawValue).tag($0)
+            Group {
+                Picker("Source", selection: $dataSource) {
+                    ForEach(DataSource.temperature, id: \.self) {
+                        Text($0.rawValue).tag($0)
+                    }
+                    Divider()
+                    ForEach(DataSource.polarization, id: \.self) {
+                        Text($0.rawValue).tag($0)
+                    }
+                    Divider()
+                    ForEach(DataSource.vector, id: \.self) {
+                        Text($0.rawValue).tag($0)
+                    }
+                    Divider()
+                    ForEach(DataSource.special, id: \.self) {
+                        Text($0.rawValue).tag($0)
+                    }
+                    Divider()
+                    ForEach([DataSource.channel], id: \.self) {
+                        Text($0.rawValue).tag($0)
+                    }
                 }
-                Divider()
-                ForEach(DataSource.polarization, id: \.self) {
-                    Text($0.rawValue).tag($0)
+                Picker("Convolution", selection: $convolution) {
+                    ForEach(DataConvolution.allCases, id: \.self) {
+                        Text($0.rawValue).tag($0)
+                    }
+                    Divider()
+                    Button("Kernel Length") {}
                 }
-                Divider()
-                ForEach(DataSource.vector, id: \.self) {
-                    Text($0.rawValue).tag($0)
+                Picker("Projection", selection: $projection) {
+                    ForEach(Projection.allCases, id: \.self) {
+                        Text($0.rawValue).tag($0)
+                    }
+                    Divider()
+                    Button("View Point") {}
                 }
-                Divider()
-                ForEach(DataSource.special, id: \.self) {
-                    Text($0.rawValue).tag($0)
+                Picker("Orientation", selection: $orientation) {
+                    ForEach(Orientation.free, id: \.self) {
+                        Text($0.rawValue).tag($0)
+                    }
+                    Divider()
+                    ForEach(Orientation.galactic, id: \.self) {
+                        Text($0.rawValue).tag($0)
+                    }
+                    Divider()
+                    ForEach(Orientation.ecliptic, id: \.self) {
+                        Text($0.rawValue).tag($0)
+                    }
                 }
-                Divider()
-                ForEach([DataSource.channel], id: \.self) {
-                    Text($0.rawValue).tag($0)
-                }
-            }
-            Picker("Convolution", selection: $convolution) {
-                ForEach(DataConvolution.allCases, id: \.self) {
-                    Text($0.rawValue).tag($0)
-                }
-                Divider()
-                Button("Kernel Length") {}
-            }
-            Picker("Projection", selection: $projection) {
-                ForEach(Projection.allCases, id: \.self) {
-                    Text($0.rawValue).tag($0)
-                }
-                Divider()
-                Button("View Point") {}
             }
             Divider()
-            Picker("Color Scheme", selection: $colorScheme) {
-                ForEach(ColorScheme.allCases, id: \.self) {
-                    Text($0.rawValue).tag($0)
+            Group {
+                Picker("Color Scheme", selection: $colorScheme) {
+                    ForEach(ColorScheme.allCases, id: \.self) {
+                        Text($0.rawValue).tag($0)
+                    }
+                    Divider()
+                    Button("Below Minimum") {}
+                    Button("Above Maximum") {}
+                    Button("Invalid Data") {}
+                    Divider()
+                    Button("Background") {}
                 }
-                Divider()
-                Button("Below Minimum") {}
-                Button("Above Maximum") {}
-                Button("Invalid Data") {}
-                Divider()
-                Button("Background") {}
-            }
-            Picker("Data Range", selection: $boundsModifier) {
-                ForEach(BoundsModifier.allCases, id: \.self) {
-                    Text($0.rawValue).tag($0)
+                Picker("Data Range", selection: $boundsModifier) {
+                    ForEach(BoundsModifier.allCases, id: \.self) {
+                        Text($0.rawValue).tag($0)
+                    }
                 }
-            }
-            Picker("Transform", selection: $dataTransform) {
-                ForEach(DataTransform.allCases, id: \.self) {
-                    Text($0.rawValue).tag($0)
+                Picker("Transform", selection: $dataTransform) {
+                    ForEach(DataTransform.allCases, id: \.self) {
+                        Text($0.rawValue).tag($0)
+                    }
+                    Divider()
+                    Picker("Apply...", selection: $dataTransform) {
+                        Text("After Convolving")
+                        Text("Before Convolving")
+                    }
                 }
-                Divider()
-                Picker("Apply...", selection: $dataTransform) {
-                    Text("After Convolving")
-                    Text("Before Convolving")
-                }
-            }
-            Picker("Bounds", selection: $dataBounds) {
-                ForEach(DataBounds.allCases, id: \.self) {
-                    Text($0.rawValue).tag($0)
+                Picker("Bounds", selection: $dataBounds) {
+                    ForEach(DataBounds.allCases, id: \.self) {
+                        Text($0.rawValue).tag($0)
+                    }
                 }
             }
             Divider()
@@ -154,6 +172,29 @@ enum Projection: String, CaseIterable {
         @AppStorage("projection") var projection = Projection.mollweide
         
         projection = kind
+    }
+}
+
+// projection orientation lock
+enum Orientation: String, CaseIterable {
+    case drag = "Drag"
+    case spin = "Spin"
+    case equator = "Equator"
+    case north = "North Pole"
+    case south = "South Pole"
+    case eclipticEquator = "Ecliptic"
+    case eclipticNorth = "Ecliptic North"
+    case eclipticSouth = "Ecliptic South"
+    
+    // collections
+    static let free: [Self] = [.drag, .spin]
+    static let galactic: [Self] = [.equator, .north, .south]
+    static let ecliptic: [Self] = [.eclipticEquator, .eclipticNorth, .eclipticSouth]
+    
+    static func change(to kind: Orientation) {
+        @AppStorage("orientation") var orientation = Orientation.equator
+        
+        orientation = kind
     }
 }
 
