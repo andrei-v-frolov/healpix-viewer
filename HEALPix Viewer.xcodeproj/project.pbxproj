@@ -82,6 +82,18 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		50563E5C29023D7300B316CA /* macOS UI */ = {
+			isa = PBXGroup;
+			children = (
+				508BBA8A28FF2764004B1A9C /* HEALPix_ViewerApp.swift */,
+				508BBA8C28FF2764004B1A9C /* ContentView.swift */,
+				503C675D28FF89C1002D4314 /* MapView.swift */,
+				50ECD2B128FF31260008F915 /* Toolbar.swift */,
+				50ECD2AF28FF2A9C0008F915 /* Menus.swift */,
+			);
+			path = "macOS UI";
+			sourceTree = "<group>";
+		};
 		508BBA7E28FF2764004B1A9C = {
 			isa = PBXGroup;
 			children = (
@@ -105,11 +117,7 @@
 		508BBA8928FF2764004B1A9C /* HEALPix Viewer */ = {
 			isa = PBXGroup;
 			children = (
-				508BBA8A28FF2764004B1A9C /* HEALPix_ViewerApp.swift */,
-				508BBA8C28FF2764004B1A9C /* ContentView.swift */,
-				503C675D28FF89C1002D4314 /* MapView.swift */,
-				50ECD2B128FF31260008F915 /* Toolbar.swift */,
-				50ECD2AF28FF2A9C0008F915 /* Menus.swift */,
+				50563E5C29023D7300B316CA /* macOS UI */,
 				50563E582901E19A00B316CA /* MetalShader.swift */,
 				50563E5A2901E38F00B316CA /* Kernels.metal */,
 				508BBA8E28FF2765004B1A9C /* Assets.xcassets */,
