@@ -61,6 +61,7 @@ struct Menus: Commands {
                     }
                     Divider()
                     Button("View Point") {}
+                    Button("Lighting") {}
                 }
                 Picker("Orientation", selection: $orientation) {
                     ForEach(Orientation.free, id: \.self) {
