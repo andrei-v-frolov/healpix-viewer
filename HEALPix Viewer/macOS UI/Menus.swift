@@ -164,10 +164,21 @@ enum Projection: String, CaseIterable {
     case gnomonic = "Gnomonic"
     case lambert = "Lambert"
     case isometric = "Isometric"
+    case mercator = "Mercator"
     
     // default value
     static let appStorage = "projection"
     static let defaultValue: Self = .mollweide
+    
+    // projection bounds
+    var extent: (x: Double, y: Double) {
+        switch self {
+            case .mollweide: return (2,1)
+            case .lambert:   return (2,2)
+            case .mercator:  return (Double.pi,2)
+            default:         return (1,1)
+        }
+    }
 }
 
 // projection orientation lock
