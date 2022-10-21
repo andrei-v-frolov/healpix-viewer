@@ -39,6 +39,7 @@ class ProjectedView: MTKView {
         self.device = device
         self.queue = queue
         
+        layer?.isOpaque = false
         framebufferOnly = false
     }
     
