@@ -19,8 +19,6 @@
 		508BBA9D28FF2765004B1A9C /* HEALPix_ViewerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 508BBA9C28FF2765004B1A9C /* HEALPix_ViewerTests.swift */; };
 		508BBAA728FF2765004B1A9C /* HEALPix_ViewerUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 508BBAA628FF2765004B1A9C /* HEALPix_ViewerUITests.swift */; };
 		508BBAA928FF2765004B1A9C /* HEALPix_ViewerUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 508BBAA828FF2765004B1A9C /* HEALPix_ViewerUITestsLaunchTests.swift */; };
-		50A0D2532902F1A300A29988 /* Healpix.metal in Sources */ = {isa = PBXBuildFile; fileRef = 50A0D2522902F1A300A29988 /* Healpix.metal */; };
-		50A0D2572902F1B200A29988 /* Projections.metal in Sources */ = {isa = PBXBuildFile; fileRef = 50A0D2562902F1B200A29988 /* Projections.metal */; };
 		50ECD2B028FF2A9C0008F915 /* Menus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50ECD2AF28FF2A9C0008F915 /* Menus.swift */; };
 		50ECD2B228FF31260008F915 /* Toolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50ECD2B128FF31260008F915 /* Toolbar.swift */; };
 /* End PBXBuildFile section */
@@ -90,7 +88,7 @@
 		50A0D2562902F1B200A29988 /* Projections.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Projections.metal; sourceTree = "<group>"; };
 		50ECD2AF28FF2A9C0008F915 /* Menus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Menus.swift; sourceTree = "<group>"; };
 		50ECD2B128FF31260008F915 /* Toolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Toolbar.swift; sourceTree = "<group>"; };
-		50FC7DCD2903565600D6498A /* Common.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = Common.h; sourceTree = "<group>"; };
+		50FAAE482904659B00EF636E /* Common.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Common.metal; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -209,7 +207,7 @@
 		50A0D2582902F1BE00A29988 /* Metal */ = {
 			isa = PBXGroup;
 			children = (
-				50FC7DCD2903565600D6498A /* Common.h */,
+				50FAAE482904659B00EF636E /* Common.metal */,
 				50A0D2522902F1A300A29988 /* Healpix.metal */,
 				50A0D2562902F1B200A29988 /* Projections.metal */,
 				50563E5A2901E38F00B316CA /* Kernels.metal */,
@@ -373,8 +371,6 @@
 			buildActionMask = 2147483647;
 			files = (
 				508BBA8D28FF2764004B1A9C /* ContentView.swift in Sources */,
-				50A0D2572902F1B200A29988 /* Projections.metal in Sources */,
-				50A0D2532902F1A300A29988 /* Healpix.metal in Sources */,
 				508BBA8B28FF2764004B1A9C /* HEALPix_ViewerApp.swift in Sources */,
 				503C675E28FF89C1002D4314 /* MapView.swift in Sources */,
 				50ECD2B028FF2A9C0008F915 /* Menus.swift in Sources */,

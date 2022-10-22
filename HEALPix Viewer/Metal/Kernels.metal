@@ -8,6 +8,11 @@
 #include <metal_stdlib>
 using namespace metal;
 
+// include Metal functions
+#include "Common.metal"
+#include "Healpix.metal"
+#include "Projections.metal"
+
 // MARK: test kernel
 kernel void uniform_fill(
     texture2d<float,access::write>      output [[ texture(0) ]],

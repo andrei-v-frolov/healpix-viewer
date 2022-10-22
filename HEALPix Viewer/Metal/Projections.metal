@@ -5,10 +5,8 @@
 //  Created by Andrei Frolov on 2022-10-21.
 //
 
-#include <metal_stdlib>
-using namespace metal;
-
-#include "Common.h"
+#ifndef __PROJECTIONS__
+#define __PROJECTIONS__
 
 // convert polar coordinates to 3-vector on a sphere
 inline float3 ang2vec(float2 a) {
@@ -50,3 +48,5 @@ inline float3 mercator(float2 v) {
     const float phi = v.x, theta = halfpi - atan(sinh(v.y));
     return select(ang2vec(float2(theta,phi)), OUT_OF_BOUNDS, phi < -pi || phi > pi);
 }
+
+#endif /* __PROJECTIONS__ */
