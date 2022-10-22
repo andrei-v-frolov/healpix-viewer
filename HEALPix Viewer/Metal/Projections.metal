@@ -25,7 +25,7 @@ inline float2 vec2ang(float3 v) {
 // Mollweide projection
 inline float3 mollweide(float2 v) {
     const float psi = asin(v.y), phi = halfpi*v.x/cos(psi), theta = acos((2.0*psi + sin(2.0*psi))/pi);
-    return select(ang2vec(float2(theta,phi)), OUT_OF_BOUNDS, phi < -pi || phi > pi);
+    return select(ang2vec(float2(theta,phi)), OUT_OF_BOUNDS, v.y < -1.0 || v.y > 1.0 || phi < -pi || phi > pi);
 }
 
 // Gnomonic projection
@@ -47,6 +47,6 @@ inline float3 isometric(float2 v) {
 
 // Mercator projection
 inline float3 mercator(float2 v) {
-    const float phi = v.x, theta = atan(sinh(v.y)) + halfpi;
+    const float phi = v.x, theta = halfpi - atan(sinh(v.y));
     return select(ang2vec(float2(theta,phi)), OUT_OF_BOUNDS, phi < -pi || phi > pi);
 }
