@@ -49,4 +49,11 @@ inline float3 mercator(float2 v) {
     return select(ang2vec(float2(theta,phi)), OUT_OF_BOUNDS, phi < -pi || phi > pi);
 }
 
+// Werner projection
+inline float3 werner(float2 v) {
+    const float2 u = v - float2(0,1.111983413);
+    const float theta = length(u), phi = theta/sin(theta)*atan2(u.x,-u.y);
+    return select(ang2vec(float2(theta,phi)), OUT_OF_BOUNDS, theta > pi || phi < -pi || phi > pi);
+}
+
 #endif /* __PROJECTIONS__ */

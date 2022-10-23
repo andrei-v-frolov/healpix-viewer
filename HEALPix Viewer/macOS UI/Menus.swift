@@ -165,6 +165,7 @@ enum Projection: String, CaseIterable {
     case lambert = "Lambert"
     case isometric = "Isometric"
     case mercator = "Mercator"
+    case werner = "Werner"
     
     // default value
     static let appStorage = "projection"
@@ -176,6 +177,7 @@ enum Projection: String, CaseIterable {
             case .mollweide: return (2,1)
             case .lambert:   return (2,2)
             case .mercator:  return (Double.pi,2)
+            case .werner:    return (2.021610497,2.029609241)
             default:         return (1,1)
         }
     }
