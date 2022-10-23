@@ -8,6 +8,8 @@
 import SwiftUI
 
 struct ContentView: View {
+    @State private var magnification: Double = 0.0
+    
     var body: some View {
         NavigationView {
             VStack {
@@ -18,7 +20,7 @@ struct ContentView: View {
             }
             ZStack {
                 Text("Fake viewport background")
-                MapView()
+                MapView(magnification: $magnification)
             }
         }
         .frame(
@@ -26,7 +28,7 @@ struct ContentView: View {
             minHeight: 600, idealHeight: 800, maxHeight: .infinity
         )
         .toolbar(id: "mainToolbar") {
-            Toolbar()
+            Toolbar(magnification: $magnification)
         }
     }
 }

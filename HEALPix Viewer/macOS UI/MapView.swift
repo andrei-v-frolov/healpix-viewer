@@ -9,6 +9,8 @@ import SwiftUI
 import MetalKit
 
 struct MapView: NSViewRepresentable {
+    @Binding var magnification: Double
+    
     typealias NSViewType = ProjectedView
     var view = ProjectedView()
     
@@ -17,6 +19,8 @@ struct MapView: NSViewRepresentable {
     }
     
     func updateNSView(_ view: Self.NSViewType, context: Self.Context) {
+        view.magnification = magnification
+        
         view.draw(view.bounds)
     }
 }
