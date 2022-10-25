@@ -11,6 +11,10 @@ import MetalKit
 struct MapView: NSViewRepresentable {
     @Binding var magnification: Double
     
+    @Binding var latitude: Double
+    @Binding var longitude: Double
+    @Binding var azimuth: Double
+    
     typealias NSViewType = ProjectedView
     var view = ProjectedView()
     
@@ -19,7 +23,10 @@ struct MapView: NSViewRepresentable {
     }
     
     func updateNSView(_ view: Self.NSViewType, context: Self.Context) {
+        let radian = Double.pi/180.0
+        
         view.magnification = magnification
+        view.rotation = ang2rot(latitude*radian, longitude*radian, azimuth*radian)
         
         view.draw(view.bounds)
     }
@@ -44,8 +51,8 @@ class ProjectedView: MTKView {
         return simd.float3x2(float2(Float(s), 0.0), float2(0.0, -Float(s)), float2(Float(dx), Float(dy)))
     }
     
-    let rotation = matrix_identity_float3x3;
-    let background = float4(1.0, 1.0, 0.0, 0.5);
+    var rotation = matrix_identity_float3x3
+    let background = float4(1.0, 1.0, 0.0, 0.5)
     
     // MARK: initalize after being decoded
     override func awakeFromNib() {
@@ -84,4 +91,16 @@ class ProjectedView: MTKView {
         command.present(drawable)
         command.commit()
     }
+}
+
+func ang2rot(_ theta: Double, _ phi: Double, _ psi: Double) -> float3x3 {
+    let ct = Float(cos(theta)), st = Float(sin(theta))
+    let cp = Float(cos(phi)), sp = Float(sin(phi))
+    let ca = Float(cos(psi)), sa = Float(sin(psi))
+    
+    let xz = float3x3(float3(ct,0,st), float3(0,1,0), float3(-st,0,ct))
+    let xy = float3x3(float3(cp,sp,0), float3(-sp,cp,0), float3(0,0,1))
+    let yz = float3x3(float3(1,0,0), float3(0,ca,sa), float3(0,-sa,ca))
+    
+    return xz*xy*yz
 }

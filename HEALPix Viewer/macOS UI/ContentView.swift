@@ -46,7 +46,7 @@ struct ContentView: View {
                 if (toolbar == .lighting) {
                     Text("Lighting Toolbar")
                 }
-                MapView(magnification: $magnification)
+                MapView(magnification: $magnification, latitude: $latitude, longitude: $longitude, azimuth: $azimuth)
             }
         }
         .frame(

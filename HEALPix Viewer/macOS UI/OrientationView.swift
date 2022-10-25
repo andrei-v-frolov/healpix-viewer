@@ -28,7 +28,7 @@ struct OrientationToolbar: View {
             TextField("Longitude", value: $longitude, formatter: TwoDigitNumber)
                 .frame(width: 55).multilineTextAlignment(.trailing)
             Spacer().frame(width: 30)
-            Slider(value: $azimuth, in: 0.0...360.0) { Text("Az:") }.frame(width: 160)
+            Slider(value: $azimuth, in: -180.0...180.0) { Text("Az:") }.frame(width: 160)
             TextField("Azimuth", value: $azimuth, formatter: TwoDigitNumber)
                 .frame(width: 55).multilineTextAlignment(.trailing)
         }
