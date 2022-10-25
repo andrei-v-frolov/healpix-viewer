@@ -10,6 +10,10 @@ import SwiftUI
 struct ContentView: View {
     @State private var magnification: Double = 0.0
     
+    @State private var latitude: Double = 0.0
+    @State private var longitude: Double = 0.0
+    @State private var azimuth: Double = 0.0
+    
     var body: some View {
         NavigationView {
             VStack {
@@ -18,8 +22,9 @@ struct ContentView: View {
                     .foregroundColor(.accentColor)
                 Text("Hello, world!")
             }
-            ZStack {
-                Text("Fake viewport background")
+            //ZStack(alignment: .top) {
+            VStack {
+                OrientationToolbar(latitude: $latitude, longitude: $longitude, azimuth: $azimuth)
                 MapView(magnification: $magnification)
             }
         }
