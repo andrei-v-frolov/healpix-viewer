@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct Toolbar: CustomizableToolbarContent {
+    @Binding var toolbar: ShowToolbar
     @Binding var magnification: Double
     
     var body: some CustomizableToolbarContent {
@@ -18,6 +19,14 @@ struct Toolbar: CustomizableToolbarContent {
                 Image(systemName: "sidebar.left")
             }
             .help("Toggle Sidebar")
+        }
+        ToolbarItem(id: "projection", placement: .principal, showsByDefault: true) {
+            Button {
+                withAnimation { toggleToolbar(.projection) }
+            } label: {
+                Image(systemName: "globe")
+            }
+            .help("Map Projection")
         }
         ToolbarItem(id: "magnification", placement: .principal, showsByDefault: true) {
             Slider(value: $magnification, in: 0.0...10.0) {
@@ -30,6 +39,22 @@ struct Toolbar: CustomizableToolbarContent {
             .frame(width: 160)
             .help("View Magnification")
         }
+        ToolbarItem(id: "orientation", placement: .principal, showsByDefault: true) {
+            Button {
+                withAnimation { toggleToolbar(.orientation) }
+            } label: {
+                Image(systemName: "rotate.3d")
+            }
+            .help("View Orientation")
+        }
+        ToolbarItem(id: "lighting", placement: .principal, showsByDefault: true) {
+            Button {
+                withAnimation { toggleToolbar(.lighting) }
+            } label: {
+                Image(systemName: "sun.max")
+            }
+            .help("Lighting Effects")
+        }
         ToolbarItem(id: "spacer", placement: .principal, showsByDefault: true) {
             Spacer()
         }
@@ -41,6 +66,10 @@ struct Toolbar: CustomizableToolbarContent {
             }
             .help("Toggle Sidebar")
         }
+    }
+    
+    func toggleToolbar(_ bar: ShowToolbar) {
+            toolbar = (toolbar == bar) ? .none : bar;
     }
 }
 
