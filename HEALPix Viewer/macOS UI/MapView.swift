@@ -9,6 +9,8 @@ import SwiftUI
 import MetalKit
 
 struct MapView: NSViewRepresentable {
+    @Binding var projection: Projection
+    
     @Binding var magnification: Double
     
     @Binding var latitude: Double
@@ -25,6 +27,7 @@ struct MapView: NSViewRepresentable {
     func updateNSView(_ view: Self.NSViewType, context: Self.Context) {
         let radian = Double.pi/180.0
         
+        view.projection = projection
         view.magnification = magnification
         view.rotation = ang2rot(latitude*radian, longitude*radian, azimuth*radian)
         
@@ -35,11 +38,20 @@ struct MapView: NSViewRepresentable {
 class ProjectedView: MTKView {
     // MARK: compute pipeline
     var queue: MTLCommandQueue! = nil
-    let shader = MetalKernel(kernel: "mollweide_grid")
     var buffers = [MTLBuffer]()
     
+    // MARK: projection shaders
+    let shaders: [Projection: MetalKernel] = [
+        .mollweide: MetalKernel(kernel: "mollweide_grid"),
+        .gnomonic:  MetalKernel(kernel: "gnomonic_grid"),
+        .lambert:   MetalKernel(kernel: "lambert_grid"),
+        .isometric: MetalKernel(kernel: "isometric_grid"),
+        .mercator:  MetalKernel(kernel: "mercator_grid"),
+        .werner:    MetalKernel(kernel: "werner_grid")
+    ]
+    
     // MARK: state variables
-    var projection = Projection.mollweide
+    var projection = Projection.defaultValue
     var magnification = 0.0
     var padding = 0.1
     
@@ -78,7 +90,7 @@ class ProjectedView: MTKView {
     // MARK: render image in Metal view
     override func draw(_ rect: CGRect) {
         // check that we have a draw destination
-        guard currentRenderPassDescriptor != nil, let drawable = currentDrawable else { return }
+        guard currentRenderPassDescriptor != nil, let shader = shaders[projection], let drawable = currentDrawable else { return }
         
         // load arguments to be passed to kernel
         buffers[0].contents().storeBytes(of: transform, as: float3x2.self)

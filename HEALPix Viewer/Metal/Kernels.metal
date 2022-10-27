@@ -23,16 +23,27 @@ inline float4 grid(float2 ang) {
     return select(LIGHT_TILE, DARK_TILE, (b.x+b.y) & 0x01);
 }
 
-// MARK: grid kernels
-kernel void mollweide_grid(
-    texture2d<float,access::write>      output [[ texture(0) ]],
-    constant float3x2 &transform        [[ buffer(0) ]],
-    constant float3x3 &rotation         [[ buffer(1) ]],
-    constant float4 &background         [[ buffer(2) ]],
-    uint2 gid                           [[ thread_position_in_grid ]]
-) {
-    const float3 v = rotation * mollweide(transform * float3(gid.x, gid.y, 1));
-    
-    float4 pixel = select(grid(vec2ang(v)), background, all(v == OUT_OF_BOUNDS));
-    output.write(pixel, gid);
-}
+// MARK: shader kernels for all projections
+#define PROJECTION(variant) mollweide ## variant
+#include "Shaders.metal"
+#undef PROJECTION
+
+#define PROJECTION(variant) gnomonic ## variant
+#include "Shaders.metal"
+#undef PROJECTION
+
+#define PROJECTION(variant) lambert ## variant
+#include "Shaders.metal"
+#undef PROJECTION
+
+#define PROJECTION(variant) isometric ## variant
+#include "Shaders.metal"
+#undef PROJECTION
+
+#define PROJECTION(variant) mercator ## variant
+#include "Shaders.metal"
+#undef PROJECTION
+
+#define PROJECTION(variant) werner ## variant
+#include "Shaders.metal"
+#undef PROJECTION
