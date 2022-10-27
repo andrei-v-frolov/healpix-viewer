@@ -64,15 +64,15 @@ struct Menus: Commands {
                     Button("Lighting") {}
                 }
                 Picker("Orientation", selection: $orientation) {
-                    ForEach(Orientation.free, id: \.self) {
-                        Text($0.rawValue).tag($0)
-                    }
-                    Divider()
                     ForEach(Orientation.galactic, id: \.self) {
                         Text($0.rawValue).tag($0)
                     }
                     Divider()
                     ForEach(Orientation.ecliptic, id: \.self) {
+                        Text($0.rawValue).tag($0)
+                    }
+                    Divider()
+                    ForEach([Orientation.free], id: \.self) {
                         Text($0.rawValue).tag($0)
                     }
                 }
@@ -185,8 +185,7 @@ enum Projection: String, CaseIterable {
 
 // projection orientation lock
 enum Orientation: String, CaseIterable, Preference {
-    case drag = "As Specified"
-    case spin = "Spin to Home"
+    case free = "As Specified"
     case equator = "Equator"
     case north = "North Pole"
     case south = "South Pole"
@@ -199,7 +198,6 @@ enum Orientation: String, CaseIterable, Preference {
     static let defaultValue: Self = .equator
     
     // collections
-    static let free: [Self] = [.drag, .spin]
     static let galactic: [Self] = [.equator, .north, .south]
     static let ecliptic: [Self] = [.eclipticEquator, .eclipticNorth, .eclipticSouth]
     

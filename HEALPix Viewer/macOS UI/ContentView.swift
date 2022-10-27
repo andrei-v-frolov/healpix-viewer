@@ -43,7 +43,7 @@ struct ContentView: View {
                 if (toolbar == .projection) {
                     ProjectionToolbar(projection: $projection, orientation: $orientation)
                         .onChange(of: orientation) {
-                            if (!Orientation.free.contains($0)) {
+                            if ($0 != .free) {
                                 let (lat,lon,az) = $0.coords
                                 latitude = lat; longitude = lon; azimuth = az
                             }
@@ -51,15 +51,9 @@ struct ContentView: View {
                 }
                 if (toolbar == .orientation) {
                     OrientationToolbar(latitude: $latitude, longitude: $longitude, azimuth: $azimuth)
-                        .onChange(of: latitude) { value in
-                            if (!Orientation.free.contains(orientation)) { orientation = .drag }
-                        }
-                        .onChange(of: longitude) { value in
-                            if (!Orientation.free.contains(orientation)) { orientation = .drag }
-                        }
-                        .onChange(of: azimuth) { value in
-                            if (!Orientation.free.contains(orientation)) { orientation = .drag }
-                        }
+                        .onChange(of: latitude)  { value in orientation = .free }
+                        .onChange(of: longitude) { value in orientation = .free }
+                        .onChange(of: azimuth)   { value in orientation = .free }
                 }
                 if (toolbar == .lighting) {
                     Text("Lighting Toolbar")

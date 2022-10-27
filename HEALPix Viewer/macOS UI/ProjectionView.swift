@@ -23,7 +23,7 @@ struct ProjectionToolbar: View {
     @Binding var projection: Projection
     @Binding var orientation: Orientation
     
-    @State private var lighting = true
+    @State private var spin = true
     
     var body: some View {
         HStack {
@@ -35,10 +35,6 @@ struct ProjectionToolbar: View {
             .frame(width: 190)
             Spacer().frame(width: 30)
             Picker("Viewpoint:", selection: $orientation) {
-                ForEach(Orientation.free, id: \.self) {
-                    Text($0.rawValue).tag($0)
-                }
-                Divider()
                 ForEach(Orientation.galactic, id: \.self) {
                     Text($0.rawValue).tag($0)
                 }
@@ -46,10 +42,14 @@ struct ProjectionToolbar: View {
                 ForEach(Orientation.ecliptic, id: \.self) {
                     Text($0.rawValue).tag($0)
                 }
+                Divider()
+                ForEach([Orientation.free], id: \.self) {
+                    Text($0.rawValue).tag($0)
+                }
             }
             .frame(width: 190)
             Spacer().frame(width: 50)
-            Toggle(" Enable lighting effects", isOn: $lighting)
+            Toggle(" Spin to viewpoint", isOn: $spin)
         }
         .padding(.top, 14)
         .padding(.bottom, 5)
