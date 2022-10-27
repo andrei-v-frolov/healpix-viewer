@@ -21,6 +21,9 @@ let TwoDigitNumber: NumberFormatter = {
 struct ContentView: View {
     @State private var toolbar = ShowToolbar.none
     
+    @State private var projection: Projection = .defaultValue
+    @State private var orientation: Orientation = .defaultValue
+    
     @State private var magnification: Double = 0.0
     
     @State private var latitude: Double = 0.0
@@ -38,7 +41,7 @@ struct ContentView: View {
             //ZStack(alignment: .top) {
             VStack {
                 if (toolbar == .projection) {
-                    Text("Projection Toolbar")
+                    ProjectionToolbar(projection: $projection,orientation: $orientation)
                 }
                 if (toolbar == .orientation) {
                     OrientationToolbar(latitude: $latitude, longitude: $longitude, azimuth: $azimuth)
