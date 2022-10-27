@@ -93,6 +93,9 @@ class ProjectedView: MTKView {
     }
 }
 
+// MARK: SO(3) group representations
+
+// latitude, longitude and azimuth to rotation matrix
 func ang2rot(_ theta: Double, _ phi: Double, _ psi: Double) -> float3x3 {
     let ct = Float(cos(theta)), st = Float(sin(theta))
     let cp = Float(cos(phi)), sp = Float(sin(phi))
@@ -103,4 +106,21 @@ func ang2rot(_ theta: Double, _ phi: Double, _ psi: Double) -> float3x3 {
     let yz = float3x3(float3(1,0,0), float3(0,ca,sa), float3(0,-sa,ca))
     
     return xz*xy*yz
+}
+
+// generator of rotation to rotation matrix
+func gen2rot(_ w: float3) -> float3x3 {
+    let theta = length(w); guard (theta > 0.0) else { return matrix_identity_float3x3 }
+    let W = float3x3( float3(0.0,w.z,-w.y), float3(-w.z,0.0,w.x), float3(w.y,-w.x,0.0))
+    let p = sin(theta)/theta, q = sin(theta/2.0)/theta, s = 2.0*q*q
+    
+    return matrix_identity_float3x3 + p*W + s*(W*W)
+}
+
+// rotation matrix to generator of rotation
+func rot2gen(_ R: float3x3) -> float3 {
+    let w = float3(R[1,2]-R[2,1], R[2,0]-R[0,1], R[0,1]-R[1,0])/2.0
+    let theta = length(w); guard (theta > 0.0) else { return float3(0,0,0) }
+    
+    return asin(theta)/theta * w
 }
