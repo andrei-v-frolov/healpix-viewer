@@ -41,10 +41,25 @@ struct ContentView: View {
             //ZStack(alignment: .top) {
             VStack {
                 if (toolbar == .projection) {
-                    ProjectionToolbar(projection: $projection,orientation: $orientation)
+                    ProjectionToolbar(projection: $projection, orientation: $orientation)
+                        .onChange(of: orientation) {
+                            if (!Orientation.free.contains($0)) {
+                                let (lat,lon,az) = $0.coords
+                                latitude = lat; longitude = lon; azimuth = az
+                            }
+                        }
                 }
                 if (toolbar == .orientation) {
                     OrientationToolbar(latitude: $latitude, longitude: $longitude, azimuth: $azimuth)
+                        .onChange(of: latitude) { value in
+                            if (!Orientation.free.contains(orientation)) { orientation = .drag }
+                        }
+                        .onChange(of: longitude) { value in
+                            if (!Orientation.free.contains(orientation)) { orientation = .drag }
+                        }
+                        .onChange(of: azimuth) { value in
+                            if (!Orientation.free.contains(orientation)) { orientation = .drag }
+                        }
                 }
                 if (toolbar == .lighting) {
                     Text("Lighting Toolbar")

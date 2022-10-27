@@ -185,8 +185,8 @@ enum Projection: String, CaseIterable {
 
 // projection orientation lock
 enum Orientation: String, CaseIterable, Preference {
-    case drag = "Drag"
-    case spin = "Spin"
+    case drag = "As Specified"
+    case spin = "Spin to Home"
     case equator = "Equator"
     case north = "North Pole"
     case south = "South Pole"
@@ -202,6 +202,19 @@ enum Orientation: String, CaseIterable, Preference {
     static let free: [Self] = [.drag, .spin]
     static let galactic: [Self] = [.equator, .north, .south]
     static let ecliptic: [Self] = [.eclipticEquator, .eclipticNorth, .eclipticSouth]
+    
+    // predefined orientations
+    var coords: (lat: Double, lon: Double, az: Double) {
+        switch self {
+            case .equator:          return (0,0,0)
+            case .north:            return (90,0,0)
+            case .south:            return (-90,0,0)
+            case .eclipticEquator:  return (-60.18845577,96.33723581,0.040679)  // double check!!!
+            case .eclipticNorth:    return (29.81163604,96.38395884,0.023278)   // double check!!!
+            case .eclipticSouth:    return (-29.81126914,-83.615941,179.977140) // double check!!!
+            default:                return (0,0,0)
+        }
+    }
 }
 
 // color scheme

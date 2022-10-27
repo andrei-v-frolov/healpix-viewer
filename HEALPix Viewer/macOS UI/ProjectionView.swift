@@ -32,7 +32,7 @@ struct ProjectionToolbar: View {
                     Text($0.rawValue).tag($0)
                 }
             }
-            .frame(width: 180)
+            .frame(width: 190)
             Spacer().frame(width: 30)
             Picker("Viewpoint:", selection: $orientation) {
                 ForEach(Orientation.free, id: \.self) {
@@ -47,7 +47,7 @@ struct ProjectionToolbar: View {
                     Text($0.rawValue).tag($0)
                 }
             }
-            .frame(width: 180)
+            .frame(width: 190)
             Spacer().frame(width: 50)
             Toggle(" Enable lighting effects", isOn: $lighting)
         }
