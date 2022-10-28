@@ -133,7 +133,7 @@ func gen2rot(_ w: float3) -> float3x3 {
 
 // rotation matrix to generator of rotation
 func rot2gen(_ R: float3x3) -> float3 {
-    let w = float3(R[1,2]-R[2,1], R[2,0]-R[0,1], R[0,1]-R[1,0])/2.0
+    let w = float3(R[1,2]-R[2,1], R[2,0]-R[0,2], R[0,1]-R[1,0])/2.0
     let theta = length(w); guard (theta > 0.0) else { return float3(0,0,0) }
     
     return asin(theta)/theta * w
