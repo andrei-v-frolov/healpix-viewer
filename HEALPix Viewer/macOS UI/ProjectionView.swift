@@ -22,8 +22,7 @@ struct ProjectionView_Previews: PreviewProvider {
 struct ProjectionToolbar: View {
     @Binding var projection: Projection
     @Binding var orientation: Orientation
-    
-    @State private var spin = true
+    @Binding var spin: Bool
     
     var body: some View {
         HStack {

@@ -23,6 +23,7 @@ struct ContentView: View {
     
     @State private var projection: Projection = .defaultValue
     @State private var orientation: Orientation = .defaultValue
+    @State private var spin: Bool = true
     
     @State private var magnification: Double = 0.0
     
@@ -41,7 +42,7 @@ struct ContentView: View {
             //ZStack(alignment: .top) {
             VStack {
                 if (toolbar == .projection) {
-                    ProjectionToolbar(projection: $projection, orientation: $orientation)
+                    ProjectionToolbar(projection: $projection, orientation: $orientation, spin: $spin)
                         .onChange(of: orientation) {
                             if ($0 != .free) {
                                 let (lat,lon,az) = $0.coords
@@ -59,7 +60,7 @@ struct ContentView: View {
                     Text("Lighting Toolbar")
                 }
                 MapView(projection: $projection, magnification: $magnification,
-                        latitude: $latitude, longitude: $longitude, azimuth: $azimuth)
+                        latitude: $latitude, longitude: $longitude, azimuth: $azimuth, spin: $spin)
             }
         }
         .frame(

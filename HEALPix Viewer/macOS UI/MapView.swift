@@ -17,6 +17,8 @@ struct MapView: NSViewRepresentable {
     @Binding var longitude: Double
     @Binding var azimuth: Double
     
+    @Binding var spin: Bool
+    
     typealias NSViewType = ProjectedView
     var view = ProjectedView()
     
