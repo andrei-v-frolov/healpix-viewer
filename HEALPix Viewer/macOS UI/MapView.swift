@@ -126,15 +126,16 @@ func ang2rot(_ theta: Double, _ phi: Double, _ psi: Double) -> float3x3 {
 func gen2rot(_ w: float3) -> float3x3 {
     let theta = length(w); guard (theta > 0.0) else { return matrix_identity_float3x3 }
     let W = float3x3( float3(0.0,w.z,-w.y), float3(-w.z,0.0,w.x), float3(w.y,-w.x,0.0))
-    let p = sin(theta)/theta, q = sin(theta/2.0)/theta, s = 2.0*q*q
+    let q = sin(theta)/theta, s = sin(theta/2.0)/theta, p = 2.0*s*s
     
-    return matrix_identity_float3x3 + p*W + s*(W*W)
+    return matrix_identity_float3x3 + q*W + p*(W*W)
 }
 
 // rotation matrix to generator of rotation
 func rot2gen(_ R: float3x3) -> float3 {
     let w = float3(R[1,2]-R[2,1], R[2,0]-R[0,2], R[0,1]-R[1,0])/2.0
-    let theta = length(w); guard (theta > 0.0) else { return float3(0,0,0) }
+    let s = length(w); guard (s > 0.0) else { return float3(0,0,0) }
+    let trace = R[0,0]+R[1,1]+R[2,2], t = (trace-1.0)/2.0
     
-    return asin(theta)/theta * w
+    return atan2(s,t)/s * w
 }
