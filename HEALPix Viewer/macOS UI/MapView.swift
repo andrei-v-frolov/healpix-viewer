@@ -8,16 +8,15 @@
 import SwiftUI
 import MetalKit
 
+// MARK: SwiftUI wrapper for ProjectedView
 struct MapView: NSViewRepresentable {
     @Binding var projection: Projection
-    
     @Binding var magnification: Double
+    @Binding var spin: Bool
     
     @Binding var latitude: Double
     @Binding var longitude: Double
     @Binding var azimuth: Double
-    
-    @Binding var spin: Bool
     
     typealias NSViewType = ProjectedView
     var view = ProjectedView()
@@ -28,15 +27,22 @@ struct MapView: NSViewRepresentable {
     
     func updateNSView(_ view: Self.NSViewType, context: Self.Context) {
         let radian = Double.pi/180.0
+        let rotation = ang2rot(latitude*radian, longitude*radian, azimuth*radian), w = rot2gen(rotation)
         
         view.projection = projection
         view.magnification = magnification
-        view.rotation = ang2rot(latitude*radian, longitude*radian, azimuth*radian)
+        view.spin = spin
+        
+        if (spin) { view.target = w } else {
+            view.w = w; view.omega = float3(0.0)
+            view.rotation = rotation
+        }
         
         view.draw(view.bounds)
     }
 }
 
+// MARK: Metal renderer for projected maps
 class ProjectedView: MTKView {
     // MARK: compute pipeline
     var queue: MTLCommandQueue! = nil
@@ -57,7 +63,7 @@ class ProjectedView: MTKView {
     var magnification = 0.0
     var padding = 0.1
     
-    // MARK: ...
+    // MARK: arguments to shader
     var transform: float3x2 {
         let (x,y) = projection.extent, w = drawableSize.width, h = drawableSize.height
         let s = 2.0 * (1.0+padding) * max(x/w, y/h)/exp2(magnification), dx = -s*w/2, dy = s*h/2
@@ -67,6 +73,33 @@ class ProjectedView: MTKView {
     
     var rotation = matrix_identity_float3x3
     let background = float4(1.0, 1.0, 0.0, 0.5)
+    
+    // MARK: solid body dynamics
+    var spin = false
+    
+    var w = float3.zero
+    var omega = float3.zero
+    var target = float3.zero
+    
+    private let gamma: Float = 6.0
+    private let kappa: Float = 4.0
+    
+    func step2(_ dt: Double) {
+        w += omega * Float(dt/2.0)
+        omega -= (gamma*omega + kappa*(w-target)) * Float(dt)
+        w += omega * Float(dt/2.0)
+    }
+    
+    func step6(_ dt: Double) {
+        let w: [Double] = [
+             1.31518632068391121888424972823886251,
+            -1.17767998417887100694641568096431573,
+             0.235573213359358133684793182978534602,
+             0.784513610477557263819497633866349876
+        ]
+        
+        for i in -3...3 { step2(w[abs(i)]*dt) }
+    }
     
     // MARK: initalize after being decoded
     override func awakeFromNib() {
@@ -93,6 +126,9 @@ class ProjectedView: MTKView {
     override func draw(_ rect: CGRect) {
         // check that we have a draw destination
         guard currentRenderPassDescriptor != nil, let shader = shaders[projection], let drawable = currentDrawable else { return }
+        
+        // if spinning, advance the viewpoint towards target view
+        if (spin) { step6(1.0/Double(preferredFramesPerSecond)); rotation = gen2rot(w) }
         
         // load arguments to be passed to kernel
         buffers[0].contents().storeBytes(of: transform, as: float3x2.self)
