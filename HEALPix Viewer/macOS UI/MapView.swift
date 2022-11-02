@@ -81,8 +81,8 @@ class ProjectedView: MTKView {
     var omega = float3.zero
     var target = float3.zero
     
-    private let gamma: Float = 6.0
-    private let kappa: Float = 4.0
+    private let gamma: Float = 8.0
+    private let kappa: Float = 16.0
     
     func step2(_ dt: Double) {
         w += omega * Float(dt/2.0)
