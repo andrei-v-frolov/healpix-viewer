@@ -21,6 +21,7 @@
 		508BBA9D28FF2765004B1A9C /* HEALPix_ViewerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 508BBA9C28FF2765004B1A9C /* HEALPix_ViewerTests.swift */; };
 		508BBAA728FF2765004B1A9C /* HEALPix_ViewerUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 508BBAA628FF2765004B1A9C /* HEALPix_ViewerUITests.swift */; };
 		508BBAA928FF2765004B1A9C /* HEALPix_ViewerUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 508BBAA828FF2765004B1A9C /* HEALPix_ViewerUITestsLaunchTests.swift */; };
+		508D56BF291309DA0099C3A0 /* LightingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 508D56BE291309DA0099C3A0 /* LightingView.swift */; };
 		50C513132907DFDC00BB6B51 /* OrientationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C513122907DFDC00BB6B51 /* OrientationView.swift */; };
 		50ECD2B028FF2A9C0008F915 /* Menus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50ECD2AF28FF2A9C0008F915 /* Menus.swift */; };
 		50ECD2B228FF31260008F915 /* Toolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50ECD2B128FF31260008F915 /* Toolbar.swift */; };
