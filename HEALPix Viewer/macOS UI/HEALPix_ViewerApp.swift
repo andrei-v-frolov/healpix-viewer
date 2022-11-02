@@ -16,4 +16,8 @@ struct HEALPix_ViewerApp: App {
             Menus()
         }
     }
+    
+    init() {
+        NSWindow.allowsAutomaticWindowTabbing = false
+    }
 }
