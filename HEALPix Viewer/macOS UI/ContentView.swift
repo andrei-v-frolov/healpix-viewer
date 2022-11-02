@@ -56,6 +56,9 @@ struct ContentView: View {
                         .onChange(of: longitude) { value in orientation = .free }
                         .onChange(of: azimuth)   { value in orientation = .free }
                 }
+                if (toolbar == .color) {
+                    ColorToolbar()
+                }
                 if (toolbar == .lighting) {
                     Text("Lighting Toolbar")
                 }
@@ -77,8 +80,4 @@ struct ContentView_Previews: PreviewProvider {
     static var previews: some View {
         ContentView()
     }
-}
-
-enum ShowToolbar {
-    case none, projection, orientation, lighting
 }

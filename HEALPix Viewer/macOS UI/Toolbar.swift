@@ -47,6 +47,14 @@ struct Toolbar: CustomizableToolbarContent {
             }
             .help("View Orientation")
         }
+        ToolbarItem(id: "color", placement: .principal, showsByDefault: true) {
+            Button {
+                withAnimation { toggleToolbar(.color) }
+            } label: {
+                Image(systemName: "paintpalette")
+            }
+            .help("Color Scheme")
+        }
         ToolbarItem(id: "lighting", placement: .principal, showsByDefault: true) {
             Button {
                 withAnimation { toggleToolbar(.lighting) }
@@ -76,4 +84,8 @@ struct Toolbar: CustomizableToolbarContent {
 func toggleSidebar() {
     NSApp.keyWindow?.contentViewController?.tryToPerform(#selector(NSSplitViewController.toggleSidebar(_:)),
                                                          with: nil)
+}
+
+enum ShowToolbar {
+    case none, projection, orientation, color, lighting
 }
