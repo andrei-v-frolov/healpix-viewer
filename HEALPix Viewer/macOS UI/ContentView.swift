@@ -19,6 +19,7 @@ let TwoDigitNumber: NumberFormatter = {
 
 // main window view
 struct ContentView: View {
+    @State private var title = "CMB Viewer"
     @State private var toolbar = ShowToolbar.none
     
     @State private var projection: Projection = .defaultValue
@@ -73,6 +74,7 @@ struct ContentView: View {
         .toolbar(id: "mainToolbar") {
             Toolbar(toolbar: $toolbar, magnification: $magnification)
         }
+        .navigationTitle(title)
     }
 }
 
