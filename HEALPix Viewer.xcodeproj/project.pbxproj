@@ -90,6 +90,7 @@
 		508BBAA228FF2765004B1A9C /* HEALPix ViewerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "HEALPix ViewerUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		508BBAA628FF2765004B1A9C /* HEALPix_ViewerUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HEALPix_ViewerUITests.swift; sourceTree = "<group>"; };
 		508BBAA828FF2765004B1A9C /* HEALPix_ViewerUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HEALPix_ViewerUITestsLaunchTests.swift; sourceTree = "<group>"; };
+		508D56BE291309DA0099C3A0 /* LightingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LightingView.swift; sourceTree = "<group>"; };
 		50A0D2522902F1A300A29988 /* Healpix.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Healpix.metal; sourceTree = "<group>"; };
 		50A0D2562902F1B200A29988 /* Projections.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Projections.metal; sourceTree = "<group>"; };
 		50C513122907DFDC00BB6B51 /* OrientationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrientationView.swift; sourceTree = "<group>"; };
@@ -133,6 +134,7 @@
 				50655411290A64F400176790 /* ProjectionView.swift */,
 				50C513122907DFDC00BB6B51 /* OrientationView.swift */,
 				5009BB132912ECEB006DE835 /* ColorView.swift */,
+				508D56BE291309DA0099C3A0 /* LightingView.swift */,
 				503C675D28FF89C1002D4314 /* MapView.swift */,
 				50ECD2B128FF31260008F915 /* Toolbar.swift */,
 				50ECD2AF28FF2A9C0008F915 /* Menus.swift */,
@@ -386,6 +388,7 @@
 				50655412290A64F400176790 /* ProjectionView.swift in Sources */,
 				508BBA8B28FF2764004B1A9C /* HEALPix_ViewerApp.swift in Sources */,
 				503C675E28FF89C1002D4314 /* MapView.swift in Sources */,
+				508D56BF291309DA0099C3A0 /* LightingView.swift in Sources */,
 				5009BB142912ECEB006DE835 /* ColorView.swift in Sources */,
 				50ECD2B028FF2A9C0008F915 /* Menus.swift in Sources */,
 				50563E592901E19A00B316CA /* MetalShader.swift in Sources */,
