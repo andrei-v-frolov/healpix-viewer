@@ -230,6 +230,21 @@ enum ColorScheme: String, CaseIterable, Preference {
     // default value
     static let appStorage = "colorScheme"
     static let defaultValue: Self = .planck
+    
+    // colormap singletons
+    var colormap: Colormap {
+        switch self {
+            case .planck:   return Colormap.planck
+            case .freq:     return Colormap.freq
+            case .cmb:      return Colormap.cmb
+            case .grey:     return Colormap.grey
+            case .hot:      return Colormap.hot
+            case .cold:     return Colormap.cold
+            case .grv:      return Colormap.GRV
+            case .bgry:     return Colormap.BGRY
+            default:        return Colormap.cmb
+        }
+    }
 }
 
 // color scheme

@@ -32,7 +32,9 @@ struct ColorToolbar: View {
             .frame(width: 210)
             Spacer().frame(width: 30)
             ColorPicker("Min:", selection: $mincolor)
+                .onChange(of: colorsheme) { value in mincolor = value.colormap.min }
             ColorPicker("Max:", selection: $maxcolor)
+                .onChange(of: colorsheme) { value in maxcolor = value.colormap.max }
             ColorPicker("NaN:", selection: $nancolor)
             Spacer().frame(width: 30)
             ColorPicker("Background:", selection: $bgcolor)
