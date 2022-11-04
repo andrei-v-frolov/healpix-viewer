@@ -32,6 +32,7 @@ struct LightingToolbar: View {
             TextField("Amount", value: $lightingAmt, formatter: TwoDigitNumber)
                 .frame(width: 55).multilineTextAlignment(.trailing)
         }
-        .padding(.top, 8)
+        .padding(.top, 11)
+        .padding(.bottom, 3)
     }
 }

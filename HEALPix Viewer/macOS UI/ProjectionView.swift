@@ -50,8 +50,8 @@ struct ProjectionToolbar: View {
             Spacer().frame(width: 50)
             Toggle(" Spin to viewpoint", isOn: $spin)
         }
-        .padding(.top, 14)
-        .padding(.bottom, 5)
+        .padding(.top, 11)
+        .padding(.bottom, 4)
     }
 }
 

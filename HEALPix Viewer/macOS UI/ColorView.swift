@@ -29,7 +29,7 @@ struct ColorToolbar: View {
                     Text($0.rawValue).tag($0)
                 }
             }
-            .frame(width: 210)
+            .frame(width: 220)
             Spacer().frame(width: 30)
             ColorPicker("Min:", selection: $mincolor)
                 .onChange(of: colorsheme) { value in mincolor = value.colormap.min }
@@ -39,7 +39,7 @@ struct ColorToolbar: View {
             Spacer().frame(width: 30)
             ColorPicker("Background:", selection: $bgcolor)
         }
-        .padding(.top, 13)
-        .padding(.bottom, 3)
+        .padding(.top, 10)
+        .padding(.bottom, 2)
     }
 }
