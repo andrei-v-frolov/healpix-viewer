@@ -3,6 +3,10 @@
 //  HEALPix Viewer
 //
 //  Created by Andrei Frolov on 2022-10-21.
+//  Code adopted from HEALPix (chealpix.c)
+//  Copyright (C) 1997-2016 Krzysztof M. Gorski, Eric Hivon, Martin Reinecke,
+//                          Benjamin D. Wandelt, Anthony J. Banday,
+//                          Matthias Bartelmann, Reza Ansari & Kenneth M. Ganga
 //
 
 #ifndef __HEALPIX__
