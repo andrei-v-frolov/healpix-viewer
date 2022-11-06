@@ -41,16 +41,36 @@ inline int xyf2nest (int nside, int ix, int iy, int face)
 
 inline int3 nest2xyf (int nside, int pix)
 {
-    const int npface = nside*nside, mask = npface-1;
-    const int p = pix & mask, q = p >> 1;
+    const int npface = nside*nside, mask = npface-1, p = pix & mask, q = p >> 1;
+    const int xx = (p&0x5555) | ((p&0x55550000)>>15), x = ctab[xx&0xff] | (ctab[xx>>8]<<4);
+    const int yy = (q&0x5555) | ((q&0x55550000)>>15), y = ctab[yy&0xff] | (ctab[yy>>8]<<4);
     
-    const int xx = (p&0x5555) | ((p&0x55550000)>>15);
-    const int x = ctab[xx&0xff] | (ctab[xx>>8]<<4);
+    return int3(x, y, pix/npface);
+}
+
+inline int3 xyz2xyf (int nside, float3 v)
+{
+    const int mask = nside-1;
+    const float za = fabs(v.z), tt = atan2(v.y,v.x)/halfpi + 2.0; /* in [0,4) */
     
-    const int yy = (q&0x5555) | ((q&0x55550000)>>15);
-    const int y = ctab[yy&0xff] | (ctab[yy>>8]<<4);
-    
-    return int3(x,y,pix/npface);
+    if (za <= 2.0/3.0) /* Equatorial region */
+    {
+        const float temp1 = nside*(0.5+tt), temp2 = nside*(v.z*0.75);
+        const int jp = (int)(temp1-temp2), ifp = jp/nside; /* index of  ascending edge line */
+        const int jm = (int)(temp1+temp2), ifm = jm/nside; /* index of descending edge line */
+        const int face = select(select(ifm+8, ifp, ifp<ifm), ifp|4, ifp==ifm);
+        
+        return int3(jm & mask, nside - (jp & mask) - 1, face);
+    }
+    else /* polar region, za > 2/3 */
+    {
+        const int ntt = min((int)tt, 3);
+        const float tp = tt-ntt, tmp = nside*sqrt(3*(1-za));
+        const int jp = min((int)(tp*tmp), mask); /* increasing edge line index */
+        const int jm = min((int)((1.0-tp)*tmp), mask); /* decreasing edge line index */
+        
+        return select(int3(jp, jm, ntt+8), int3(mask-jm, mask-jp, ntt), v.z>=0);
+    }
 }
 
 #endif /* __HEALPIX__ */
