@@ -55,7 +55,7 @@ inline int3 nest2xyf (int nside, int pix)
 inline int3 xyz2xyf (int nside, float3 v)
 {
     const int mask = nside-1;
-    const float za = fabs(v.z), tt = atan2(v.y,v.x)/halfpi + 2.0; /* in [0,4) */
+    const float za = fabs(v.z), t = atan2(v.y,v.x)/halfpi, tt = select(t, t+4.0, t<0.0); /* in [0,4) */
     
     if (za <= 2.0/3.0) /* Equatorial region */
     {
