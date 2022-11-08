@@ -32,6 +32,8 @@ struct ContentView: View {
     @State private var longitude: Double = 0.0
     @State private var azimuth: Double = 0.0
     
+    @State private var bgcolor = Color.clear
+    
     var body: some View {
         NavigationView {
             VStack {
@@ -58,13 +60,14 @@ struct ContentView: View {
                         .onChange(of: azimuth)   { value in orientation = .free }
                 }
                 if (toolbar == .color) {
-                    ColorToolbar()
+                    ColorToolbar(bgcolor: $bgcolor)
                 }
                 if (toolbar == .lighting) {
                     LightingToolbar()
                 }
                 MapView(projection: $projection, magnification: $magnification, spin: $spin,
-                        latitude: $latitude, longitude: $longitude, azimuth: $azimuth)
+                        latitude: $latitude, longitude: $longitude, azimuth: $azimuth,
+                        background: $bgcolor)
             }
         }
         .frame(

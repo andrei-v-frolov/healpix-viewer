@@ -18,6 +18,8 @@ struct MapView: NSViewRepresentable {
     @Binding var longitude: Double
     @Binding var azimuth: Double
     
+    @Binding var background: Color
+    
     typealias NSViewType = ProjectedView
     var view = ProjectedView()
     
@@ -37,6 +39,8 @@ struct MapView: NSViewRepresentable {
             view.w = w; view.omega = float3(0.0)
             view.rotation = rotation
         }
+        
+        view.background = background.components
         
         view.draw(view.bounds)
     }
@@ -62,6 +66,7 @@ class ProjectedView: MTKView {
     var projection = Projection.defaultValue
     var magnification = 0.0
     var padding = 0.1
+    var spin = false
     
     // MARK: arguments to shader
     var transform: float3x2 {
@@ -72,11 +77,9 @@ class ProjectedView: MTKView {
     }
     
     var rotation = matrix_identity_float3x3
-    let background = float4(1.0, 1.0, 0.0, 0.5)
+    var background = float4(0.0)
     
     // MARK: solid body dynamics
-    var spin = false
-    
     var w = float3.zero
     var omega = float3.zero
     var target = float3.zero

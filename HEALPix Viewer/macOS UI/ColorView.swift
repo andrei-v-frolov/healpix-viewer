@@ -20,7 +20,7 @@ struct ColorToolbar: View {
     @State private var maxcolor = Color.red
     @State private var nancolor = Color.green
     
-    @State private var bgcolor = Color.black
+    @Binding var bgcolor: Color
     
     var body: some View {
         HStack {

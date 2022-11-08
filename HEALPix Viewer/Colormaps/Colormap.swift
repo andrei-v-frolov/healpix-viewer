@@ -34,3 +34,12 @@ struct Colormap {
     var min: Color { return self[0] }
     var max: Color { return self[lut.count-1] }
 }
+
+extension Color {
+    var components: SIMD4<Float> {
+        guard let color = NSColor(self).usingColorSpace(NSColorSpace.deviceRGB) else { return SIMD4<Float>(0.0) }
+        let r = color.redComponent, g = color.greenComponent, b = color.blueComponent, a = color.alphaComponent
+        
+        return SIMD4<Float>(Float(r), Float(g), Float(b), Float(a))
+    }
+}
