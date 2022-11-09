@@ -43,33 +43,35 @@ struct ContentView: View {
                     .foregroundColor(.accentColor)
                 Text("Hello, world!")
             }
-            //ZStack(alignment: .top) {
-            VStack {
-                if (toolbar == .projection) {
-                    ProjectionToolbar(projection: $projection, orientation: $orientation, spin: $spin)
-                        .onChange(of: orientation) {
-                            if ($0 != .free) {
-                                let (lat,lon,az) = $0.coords
-                                latitude = lat; longitude = lon; azimuth = az
+            GeometryReader { geometry in
+                VStack(spacing: 0) {
+                    if (toolbar == .projection) {
+                        ProjectionToolbar(projection: $projection, orientation: $orientation, spin: $spin)
+                            .onChange(of: orientation) {
+                                if ($0 != .free) {
+                                    let (lat,lon,az) = $0.coords
+                                    latitude = lat; longitude = lon; azimuth = az
+                                }
                             }
-                        }
+                    }
+                    if (toolbar == .orientation) {
+                        OrientationToolbar(latitude: $latitude, longitude: $longitude, azimuth: $azimuth)
+                            .onChange(of: latitude)  { value in orientation = .free }
+                            .onChange(of: longitude) { value in orientation = .free }
+                            .onChange(of: azimuth)   { value in orientation = .free }
+                    }
+                    if (toolbar == .color) {
+                        ColorToolbar(colorsheme: $colorsheme, bgcolor: $bgcolor)
+                    }
+                    if (toolbar == .lighting) {
+                        LightingToolbar()
+                    }
+                    MapView(projection: $projection, magnification: $magnification, spin: $spin,
+                            latitude: $latitude, longitude: $longitude, azimuth: $azimuth,
+                            background: $bgcolor)
+                    BarView(colorsheme: $colorsheme, background: $bgcolor)
+                        .frame(height: geometry.size.width/20)
                 }
-                if (toolbar == .orientation) {
-                    OrientationToolbar(latitude: $latitude, longitude: $longitude, azimuth: $azimuth)
-                        .onChange(of: latitude)  { value in orientation = .free }
-                        .onChange(of: longitude) { value in orientation = .free }
-                        .onChange(of: azimuth)   { value in orientation = .free }
-                }
-                if (toolbar == .color) {
-                    ColorToolbar(colorsheme: $colorsheme, bgcolor: $bgcolor)
-                }
-                if (toolbar == .lighting) {
-                    LightingToolbar()
-                }
-                MapView(projection: $projection, magnification: $magnification, spin: $spin,
-                        latitude: $latitude, longitude: $longitude, azimuth: $azimuth,
-                        background: $bgcolor)
-                BarView(colorsheme: $colorsheme, background: $bgcolor)
             }
         }
         .frame(

@@ -40,6 +40,6 @@ struct ColorToolbar: View {
             ColorPicker("Background:", selection: $bgcolor)
         }
         .padding(.top, 10)
-        .padding(.bottom, 2)
+        .padding(.bottom, 9)
     }
 }

@@ -40,12 +40,12 @@ class ColorbarView: MTKView {
     // MARK: state variables
     var colormap = ColorScheme.defaultValue.colormap
     var padding = 0.1
-    let aspect = 20.0
+    let aspect = 30.0
     
     // MARK: arguments to shader
     var transform: float3x2 {
         let x = 1.0, y = x/aspect, w = drawableSize.width, h = drawableSize.height
-        let s = max((1.0+2.0*padding) * x/w, y/h), dx = -s*w/2 + 0.5, dy = aspect*s*h/2 + 0.5
+        let s = max((1.0+padding) * x/w, y/h), dx = -s*w/2 + 0.5, dy = aspect*s*h/2 + 0.5
         
         return simd.float3x2(float2(Float(s), 0.0), float2(0.0, -Float(aspect*s)), float2(Float(dx), Float(dy)))
     }
