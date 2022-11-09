@@ -14,7 +14,7 @@ struct ColorView: View {
 }
 
 struct ColorToolbar: View {
-    @State private var colorsheme: ColorScheme = .defaultValue
+    @Binding var colorsheme: ColorScheme
     
     @State private var mincolor = Color.blue
     @State private var maxcolor = Color.red

@@ -14,6 +14,7 @@
 		50655412290A64F400176790 /* ProjectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50655411290A64F400176790 /* ProjectionView.swift */; };
 		50811E5229023F280069B219 /* CFitsIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 50811E5029023EAF0069B219 /* CFitsIO.framework */; };
 		50811E5329023F280069B219 /* CFitsIO.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 50811E5029023EAF0069B219 /* CFitsIO.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		508910B2291B077E00E33CB6 /* ColorbarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 508910B1291B077E00E33CB6 /* ColorbarView.swift */; };
 		508BBA8B28FF2764004B1A9C /* HEALPix_ViewerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 508BBA8A28FF2764004B1A9C /* HEALPix_ViewerApp.swift */; };
 		508BBA8D28FF2764004B1A9C /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 508BBA8C28FF2764004B1A9C /* ContentView.swift */; };
 		508BBA8F28FF2765004B1A9C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 508BBA8E28FF2765004B1A9C /* Assets.xcassets */; };
@@ -88,6 +89,7 @@
 		50563E5A2901E38F00B316CA /* Kernels.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Kernels.metal; sourceTree = "<group>"; };
 		50655411290A64F400176790 /* ProjectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectionView.swift; sourceTree = "<group>"; };
 		50811E4829023EAF0069B219 /* cfitsio.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = cfitsio.xcodeproj; path = cfitsio/cfitsio.xcodeproj; sourceTree = "<group>"; };
+		508910B1291B077E00E33CB6 /* ColorbarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorbarView.swift; sourceTree = "<group>"; };
 		508BBA8728FF2764004B1A9C /* HEALPix Viewer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "HEALPix Viewer.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		508BBA8A28FF2764004B1A9C /* HEALPix_ViewerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HEALPix_ViewerApp.swift; sourceTree = "<group>"; };
 		508BBA8C28FF2764004B1A9C /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -154,6 +156,7 @@
 				5009BB132912ECEB006DE835 /* ColorView.swift */,
 				508D56BE291309DA0099C3A0 /* LightingView.swift */,
 				503C675D28FF89C1002D4314 /* MapView.swift */,
+				508910B1291B077E00E33CB6 /* ColorbarView.swift */,
 				50ECD2B128FF31260008F915 /* Toolbar.swift */,
 				50ECD2AF28FF2A9C0008F915 /* Menus.swift */,
 			);
@@ -422,6 +425,7 @@
 				508D56C729131C270099C3A0 /* Planck Parchment.swift in Sources */,
 				508D56D029131DB10099C3A0 /* HEALPix CMB.swift in Sources */,
 				50F1F27829134E2500FBF00D /* Colormap.swift in Sources */,
+				508910B2291B077E00E33CB6 /* ColorbarView.swift in Sources */,
 				508D56D629131F050099C3A0 /* HEALPix Cold.swift in Sources */,
 				508D56D429131EB80099C3A0 /* HEALPix Hot.swift in Sources */,
 				508BBA8D28FF2764004B1A9C /* ContentView.swift in Sources */,

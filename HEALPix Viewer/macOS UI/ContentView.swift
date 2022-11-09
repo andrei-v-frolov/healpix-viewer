@@ -32,6 +32,7 @@ struct ContentView: View {
     @State private var longitude: Double = 0.0
     @State private var azimuth: Double = 0.0
     
+    @State private var colorsheme: ColorScheme = .defaultValue
     @State private var bgcolor = Color.clear
     
     var body: some View {
@@ -60,7 +61,7 @@ struct ContentView: View {
                         .onChange(of: azimuth)   { value in orientation = .free }
                 }
                 if (toolbar == .color) {
-                    ColorToolbar(bgcolor: $bgcolor)
+                    ColorToolbar(colorsheme: $colorsheme, bgcolor: $bgcolor)
                 }
                 if (toolbar == .lighting) {
                     LightingToolbar()
@@ -68,6 +69,7 @@ struct ContentView: View {
                 MapView(projection: $projection, magnification: $magnification, spin: $spin,
                         latitude: $latitude, longitude: $longitude, azimuth: $azimuth,
                         background: $bgcolor)
+                BarView(colorsheme: $colorsheme, background: $bgcolor)
             }
         }
         .frame(

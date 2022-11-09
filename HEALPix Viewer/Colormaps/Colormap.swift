@@ -10,6 +10,7 @@ import MetalKit
 
 struct Colormap {
     let lut: [SIMD4<Float>]
+    var size: Int { lut.count * MemoryLayout<SIMD4<Float>>.size }
     
     // singleton colormaps
     static let planck = Colormap(lut: Planck_Parchment_LUT)
@@ -20,6 +21,25 @@ struct Colormap {
     static let cold = Colormap(lut: HEALPix_Cold_LUT)
     static let GRV = Colormap(lut: HEALPix_GRV_LUT)
     static let BGRY = Colormap(lut: HEALPix_BGRY_LUT)
+    
+    // Metal texture representing colormap
+    lazy var texture: MTLTexture = {
+        // texture format
+        let desc = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: MTLPixelFormat.rgba32Float, width: lut.count, height: 1, mipmapped: false)
+        
+        desc.textureType = MTLTextureType.type1D
+        desc.usage = MTLTextureUsage.shaderRead
+        
+        // initialize compute pipeline
+        guard let device = MTLCreateSystemDefaultDevice(),
+              let texture = device.makeTexture(descriptor: desc)
+              else { fatalError("Metal Framework could not be initalized") }
+        
+        // load texture contents
+        lut.withUnsafeBytes { data in texture.replace(region: MTLRegionMake1D(0, lut.count), mipmapLevel: 0, withBytes: data.baseAddress!, bytesPerRow: size) }
+        
+        return texture
+    }()
     
     // initialize colormap from LUT
     init(lut: [SIMD4<Float>]) {
