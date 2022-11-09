@@ -71,6 +71,7 @@ struct ContentView: View {
                             background: $bgcolor)
                     BarView(colorsheme: $colorsheme, background: $bgcolor)
                         .frame(height: geometry.size.width/20)
+                    RangeToolbar()
                 }
             }
         }

@@ -13,12 +13,6 @@ struct ProjectionView: View {
     }
 }
 
-struct ProjectionView_Previews: PreviewProvider {
-    static var previews: some View {
-        ProjectionView()
-    }
-}
-
 struct ProjectionToolbar: View {
     @Binding var projection: Projection
     @Binding var orientation: Orientation
