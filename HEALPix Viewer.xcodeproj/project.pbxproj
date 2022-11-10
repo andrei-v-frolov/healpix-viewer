@@ -33,6 +33,7 @@
 		508D56DA29131FBA0099C3A0 /* HEALPix BGRY.swift in Sources */ = {isa = PBXBuildFile; fileRef = 508D56D929131FBA0099C3A0 /* HEALPix BGRY.swift */; };
 		50A94798291B3AEB00F6F1BA /* RangeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50A94797291B3AEB00F6F1BA /* RangeView.swift */; };
 		50C513132907DFDC00BB6B51 /* OrientationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C513122907DFDC00BB6B51 /* OrientationView.swift */; };
+		50D29751291C39AA00E18C08 /* Map.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50D29750291C39AA00E18C08 /* Map.swift */; };
 		50ECD2B028FF2A9C0008F915 /* Menus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50ECD2AF28FF2A9C0008F915 /* Menus.swift */; };
 		50ECD2B228FF31260008F915 /* Toolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50ECD2B128FF31260008F915 /* Toolbar.swift */; };
 		50F1F27829134E2500FBF00D /* Colormap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50F1F27729134E2500FBF00D /* Colormap.swift */; };
@@ -116,6 +117,7 @@
 		50A94797291B3AEB00F6F1BA /* RangeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RangeView.swift; sourceTree = "<group>"; };
 		50C513122907DFDC00BB6B51 /* OrientationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrientationView.swift; sourceTree = "<group>"; };
 		50CB1444290B03B0006D59FA /* Shaders.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Shaders.metal; sourceTree = "<group>"; };
+		50D29750291C39AA00E18C08 /* Map.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Map.swift; sourceTree = "<group>"; };
 		50ECD2AF28FF2A9C0008F915 /* Menus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Menus.swift; sourceTree = "<group>"; };
 		50ECD2B128FF31260008F915 /* Toolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Toolbar.swift; sourceTree = "<group>"; };
 		50F1F27729134E2500FBF00D /* Colormap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Colormap.swift; sourceTree = "<group>"; };
@@ -208,6 +210,7 @@
 			isa = PBXGroup;
 			children = (
 				50563E5C29023D7300B316CA /* macOS UI */,
+				50D29754291C3AAA00E18C08 /* Data */,
 				508D56CA29131C2D0099C3A0 /* Colormaps */,
 				50A0D2582902F1BE00A29988 /* Metal */,
 				508BBA8E28FF2765004B1A9C /* Assets.xcassets */,
@@ -269,6 +272,14 @@
 				50563E582901E19A00B316CA /* MetalShader.swift */,
 			);
 			path = Metal;
+			sourceTree = "<group>";
+		};
+		50D29754291C3AAA00E18C08 /* Data */ = {
+			isa = PBXGroup;
+			children = (
+				50D29750291C39AA00E18C08 /* Map.swift */,
+			);
+			path = Data;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -444,6 +455,7 @@
 				50563E592901E19A00B316CA /* MetalShader.swift in Sources */,
 				50563E5B2901E38F00B316CA /* Kernels.metal in Sources */,
 				50ECD2B228FF31260008F915 /* Toolbar.swift in Sources */,
+				50D29751291C39AA00E18C08 /* Map.swift in Sources */,
 				50C513132907DFDC00BB6B51 /* OrientationView.swift in Sources */,
 				508D56D829131F7E0099C3A0 /* HEALPix GRV.swift in Sources */,
 				508D56D229131E7E0099C3A0 /* HEALPix Grey.swift in Sources */,

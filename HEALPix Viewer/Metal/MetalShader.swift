@@ -76,7 +76,8 @@ struct MetalKernel: MetalShader {
         // dispatch thread groups to cover entire grid
         let w = (threadsPerGrid.width + threadsPerGroup.width - 1)/threadsPerGroup.width
         let h = (threadsPerGrid.height + threadsPerGroup.height - 1)/threadsPerGroup.height
-        let groupsPerGrid = MTLSize(width: w, height: h, depth: 1)
+        let d = (threadsPerGrid.depth + threadsPerGroup.depth - 1)/threadsPerGroup.depth
+        let groupsPerGrid = MTLSize(width: w, height: h, depth: d)
         encoder.dispatchThreadgroups(groupsPerGrid, threadsPerThreadgroup: threadsPerGroup)
     }
     

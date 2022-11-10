@@ -8,7 +8,7 @@
 import SwiftUI
 import MetalKit
 
-struct Colormap {
+final class Colormap {
     let lut: [SIMD4<Float>]
     var size: Int { lut.count * MemoryLayout<SIMD4<Float>>.size }
     
