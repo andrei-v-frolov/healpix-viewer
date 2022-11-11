@@ -27,15 +27,18 @@ struct ContentView: View {
     @State private var orientation: Orientation = .defaultValue
     @State private var spin: Bool = true
     
-    // magnification and orientation
+    // magnification and orientation toolbar
     @State private var magnification: Double = 0.0
     
     @State private var latitude: Double = 0.0
     @State private var longitude: Double = 0.0
     @State private var azimuth: Double = 0.0
     
-    // color bar
+    // color toolbar
     @State private var colorsheme: ColorScheme = .defaultValue
+    @State private var mincolor = Color.blue
+    @State private var maxcolor = Color.red
+    @State private var nancolor = Color.green
     @State private var bgcolor = Color.clear
     
     // range toolbar
@@ -72,7 +75,9 @@ struct ContentView: View {
                             .onChange(of: azimuth)   { value in orientation = .free }
                     }
                     if (toolbar == .color) {
-                        ColorToolbar(colorsheme: $colorsheme, bgcolor: $bgcolor)
+                        ColorToolbar(colorsheme: $colorsheme,
+                                     mincolor: $mincolor, maxcolor: $maxcolor,
+                                     nancolor: $nancolor, bgcolor: $bgcolor)
                     }
                     if (toolbar == .lighting) {
                         LightingToolbar()
