@@ -22,6 +22,9 @@ struct ContentView: View {
     @State private var title = "CMB Viewer"
     @State private var toolbar = ShowToolbar.none
     
+    // map to be displayed
+    @State private var map: Map? = test
+    
     // projection toolbar
     @State private var projection: Projection = .defaultValue
     @State private var orientation: Orientation = .defaultValue
@@ -48,6 +51,9 @@ struct ContentView: View {
     @State private var rangemax: Double =  1.0
     
     @State private var modifier: BoundsModifier = .defaultValue
+    
+    // color mapper
+    private let mapper = ColorMapper()
     
     var body: some View {
         NavigationView {
@@ -82,7 +88,7 @@ struct ContentView: View {
                     if (toolbar == .lighting) {
                         LightingToolbar()
                     }
-                    MapView(projection: $projection, magnification: $magnification, spin: $spin,
+                    MapView(map: $map, projection: $projection, magnification: $magnification, spin: $spin,
                             latitude: $latitude, longitude: $longitude, azimuth: $azimuth,
                             background: $bgcolor)
                     BarView(colorsheme: $colorscheme, background: $bgcolor)
@@ -101,6 +107,15 @@ struct ContentView: View {
             Toolbar(toolbar: $toolbar, magnification: $magnification)
         }
         .navigationTitle(title)
+    }
+    
+    // colorize map with current settings
+    func colorize(_ map: Map?) {
+        guard let map = map else { return }
+        
+        mapper.colorize(map: map, colormap: colorscheme.colormap,
+                        mincolor: mincolor, maxcolor: maxcolor, nancolor: nancolor,
+                        minvalue: rangemin, maxvalue: rangemax)
     }
 }
 

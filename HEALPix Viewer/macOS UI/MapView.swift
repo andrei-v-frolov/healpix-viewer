@@ -10,6 +10,8 @@ import MetalKit
 
 // MARK: SwiftUI wrapper for ProjectedView
 struct MapView: NSViewRepresentable {
+    @Binding var map: Map?
+    
     @Binding var projection: Projection
     @Binding var magnification: Double
     @Binding var spin: Bool
@@ -31,6 +33,7 @@ struct MapView: NSViewRepresentable {
         let radian = Double.pi/180.0
         let rotation = ang2rot(latitude*radian, longitude*radian, azimuth*radian), w = rot2gen(rotation)
         
+        view.map = map
         view.projection = projection
         view.magnification = magnification
         view.spin = spin
@@ -48,6 +51,9 @@ struct MapView: NSViewRepresentable {
 
 // MARK: Metal renderer for projected maps
 class ProjectedView: MTKView {
+    // MARK: map
+    var map: Map? = nil
+    
     // MARK: compute pipeline
     var queue: MTLCommandQueue! = nil
     var buffers = [MTLBuffer]()
@@ -140,8 +146,14 @@ class ProjectedView: MTKView {
         
         // initialize compute command buffer
         guard let command = queue.makeCommandBuffer() else { return }
-        //shader.grid.encode(command: command, buffers: buffers, textures: [drawable.texture])
-        shader.data.encode(command: command, buffers: buffers, textures: [test.texture, drawable.texture])
+        
+        // render map if available
+        if let map = map {
+            shader.data.encode(command: command, buffers: buffers, textures: [map.texture, drawable.texture])
+        } else {
+            shader.grid.encode(command: command, buffers: buffers, textures: [drawable.texture])
+        }
+        
         command.present(drawable)
         command.commit()
     }
