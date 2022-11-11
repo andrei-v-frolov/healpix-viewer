@@ -19,11 +19,11 @@ final class Map {
     
     // Metal buffer containing map data
     lazy var buffer: MTLBuffer = {
-        guard let device = MTLCreateSystemDefaultDevice(),
-              let buffer = device.makeBuffer(length: size)
+        guard let device = MTLCreateSystemDefaultDevice()
               else { fatalError("Metal Framework could not be initalized") }
         
-        buffer.contents().storeBytes(of: data, as: [Float].self)
+        let buffer = data.withUnsafeBytes { return device.makeBuffer(bytes: $0.baseAddress!, length: size) }
+        guard let buffer = buffer else { fatalError("Metal Framework could not be initalized") }
         
         return buffer
     }()
@@ -84,3 +84,17 @@ struct ColorMapper {
         command.commit()
     }
 }
+
+// test map
+var test: Map = {
+    let nside = 32
+    let seq = [Int](0..<12*nside*nside)
+    let data = seq.map { Float($0)/Float(12*nside*nside-1) }
+    let map = Map(nside: nside, data: data)
+    
+    let mapper = ColorMapper()
+    
+    mapper.colorize(map: map, colormap: Colormap.planck, mincolor: Color.blue, maxcolor: Color.red, nancolor: Color.green, minvalue: 0.0, maxvalue: 1.0)
+    
+    return map
+}()

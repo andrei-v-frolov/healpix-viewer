@@ -53,13 +53,13 @@ class ProjectedView: MTKView {
     var buffers = [MTLBuffer]()
     
     // MARK: projection shaders
-    let shaders: [Projection: MetalKernel] = [
-        .mollweide: MetalKernel(kernel: "mollweide_grid"),
-        .gnomonic:  MetalKernel(kernel: "gnomonic_grid"),
-        .lambert:   MetalKernel(kernel: "lambert_grid"),
-        .isometric: MetalKernel(kernel: "isometric_grid"),
-        .mercator:  MetalKernel(kernel: "mercator_grid"),
-        .werner:    MetalKernel(kernel: "werner_grid")
+    let shaders: [Projection: (grid: MetalKernel, data: MetalKernel)] = [
+        .mollweide: (MetalKernel(kernel: "mollweide_grid"), MetalKernel(kernel: "mollweide_data")),
+        .gnomonic:  (MetalKernel(kernel: "gnomonic_grid"),  MetalKernel(kernel: "gnomonic_data")),
+        .lambert:   (MetalKernel(kernel: "lambert_grid"),   MetalKernel(kernel: "lambert_data")),
+        .isometric: (MetalKernel(kernel: "isometric_grid"), MetalKernel(kernel: "isometric_data")),
+        .mercator:  (MetalKernel(kernel: "mercator_grid"),  MetalKernel(kernel: "mercator_data")),
+        .werner:    (MetalKernel(kernel: "werner_grid"),    MetalKernel(kernel: "werner_data"))
     ]
     
     // MARK: state variables
@@ -140,7 +140,8 @@ class ProjectedView: MTKView {
         
         // initialize compute command buffer
         guard let command = queue.makeCommandBuffer() else { return }
-        shader.encode(command: command, buffers: buffers, textures: [drawable.texture])
+        //shader.grid.encode(command: command, buffers: buffers, textures: [drawable.texture])
+        shader.data.encode(command: command, buffers: buffers, textures: [test.texture, drawable.texture])
         command.present(drawable)
         command.commit()
     }
