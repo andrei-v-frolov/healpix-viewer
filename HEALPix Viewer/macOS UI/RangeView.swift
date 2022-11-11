@@ -14,13 +14,16 @@ struct RangeView: View {
 }
 
 struct RangeToolbar: View {
+    @Binding var map: Map?
+    @Binding var modifier: BoundsModifier
+    
     @Binding var datamin: Double
     @Binding var datamax: Double
     
     @Binding var rangemin: Double
     @Binding var rangemax: Double
     
-    @Binding var modifier: BoundsModifier
+    @FocusState private var focus: Bool
     
     var body: some View {
         HStack {
@@ -28,15 +31,21 @@ struct RangeToolbar: View {
             TextField("Min", value: $rangemin, formatter: TwoDigitNumber)
                 .frame(width: 95).multilineTextAlignment(.trailing)
                 .disabled(modifier == .positive)
+                .focused($focus)
                 .onChange(of: modifier) { value in
                     switch value {
                         case .positive: rangemin = 0.0
-                        case .symmetric: rangemin = -min(abs(rangemin), abs(rangemax))
+                        case .symmetric: rangemin = -max(abs(rangemin), abs(rangemax))
+                        case .full: if let map = map { datamin = map.min; rangemin = datamin }
                         default: break
                     }
                 }
+                .onChange(of: rangemin) { value in
+                    if (modifier == .symmetric) { rangemax = -value }
+                }
             Slider(value: $rangemin, in: datamin...datamax) {}.frame(width: 160)
                 .disabled(modifier == .positive)
+                .onChange(of: rangemin) { value in focus = false }
             Spacer()
             Picker("Range:", selection: $modifier) {
                 ForEach(BoundsModifier.allCases, id: \.self) {
@@ -47,15 +56,20 @@ struct RangeToolbar: View {
             Spacer()
             Slider(value: $rangemax, in: datamin...datamax) {}.frame(width: 160)
                 .disabled(modifier == .negative)
+                .onChange(of: rangemax) { value in focus = false }
             TextField("Max", value: $rangemax, formatter: TwoDigitNumber)
                 .frame(width: 95).multilineTextAlignment(.trailing)
                 .disabled(modifier == .negative)
                 .onChange(of: modifier) { value in
                     switch value {
                         case .negative: rangemax = 0.0
-                        case .symmetric: rangemax = min(abs(rangemin), abs(rangemax))
+                        case .symmetric: rangemax = max(abs(rangemin), abs(rangemax))
+                        case .full: if let map = map { datamax = map.max; rangemax = datamax }
                         default: break
                     }
+                }
+                .onChange(of: rangemax) { value in
+                    if (modifier == .symmetric) { rangemin = -value }
                 }
             Spacer().frame(width: 20)
         }

@@ -93,9 +93,9 @@ struct ContentView: View {
                             background: $bgcolor)
                     BarView(colorsheme: $colorscheme, background: $bgcolor)
                         .frame(height: geometry.size.width/20)
-                    RangeToolbar(datamin: $datamin, datamax: $datamax,
-                                 rangemin: $rangemin, rangemax: $rangemax,
-                                 modifier: $modifier)
+                    RangeToolbar(map: $map, modifier: $modifier,
+                                 datamin: $datamin, datamax: $datamax,
+                                 rangemin: $rangemin, rangemax: $rangemax)
                 }
             }
         }
@@ -107,6 +107,12 @@ struct ContentView: View {
             Toolbar(toolbar: $toolbar, magnification: $magnification)
         }
         .navigationTitle(title)
+    }
+    
+    // load map to view
+    func load(_ map: Map) {
+        self.map = map; colorize(map)
+        datamin = map.min; datamax = map.max
     }
     
     // colorize map with current settings

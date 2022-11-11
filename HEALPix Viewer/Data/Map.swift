@@ -17,6 +17,10 @@ final class Map {
     var npix: Int { return 12*nside*nside }
     var size: Int { npix * MemoryLayout<Float>.size }
     
+    // data bounds
+    lazy var min: Double = { if let v = data.min() { return Double(v) } else { return 0.0 } }()
+    lazy var max: Double = { if let v = data.max() { return Double(v) } else { return 0.0 } }()
+    
     // Metal buffer containing map data
     lazy var buffer: MTLBuffer = {
         guard let device = MTLCreateSystemDefaultDevice()

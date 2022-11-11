@@ -271,14 +271,14 @@ enum DataBounds: String, CaseIterable {
 
 // data bounds modifier
 enum BoundsModifier: String, CaseIterable, Preference {
-    case none = "Full"
+    case full = "Full"
     case symmetric = "Symmetric"
     case positive = "Positive"
     case negative = "Negative"
     
     // default value
     static let appStorage = "boundsModifier"
-    static let defaultValue: Self = .none
+    static let defaultValue: Self = .full
 }
 
 // encapsulates @AppStorage preference properties
