@@ -13,7 +13,7 @@ struct RangeView: View {
     }
 }
 
-struct RangeToolbar: View {
+struct RangeToolbar: View, Equatable {
     @Binding var map: Map?
     @Binding var modifier: BoundsModifier
     
@@ -75,5 +75,12 @@ struct RangeToolbar: View {
         }
         .padding(.top, 11)
         .padding(.bottom, 10)
-   }
+    }
+    
+    // comparing view state
+    static func == (a: Self, b: Self) -> Bool {
+        return a.modifier == b.modifier &&
+               a.datamin == b.datamin && a.datamax == b.datamin &&
+               a.rangemin == b.rangemin && a.rangemax == b.rangemax
+    }
 }

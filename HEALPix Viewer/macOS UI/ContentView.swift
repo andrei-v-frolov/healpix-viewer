@@ -96,6 +96,7 @@ struct ContentView: View {
                     RangeToolbar(map: $map, modifier: $modifier,
                                  datamin: $datamin, datamax: $datamax,
                                  rangemin: $rangemin, rangemax: $rangemax)
+                    .onChange(of: rangemin...rangemax) { value in colorize(map) }
                 }
             }
         }
