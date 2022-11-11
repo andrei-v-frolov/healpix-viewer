@@ -14,7 +14,7 @@ struct ColorView: View {
 }
 
 struct ColorToolbar: View {
-    @Binding var colorsheme: ColorScheme
+    @Binding var colorscheme: ColorScheme
     
     @Binding var mincolor: Color
     @Binding var maxcolor: Color
@@ -24,7 +24,7 @@ struct ColorToolbar: View {
     
     var body: some View {
         HStack {
-            Picker("Color Scheme:", selection: $colorsheme) {
+            Picker("Color Scheme:", selection: $colorscheme) {
                 ForEach(ColorScheme.allCases, id: \.self) {
                     Text($0.rawValue).tag($0)
                 }
@@ -32,9 +32,9 @@ struct ColorToolbar: View {
             .frame(width: 220)
             Spacer().frame(width: 30)
             ColorPicker("Min:", selection: $mincolor)
-                .onChange(of: colorsheme) { value in mincolor = value.colormap.min }
+                .onChange(of: colorscheme) { value in mincolor = value.colormap.min }
             ColorPicker("Max:", selection: $maxcolor)
-                .onChange(of: colorsheme) { value in maxcolor = value.colormap.max }
+                .onChange(of: colorscheme) { value in maxcolor = value.colormap.max }
             ColorPicker("NaN:", selection: $nancolor)
             Spacer().frame(width: 30)
             ColorPicker("Background:", selection: $bgcolor)

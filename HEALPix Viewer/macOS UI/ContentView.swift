@@ -35,7 +35,7 @@ struct ContentView: View {
     @State private var azimuth: Double = 0.0
     
     // color toolbar
-    @State private var colorsheme: ColorScheme = .defaultValue
+    @State private var colorscheme: ColorScheme = .defaultValue
     @State private var mincolor = Color.blue
     @State private var maxcolor = Color.red
     @State private var nancolor = Color.green
@@ -75,7 +75,7 @@ struct ContentView: View {
                             .onChange(of: azimuth)   { value in orientation = .free }
                     }
                     if (toolbar == .color) {
-                        ColorToolbar(colorsheme: $colorsheme,
+                        ColorToolbar(colorscheme: $colorscheme,
                                      mincolor: $mincolor, maxcolor: $maxcolor,
                                      nancolor: $nancolor, bgcolor: $bgcolor)
                     }
@@ -85,7 +85,7 @@ struct ContentView: View {
                     MapView(projection: $projection, magnification: $magnification, spin: $spin,
                             latitude: $latitude, longitude: $longitude, azimuth: $azimuth,
                             background: $bgcolor)
-                    BarView(colorsheme: $colorsheme, background: $bgcolor)
+                    BarView(colorsheme: $colorscheme, background: $bgcolor)
                         .frame(height: geometry.size.width/20)
                     RangeToolbar(datamin: $datamin, datamax: $datamax,
                                  rangemin: $rangemin, rangemax: $rangemax,
