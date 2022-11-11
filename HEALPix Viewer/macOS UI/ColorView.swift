@@ -13,7 +13,7 @@ struct ColorView: View {
     }
 }
 
-struct ColorToolbar: View {
+struct ColorToolbar: View, Equatable {
     @Binding var colorscheme: ColorScheme
     
     @Binding var mincolor: Color
@@ -41,5 +41,12 @@ struct ColorToolbar: View {
         }
         .padding(.top, 10)
         .padding(.bottom, 9)
+    }
+    
+    // comparing view state
+    static func == (a: Self, b: Self) -> Bool {
+        return a.colorscheme == b.colorscheme &&
+        a.mincolor == b.mincolor && a.maxcolor == b.maxcolor &&
+        a.nancolor == b.nancolor && a.bgcolor == b.bgcolor
     }
 }

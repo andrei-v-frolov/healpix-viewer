@@ -80,7 +80,7 @@ struct RangeToolbar: View, Equatable {
     // comparing view state
     static func == (a: Self, b: Self) -> Bool {
         return a.modifier == b.modifier &&
-               a.datamin == b.datamin && a.datamax == b.datamin &&
-               a.rangemin == b.rangemin && a.rangemax == b.rangemax
+               a.datamin == b.datamin && a.rangemin == b.rangemin &&
+               a.datamax == b.datamin && a.rangemax == b.rangemax
     }
 }

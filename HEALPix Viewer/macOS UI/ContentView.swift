@@ -55,6 +55,17 @@ struct ContentView: View {
     // color mapper
     private let mapper = ColorMapper()
     
+    // convenience wrappers for tracking color changes
+    private struct Palette: Equatable {
+        let colorscheme: ColorScheme
+        let mincolor: Color
+        let maxcolor: Color
+        let nancolor: Color
+    }
+    
+    private var colors: Palette { return Palette(colorscheme: colorscheme, mincolor: mincolor, maxcolor: maxcolor, nancolor: nancolor) }
+    
+    // ...
     var body: some View {
         NavigationView {
             VStack {
@@ -84,6 +95,7 @@ struct ContentView: View {
                         ColorToolbar(colorscheme: $colorscheme,
                                      mincolor: $mincolor, maxcolor: $maxcolor,
                                      nancolor: $nancolor, bgcolor: $bgcolor)
+                        .onChange(of: colors) { value in colorize(map) }
                     }
                     if (toolbar == .lighting) {
                         LightingToolbar()
@@ -117,7 +129,7 @@ struct ContentView: View {
         datamin = map.min; rangemin = datamin
         datamax = map.max; rangemax = datamax
         
-        colorize(map)
+        colorize(self.map)
     }
     
     // colorize map with current settings
