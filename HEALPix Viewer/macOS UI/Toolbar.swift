@@ -9,6 +9,7 @@ import SwiftUI
 
 struct Toolbar: CustomizableToolbarContent {
     @Binding var toolbar: ShowToolbar
+    @Binding var colorbar: Bool
     @Binding var magnification: Double
     
     var body: some CustomizableToolbarContent {
@@ -55,6 +56,14 @@ struct Toolbar: CustomizableToolbarContent {
             }
             .help("Color Scheme")
         }
+        ToolbarItem(id: "range", placement: .principal, showsByDefault: true) {
+            Button {
+                withAnimation { toggleColorbar() }
+            } label: {
+                Image(systemName: "ruler")
+            }
+            .help("Colorbar & Range")
+        }
         ToolbarItem(id: "lighting", placement: .principal, showsByDefault: true) {
             Button {
                 withAnimation { toggleToolbar(.lighting) }
@@ -77,7 +86,11 @@ struct Toolbar: CustomizableToolbarContent {
     }
     
     func toggleToolbar(_ bar: ShowToolbar) {
-            toolbar = (toolbar == bar) ? .none : bar;
+        toolbar = (toolbar == bar) ? .none : bar
+    }
+    
+    func toggleColorbar() {
+        colorbar = !colorbar
     }
 }
 

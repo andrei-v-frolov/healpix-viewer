@@ -21,6 +21,7 @@ let TwoDigitNumber: NumberFormatter = {
 struct ContentView: View {
     @State private var title = "CMB Viewer"
     @State private var toolbar = ShowToolbar.none
+    @State private var colorbar = false
     
     // map to be displayed
     @State private var map: Map? = test
@@ -111,12 +112,14 @@ struct ContentView: View {
                     MapView(map: $map, projection: $projection, magnification: $magnification, spin: $spin,
                             latitude: $latitude, longitude: $longitude, azimuth: $azimuth,
                             background: $bgcolor)
-                    BarView(colorsheme: $colorscheme, background: $bgcolor)
-                        .frame(height: geometry.size.width/20)
-                    RangeToolbar(map: $map, modifier: $modifier,
-                                 datamin: $datamin, datamax: $datamax,
-                                 rangemin: $rangemin, rangemax: $rangemax)
-                    .onChange(of: range) { value in colorize(map) }
+                    if (colorbar) {
+                        BarView(colorsheme: $colorscheme, background: $bgcolor)
+                            .frame(height: geometry.size.width/20)
+                        RangeToolbar(map: $map, modifier: $modifier,
+                                     datamin: $datamin, datamax: $datamax,
+                                     rangemin: $rangemin, rangemax: $rangemax)
+                        .onChange(of: range) { value in colorize(map) }
+                    }
                 }
             }
         }
@@ -125,7 +128,7 @@ struct ContentView: View {
             minHeight: 600, idealHeight: 800, maxHeight: .infinity
         )
         .toolbar(id: "mainToolbar") {
-            Toolbar(toolbar: $toolbar, magnification: $magnification)
+            Toolbar(toolbar: $toolbar, colorbar: $colorbar, magnification: $magnification)
         }
         .navigationTitle(title)
     }
