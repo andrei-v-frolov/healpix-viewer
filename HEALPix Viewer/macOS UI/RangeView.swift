@@ -14,17 +14,29 @@ struct RangeView: View {
 }
 
 struct RangeToolbar: View {
-    @State private var datamin: Double = -5.0
-    @State private var datamax: Double = 13.0
+    @Binding var datamin: Double
+    @Binding var datamax: Double
     
-    @State private var modifier: BoundsModifier = .defaultValue
+    @Binding var rangemin: Double
+    @Binding var rangemax: Double
+    
+    @Binding var modifier: BoundsModifier
     
     var body: some View {
         HStack {
             Spacer().frame(width: 20)
-            TextField("Min", value: $datamin, formatter: TwoDigitNumber)
+            TextField("Min", value: $rangemin, formatter: TwoDigitNumber)
                 .frame(width: 95).multilineTextAlignment(.trailing)
-            Slider(value: $datamin, in: 0.0...1.0) {}.frame(width: 160)
+                .disabled(modifier == .positive)
+                .onChange(of: modifier) { value in
+                    switch value {
+                        case .positive: rangemin = 0.0
+                        case .symmetric: rangemin = -min(abs(rangemin), abs(rangemax))
+                        default: break
+                    }
+                }
+            Slider(value: $rangemin, in: datamin...datamax) {}.frame(width: 160)
+                .disabled(modifier == .positive)
             Spacer()
             Picker("Range:", selection: $modifier) {
                 ForEach(BoundsModifier.allCases, id: \.self) {
@@ -33,9 +45,18 @@ struct RangeToolbar: View {
             }
             .frame(width: 150)
             Spacer()
-            Slider(value: $datamax, in: 0.0...1.0) {}.frame(width: 160)
-            TextField("Max", value: $datamax, formatter: TwoDigitNumber)
+            Slider(value: $rangemax, in: datamin...datamax) {}.frame(width: 160)
+                .disabled(modifier == .negative)
+            TextField("Max", value: $rangemax, formatter: TwoDigitNumber)
                 .frame(width: 95).multilineTextAlignment(.trailing)
+                .disabled(modifier == .negative)
+                .onChange(of: modifier) { value in
+                    switch value {
+                        case .negative: rangemax = 0.0
+                        case .symmetric: rangemax = min(abs(rangemin), abs(rangemax))
+                        default: break
+                    }
+                }
             Spacer().frame(width: 20)
         }
         .padding(.top, 11)

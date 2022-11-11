@@ -22,18 +22,29 @@ struct ContentView: View {
     @State private var title = "CMB Viewer"
     @State private var toolbar = ShowToolbar.none
     
+    // projection toolbar
     @State private var projection: Projection = .defaultValue
     @State private var orientation: Orientation = .defaultValue
     @State private var spin: Bool = true
     
+    // magnification and orientation
     @State private var magnification: Double = 0.0
     
     @State private var latitude: Double = 0.0
     @State private var longitude: Double = 0.0
     @State private var azimuth: Double = 0.0
     
+    // color bar
     @State private var colorsheme: ColorScheme = .defaultValue
     @State private var bgcolor = Color.clear
+    
+    // range toolbar
+    @State private var datamin: Double = -1.0
+    @State private var datamax: Double =  1.0
+    @State private var rangemin: Double = -1.0
+    @State private var rangemax: Double =  1.0
+    
+    @State private var modifier: BoundsModifier = .defaultValue
     
     var body: some View {
         NavigationView {
@@ -71,7 +82,9 @@ struct ContentView: View {
                             background: $bgcolor)
                     BarView(colorsheme: $colorsheme, background: $bgcolor)
                         .frame(height: geometry.size.width/20)
-                    RangeToolbar()
+                    RangeToolbar(datamin: $datamin, datamax: $datamax,
+                                 rangemin: $rangemin, rangemax: $rangemax,
+                                 modifier: $modifier)
                 }
             }
         }
