@@ -55,7 +55,7 @@ struct ContentView: View {
     // color mapper
     private let mapper = ColorMapper()
     
-    // convenience wrappers for tracking color changes
+    // convenience wrapper for tracking color changes
     private struct Palette: Equatable {
         let colorscheme: ColorScheme
         let mincolor: Color
@@ -65,7 +65,15 @@ struct ContentView: View {
     
     private var colors: Palette { return Palette(colorscheme: colorscheme, mincolor: mincolor, maxcolor: maxcolor, nancolor: nancolor) }
     
-    // ...
+    // convenience wrapper for tracking range changes
+    private struct Bounds: Equatable {
+        let min: Double
+        let max: Double
+    }
+    
+    private var range: Bounds { return Bounds(min: rangemin, max: rangemax) }
+    
+    // view layout
     var body: some View {
         NavigationView {
             VStack {
@@ -108,7 +116,7 @@ struct ContentView: View {
                     RangeToolbar(map: $map, modifier: $modifier,
                                  datamin: $datamin, datamax: $datamax,
                                  rangemin: $rangemin, rangemax: $rangemax)
-                    .onChange(of: rangemin...rangemax) { value in colorize(map) }
+                    .onChange(of: range) { value in colorize(map) }
                 }
             }
         }

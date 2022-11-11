@@ -41,7 +41,9 @@ struct RangeToolbar: View, Equatable {
                     }
                 }
                 .onChange(of: rangemin) { value in
+                    if ((modifier == .negative || modifier == .symmetric) && value > 0.0) { rangemin = 0.0 }
                     if (modifier == .symmetric) { rangemax = -value }
+                    if (rangemin > rangemax) { rangemax = rangemin }
                 }
             Slider(value: $rangemin, in: datamin...datamax) {}.frame(width: 160)
                 .disabled(modifier == .positive)
@@ -69,7 +71,9 @@ struct RangeToolbar: View, Equatable {
                     }
                 }
                 .onChange(of: rangemax) { value in
+                    if ((modifier == .positive || modifier == .symmetric) && value < 0.0) { rangemax = 0.0 }
                     if (modifier == .symmetric) { rangemin = -value }
+                    if (rangemin > rangemax) { rangemin = rangemax }
                 }
             Spacer().frame(width: 20)
         }
