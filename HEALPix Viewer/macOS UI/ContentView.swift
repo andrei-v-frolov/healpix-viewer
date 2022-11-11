@@ -111,8 +111,12 @@ struct ContentView: View {
     
     // load map to view
     func load(_ map: Map) {
-        self.map = map; colorize(map)
-        datamin = map.min; datamax = map.max
+        self.map = map
+        
+        datamin = map.min; rangemin = datamin
+        datamax = map.max; rangemax = datamax
+        
+        colorize(map)
     }
     
     // colorize map with current settings
