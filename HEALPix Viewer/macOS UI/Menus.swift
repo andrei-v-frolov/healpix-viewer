@@ -222,7 +222,6 @@ enum ColorScheme: String, CaseIterable, Preference {
     case grey = "Greyscale"
     case hot = "Hot"
     case cold = "Cold"
-    case diff = "Difference Map"
     case freq = "Frequency Map"
     case grv = "GRV"
     case bgry = "BGRY"
