@@ -12,6 +12,7 @@
 		50563E592901E19A00B316CA /* MetalShader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50563E582901E19A00B316CA /* MetalShader.swift */; };
 		50563E5B2901E38F00B316CA /* Kernels.metal in Sources */ = {isa = PBXBuildFile; fileRef = 50563E5A2901E38F00B316CA /* Kernels.metal */; };
 		50655412290A64F400176790 /* ProjectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50655411290A64F400176790 /* ProjectionView.swift */; };
+		5065EE80292044D000AD46CD /* Preferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5065EE7F292044D000AD46CD /* Preferences.swift */; };
 		50811E5229023F280069B219 /* CFitsIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 50811E5029023EAF0069B219 /* CFitsIO.framework */; };
 		50811E5329023F280069B219 /* CFitsIO.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 50811E5029023EAF0069B219 /* CFitsIO.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		508910B2291B077E00E33CB6 /* ColorbarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 508910B1291B077E00E33CB6 /* ColorbarView.swift */; };
@@ -91,6 +92,7 @@
 		50563E582901E19A00B316CA /* MetalShader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetalShader.swift; sourceTree = "<group>"; };
 		50563E5A2901E38F00B316CA /* Kernels.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Kernels.metal; sourceTree = "<group>"; };
 		50655411290A64F400176790 /* ProjectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectionView.swift; sourceTree = "<group>"; };
+		5065EE7F292044D000AD46CD /* Preferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Preferences.swift; sourceTree = "<group>"; };
 		50811E4829023EAF0069B219 /* cfitsio.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = cfitsio.xcodeproj; path = cfitsio/cfitsio.xcodeproj; sourceTree = "<group>"; };
 		508910B1291B077E00E33CB6 /* ColorbarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorbarView.swift; sourceTree = "<group>"; };
 		508BBA8728FF2764004B1A9C /* HEALPix Viewer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "HEALPix Viewer.app"; sourceTree = BUILT_PRODUCTS_DIR; };
@@ -167,6 +169,7 @@
 				50A94797291B3AEB00F6F1BA /* RangeView.swift */,
 				50ECD2B128FF31260008F915 /* Toolbar.swift */,
 				50ECD2AF28FF2A9C0008F915 /* Menus.swift */,
+				5065EE7F292044D000AD46CD /* Preferences.swift */,
 			);
 			path = "macOS UI";
 			sourceTree = "<group>";
@@ -456,6 +459,7 @@
 				508D56DA29131FBA0099C3A0 /* HEALPix BGRY.swift in Sources */,
 				508D56BF291309DA0099C3A0 /* LightingView.swift in Sources */,
 				508D56CE29131D530099C3A0 /* Planck FreqMap.swift in Sources */,
+				5065EE80292044D000AD46CD /* Preferences.swift in Sources */,
 				5009BB142912ECEB006DE835 /* ColorView.swift in Sources */,
 				50ECD2B028FF2A9C0008F915 /* Menus.swift in Sources */,
 				50563E592901E19A00B316CA /* MetalShader.swift in Sources */,
