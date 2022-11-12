@@ -215,9 +215,9 @@
 				50D29754291C3AAA00E18C08 /* Data */,
 				508D56CA29131C2D0099C3A0 /* Colormaps */,
 				50A0D2582902F1BE00A29988 /* Metal */,
-				50BAE19A291F43380024FD5C /* Credits.rtf */,
 				508BBA8E28FF2765004B1A9C /* Assets.xcassets */,
 				508BBA9328FF2765004B1A9C /* HEALPix_Viewer.entitlements */,
+				50BAE19A291F43380024FD5C /* Credits.rtf */,
 				508BBA9028FF2765004B1A9C /* Preview Content */,
 			);
 			path = "HEALPix Viewer";
