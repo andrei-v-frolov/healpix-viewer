@@ -33,7 +33,6 @@
 		508D56DA29131FBA0099C3A0 /* HEALPix BGRY.swift in Sources */ = {isa = PBXBuildFile; fileRef = 508D56D929131FBA0099C3A0 /* HEALPix BGRY.swift */; };
 		50A94798291B3AEB00F6F1BA /* RangeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50A94797291B3AEB00F6F1BA /* RangeView.swift */; };
 		50BAE19B291F43380024FD5C /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 50BAE19A291F43380024FD5C /* Credits.rtf */; };
-		50BAE1A4291F4E420024FD5C /* HEALPix Viewer in Resources */ = {isa = PBXBuildFile; fileRef = 50BAE1A3291F4E420024FD5C /* HEALPix Viewer */; };
 		50C513132907DFDC00BB6B51 /* OrientationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C513122907DFDC00BB6B51 /* OrientationView.swift */; };
 		50D29751291C39AA00E18C08 /* Map.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50D29750291C39AA00E18C08 /* Map.swift */; };
 		50ECD2B028FF2A9C0008F915 /* Menus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50ECD2AF28FF2A9C0008F915 /* Menus.swift */; };
@@ -119,7 +118,6 @@
 		50A94797291B3AEB00F6F1BA /* RangeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RangeView.swift; sourceTree = "<group>"; };
 		50BAE19A291F43380024FD5C /* Credits.rtf */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; path = Credits.rtf; sourceTree = "<group>"; };
 		50BAE1A0291F4CA40024FD5C /* HEALPix-Viewer-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "HEALPix-Viewer-Info.plist"; sourceTree = SOURCE_ROOT; };
-		50BAE1A3291F4E420024FD5C /* HEALPix Viewer */ = {isa = PBXFileReference; lastKnownFileType = folder; name = "HEALPix Viewer"; sourceTree = "<group>"; };
 		50C513122907DFDC00BB6B51 /* OrientationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrientationView.swift; sourceTree = "<group>"; };
 		50CB1444290B03B0006D59FA /* Shaders.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Shaders.metal; sourceTree = "<group>"; };
 		50D29750291C39AA00E18C08 /* Map.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Map.swift; sourceTree = "<group>"; };
@@ -214,7 +212,6 @@
 		508BBA8928FF2764004B1A9C /* HEALPix Viewer */ = {
 			isa = PBXGroup;
 			children = (
-				50BAE1A3291F4E420024FD5C /* HEALPix Viewer */,
 				50563E5C29023D7300B316CA /* macOS UI */,
 				50D29754291C3AAA00E18C08 /* Data */,
 				508D56CA29131C2D0099C3A0 /* Colormaps */,
@@ -421,7 +418,6 @@
 				508BBA9228FF2765004B1A9C /* Preview Assets.xcassets in Resources */,
 				50BAE19B291F43380024FD5C /* Credits.rtf in Resources */,
 				508BBA8F28FF2765004B1A9C /* Assets.xcassets in Resources */,
-				50BAE1A4291F4E420024FD5C /* HEALPix Viewer in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
