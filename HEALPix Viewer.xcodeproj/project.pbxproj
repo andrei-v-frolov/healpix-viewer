@@ -32,6 +32,7 @@
 		508D56D829131F7E0099C3A0 /* HEALPix GRV.swift in Sources */ = {isa = PBXBuildFile; fileRef = 508D56D729131F7E0099C3A0 /* HEALPix GRV.swift */; };
 		508D56DA29131FBA0099C3A0 /* HEALPix BGRY.swift in Sources */ = {isa = PBXBuildFile; fileRef = 508D56D929131FBA0099C3A0 /* HEALPix BGRY.swift */; };
 		50A94798291B3AEB00F6F1BA /* RangeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50A94797291B3AEB00F6F1BA /* RangeView.swift */; };
+		50BAE19B291F43380024FD5C /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 50BAE19A291F43380024FD5C /* Credits.rtf */; };
 		50C513132907DFDC00BB6B51 /* OrientationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C513122907DFDC00BB6B51 /* OrientationView.swift */; };
 		50D29751291C39AA00E18C08 /* Map.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50D29750291C39AA00E18C08 /* Map.swift */; };
 		50ECD2B028FF2A9C0008F915 /* Menus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50ECD2AF28FF2A9C0008F915 /* Menus.swift */; };
@@ -115,6 +116,7 @@
 		50A0D2522902F1A300A29988 /* Healpix.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Healpix.metal; sourceTree = "<group>"; };
 		50A0D2562902F1B200A29988 /* Projections.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Projections.metal; sourceTree = "<group>"; };
 		50A94797291B3AEB00F6F1BA /* RangeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RangeView.swift; sourceTree = "<group>"; };
+		50BAE19A291F43380024FD5C /* Credits.rtf */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; path = Credits.rtf; sourceTree = "<group>"; };
 		50C513122907DFDC00BB6B51 /* OrientationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrientationView.swift; sourceTree = "<group>"; };
 		50CB1444290B03B0006D59FA /* Shaders.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Shaders.metal; sourceTree = "<group>"; };
 		50D29750291C39AA00E18C08 /* Map.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Map.swift; sourceTree = "<group>"; };
@@ -213,6 +215,7 @@
 				50D29754291C3AAA00E18C08 /* Data */,
 				508D56CA29131C2D0099C3A0 /* Colormaps */,
 				50A0D2582902F1BE00A29988 /* Metal */,
+				50BAE19A291F43380024FD5C /* Credits.rtf */,
 				508BBA8E28FF2765004B1A9C /* Assets.xcassets */,
 				508BBA9328FF2765004B1A9C /* HEALPix_Viewer.entitlements */,
 				508BBA9028FF2765004B1A9C /* Preview Content */,
@@ -411,6 +414,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				508BBA9228FF2765004B1A9C /* Preview Assets.xcassets in Resources */,
+				50BAE19B291F43380024FD5C /* Credits.rtf in Resources */,
 				508BBA8F28FF2765004B1A9C /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
