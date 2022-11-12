@@ -152,9 +152,3 @@ struct ContentView: View {
                         minvalue: rangemin, maxvalue: rangemax)
     }
 }
-
-struct ContentView_Previews: PreviewProvider {
-    static var previews: some View {
-        ContentView()
-    }
-}
