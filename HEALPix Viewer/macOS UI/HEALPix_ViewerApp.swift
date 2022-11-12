@@ -13,7 +13,9 @@ struct HEALPix_ViewerApp: App {
         WindowGroup {
             ContentView()
         } .commands {
-            Menus()
+            FileMenus()
+            ViewMenus()
+            DataMenus()
         }
     }
     

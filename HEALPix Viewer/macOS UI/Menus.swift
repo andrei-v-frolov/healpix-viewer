@@ -7,7 +7,50 @@
 
 import SwiftUI
 
-struct Menus: Commands {
+struct FileMenus: Commands {
+    // menu commands
+    var body: some Commands {
+        CommandGroup(before: CommandGroupPlacement.newItem) {
+            Button(action: { print("try to open file...") }, label: { Text("Open File...") })
+                .keyboardShortcut("O", modifiers: [.command])
+            Divider()
+        }
+    }
+}
+
+struct ViewMenus: Commands {
+    // application defaults
+    @AppStorage(Appearance.appStorage) var appearance = Appearance.defaultValue
+    
+    // render colorbar?
+    @AppStorage("showColorBar") var showColorBar = true
+    @AppStorage("showDataBar") var showDataBar = false
+    
+    // menu commands
+    var body: some Commands {
+        Group {
+            SidebarCommands()
+            ToolbarCommands()
+        }
+        
+        CommandGroup(before: CommandGroupPlacement.toolbar) {
+            Picker("Appearance", selection: $appearance) {
+                ForEach(Appearance.allCases, id: \.self) {
+                    Text($0.rawValue).tag($0)
+                }
+            }
+            Divider()
+            Toggle(isOn: $showColorBar) {
+                Text("Show Color Bar")
+            }
+            Toggle(isOn: $showDataBar) {
+                Text("Show Data Sidebar")
+            }
+        }
+    }
+}
+
+struct DataMenus: Commands {
     // data source and projection
     @AppStorage(DataSource.appStorage) var dataSource = DataSource.defaultValue
     @AppStorage(DataConvolution.appStorage) var convolution = DataConvolution.defaultValue
@@ -19,9 +62,6 @@ struct Menus: Commands {
     @AppStorage(DataTransform.appStorage) var dataTransform = DataTransform.defaultValue
     @AppStorage(DataBounds.appStorage) var dataBounds = DataBounds.defaultValue
     @AppStorage(BoundsModifier.appStorage) var boundsModifier = BoundsModifier.defaultValue
-    
-    // render colorbar?
-    @AppStorage("showColorBar") var showColorBar = true
     
     // menu commands
     var body: some Commands {
@@ -111,13 +151,6 @@ struct Menus: Commands {
                     }
                 }
             }
-            Divider()
-            Toggle(isOn: $showColorBar) {
-                Text("Show Color Bar")
-            }
         }
-        
-        SidebarCommands()
-        ToolbarCommands()
     }
 }
