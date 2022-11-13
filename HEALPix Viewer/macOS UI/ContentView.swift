@@ -151,7 +151,7 @@ struct ContentView: View {
             }
             observers.add(key: Orientation.appStorage) { old, new in
                 guard let raw = new as? String, let mode = Orientation(rawValue: raw) else { return }
-                withAnimation { toolbar = .projection }; orientation = mode
+                withAnimation { toolbar = (mode == .free) ? .orientation : .projection }; orientation = mode
             }
             observers.add(key: ColorScheme.appStorage) { old, new in
                 guard let raw = new as? String, let mode = ColorScheme(rawValue: raw) else { return }

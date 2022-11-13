@@ -25,6 +25,7 @@ struct ViewMenus: Commands {
     // render colorbar?
     @AppStorage("showColorBar") var showColorBar = false
     @AppStorage("showDataBar") var showDataBar = false
+    @AppStorage("lighting") var lightingEffects = false
     
     // menu commands
     var body: some Commands {
@@ -39,6 +40,11 @@ struct ViewMenus: Commands {
                     Text($0.rawValue).tag($0)
                 }
             }
+            Divider()
+            Toggle(isOn: $lightingEffects) {
+                Text("Lighting Effects")
+            }
+            .disabled(true)
             Divider()
             Toggle(isOn: $showColorBar) {
                 Text("Show Color Bar")
@@ -89,6 +95,7 @@ struct DataMenus: Commands {
                         Text($0.rawValue).tag($0)
                     }
                 }
+                .disabled(true)
                 Picker("Convolution", selection: $convolution) {
                     ForEach(DataConvolution.allCases, id: \.self) {
                         Text($0.rawValue).tag($0)
@@ -96,13 +103,14 @@ struct DataMenus: Commands {
                     Divider()
                     Button("Kernel Length") {}
                 }
+                .disabled(true)
+            }
+            Divider()
+            Group {
                 Picker("Projection", selection: $projection) {
                     ForEach(Projection.allCases, id: \.self) {
                         Text($0.rawValue).tag($0)
                     }
-                    Divider()
-                    Button("View Point") {}
-                    Button("Lighting") {}
                 }
                 Picker("Orientation", selection: $orientation) {
                     ForEach(Orientation.galactic, id: \.self) {
@@ -118,24 +126,19 @@ struct DataMenus: Commands {
                     }
                 }
             }
-            Divider()
-            Group {
                 Picker("Color Scheme", selection: $colorScheme) {
                     ForEach(ColorScheme.allCases, id: \.self) {
                         Text($0.rawValue).tag($0)
                     }
-                    Divider()
-                    Button("Below Minimum") {}
-                    Button("Above Maximum") {}
-                    Button("Invalid Data") {}
-                    Divider()
-                    Button("Background") {}
                 }
+                Divider()
+                Group {
                 Picker("Data Range", selection: $boundsModifier) {
                     ForEach(BoundsModifier.allCases, id: \.self) {
                         Text($0.rawValue).tag($0)
                     }
                 }
+                .disabled(true)
                 Picker("Transform", selection: $dataTransform) {
                     ForEach(DataTransform.allCases, id: \.self) {
                         Text($0.rawValue).tag($0)
@@ -145,12 +148,15 @@ struct DataMenus: Commands {
                         Text("After Convolving")
                         Text("Before Convolving")
                     }
+                    .disabled(true)
                 }
+                .disabled(true)
                 Picker("Bounds", selection: $dataBounds) {
                     ForEach(DataBounds.allCases, id: \.self) {
                         Text($0.rawValue).tag($0)
                     }
                 }
+                .disabled(true)
             }
         }
     }
