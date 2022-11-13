@@ -134,7 +134,7 @@ struct ContentView: View {
             Toolbar(toolbar: $toolbar, colorbar: $colorbar, magnification: $magnification)
         }
         .navigationTitle(title)
-        .onAppear {
+        .task {
             observers.add(key: "showColorBar") { old, new in
                 guard let value = new as? Bool else { return }
                 withAnimation { colorbar = value }
