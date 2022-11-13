@@ -74,6 +74,9 @@ struct ContentView: View {
     
     private var range: Bounds { return Bounds(min: rangemin, max: rangemax) }
     
+    // registered observers binding to application state
+    var observers = Observers()
+    
     // view layout
     var body: some View {
         NavigationView {
@@ -131,6 +134,12 @@ struct ContentView: View {
             Toolbar(toolbar: $toolbar, colorbar: $colorbar, magnification: $magnification)
         }
         .navigationTitle(title)
+        .onAppear {
+            observers.add(key: "showColorBar") { old, new in
+                guard let value = new as? Bool else { return }
+                withAnimation { colorbar = value }
+            }
+        }
     }
     
     // load map to view

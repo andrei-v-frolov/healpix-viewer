@@ -59,3 +59,14 @@ class AppStorageObserver: NSObject {
         UserDefaults.standard.removeObserver(self, forKeyPath: key, context: nil)
     }
 }
+
+// unique observer container for SwiftUI views
+class Observers {
+    var registered = [String: AppStorageObserver]()
+    
+    func add(key: String, onChange: @escaping (Any, Any) -> Void) {
+        if registered[key] != nil { return }
+        
+        registered[key] = AppStorageObserver(key: key, onChange: onChange)
+    }
+}

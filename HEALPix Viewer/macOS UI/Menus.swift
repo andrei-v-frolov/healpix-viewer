@@ -23,7 +23,7 @@ struct ViewMenus: Commands {
     @AppStorage(Appearance.appStorage) var appearance = Appearance.defaultValue
     
     // render colorbar?
-    @AppStorage("showColorBar") var showColorBar = true
+    @AppStorage("showColorBar") var showColorBar = false
     @AppStorage("showDataBar") var showDataBar = false
     
     // menu commands
@@ -46,6 +46,7 @@ struct ViewMenus: Commands {
             Toggle(isOn: $showDataBar) {
                 Text("Show Data Sidebar")
             }
+            .disabled(true)
         }
     }
 }
