@@ -21,8 +21,6 @@
 		508BBA8F28FF2765004B1A9C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 508BBA8E28FF2765004B1A9C /* Assets.xcassets */; };
 		508BBA9228FF2765004B1A9C /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 508BBA9128FF2765004B1A9C /* Preview Assets.xcassets */; };
 		508BBA9D28FF2765004B1A9C /* HEALPix_ViewerTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 508BBA9C28FF2765004B1A9C /* HEALPix_ViewerTests.swift */; };
-		508BBAA728FF2765004B1A9C /* HEALPix_ViewerUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 508BBAA628FF2765004B1A9C /* HEALPix_ViewerUITests.swift */; };
-		508BBAA928FF2765004B1A9C /* HEALPix_ViewerUITestsLaunchTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 508BBAA828FF2765004B1A9C /* HEALPix_ViewerUITestsLaunchTests.swift */; };
 		508D56BF291309DA0099C3A0 /* LightingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 508D56BE291309DA0099C3A0 /* LightingView.swift */; };
 		508D56C729131C270099C3A0 /* Planck Parchment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 508D56C629131C270099C3A0 /* Planck Parchment.swift */; };
 		508D56CE29131D530099C3A0 /* Planck FreqMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 508D56CD29131D530099C3A0 /* Planck FreqMap.swift */; };
@@ -63,13 +61,6 @@
 			remoteGlobalIDString = 508BBA8628FF2764004B1A9C;
 			remoteInfo = "HEALPix Viewer";
 		};
-		508BBAA328FF2765004B1A9C /* PBXContainerItemProxy */ = {
-			isa = PBXContainerItemProxy;
-			containerPortal = 508BBA7F28FF2764004B1A9C /* Project object */;
-			proxyType = 1;
-			remoteGlobalIDString = 508BBA8628FF2764004B1A9C;
-			remoteInfo = "HEALPix Viewer";
-		};
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -103,9 +94,6 @@
 		508BBA9328FF2765004B1A9C /* HEALPix_Viewer.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = HEALPix_Viewer.entitlements; sourceTree = "<group>"; };
 		508BBA9828FF2765004B1A9C /* HEALPix ViewerTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "HEALPix ViewerTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		508BBA9C28FF2765004B1A9C /* HEALPix_ViewerTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HEALPix_ViewerTests.swift; sourceTree = "<group>"; };
-		508BBAA228FF2765004B1A9C /* HEALPix ViewerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "HEALPix ViewerUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
-		508BBAA628FF2765004B1A9C /* HEALPix_ViewerUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HEALPix_ViewerUITests.swift; sourceTree = "<group>"; };
-		508BBAA828FF2765004B1A9C /* HEALPix_ViewerUITestsLaunchTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HEALPix_ViewerUITestsLaunchTests.swift; sourceTree = "<group>"; };
 		508D56BE291309DA0099C3A0 /* LightingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LightingView.swift; sourceTree = "<group>"; };
 		508D56C629131C270099C3A0 /* Planck Parchment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Planck Parchment.swift"; sourceTree = "<group>"; };
 		508D56CD29131D530099C3A0 /* Planck FreqMap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Planck FreqMap.swift"; sourceTree = "<group>"; };
@@ -139,13 +127,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		508BBA9528FF2765004B1A9C /* Frameworks */ = {
-			isa = PBXFrameworksBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		508BBA9F28FF2765004B1A9C /* Frameworks */ = {
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -196,7 +177,6 @@
 				508BBA8928FF2764004B1A9C /* HEALPix Viewer */,
 				50811E4829023EAF0069B219 /* cfitsio.xcodeproj */,
 				508BBA9B28FF2765004B1A9C /* HEALPix ViewerTests */,
-				508BBAA528FF2765004B1A9C /* HEALPix ViewerUITests */,
 				508BBA8828FF2764004B1A9C /* Products */,
 				50811E5129023F280069B219 /* Frameworks */,
 			);
@@ -207,7 +187,6 @@
 			children = (
 				508BBA8728FF2764004B1A9C /* HEALPix Viewer.app */,
 				508BBA9828FF2765004B1A9C /* HEALPix ViewerTests.xctest */,
-				508BBAA228FF2765004B1A9C /* HEALPix ViewerUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -242,15 +221,6 @@
 				508BBA9C28FF2765004B1A9C /* HEALPix_ViewerTests.swift */,
 			);
 			path = "HEALPix ViewerTests";
-			sourceTree = "<group>";
-		};
-		508BBAA528FF2765004B1A9C /* HEALPix ViewerUITests */ = {
-			isa = PBXGroup;
-			children = (
-				508BBAA628FF2765004B1A9C /* HEALPix_ViewerUITests.swift */,
-				508BBAA828FF2765004B1A9C /* HEALPix_ViewerUITestsLaunchTests.swift */,
-			);
-			path = "HEALPix ViewerUITests";
 			sourceTree = "<group>";
 		};
 		508D56CA29131C2D0099C3A0 /* Colormaps */ = {
@@ -329,24 +299,6 @@
 			productReference = 508BBA9828FF2765004B1A9C /* HEALPix ViewerTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		508BBAA128FF2765004B1A9C /* HEALPix ViewerUITests */ = {
-			isa = PBXNativeTarget;
-			buildConfigurationList = 508BBAB228FF2765004B1A9C /* Build configuration list for PBXNativeTarget "HEALPix ViewerUITests" */;
-			buildPhases = (
-				508BBA9E28FF2765004B1A9C /* Sources */,
-				508BBA9F28FF2765004B1A9C /* Frameworks */,
-				508BBAA028FF2765004B1A9C /* Resources */,
-			);
-			buildRules = (
-			);
-			dependencies = (
-				508BBAA428FF2765004B1A9C /* PBXTargetDependency */,
-			);
-			name = "HEALPix ViewerUITests";
-			productName = "HEALPix ViewerUITests";
-			productReference = 508BBAA228FF2765004B1A9C /* HEALPix ViewerUITests.xctest */;
-			productType = "com.apple.product-type.bundle.ui-testing";
-		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -361,10 +313,6 @@
 						CreatedOnToolsVersion = 14.0.1;
 					};
 					508BBA9728FF2765004B1A9C = {
-						CreatedOnToolsVersion = 14.0.1;
-						TestTargetID = 508BBA8628FF2764004B1A9C;
-					};
-					508BBAA128FF2765004B1A9C = {
 						CreatedOnToolsVersion = 14.0.1;
 						TestTargetID = 508BBA8628FF2764004B1A9C;
 					};
@@ -391,7 +339,6 @@
 			targets = (
 				508BBA8628FF2764004B1A9C /* HEALPix Viewer */,
 				508BBA9728FF2765004B1A9C /* HEALPix ViewerTests */,
-				508BBAA128FF2765004B1A9C /* HEALPix ViewerUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -425,13 +372,6 @@
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 		508BBA9628FF2765004B1A9C /* Resources */ = {
-			isa = PBXResourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
-		508BBAA028FF2765004B1A9C /* Resources */ = {
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
@@ -480,15 +420,6 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
-		508BBA9E28FF2765004B1A9C /* Sources */ = {
-			isa = PBXSourcesBuildPhase;
-			buildActionMask = 2147483647;
-			files = (
-				508BBAA928FF2765004B1A9C /* HEALPix_ViewerUITestsLaunchTests.swift in Sources */,
-				508BBAA728FF2765004B1A9C /* HEALPix_ViewerUITests.swift in Sources */,
-			);
-			runOnlyForDeploymentPostprocessing = 0;
-		};
 /* End PBXSourcesBuildPhase section */
 
 /* Begin PBXTargetDependency section */
@@ -496,11 +427,6 @@
 			isa = PBXTargetDependency;
 			target = 508BBA8628FF2764004B1A9C /* HEALPix Viewer */;
 			targetProxy = 508BBA9928FF2765004B1A9C /* PBXContainerItemProxy */;
-		};
-		508BBAA428FF2765004B1A9C /* PBXTargetDependency */ = {
-			isa = PBXTargetDependency;
-			target = 508BBA8628FF2764004B1A9C /* HEALPix Viewer */;
-			targetProxy = 508BBAA328FF2765004B1A9C /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
 
@@ -714,40 +640,6 @@
 			};
 			name = Release;
 		};
-		508BBAB328FF2765004B1A9C /* Debug */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 28GCAU455A;
-				GENERATE_INFOPLIST_FILE = YES;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "ca.sfu.cosmo.HEALPix-ViewerUITests";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TEST_TARGET_NAME = "HEALPix Viewer";
-			};
-			name = Debug;
-		};
-		508BBAB428FF2765004B1A9C /* Release */ = {
-			isa = XCBuildConfiguration;
-			buildSettings = {
-				ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES = YES;
-				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 1;
-				DEVELOPMENT_TEAM = 28GCAU455A;
-				GENERATE_INFOPLIST_FILE = YES;
-				MARKETING_VERSION = 1.0;
-				PRODUCT_BUNDLE_IDENTIFIER = "ca.sfu.cosmo.HEALPix-ViewerUITests";
-				PRODUCT_NAME = "$(TARGET_NAME)";
-				SWIFT_EMIT_LOC_STRINGS = NO;
-				SWIFT_VERSION = 5.0;
-				TEST_TARGET_NAME = "HEALPix Viewer";
-			};
-			name = Release;
-		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -774,15 +666,6 @@
 			buildConfigurations = (
 				508BBAB028FF2765004B1A9C /* Debug */,
 				508BBAB128FF2765004B1A9C /* Release */,
-			);
-			defaultConfigurationIsVisible = 0;
-			defaultConfigurationName = Release;
-		};
-		508BBAB228FF2765004B1A9C /* Build configuration list for PBXNativeTarget "HEALPix ViewerUITests" */ = {
-			isa = XCConfigurationList;
-			buildConfigurations = (
-				508BBAB328FF2765004B1A9C /* Debug */,
-				508BBAB428FF2765004B1A9C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
