@@ -9,6 +9,8 @@ import SwiftUI
 
 @main
 struct HEALPix_ViewerApp: App {
+    @NSApplicationDelegateAdaptor(AppDelegate.self) var delegate
+    
     var body: some Scene {
         WindowGroup {
             ContentView()
@@ -28,6 +30,13 @@ struct HEALPix_ViewerApp: App {
         guard let raw = new as? String, let mode = Appearance(rawValue: raw) else { return }
         
         NSApp.appearance = mode.appearance
+    }
+}
+
+// AppDelegate handles lifecycle events
+class AppDelegate: NSObject, NSApplicationDelegate {
+    func applicationWillFinishLaunching(_ notification: Notification) {
+        NSApp.appearance = Appearance.value.appearance
     }
 }
 

@@ -195,6 +195,7 @@ protocol Preference {
     init?(rawValue: String)
 }
 
+// default implementation of current value access
 extension Preference {
     static var value: Self {
         guard let raw = UserDefaults.standard.string(forKey: Self.appStorage),
