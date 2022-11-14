@@ -173,9 +173,10 @@ class ProjectedView: MTKView {
 
 // MARK: SO(3) group representations
 
-// sperical coordinates to unit vector
+// spherical coordinates to unit vector
 func ang2vec(_ theta: Double, _ phi: Double) -> float3 {
     let z = cos(theta), r = sin(theta)
+    
     return float3(Float(r*cos(phi)), Float(r*sin(phi)), Float(z))
 }
 
