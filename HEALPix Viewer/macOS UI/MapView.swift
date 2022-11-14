@@ -147,6 +147,9 @@ class ProjectedView: MTKView {
         // if spinning, advance the viewpoint towards target view
         if (spin) { step6(1.0/Double(preferredFramesPerSecond)); rotation = gen2rot(w) }
         
+        // if lighting effects are enabled, pass lighting to the shader
+        let lighting = UserDefaults.standard.bool(forKey: lightingKey) ? self.lighting : float4(0.0)
+        
         // load arguments to be passed to kernel
         buffers[0].contents().storeBytes(of: transform, as: float3x2.self)
         buffers[1].contents().storeBytes(of: rotation, as: float3x3.self)

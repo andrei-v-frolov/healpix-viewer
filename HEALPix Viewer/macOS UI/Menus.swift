@@ -44,7 +44,6 @@ struct ViewMenus: Commands {
             Toggle(isOn: $lightingEffects) {
                 Text("Lighting Effects")
             }
-            .disabled(true)
             Divider()
             Toggle(isOn: $showColorBar) {
                 Text("Show Color Bar")
