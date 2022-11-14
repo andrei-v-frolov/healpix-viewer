@@ -57,23 +57,25 @@ struct RangeToolbar: View, Equatable {
                     if (modifier == .symmetric) { rangemax = -value }
                     if (rangemin > rangemax) { rangemax = rangemin }
                 }
-            Slider(value: $rangemin, in: datamin...datamax) {}.frame(width: 160)
+            Slider(value: $rangemin, in: datamin...(modifier == .symmetric || modifier == .negative ? 0.0 : datamax)) {}.frame(width: 160)
                 .disabled(modifier == .positive)
                 .onChange(of: rangemin) { value in focus = false }
             Spacer()
             Picker("Range:", selection: $modifier) {
-                ForEach(BoundsModifier.allCases, id: \.self) {
-                    Text($0.rawValue).tag($0)
-                }
+                Text(BoundsModifier.full.rawValue).tag(BoundsModifier.full)
+                Text(BoundsModifier.symmetric.rawValue).tag(BoundsModifier.symmetric)
+                if (datamax > 0.0) { Text(BoundsModifier.positive.rawValue).tag(BoundsModifier.positive) }
+                if (datamin < 0.0) { Text(BoundsModifier.negative.rawValue).tag(BoundsModifier.negative) }
             }
             .frame(width: 150)
             Spacer()
-            Slider(value: $rangemax, in: datamin...datamax) {}.frame(width: 160)
+            Slider(value: $rangemax, in: (modifier == .symmetric || modifier == .positive ? 0.0 : datamin)...datamax) {}.frame(width: 160)
                 .disabled(modifier == .negative)
                 .onChange(of: rangemax) { value in focus = false }
             TextField("Max", value: $rangemax, formatter: SixDigitsScientific)
                 .frame(width: 95).multilineTextAlignment(.trailing)
                 .disabled(modifier == .negative)
+                .focused($focus)
                 .onChange(of: modifier) { value in
                     switch value {
                         case .negative: rangemax = 0.0
