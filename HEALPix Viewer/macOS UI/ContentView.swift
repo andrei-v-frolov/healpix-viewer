@@ -24,7 +24,7 @@ struct ContentView: View {
     @State private var colorbar = false
     
     // map to be displayed
-    @State private var map: Map? = test
+    @State private var map: Map? = nil
     
     // projection toolbar
     @State private var projection: Projection = .defaultValue
@@ -163,12 +163,16 @@ struct ContentView: View {
                 withAnimation { toolbar = .color }; colorscheme = mode
             }
         }
+        .task {
+            load(test)
+        }
     }
     
     // load map to view
     func load(_ map: Map) {
         self.map = map
         
+        modifier = .full
         datamin = map.min; rangemin = datamin
         datamax = map.max; rangemax = datamax
         
