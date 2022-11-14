@@ -18,8 +18,8 @@ final class Map {
     var size: Int { npix * MemoryLayout<Float>.size }
     
     // data bounds
-    lazy var min: Double = { if let v = data.min() { return Double(v) } else { return 0.0 } }()
-    lazy var max: Double = { if let v = data.max() { return Double(v) } else { return 0.0 } }()
+    let min: Double
+    let max: Double
     
     // Metal buffer containing map data
     lazy var buffer: MTLBuffer = {
@@ -50,9 +50,12 @@ final class Map {
     }()
     
     // initialize map from array
-    init(nside: Int, data: [Float]) {
+    init(nside: Int, data: [Float], min: Double? = nil, max: Double? = nil) {
         self.nside = nside
         self.data = data
+        
+        self.min = min ?? Double(data.min() ?? 0.0)
+        self.max = max ?? Double(data.max() ?? 0.0)
     }
 }
 
