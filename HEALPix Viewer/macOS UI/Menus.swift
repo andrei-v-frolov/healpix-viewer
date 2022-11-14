@@ -44,13 +44,16 @@ struct ViewMenus: Commands {
             Toggle(isOn: $lightingEffects) {
                 Text("Lighting Effects")
             }
+            .keyboardShortcut("L", modifiers: [.option, .command])
             Divider()
             Toggle(isOn: $showColorBar) {
                 Text("Show Color Bar")
             }
+            .keyboardShortcut("C", modifiers: [.option, .command])
             Toggle(isOn: $showDataBar) {
                 Text("Show Data Sidebar")
             }
+            .keyboardShortcut("D", modifiers: [.option, .command])
             .disabled(true)
         }
     }
