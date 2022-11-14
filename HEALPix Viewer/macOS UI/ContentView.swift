@@ -46,10 +46,10 @@ struct ContentView: View {
     @State private var bgcolor = Color.clear
     
     // range toolbar
-    @State private var datamin: Double = -1.0
-    @State private var datamax: Double =  1.0
-    @State private var rangemin: Double = -1.0
-    @State private var rangemax: Double =  1.0
+    @State private var datamin: Double = 0.0
+    @State private var datamax: Double = 0.0
+    @State private var rangemin: Double = 0.0
+    @State private var rangemax: Double = 0.0
     
     @State private var modifier: BoundsModifier = .defaultValue
     
