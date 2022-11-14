@@ -140,13 +140,13 @@ struct ContentView: View {
         }
         .navigationTitle(title)
         .task {
-            colorbar = UserDefaults.standard.bool(forKey: "showColorBar")
+            colorbar = UserDefaults.standard.bool(forKey: showColorBarKey)
             projection = Projection.value
             orientation = Orientation.value
             colorscheme = ColorScheme.value
         }
         .task {
-            observers.add(key: "showColorBar") { old, new in
+            observers.add(key: showColorBarKey) { old, new in
                 guard let value = new as? Bool else { return }
                 withAnimation { colorbar = value }
             }

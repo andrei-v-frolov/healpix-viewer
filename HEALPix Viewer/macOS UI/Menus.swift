@@ -23,9 +23,9 @@ struct ViewMenus: Commands {
     @AppStorage(Appearance.appStorage) var appearance = Appearance.defaultValue
     
     // render colorbar?
-    @AppStorage("showColorBar") var showColorBar = false
-    @AppStorage("showDataBar") var showDataBar = false
-    @AppStorage("lighting") var lightingEffects = false
+    @AppStorage(showColorBarKey) var showColorBar = false
+    @AppStorage(showDataBarKey) var showDataBar = false
+    @AppStorage(lightingKey) var lightingEffects = false
     
     // menu commands
     var body: some Commands {
