@@ -7,6 +7,18 @@
 
 import SwiftUI
 
+// number formatter common to most fields
+let SixDigitsScientific: NumberFormatter = {
+    let format = NumberFormatter()
+    
+    format.numberStyle = .scientific
+    format.usesSignificantDigits = true
+    format.minimumSignificantDigits = 6
+    format.maximumSignificantDigits = 6
+    
+    return format
+}()
+
 struct RangeView: View {
     var body: some View {
         Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
@@ -28,7 +40,7 @@ struct RangeToolbar: View, Equatable {
     var body: some View {
         HStack {
             Spacer().frame(width: 20)
-            TextField("Min", value: $rangemin, formatter: TwoDigitNumber)
+            TextField("Min", value: $rangemin, formatter: SixDigitsScientific)
                 .frame(width: 95).multilineTextAlignment(.trailing)
                 .disabled(modifier == .positive)
                 .focused($focus)
@@ -59,7 +71,7 @@ struct RangeToolbar: View, Equatable {
             Slider(value: $rangemax, in: datamin...datamax) {}.frame(width: 160)
                 .disabled(modifier == .negative)
                 .onChange(of: rangemax) { value in focus = false }
-            TextField("Max", value: $rangemax, formatter: TwoDigitNumber)
+            TextField("Max", value: $rangemax, formatter: SixDigitsScientific)
                 .frame(width: 95).multilineTextAlignment(.trailing)
                 .disabled(modifier == .negative)
                 .onChange(of: modifier) { value in
