@@ -9,7 +9,38 @@ import SwiftUI
 import MetalKit
 
 // HEALPix map representation
-final class Map {
+protocol Map {
+    var nside: Int { get }
+    var npix: Int { get }
+    var size: Int { get }
+    
+    var min: Double { get }
+    var max: Double { get }
+    
+    var data: [Float] { get }
+    var buffer: MTLBuffer { get }
+    var texture: MTLTexture { get }
+}
+
+// HEALPix map texture array
+func HPXTexture(nside: Int) -> MTLTexture {
+    // texture format
+    let desc = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: MTLPixelFormat.rgba32Float, width: nside, height: nside, mipmapped: false)
+    
+    desc.textureType = MTLTextureType.type2DArray
+    desc.usage = [.shaderWrite, .shaderRead]
+    desc.arrayLength = 12
+    
+    // initialize compute pipeline
+    guard let device = MTLCreateSystemDefaultDevice(),
+          let texture = device.makeTexture(descriptor: desc)
+          else { fatalError("Metal Framework could not be initalized") }
+    
+    return texture
+}
+
+// HEALPix map representation, based on CPU data
+final class CpuMap: Map {
     let nside: Int
     let data: [Float]
     
@@ -33,21 +64,7 @@ final class Map {
     }()
     
     // Metal texture array representing xyf faces
-    lazy var texture: MTLTexture = {
-        // texture format
-        let desc = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: MTLPixelFormat.rgba32Float, width: nside, height: nside, mipmapped: false)
-        
-        desc.textureType = MTLTextureType.type2DArray
-        desc.usage = [.shaderWrite, .shaderRead]
-        desc.arrayLength = 12
-        
-        // initialize compute pipeline
-        guard let device = MTLCreateSystemDefaultDevice(),
-              let texture = device.makeTexture(descriptor: desc)
-              else { fatalError("Metal Framework could not be initalized") }
-        
-        return texture
-    }()
+    lazy var texture: MTLTexture = HPXTexture(nside: nside)
     
     // initialize map from array
     init(nside: Int, data: [Float], min: Double? = nil, max: Double? = nil) {
@@ -56,6 +73,38 @@ final class Map {
         
         self.min = min ?? Double(data.min() ?? 0.0)
         self.max = max ?? Double(data.max() ?? 0.0)
+    }
+}
+
+// HEALPix map representation, based on GPU data
+final class GpuMap: Map {
+    let nside: Int
+    let buffer: MTLBuffer
+    
+    // computed properties
+    var npix: Int { return 12*nside*nside }
+    var size: Int { npix * MemoryLayout<Float>.size }
+    
+    // data bounds
+    let min: Double
+    let max: Double
+    
+    // array representing buffer data
+    lazy var data: [Float] = {
+        let ptr = buffer.contents().bindMemory(to: Float.self, capacity: npix)
+        return Array(UnsafeBufferPointer(start: ptr, count: npix))
+    }()
+    
+    // Metal texture array representing xyf faces
+    lazy var texture: MTLTexture = HPXTexture(nside: nside)
+    
+    // initialize map from buffer
+    init(nside: Int, buffer: MTLBuffer, min: Double, max: Double) {
+        self.nside = nside
+        self.buffer = buffer
+        
+        self.min = min
+        self.max = max
     }
 }
 
@@ -97,7 +146,7 @@ var test: Map = {
     let nside = 32
     let seq = [Int](0..<12*nside*nside)
     let data = seq.map { Float($0)/Float(12*nside*nside-1) }
-    let map = Map(nside: nside, data: data)
+    let map = CpuMap(nside: nside, data: data, min: 0.0, max: 1.0)
     
     let mapper = ColorMapper()
     
