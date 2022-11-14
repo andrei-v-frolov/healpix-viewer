@@ -53,6 +53,11 @@ struct ContentView: View {
     
     @State private var modifier: BoundsModifier = .defaultValue
     
+    // lighting toolbar
+    @State private var lightingLat: Double = 45.0
+    @State private var lightingLon: Double = -45.0
+    @State private var lightingAmt: Double = 30.0
+    
     // color mapper
     private let mapper = ColorMapper()
     
@@ -110,11 +115,11 @@ struct ContentView: View {
                         .onChange(of: colors) { value in colorize(map) }
                     }
                     if (toolbar == .lighting) {
-                        LightingToolbar()
+                        LightingToolbar(lightingLat: $lightingLat, lightingLon: $lightingLon, lightingAmt: $lightingAmt)
                     }
                     MapView(map: $map, projection: $projection, magnification: $magnification, spin: $spin,
-                            latitude: $latitude, longitude: $longitude, azimuth: $azimuth,
-                            background: $bgcolor)
+                            latitude: $latitude, longitude: $longitude, azimuth: $azimuth, background: $bgcolor,
+                            lightingLat: $lightingLat, lightingLon: $lightingLon, lightingAmt: $lightingAmt)
                     if (colorbar) {
                         BarView(colorsheme: $colorscheme, background: $bgcolor)
                             .frame(height: geometry.size.width/20)

@@ -14,9 +14,9 @@ struct LightingView: View {
 }
 
 struct LightingToolbar: View {
-    @State private var lightingLat: Double = 45.0
-    @State private var lightingLon: Double = -45.0
-    @State private var lightingAmt: Double = 100.0
+    @Binding var lightingLat: Double
+    @Binding var lightingLon: Double
+    @Binding var lightingAmt: Double
     
     @FocusState private var focus: Bool
     

@@ -22,6 +22,10 @@ struct MapView: NSViewRepresentable {
     
     @Binding var background: Color
     
+    @Binding var lightingLat: Double
+    @Binding var lightingLon: Double
+    @Binding var lightingAmt: Double
+    
     typealias NSViewType = ProjectedView
     var view = ProjectedView()
     
@@ -32,6 +36,7 @@ struct MapView: NSViewRepresentable {
     func updateNSView(_ view: Self.NSViewType, context: Self.Context) {
         let radian = Double.pi/180.0
         let rotation = ang2rot(latitude*radian, longitude*radian, azimuth*radian), w = rot2gen(rotation)
+        let lighting = ang2vec((90.0-lightingLat)*radian, lightingLon*radian)
         
         view.map = map
         view.projection = projection
@@ -44,6 +49,7 @@ struct MapView: NSViewRepresentable {
         }
         
         view.background = background.components
+        view.lighting = float4(lighting, Float(lightingAmt/100.0))
         
         view.draw(view.bounds)
     }
@@ -84,6 +90,7 @@ class ProjectedView: MTKView {
     
     var rotation = matrix_identity_float3x3
     var background = float4(0.0)
+    var lighting = float4(0.0)
     
     // MARK: solid body dynamics
     var w = float3.zero
@@ -120,12 +127,13 @@ class ProjectedView: MTKView {
               let transform = device.makeBuffer(length: MemoryLayout<float3x2>.size),
               let rotation = device.makeBuffer(length: MemoryLayout<float3x3>.size),
               let bgcolor = device.makeBuffer(length: MemoryLayout<float4>.size),
+              let light = device.makeBuffer(length: MemoryLayout<float4>.size),
               let queue = device.makeCommandQueue()
               else { fatalError("Metal Framework could not be initalized") }
         
         self.device = device
         self.queue = queue
-        self.buffers = [transform, rotation, bgcolor]
+        self.buffers = [transform, rotation, bgcolor, light]
         
         layer?.isOpaque = false
         framebufferOnly = false
@@ -143,6 +151,7 @@ class ProjectedView: MTKView {
         buffers[0].contents().storeBytes(of: transform, as: float3x2.self)
         buffers[1].contents().storeBytes(of: rotation, as: float3x3.self)
         buffers[2].contents().storeBytes(of: background, as: float4.self)
+        buffers[3].contents().storeBytes(of: lighting, as: float4.self)
         
         // initialize compute command buffer
         guard let command = queue.makeCommandBuffer() else { return }
@@ -160,6 +169,12 @@ class ProjectedView: MTKView {
 }
 
 // MARK: SO(3) group representations
+
+// sperical coordinates to unit vector
+func ang2vec(_ theta: Double, _ phi: Double) -> float3 {
+    let z = cos(theta), r = sin(theta)
+    return float3(Float(r*cos(phi)), Float(r*sin(phi)), Float(z))
+}
 
 // latitude, longitude and azimuth to rotation matrix
 func ang2rot(_ theta: Double, _ phi: Double, _ psi: Double) -> float3x3 {
