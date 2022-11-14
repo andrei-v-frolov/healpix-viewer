@@ -14,10 +14,10 @@ kernel void PROJECTION(_grid)(
     constant float4 &light              [[ buffer(3) ]],
     uint2 gid                           [[ thread_position_in_grid ]]
 ) {
-    const float3 v = rotation * PROJECTION()(transform * float3(gid.x, gid.y, 1));
+    const float3 u = PROJECTION()(transform * float3(gid.x, gid.y, 1)), v = rotation * u;
     
     float4 pixel = select(grid(vec2ang(v)), background, all(v == OUT_OF_BOUNDS));
-    output.write(lighted(pixel, light, v), gid);
+    output.write(lighted(pixel, light, u), gid);
 }
 
 // MARK: data kernels template
@@ -30,12 +30,12 @@ kernel void PROJECTION(_data)(
     constant float4 &light              [[ buffer(3) ]],
     uint2 gid                           [[ thread_position_in_grid ]]
 ) {
-    const float3 v = rotation * PROJECTION()(transform * float3(gid.x, gid.y, 1));
+    const float3 u = PROJECTION()(transform * float3(gid.x, gid.y, 1)), v = rotation * u;
     
     if (all(v == OUT_OF_BOUNDS)) {
         output.write(background, gid);
     } else {
         const uint3 f = uint3(xyz2xyf(map.get_width(), v));
-        output.write(lighted(map.read(f.xy, f.z), light, v), gid);
+        output.write(lighted(map.read(f.xy, f.z), light, u), gid);
     }
 }
