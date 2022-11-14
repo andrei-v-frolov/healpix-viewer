@@ -21,8 +21,14 @@
 			<dict>
 				<key>public.filename-extension</key>
 				<array>
-					<string>.fit</string>
-					<string>.fits</string>
+					<string>fits</string>
+					<string>fit</string>
+					<string>FITS</string>
+					<string>FIT</string>
+				</array>
+				<key>public.mime-type</key>
+				<array>
+					<string>image/fits</string>
 				</array>
 			</dict>
 		</dict>
