@@ -78,23 +78,27 @@ enum HpxCard: String, CaseIterable {
     case coords = "COORDSYS"
     case temptype = "TEMPTYPE"
     
+    // my vector extensions
+    case vector = "VECTOR"
+    case vframe = "VFRAME"
+    
     // collections
     static let required: [Self] = [.fields, .healpix, .indexing, .ordering, .nside,
                                    .firstpix, .lastpix, .baddata, .polar, .polconv]
     static let recommended: [Self] = [.object, .coords, .temptype]
     static let optional: [Self] = []
-    static let extended: [Self] = []
+    static let extended: [Self] = [.vector, .vframe]
     
     // read card (returning a proper data type)
     func read(_ fptr: UnsafeMutablePointer<fitsfile>?) -> FitsType? {
         switch self {
         case .fields, .nside, .firstpix, .lastpix:
             return FitsType.readInt(fptr, key: self.rawValue)
-        case .healpix, .indexing, .ordering, .object, .coords, .temptype, .polconv:
+        case .healpix, .indexing, .ordering, .object, .coords, .temptype, .polconv, .vframe:
             return FitsType.readString(fptr, key: self.rawValue)
         case .baddata:
             return FitsType.readFloat(fptr, key: self.rawValue)
-        case .polar:
+        case .polar, .vector:
             return FitsType.readBool(fptr, key: self.rawValue)
         }
     }
