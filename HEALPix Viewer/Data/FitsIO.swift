@@ -8,6 +8,9 @@
 import Foundation
 import CFitsIO
 
+// HEALPix bad data guard value
+let BAD_DATA: Float = -1.6375000E+30
+
 // enumeration encapsulating FITS data types
 enum FitsType: Equatable {
     case int(Int)
@@ -107,9 +110,7 @@ enum HpxCard: String, CaseIterable {
     var mandatory: FitsType? {
         switch self {
             case .healpix:  return FitsType.string("HEALPIX")
-            case .indexing: return FitsType.string("IMPLICIT")
-            case .baddata:  return FitsType.float(-1.6375000E+30)
-            case .object:   return FitsType.string("FULLSKY")
+            case .baddata:  return FitsType.float(BAD_DATA)
             default:        return nil
         }
     }
@@ -118,7 +119,7 @@ enum HpxCard: String, CaseIterable {
     var fallback: FitsType? {
         switch self {
             case .indexing: return FitsType.string("IMPLICIT")
-            case .baddata:  return FitsType.float(-1.6375000E+30)
+            case .baddata:  return FitsType.float(BAD_DATA)
             case .polar:    return FitsType.bool(false)
             case .polconv:  return FitsType.string("COSMO")
             default: return nil
@@ -209,8 +210,60 @@ func getsize_fits(file: String) {
     guard (status == 0), let header = header else { return }
     
     // typeset and parse header
-    let info = typeset_header(header, nkeys: nkeys), card = HpxCard.parse(fptr)
+    let info = typeset_header(header, nkeys: nkeys)
+    guard let card = HpxCard.parse(fptr) else { return }
     
     print(info)
     print(card)
+    
+    // find nmaps and nside values
+    var nside = 0; if let v = card[.nside], case let .int(n) = v { nside = n }
+    var nmaps = 0; if let v = card[.fields], case let .int(n) = v { nmaps = n }
+    guard nside > 0, nmaps > 0 else { return }
+    
+    // process metadata for all maps
+    var metadata = [[MapCard: FitsType]?](); metadata.reserveCapacity(nmaps)
+    for i in 1...nmaps { metadata.append(MapCard.parse(fptr, map: i)) }
+    
+    print(metadata)
+    
+    // full sky map (without pixel index)
+    if card[.indexing] == .string("IMPLICIT") {
+        if let object = card[.object] { guard object == .string("FULLSKY") else { return } }
+        
+        print("Full sky map")
+    }
+    
+    // partial sky map (first column contains pixel index)
+    if card[.indexing] == .string("EXPLICIT") && nmaps > 1 {
+        if let object = card[.object] { guard object == .string("PARTIAL") else { return } }
+        
+        // check that the first column format is integer
+        let idx = metadata.removeFirst(); nmaps -= 1
+        if let format = idx?[.format] { guard format == .string("J") || format == .string("K") else { return } }
+        
+        print("Partial sky map")
+    }
+    
+    // index named data channels
+    var index = [DataSource: Int]()
+    
+    for i in 0..<nmaps {
+        if let m = metadata[i], let t = m[.type], case let .string(s) = t {
+            switch s {
+                case "TEMPERATURE":     index[.i] = i
+                case "Q_POLARISATION":  index[.q] = i
+                case "U_POLARISATION":  index[.u] = i
+                case "E_POLARISATION":  index[.e] = i
+                case "B_POLARISATION":  index[.b] = i
+                case "P_POLARISATION":  index[.p] = i
+                case "X_VECTOR":        index[.x] = i
+                case "Y_VECTOR":        index[.y] = i
+                case "V_VECTOR":        index[.v] = i
+                default: break
+            }
+        }
+    }
+    
+    print(index)
 }
