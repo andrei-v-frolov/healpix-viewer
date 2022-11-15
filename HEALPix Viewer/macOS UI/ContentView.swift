@@ -144,6 +144,8 @@ struct ContentView: View {
             projection = Projection.value
             orientation = Orientation.value
             colorscheme = ColorScheme.value
+            mincolor = colorscheme.colormap.min
+            maxcolor = colorscheme.colormap.max
         }
         .task {
             observers.add(key: showColorBarKey) { old, new in
@@ -160,7 +162,11 @@ struct ContentView: View {
             }
             observers.add(key: ColorScheme.appStorage) { old, new in
                 guard let raw = new as? String, let mode = ColorScheme(rawValue: raw) else { return }
-                withAnimation { toolbar = .color }; colorscheme = mode
+                withAnimation { toolbar = .color }
+                
+                colorscheme = mode
+                mincolor = colorscheme.colormap.min
+                maxcolor = colorscheme.colormap.max
             }
         }
         .task {
