@@ -33,6 +33,7 @@
 		50A94798291B3AEB00F6F1BA /* RangeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50A94797291B3AEB00F6F1BA /* RangeView.swift */; };
 		50AFD40D29216FED00994618 /* HEALPix_Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50AFD40C29216FED00994618 /* HEALPix_Tests.swift */; };
 		50BAE19B291F43380024FD5C /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 50BAE19A291F43380024FD5C /* Credits.rtf */; };
+		50C1FBBF2922B7C7009A3C99 /* FitsIO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C1FBBE2922B7C7009A3C99 /* FitsIO.swift */; };
 		50C513132907DFDC00BB6B51 /* OrientationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C513122907DFDC00BB6B51 /* OrientationView.swift */; };
 		50D29751291C39AA00E18C08 /* Map.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50D29750291C39AA00E18C08 /* Map.swift */; };
 		50ECD2B028FF2A9C0008F915 /* Menus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50ECD2AF28FF2A9C0008F915 /* Menus.swift */; };
@@ -110,6 +111,7 @@
 		50AFD40C29216FED00994618 /* HEALPix_Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HEALPix_Tests.swift; sourceTree = "<group>"; };
 		50BAE19A291F43380024FD5C /* Credits.rtf */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; path = Credits.rtf; sourceTree = "<group>"; };
 		50BAE1A0291F4CA40024FD5C /* HEALPix-Viewer-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "HEALPix-Viewer-Info.plist"; sourceTree = SOURCE_ROOT; };
+		50C1FBBE2922B7C7009A3C99 /* FitsIO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FitsIO.swift; sourceTree = "<group>"; };
 		50C513122907DFDC00BB6B51 /* OrientationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrientationView.swift; sourceTree = "<group>"; };
 		50CB1444290B03B0006D59FA /* Shaders.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Shaders.metal; sourceTree = "<group>"; };
 		50D29750291C39AA00E18C08 /* Map.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Map.swift; sourceTree = "<group>"; };
@@ -258,6 +260,7 @@
 		50D29754291C3AAA00E18C08 /* Data */ = {
 			isa = PBXGroup;
 			children = (
+				50C1FBBE2922B7C7009A3C99 /* FitsIO.swift */,
 				50D29750291C39AA00E18C08 /* Map.swift */,
 			);
 			path = Data;
@@ -397,6 +400,7 @@
 				508BBA8D28FF2764004B1A9C /* ContentView.swift in Sources */,
 				50655412290A64F400176790 /* ProjectionView.swift in Sources */,
 				50A94798291B3AEB00F6F1BA /* RangeView.swift in Sources */,
+				50C1FBBF2922B7C7009A3C99 /* FitsIO.swift in Sources */,
 				508BBA8B28FF2764004B1A9C /* HEALPix_ViewerApp.swift in Sources */,
 				503C675E28FF89C1002D4314 /* MapView.swift in Sources */,
 				508D56DA29131FBA0099C3A0 /* HEALPix BGRY.swift in Sources */,
