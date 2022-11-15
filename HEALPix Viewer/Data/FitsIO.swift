@@ -141,6 +141,34 @@ enum HpxCard: String, CaseIterable {
     }
 }
 
+// enumeration encapsulating map metadata cards
+enum MapCard: String, CaseIterable {
+    case type = "TTYPE"
+    case unit = "TUNIT"
+    case format = "TFORM"
+    
+    // collections
+    static let required: [Self] = [.format]
+    
+    // read card (returning a proper data type)
+    func read(_ fptr: UnsafeMutablePointer<fitsfile>?, map: Int) -> FitsType? {
+        return FitsType.readString(fptr, key: self.rawValue + "\(map)")
+    }
+    
+    // parse map metadata
+    static func parse(_ fptr: UnsafeMutablePointer<fitsfile>?, map: Int) -> [Self: FitsType]? {
+        var card = [Self: FitsType]()
+        
+        for k in Self.allCases {
+            if let value = k.read(fptr, map: map) { card[k] = value }
+        }
+        
+        for k in required { if (card[k] == nil) { return nil } }
+        
+        return card
+    }
+}
+
 // HDU header in human-readable form, as opposed to String(cString: header)
 func typeset_header(_ header: UnsafeMutablePointer<CChar>, nkeys: Int32) -> String {
     var info = ""; for i in 0..<Int(nkeys) {
