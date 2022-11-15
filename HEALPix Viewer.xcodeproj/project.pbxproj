@@ -30,6 +30,7 @@
 		508D56D629131F050099C3A0 /* HEALPix Cold.swift in Sources */ = {isa = PBXBuildFile; fileRef = 508D56D529131F050099C3A0 /* HEALPix Cold.swift */; };
 		508D56D829131F7E0099C3A0 /* HEALPix GRV.swift in Sources */ = {isa = PBXBuildFile; fileRef = 508D56D729131F7E0099C3A0 /* HEALPix GRV.swift */; };
 		508D56DA29131FBA0099C3A0 /* HEALPix BGRY.swift in Sources */ = {isa = PBXBuildFile; fileRef = 508D56D929131FBA0099C3A0 /* HEALPix BGRY.swift */; };
+		508F923B2923E96600E6DD73 /* FileInput.swift in Sources */ = {isa = PBXBuildFile; fileRef = 508F923A2923E96600E6DD73 /* FileInput.swift */; };
 		50A94798291B3AEB00F6F1BA /* RangeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50A94797291B3AEB00F6F1BA /* RangeView.swift */; };
 		50AFD40D29216FED00994618 /* HEALPix_Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50AFD40C29216FED00994618 /* HEALPix_Tests.swift */; };
 		50BAE19B291F43380024FD5C /* Credits.rtf in Resources */ = {isa = PBXBuildFile; fileRef = 50BAE19A291F43380024FD5C /* Credits.rtf */; };
@@ -105,6 +106,7 @@
 		508D56D529131F050099C3A0 /* HEALPix Cold.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HEALPix Cold.swift"; sourceTree = "<group>"; };
 		508D56D729131F7E0099C3A0 /* HEALPix GRV.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HEALPix GRV.swift"; sourceTree = "<group>"; };
 		508D56D929131FBA0099C3A0 /* HEALPix BGRY.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HEALPix BGRY.swift"; sourceTree = "<group>"; };
+		508F923A2923E96600E6DD73 /* FileInput.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FileInput.swift; sourceTree = "<group>"; };
 		50A0D2522902F1A300A29988 /* Healpix.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Healpix.metal; sourceTree = "<group>"; };
 		50A0D2562902F1B200A29988 /* Projections.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Projections.metal; sourceTree = "<group>"; };
 		50A94797291B3AEB00F6F1BA /* RangeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RangeView.swift; sourceTree = "<group>"; };
@@ -144,6 +146,7 @@
 			isa = PBXGroup;
 			children = (
 				508BBA8A28FF2764004B1A9C /* HEALPix_ViewerApp.swift */,
+				508F923A2923E96600E6DD73 /* FileInput.swift */,
 				508BBA8C28FF2764004B1A9C /* ContentView.swift */,
 				50655411290A64F400176790 /* ProjectionView.swift */,
 				50C513122907DFDC00BB6B51 /* OrientationView.swift */,
@@ -411,6 +414,7 @@
 				50ECD2B028FF2A9C0008F915 /* Menus.swift in Sources */,
 				50563E592901E19A00B316CA /* MetalShader.swift in Sources */,
 				50563E5B2901E38F00B316CA /* Kernels.metal in Sources */,
+				508F923B2923E96600E6DD73 /* FileInput.swift in Sources */,
 				50ECD2B228FF31260008F915 /* Toolbar.swift in Sources */,
 				50D29751291C39AA00E18C08 /* Map.swift in Sources */,
 				50C513132907DFDC00BB6B51 /* OrientationView.swift in Sources */,
