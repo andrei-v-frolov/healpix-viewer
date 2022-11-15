@@ -70,14 +70,18 @@ enum HpxCard: String, CaseIterable {
     case firstpix = "FIRSTPIX"
     case lastpix = "LASTPIX"
     case baddata = "BAD_DATA"
+    case polar = "POLAR"
+    case polconv = "POLCCONV"
     
     // HEALPix recommended cards
     case object = "OBJECT"
     case coords = "COORDSYS"
+    case temptype = "TEMPTYPE"
     
     // collections
-    static let required: [Self] = [.fields, .healpix, .indexing, .ordering, .nside, .firstpix, .lastpix, .baddata]
-    static let recommended: [Self] = [.object, .coords]
+    static let required: [Self] = [.fields, .healpix, .indexing, .ordering, .nside,
+                                   .firstpix, .lastpix, .baddata, .polar, .polconv]
+    static let recommended: [Self] = [.object, .coords, .temptype]
     static let optional: [Self] = []
     static let extended: [Self] = []
     
@@ -86,10 +90,12 @@ enum HpxCard: String, CaseIterable {
         switch self {
         case .fields, .nside, .firstpix, .lastpix:
             return FitsType.readInt(fptr, key: self.rawValue)
-        case .healpix, .indexing, .ordering, .object, .coords:
+        case .healpix, .indexing, .ordering, .object, .coords, .temptype, .polconv:
             return FitsType.readString(fptr, key: self.rawValue)
         case .baddata:
             return FitsType.readFloat(fptr, key: self.rawValue)
+        case .polar:
+            return FitsType.readBool(fptr, key: self.rawValue)
         }
     }
     
@@ -109,6 +115,8 @@ enum HpxCard: String, CaseIterable {
         switch self {
             case .indexing: return FitsType.string("IMPLICIT")
             case .baddata:  return FitsType.float(-1.6375000E+30)
+            case .polar:    return FitsType.bool(false)
+            case .polconv:  return FitsType.string("COSMO")
             default: return nil
         }
     }
