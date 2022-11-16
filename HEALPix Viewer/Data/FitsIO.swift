@@ -175,7 +175,11 @@ enum MapCard: String, CaseIterable {
     }
 }
 
-// HDU header in human-readable form, as opposed to String(cString: header)
+// ...
+typealias Cards = [HpxCard: FitsType]
+typealias Metadata = [[MapCard: FitsType]?]
+
+// typeset HDU header in human-readable form, as opposed to String(cString: header)
 func typeset_header(_ header: UnsafeMutablePointer<CChar>, nkeys: Int32) -> String {
     var info = ""; for i in 0..<Int(nkeys) {
         if let card = NSString(bytes: header + 80*i, length: 80, encoding: NSASCIIStringEncoding) {
@@ -184,6 +188,49 @@ func typeset_header(_ header: UnsafeMutablePointer<CChar>, nkeys: Int32) -> Stri
     }
     
     return info
+}
+
+// read BINTABLE content, returning data as raw byte arrays
+func read_bintable(_ fptr: UnsafeMutablePointer<fitsfile>?, nside: Int, nmaps: Int, nrows: Int, metadata: Metadata) -> (type: [Int32], data: [UnsafeMutableRawPointer])? {
+    let npix = 12*nside*nside
+    var status: Int32 = 0
+    
+    // parse data layout for all columns & allocate data buffers
+    var format = [String](repeating: "", count: nmaps)
+    var type = [Int32](repeating: 0, count: nmaps)
+    var count = [Int](repeating: 0, count: nmaps)
+    var width = [Int](repeating: 0, count: nmaps)
+    var data = [UnsafeMutableRawPointer](); data.reserveCapacity(nmaps)
+    
+    for m in 0..<nmaps {
+        if let v = metadata[m]?[.format], case let .string(s) = v { format[m] = s }
+        format[m].withCString { s in let _ = ffbnfm(UnsafeMutablePointer(mutating: s), &type[m], &count[m], &width[m], &status) }
+        guard (status == 0 && count[m] > 0 && width[m] > 0) else { return nil }
+        //if (count[m]*nrows != npix) { print("row count mismatch for column \(m+1)?") }
+        
+        data.append(UnsafeMutableRawPointer.allocate(byteCount: npix*width[m], alignment: 8))
+    }
+    
+    // determine optimal row chunk size (according to cfitsio)
+    var chunk = 0; ffgrsz(fptr, &chunk, &status); chunk = max(chunk,1)
+    guard (status == 0) else { return nil }
+    
+    // read chunked column data into buffers
+    var i = [Int](repeating: 0, count: nmaps)
+    var j = [Int](repeating: 0, count: nmaps)
+    
+    for frow in stride(from: 1, through: nrows, by: chunk) {
+        for m in 0..<nmaps {
+            j[m] = min(i[m]+chunk*count[m], npix) - 1; let n = j[m]-i[m]+1
+            ffgcv(fptr, type[m], Int32(m+1), Int64(frow), 1, Int64(n), nil, data[m] + i[m]*width[m], nil, &status)
+            guard (status == 0) else { return nil }
+            i[m] = j[m]+1
+        }
+    }
+    
+    //if !(i.allSatisfy {$0 == npix}) { print("something went wrong during piecewise read?") }
+    
+    return (type, data)
 }
 
 // ...
@@ -228,7 +275,7 @@ func getsize_fits(file: String) {
     guard nside > 0, nmaps > 0, nrows > 0 else { return }
     
     // process metadata for all maps
-    var metadata = [[MapCard: FitsType]?](); metadata.reserveCapacity(nmaps)
+    var metadata = Metadata(); metadata.reserveCapacity(nmaps)
     for i in 1...nmaps { metadata.append(MapCard.parse(fptr, map: i)) }
     
     print(metadata)
@@ -238,6 +285,8 @@ func getsize_fits(file: String) {
         if let object = card[.object] { guard object == .string("FULLSKY") else { return } }
         
         print("Full sky map")
+        
+        guard let (type, data) = read_bintable(fptr, nside: nside, nmaps: nmaps, nrows: nrows, metadata: metadata) else { return }
     }
     
     // partial sky map (first column contains pixel index)
