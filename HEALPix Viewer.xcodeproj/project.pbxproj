@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		5009BB142912ECEB006DE835 /* ColorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5009BB132912ECEB006DE835 /* ColorView.swift */; };
+		500F99B3292553730097695C /* rawmap.c in Sources */ = {isa = PBXBuildFile; fileRef = 500F99B2292553730097695C /* rawmap.c */; };
 		503C675E28FF89C1002D4314 /* MapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 503C675D28FF89C1002D4314 /* MapView.swift */; };
 		50563E592901E19A00B316CA /* MetalShader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50563E582901E19A00B316CA /* MetalShader.swift */; };
 		50563E5B2901E38F00B316CA /* Kernels.metal in Sources */ = {isa = PBXBuildFile; fileRef = 50563E5A2901E38F00B316CA /* Kernels.metal */; };
@@ -82,6 +83,9 @@
 
 /* Begin PBXFileReference section */
 		5009BB132912ECEB006DE835 /* ColorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorView.swift; sourceTree = "<group>"; };
+		500F99AE292553720097695C /* Bridging Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Bridging Header.h"; sourceTree = "<group>"; };
+		500F99B1292553730097695C /* rawmap.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = rawmap.h; sourceTree = "<group>"; };
+		500F99B2292553730097695C /* rawmap.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = rawmap.c; sourceTree = "<group>"; };
 		503C675D28FF89C1002D4314 /* MapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapView.swift; sourceTree = "<group>"; };
 		50563E582901E19A00B316CA /* MetalShader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetalShader.swift; sourceTree = "<group>"; };
 		50563E5A2901E38F00B316CA /* Kernels.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Kernels.metal; sourceTree = "<group>"; };
@@ -264,7 +268,10 @@
 			isa = PBXGroup;
 			children = (
 				50C1FBBE2922B7C7009A3C99 /* FitsIO.swift */,
+				500F99B1292553730097695C /* rawmap.h */,
+				500F99B2292553730097695C /* rawmap.c */,
 				50D29750291C39AA00E18C08 /* Map.swift */,
+				500F99AE292553720097695C /* Bridging Header.h */,
 			);
 			path = Data;
 			sourceTree = "<group>";
@@ -320,6 +327,7 @@
 				TargetAttributes = {
 					508BBA8628FF2764004B1A9C = {
 						CreatedOnToolsVersion = 14.0.1;
+						LastSwiftMigration = 1410;
 					};
 					508BBA9728FF2765004B1A9C = {
 						CreatedOnToolsVersion = 14.0.1;
@@ -420,6 +428,7 @@
 				50C513132907DFDC00BB6B51 /* OrientationView.swift in Sources */,
 				508D56D829131F7E0099C3A0 /* HEALPix GRV.swift in Sources */,
 				508D56D229131E7E0099C3A0 /* HEALPix Grey.swift in Sources */,
+				500F99B3292553730097695C /* rawmap.c in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -561,6 +570,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = "HEALPix Viewer/HEALPix_Viewer.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
@@ -581,6 +591,8 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "ca.sfu.cosmo.healpix-viewer";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "HEALPix Viewer/Data/Bridging Header.h";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 			};
 			name = Debug;
@@ -590,6 +602,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CLANG_ENABLE_MODULES = YES;
 				CODE_SIGN_ENTITLEMENTS = "HEALPix Viewer/HEALPix_Viewer.entitlements";
 				CODE_SIGN_STYLE = Automatic;
 				COMBINE_HIDPI_IMAGES = YES;
@@ -610,6 +623,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "ca.sfu.cosmo.healpix-viewer";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_OBJC_BRIDGING_HEADER = "HEALPix Viewer/Data/Bridging Header.h";
 				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
