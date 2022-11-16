@@ -63,6 +63,9 @@ enum FitsType: Equatable {
 // enumeration encapsulating HEALPix cards
 enum HpxCard: String, CaseIterable {
     // FITS required cards
+    case naxis = "NAXIS"
+    case naxis1 = "NAXIS1"
+    case naxis2 = "NAXIS2"
     case fields = "TFIELDS"
     
     // HEALPix required cards
@@ -86,7 +89,8 @@ enum HpxCard: String, CaseIterable {
     case vframe = "VFRAME"
     
     // collections
-    static let required: [Self] = [.fields, .healpix, .indexing, .ordering, .nside,
+    static let required: [Self] = [.naxis, .naxis1, .naxis2, .fields,
+                                   .healpix, .indexing, .ordering, .nside,
                                    .firstpix, .lastpix, .baddata, .polar, .polconv]
     static let recommended: [Self] = [.object, .coords, .temptype]
     static let optional: [Self] = []
@@ -95,7 +99,7 @@ enum HpxCard: String, CaseIterable {
     // read card (returning a proper data type)
     func read(_ fptr: UnsafeMutablePointer<fitsfile>?) -> FitsType? {
         switch self {
-        case .fields, .nside, .firstpix, .lastpix:
+        case .naxis, .naxis1, .naxis2, .fields, .nside, .firstpix, .lastpix:
             return FitsType.readInt(fptr, key: self.rawValue)
         case .healpix, .indexing, .ordering, .object, .coords, .temptype, .polconv, .vframe:
             return FitsType.readString(fptr, key: self.rawValue)
@@ -109,6 +113,7 @@ enum HpxCard: String, CaseIterable {
     // mandatory values (if card is present, it must have this value)
     var mandatory: FitsType? {
         switch self {
+            case .naxis:    return FitsType.int(2)
             case .healpix:  return FitsType.string("HEALPIX")
             case .baddata:  return FitsType.float(BAD_DATA)
             default:        return nil
@@ -219,7 +224,8 @@ func getsize_fits(file: String) {
     // find nmaps and nside values
     var nside = 0; if let v = card[.nside], case let .int(n) = v { nside = n }
     var nmaps = 0; if let v = card[.fields], case let .int(n) = v { nmaps = n }
-    guard nside > 0, nmaps > 0 else { return }
+    var nrows = 0; if let v = card[.naxis2], case let .int(n) = v { nrows = n }
+    guard nside > 0, nmaps > 0, nrows > 0 else { return }
     
     // process metadata for all maps
     var metadata = [[MapCard: FitsType]?](); metadata.reserveCapacity(nmaps)
