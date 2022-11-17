@@ -39,8 +39,8 @@ func HPXTexture(nside: Int) -> MTLTexture {
     return texture
 }
 
-// HEALPix map representation, based on CPU data
-final class CpuMap: Map {
+// HEALPix map representation, based on Swift array
+final class HpxMap: Map {
     let nside: Int
     let data: [Float]
     
@@ -73,6 +73,42 @@ final class CpuMap: Map {
         
         self.min = min ?? Double(data.min() ?? 0.0)
         self.max = max ?? Double(data.max() ?? 0.0)
+    }
+}
+
+// HEALPix map representation, based on CPU data
+final class CpuMap: Map {
+    let nside: Int
+    let ptr: UnsafePointer<Float>
+    lazy var data: [Float] = { Array(UnsafeBufferPointer(start: ptr, count: npix)) }()
+    
+    // computed properties
+    var npix: Int { return 12*nside*nside }
+    var size: Int { npix * MemoryLayout<Float>.size }
+    
+    // data bounds
+    let min: Double
+    let max: Double
+    
+    // Metal buffer containing map data
+    lazy var buffer: MTLBuffer = {
+        guard let device = MTLCreateSystemDefaultDevice(),
+              let buffer = device.makeBuffer(bytes: ptr, length: size)
+              else { fatalError("Metal Framework could not be initalized") }
+        
+        return buffer
+    }()
+    
+    // Metal texture array representing xyf faces
+    lazy var texture: MTLTexture = HPXTexture(nside: nside)
+    
+    // initialize map from array
+    init(nside: Int, buffer: UnsafePointer<Float>, min: Double, max: Double) {
+        self.nside = nside
+        self.ptr = buffer
+        
+        self.min = min
+        self.max = max
     }
 }
 
@@ -146,7 +182,7 @@ var test: Map = {
     let nside = 32
     let seq = [Int](0..<12*nside*nside)
     let data = seq.map { Float($0)/Float(12*nside*nside-1) }
-    let map = CpuMap(nside: nside, data: data, min: 0.0, max: 1.0)
+    let map = HpxMap(nside: nside, data: data, min: 0.0, max: 1.0)
     
     let mapper = ColorMapper()
     
