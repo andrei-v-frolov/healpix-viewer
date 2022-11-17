@@ -10,7 +10,9 @@ import SwiftUI
 struct Toolbar: CustomizableToolbarContent {
     @Binding var toolbar: ShowToolbar
     @Binding var colorbar: Bool
+    @Binding var infoview: Bool
     @Binding var magnification: Double
+    @Binding var info: String?
     
     var body: some CustomizableToolbarContent {
         ToolbarItem(id: "toggleSidebar", placement: .navigation, showsByDefault: true) {
@@ -77,7 +79,7 @@ struct Toolbar: CustomizableToolbarContent {
         }
         ToolbarItem(id: "info", placement: .principal, showsByDefault: true) {
             Button {
-                toggleSidebar()
+                withAnimation { toggleInfoView() }
             } label: {
                 Image(systemName: "info.circle")
             }
@@ -91,6 +93,10 @@ struct Toolbar: CustomizableToolbarContent {
     
     func toggleColorbar() {
         colorbar = !colorbar
+    }
+    
+    func toggleInfoView() {
+        infoview = (!infoview) && (info != nil)
     }
 }
 
