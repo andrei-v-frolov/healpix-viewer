@@ -174,6 +174,26 @@ enum MapCard: String, CaseIterable {
         
         return card
     }
+    
+    // ID commonly used map types
+    static func type(_ string: String) -> DataSource? {
+        switch string {
+            case "TEMPERATURE", "I_STOKES":     return .i
+            case "Q_POLARISATION", "Q_STOKES":  return .q
+            case "U_POLARISATION", "U_STOKES":  return .u
+            case "E_POLARISATION":              return .e
+            case "B_POLARISATION":              return .b
+            case "P_POLARISATION":              return .p
+            case "X_VECTOR":                    return .x
+            case "Y_VECTOR":                    return .y
+            case "V_VECTOR":                    return .v
+            default: return nil
+        }
+    }
+    
+    static func type(_ value: FitsType) -> DataSource? {
+        if case let .string(s) = value { return type(s) } else { return nil }
+    }
 }
 
 // ...
@@ -305,20 +325,7 @@ func getsize_fits(file: String) {
     var index = [DataSource: Int]()
     
     for i in 0..<nmaps {
-        if let m = metadata[i], let t = m[.type], case let .string(s) = t {
-            switch s {
-                case "TEMPERATURE":     index[.i] = i
-                case "Q_POLARISATION":  index[.q] = i
-                case "U_POLARISATION":  index[.u] = i
-                case "E_POLARISATION":  index[.e] = i
-                case "B_POLARISATION":  index[.b] = i
-                case "P_POLARISATION":  index[.p] = i
-                case "X_VECTOR":        index[.x] = i
-                case "Y_VECTOR":        index[.y] = i
-                case "V_VECTOR":        index[.v] = i
-                default: break
-            }
-        }
+        if let t = metadata[i]?[.type], let type = MapCard.type(t) { index[type] = i }
     }
     
     print(index)
