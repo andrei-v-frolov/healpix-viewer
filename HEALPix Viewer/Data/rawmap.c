@@ -22,10 +22,10 @@ void raw2map_ffrp(const float *in, float *out, long nside, double *min, double *
     float minval = FLT_MAX, maxval = -FLT_MAX, nan = 1.0/0.0;
     
     for (long i = 0; i < 12*nside*nside; i++) {
-        long p; nest2ring(nside, i, &p); float v = *(in+p);
-        if (v == BAD_DATA) { *(out+i) = nan; continue; }
+        long p; nest2ring(nside, i, &p); float v = in[p];
+        if (v == BAD_DATA) { out[i] = nan; continue; }
         
-        *(out+i) = v;
+        out[i] = v;
         
         if (v < minval) { minval = v; }
         if (v > maxval) { maxval = v; }
@@ -40,10 +40,10 @@ void raw2map_ffrn(const float *in, float *out, long nside, double *min, double *
     float minval = FLT_MAX, maxval = -FLT_MAX, nan = 1.0/0.0;
     
     for (long i = 0; i < 12*nside*nside; i++) {
-        long p; nest2ring(nside, i, &p); float v = *(in+p);
-        if (v == BAD_DATA) { *(out+i) = nan; continue; }; v = -v;
+        long p; nest2ring(nside, i, &p); float v = in[p];
+        if (v == BAD_DATA) { out[i] = nan; continue; }
         
-        *(out+i) = v;
+        v = -v; out[i] = v;
         
         if (v < minval) { minval = v; }
         if (v > maxval) { maxval = v; }
@@ -58,9 +58,9 @@ void raw2map_ffnp(const float *in, float *out, long nside, double *min, double *
     float minval = FLT_MAX, maxval = -FLT_MAX, nan = 1.0/0.0;
     
     for (long i = 0; i < 12*nside*nside; i++) {
-        float v = *(in+i); if (v == BAD_DATA) { *(out+i) = nan; continue; }
+        float v = in[i]; if (v == BAD_DATA) { out[i] = nan; continue; }
         
-        *(out+i) = v;
+        out[i] = v;
         
         if (v < minval) { minval = v; }
         if (v > maxval) { maxval = v; }
@@ -75,9 +75,9 @@ void raw2map_ffnn(const float *in, float *out, long nside, double *min, double *
     float minval = FLT_MAX, maxval = -FLT_MAX, nan = 1.0/0.0;
     
     for (long i = 0; i < 12*nside*nside; i++) {
-        float v = *(in+i); if (v == BAD_DATA) { *(out+i) = nan; continue; }; v = -v;
+        float v = in[i]; if (v == BAD_DATA) { out[i] = nan; continue; }
         
-        *(out+i) = v;
+        v = -v; out[i] = v;
         
         if (v < minval) { minval = v; }
         if (v > maxval) { maxval = v; }
@@ -92,10 +92,10 @@ void raw2map_fdrp(const double *in, float *out, long nside, double *min, double 
     float minval = FLT_MAX, maxval = -FLT_MAX, nan = 1.0/0.0;
     
     for (long i = 0; i < 12*nside*nside; i++) {
-        long p; nest2ring(nside, i, &p); float v = *(in+p);
-        if (v == BAD_DATA) { *(out+i) = nan; continue; }
+        long p; nest2ring(nside, i, &p); float v = in[p];
+        if (v == BAD_DATA) { out[i] = nan; continue; }
         
-        *(out+i) = v;
+        out[i] = v;
         
         if (v < minval) { minval = v; }
         if (v > maxval) { maxval = v; }
@@ -110,10 +110,10 @@ void raw2map_fdrn(const double *in, float *out, long nside, double *min, double 
     float minval = FLT_MAX, maxval = -FLT_MAX, nan = 1.0/0.0;
     
     for (long i = 0; i < 12*nside*nside; i++) {
-        long p; nest2ring(nside, i, &p); float v = *(in+p);
-        if (v == BAD_DATA) { *(out+i) = nan; continue; }; v = -v;
+        long p; nest2ring(nside, i, &p); float v = in[p];
+        if (v == BAD_DATA) { out[i] = nan; continue; }
         
-        *(out+i) = v;
+        v = -v; out[i] = v;
         
         if (v < minval) { minval = v; }
         if (v > maxval) { maxval = v; }
@@ -128,9 +128,9 @@ void raw2map_fdnp(const double *in, float *out, long nside, double *min, double 
     float minval = FLT_MAX, maxval = -FLT_MAX, nan = 1.0/0.0;
     
     for (long i = 0; i < 12*nside*nside; i++) {
-        float v = *(in+i); if (v == BAD_DATA) { *(out+i) = nan; continue; }
+        float v = in[i]; if (v == BAD_DATA) { out[i] = nan; continue; }
         
-        *(out+i) = v;
+        out[i] = v;
         
         if (v < minval) { minval = v; }
         if (v > maxval) { maxval = v; }
@@ -145,9 +145,9 @@ void raw2map_fdnn(const double *in, float *out, long nside, double *min, double 
     float minval = FLT_MAX, maxval = -FLT_MAX, nan = 1.0/0.0;
     
     for (long i = 0; i < 12*nside*nside; i++) {
-        float v = *(in+i); if (v == BAD_DATA) { *(out+i) = nan; continue; }; v = -v;
+        float v = in[i]; if (v == BAD_DATA) { out[i] = nan; continue; }
         
-        *(out+i) = v;
+        v = -v; out[i] = v;
         
         if (v < minval) { minval = v; }
         if (v > maxval) { maxval = v; }
