@@ -212,29 +212,30 @@ func typeset_header(_ header: UnsafeMutablePointer<CChar>, nkeys: Int32) -> Stri
 }
 
 // read BINTABLE content, returning data as raw byte arrays
-func read_bintable(_ fptr: UnsafeMutablePointer<fitsfile>?, nside: Int, nmaps: Int, nrows: Int, metadata: Metadata) -> (type: [Int32], data: [UnsafeMutableRawPointer])? {
-    let npix = 12*nside*nside
-    var status: Int32 = 0
+func read_bintable(_ fptr: UnsafeMutablePointer<fitsfile>?, npix: Int, nmaps: Int, nrows: Int, metadata: Metadata) -> (type: [Int32], data: [UnsafeMutableRawPointer])? {
+    var status: Int32 = 0, cleanup = true
+    
+    // determine optimal row chunk size (according to cfitsio)
+    var chunk = 0; ffgrsz(fptr, &chunk, &status); chunk = max(chunk,1)
+    guard (status == 0) else { return nil }
     
     // parse data layout for all columns & allocate data buffers
-    var format = [String](repeating: "", count: nmaps)
     var type = [Int32](repeating: 0, count: nmaps)
     var count = [Int](repeating: 0, count: nmaps)
     var width = [Int](repeating: 0, count: nmaps)
+    
     var data = [UnsafeMutableRawPointer](); data.reserveCapacity(nmaps)
+    defer { if (cleanup) { for p in data { p.deallocate() } } }
     
     for m in 0..<nmaps {
-        if let v = metadata[m]?[.format], case let .string(s) = v { format[m] = s }
-        format[m].withCString { s in let _ = ffbnfm(UnsafeMutablePointer(mutating: s), &type[m], &count[m], &width[m], &status) }
+        if let v = metadata[m]?[.format], case let .string(s) = v {
+            s.withCString { s in let _ = ffbnfm(UnsafeMutablePointer(mutating: s), &type[m], &count[m], &width[m], &status) }
+        }
         guard (status == 0 && count[m] > 0 && width[m] > 0) else { return nil }
         //if (count[m]*nrows != npix) { print("row count mismatch for column \(m+1)?") }
         
         data.append(UnsafeMutableRawPointer.allocate(byteCount: npix*width[m], alignment: 8))
     }
-    
-    // determine optimal row chunk size (according to cfitsio)
-    var chunk = 0; ffgrsz(fptr, &chunk, &status); chunk = max(chunk,1)
-    guard (status == 0) else { return nil }
     
     // read chunked column data into buffers
     var i = [Int](repeating: 0, count: nmaps)
@@ -251,7 +252,7 @@ func read_bintable(_ fptr: UnsafeMutablePointer<fitsfile>?, nside: Int, nmaps: I
     
     //if !(i.allSatisfy {$0 == npix}) { print("something went wrong during piecewise read?") }
     
-    return (type, data)
+    cleanup = false; return (type, data)
 }
 
 // ...
