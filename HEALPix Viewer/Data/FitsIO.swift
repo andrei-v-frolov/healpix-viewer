@@ -69,20 +69,20 @@ enum HpxCard: String, CaseIterable {
     case fields = "TFIELDS"
     
     // HEALPix required cards
-    case healpix = "PIXTYPE"
-    case indexing = "INDXSCHM"
-    case ordering = "ORDERING"
-    case nside = "NSIDE"
-    case firstpix = "FIRSTPIX"
-    case lastpix = "LASTPIX"
-    case baddata = "BAD_DATA"
-    case polar = "POLAR"
-    case polconv = "POLCCONV"
+    case healpix = "PIXTYPE"    // ABSOLUTELY needed (HEALPix format ID)
+    case indexing = "INDXSCHM"  // omitted in WMAP before 2012; fallback provided
+    case ordering = "ORDERING"  // ABSOLUTELY needed for correct decoding
+    case nside = "NSIDE"        // ABSOLUTELY needed for correct decoding
+    case firstpix = "FIRSTPIX"  // omitted in Planck Legacy Archive; made optional
+    case lastpix = "LASTPIX"    // omitted in Planck Legacy Archive; made optional
+    case baddata = "BAD_DATA"   // omitted in WMAP before 2012; fallback provided
+    case polar = "POLAR"        // omitted in Planck Legacy Archive; fallback provided
+    case polconv = "POLCCONV"   // present in Planck Legacy Archive; fallback provided
     
     // HEALPix recommended cards
-    case object = "OBJECT"
-    case coords = "COORDSYS"
-    case temptype = "TEMPTYPE"
+    case object = "OBJECT"      // checked if present
+    case coords = "COORDSYS"    // ignored for now
+    case temptype = "TEMPTYPE"  // ignored for now
     
     // my vector extensions
     case vector = "VECTOR"
@@ -91,11 +91,12 @@ enum HpxCard: String, CaseIterable {
     // collections
     static let required: [Self] = [.naxis, .naxis1, .naxis2, .fields,
                                    .healpix, .indexing, .ordering, .nside,
-                                   .firstpix, .lastpix, .baddata, .polar, .polconv]
-    static let recommended: [Self] = [.object, .coords, .temptype]
-    static let optional: [Self] = []
+                                   .baddata, .polar, .polconv]
+    static let optional: [Self] = [.firstpix, .lastpix]
     static let extended: [Self] = [.vector, .vframe]
-    
+    static let recommended: [Self] = [.object, .coords, .temptype]
+    static let strict: [Self] = required + optional
+
     // read card (returning a proper data type)
     func read(_ fptr: UnsafeMutablePointer<fitsfile>?) -> FitsType? {
         switch self {
