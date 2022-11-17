@@ -22,9 +22,11 @@ struct ContentView: View {
     @State private var title = "CMB Viewer"
     @State private var toolbar = ShowToolbar.none
     @State private var colorbar = false
+    @State private var infoview = false
     
     // map to be displayed
     @State private var map: Map? = nil
+    @State private var info: String? = nil
     
     // projection toolbar
     @State private var projection: Projection = .defaultValue
@@ -92,42 +94,53 @@ struct ContentView: View {
                 Text("Hello, world!")
             }
             GeometryReader { geometry in
-                VStack(spacing: 0) {
-                    if (toolbar == .projection) {
-                        ProjectionToolbar(projection: $projection, orientation: $orientation, spin: $spin)
+                ZStack {
+                    VStack(spacing: 0) {
+                        if (toolbar == .projection) {
+                            ProjectionToolbar(projection: $projection, orientation: $orientation, spin: $spin)
                             .onChange(of: orientation) {
                                 if ($0 != .free) {
                                     let (lat,lon,az) = $0.coords
                                     latitude = lat; longitude = lon; azimuth = az
                                 }
                             }
-                    }
-                    if (toolbar == .orientation) {
-                        OrientationToolbar(latitude: $latitude, longitude: $longitude, azimuth: $azimuth)
+                        }
+                        if (toolbar == .orientation) {
+                            OrientationToolbar(latitude: $latitude, longitude: $longitude, azimuth: $azimuth)
                             .onChange(of: latitude)  { value in orientation = .free }
                             .onChange(of: longitude) { value in orientation = .free }
                             .onChange(of: azimuth)   { value in orientation = .free }
+                        }
+                        if (toolbar == .color) {
+                            ColorToolbar(colorscheme: $colorscheme,
+                                         mincolor: $mincolor, maxcolor: $maxcolor,
+                                         nancolor: $nancolor, bgcolor: $bgcolor)
+                            .onChange(of: colors) { value in colorize(map) }
+                        }
+                        if (toolbar == .lighting) {
+                            LightingToolbar(lightingLat: $lightingLat, lightingLon: $lightingLon, lightingAmt: $lightingAmt)
+                        }
+                        MapView(map: $map, projection: $projection, magnification: $magnification, spin: $spin,
+                                latitude: $latitude, longitude: $longitude, azimuth: $azimuth, background: $bgcolor,
+                                lightingLat: $lightingLat, lightingLon: $lightingLon, lightingAmt: $lightingAmt)
+                        if (colorbar) {
+                            BarView(colorsheme: $colorscheme, background: $bgcolor)
+                                .frame(height: geometry.size.width/20)
+                            RangeToolbar(map: $map, modifier: $modifier,
+                                         datamin: $datamin, datamax: $datamax,
+                                         rangemin: $rangemin, rangemax: $rangemax)
+                            .onChange(of: range) { value in colorize(map) }
+                        }
                     }
-                    if (toolbar == .color) {
-                        ColorToolbar(colorscheme: $colorscheme,
-                                     mincolor: $mincolor, maxcolor: $maxcolor,
-                                     nancolor: $nancolor, bgcolor: $bgcolor)
-                        .onChange(of: colors) { value in colorize(map) }
+                }
+                if (infoview) {
+                    ScrollView {
+                        Text(info ?? "")
+                            .lineLimit(nil)
+                            .frame(width: geometry.size.width)
+                            .font(Font.system(size: 13).monospaced())
                     }
-                    if (toolbar == .lighting) {
-                        LightingToolbar(lightingLat: $lightingLat, lightingLon: $lightingLon, lightingAmt: $lightingAmt)
-                    }
-                    MapView(map: $map, projection: $projection, magnification: $magnification, spin: $spin,
-                            latitude: $latitude, longitude: $longitude, azimuth: $azimuth, background: $bgcolor,
-                            lightingLat: $lightingLat, lightingLon: $lightingLon, lightingAmt: $lightingAmt)
-                    if (colorbar) {
-                        BarView(colorsheme: $colorscheme, background: $bgcolor)
-                            .frame(height: geometry.size.width/20)
-                        RangeToolbar(map: $map, modifier: $modifier,
-                                     datamin: $datamin, datamax: $datamax,
-                                     rangemin: $rangemin, rangemax: $rangemax)
-                        .onChange(of: range) { value in colorize(map) }
-                    }
+                    .background(.thinMaterial)
                 }
             }
         }
@@ -136,7 +149,7 @@ struct ContentView: View {
             minHeight: 600, idealHeight: 800, maxHeight: .infinity
         )
         .toolbar(id: "mainToolbar") {
-            Toolbar(toolbar: $toolbar, colorbar: $colorbar, magnification: $magnification)
+            Toolbar(toolbar: $toolbar, colorbar: $colorbar, infoview: $infoview, magnification: $magnification, info: $info)
         }
         .navigationTitle(title)
         .task {
