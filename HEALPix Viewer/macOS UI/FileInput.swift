@@ -24,5 +24,5 @@ func showOpenPanel() -> URL? {
     panel.allowsOtherFileTypes = true
     
     let response = panel.runModal()
-    return response == .OK && (panel.url?.isFileURL ?? false) ? panel.url : nil
+    return (response == .OK) ? panel.url : nil
 }

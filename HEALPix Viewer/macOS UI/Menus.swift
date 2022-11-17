@@ -11,8 +11,13 @@ struct FileMenus: Commands {
     // menu commands
     var body: some Commands {
         CommandGroup(before: CommandGroupPlacement.newItem) {
-            Button(action: { print("try to open file...") }, label: { Text("Open File...") })
-                .keyboardShortcut("O", modifiers: [.command])
+            Button {
+                print("try to open file...")
+                if let url = showOpenPanel() { read_hpxfile(url: url) }
+            } label: {
+                Text("Open File...")
+            }
+            .keyboardShortcut("O", modifiers: [.command])
             Divider()
         }
     }

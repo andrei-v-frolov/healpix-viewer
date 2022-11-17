@@ -196,7 +196,7 @@ enum MapCard: String, CaseIterable {
     }
 }
 
-// ...
+// convenience types for cards and per-map metadata
 typealias Cards = [HpxCard: FitsType]
 typealias Metadata = [[MapCard: FitsType]?]
 
@@ -255,7 +255,7 @@ func read_bintable(_ fptr: UnsafeMutablePointer<fitsfile>?, npix: Int, nmaps: In
     cleanup = false; return (type, data)
 }
 
-// read raw full-sky map data and convert it into canonical format (NESTED float)
+// convert raw full-sky map data into canonical format (full-sky NESTED float)
 func raw2map_full(_ ptr: UnsafeMutableRawPointer, nside: Int, type: Int32, order: FitsType, flip: Bool) -> CpuMap? {
     let npix = 12*nside*nside; var cleanup = true, minval = 0.0, maxval = 0.0
     let output = UnsafeMutablePointer<Float>.allocate(capacity: npix)
@@ -289,8 +289,36 @@ func raw2map_full(_ ptr: UnsafeMutableRawPointer, nside: Int, type: Int32, order
     cleanup = false; return CpuMap(nside: nside, buffer: output, min: minval, max: maxval)
 }
 
-// ...
-func getsize_fits(file: String) {
+// structure encapsulating contents of HEALPix file
+struct HpxFile {
+    let url: URL
+    let name: String
+    
+    let nmaps: Int
+    let header: String
+    let card: Cards?
+    
+    let map: [Map]
+    let metadata: Metadata
+    let channel: [DataSource: Int]
+    
+    // map indexing
+    subscript(index: Int) -> Map { return map[index] }
+    subscript(data: DataSource) -> Map? {
+        if let c = channel[data] { return map[c] } else { return nil }
+    }
+    
+    // map data description
+    func description(_ index: Int) -> String {
+        if let t = metadata[index]?[.type], case let .string(s) = t { return s } else { return "Channel \(index)" }
+    }
+}
+
+// read entire contents of HEALPix file
+func read_hpxfile(url: URL) -> HpxFile? {
+    guard url.isFileURL else { return nil }
+    let file = url.path, name = url.lastPathComponent
+    
     var fptr: UnsafeMutablePointer<fitsfile>? = nil
     var header: UnsafeMutablePointer<CChar>? = nil
     var hdu: Int32 = 0, nkeys: Int32 = 0, status: Int32 = 0
@@ -303,59 +331,54 @@ func getsize_fits(file: String) {
     
     // open FITS file and move to first table HDU
     fftopn(&fptr, file, READONLY, &status)
-    guard (status == 0) else { return }
+    guard (status == 0) else { return nil }
     
     // check the number of the current HDU (should not be primary)
     ffghdn(fptr, &hdu)
-    guard (hdu > 1) else { return }
+    guard (hdu > 1) else { return nil }
     
     // check the type of the current HDU (should be BINARY_TBL)
     ffghdt(fptr, &hdu, &status)
-    guard (status == 0 && hdu == BINARY_TBL) else { return }
+    guard (status == 0 && hdu == BINARY_TBL) else { return nil }
     
     // read in the entire HDU header
     ffhdr2str(fptr, 0, nil, 0, &header, &nkeys, &status)
-    guard (status == 0), let header = header else { return }
+    guard (status == 0), let header = header else { return nil }
     
     // typeset and parse header
     let info = typeset_header(header, nkeys: nkeys)
-    guard let card = HpxCard.parse(fptr) else { return }
-    guard let order = card[.ordering] else { return }
+    guard let card = HpxCard.parse(fptr) else { return nil }
+    guard let order = card[.ordering] else { return nil }
     let iau = (card[.polar] == .bool(true)) && (card[.polconv] == .string("IAU"))
-    
-    print(info)
-    print(card)
     
     // find nmaps and nside values
     var nside = 0; if let v = card[.nside], case let .int(n) = v { nside = n }
     var nmaps = 0; if let v = card[.fields], case let .int(n) = v { nmaps = n }
     var nrows = 0; if let v = card[.naxis2], case let .int(n) = v { nrows = n }
-    guard nside > 0, nmaps > 0, nrows > 0 else { return }
+    guard nside > 0, nmaps > 0, nrows > 0 else { return nil }
     
     // process metadata for all maps
     var metadata = Metadata(); metadata.reserveCapacity(nmaps)
     for i in 1...nmaps { metadata.append(MapCard.parse(fptr, map: i)) }
-    
-    print(metadata)
     
     // maps contained in the file (we will own their UnsafeBuffers!)
     var map = [CpuMap](); map.reserveCapacity(nmaps)
     
     // full sky map (without pixel index)
     if card[.indexing] == .string("IMPLICIT") {
-        if let object = card[.object] { guard object == .string("FULLSKY") else { return } }
+        if let object = card[.object] { guard object == .string("FULLSKY") else { return nil } }
         
-        print("Full sky map")
+        print("Full sky map, nside = \(nside), nmaps = \(nmaps)")
         let npix = 12*nside*nside
         
         // read in raw HEALPix data (we own these UnsafeBuffers!)
-        guard let (type, data) = read_bintable(fptr, npix: npix, nmaps: nmaps, nrows: nrows, metadata: metadata) else { return }
+        guard let (type, data) = read_bintable(fptr, npix: npix, nmaps: nmaps, nrows: nrows, metadata: metadata) else { return nil }
         
         // convert to canonical map format
         for m in 0..<nmaps {
             let flip =  iau && (MapCard.type(metadata[m]?[.type]) == .u)
             
-            if let c = raw2map_full(data[m], nside: nside, type: type[m], order: order, flip: flip) { map.append(c) } else { for p in data { p.deallocate() }; return }
+            if let c = raw2map_full(data[m], nside: nside, type: type[m], order: order, flip: flip) { map.append(c) } else { for p in data { p.deallocate() }; return nil }
         }
         
         for p in data { p.deallocate() }
@@ -363,14 +386,14 @@ func getsize_fits(file: String) {
     else
     // partial sky map (first column contains pixel index)
     if card[.indexing] == .string("EXPLICIT") && nmaps > 1 {
-        if let object = card[.object] { guard object == .string("PARTIAL") else { return } }
+        if let object = card[.object] { guard object == .string("PARTIAL") else { return nil } }
         
         // check that the first column format is integer
         let idx = metadata.removeFirst(); nmaps -= 1
-        if let format = idx?[.format] { guard format == .string("J") || format == .string("K") else { return } }
+        if let format = idx?[.format] { guard format == .string("J") || format == .string("K") else { return nil } }
         
-        print("Partial sky map is not supported yet..."); return
-    } else { return }
+        print("Partial sky map is not supported yet..."); return nil
+    } else { return nil }
     
     // index named data channels
     var index = [DataSource: Int]()
@@ -379,5 +402,5 @@ func getsize_fits(file: String) {
         if let t = metadata[i]?[.type], let type = MapCard.type(t) { index[type] = i }
     }
     
-    print(index)
+    return HpxFile(url: url, name: name, nmaps: nmaps, header: info, card: card, map: map, metadata: metadata, channel: index)
 }
