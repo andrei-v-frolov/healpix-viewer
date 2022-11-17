@@ -191,8 +191,8 @@ enum MapCard: String, CaseIterable {
         }
     }
     
-    static func type(_ value: FitsType) -> DataSource? {
-        if case let .string(s) = value { return type(s) } else { return nil }
+    static func type(_ value: FitsType?) -> DataSource? {
+        if let v = value, case let .string(s) = v { return type(s) } else { return nil }
     }
 }
 
@@ -255,6 +255,40 @@ func read_bintable(_ fptr: UnsafeMutablePointer<fitsfile>?, npix: Int, nmaps: In
     cleanup = false; return (type, data)
 }
 
+// read raw full-sky map data and convert it into canonical format (NESTED float)
+func raw2map_full(_ ptr: UnsafeMutableRawPointer, nside: Int, type: Int32, order: FitsType, flip: Bool) -> CpuMap? {
+    let npix = 12*nside*nside; var cleanup = true, minval = 0.0, maxval = 0.0
+    let output = UnsafeMutablePointer<Float>.allocate(capacity: npix)
+    defer { if (cleanup) { output.deallocate() } }
+    
+    if type == TFLOAT, case let .string(value) = order {
+        let buffer = ptr.bindMemory(to: Float.self, capacity: npix)
+        
+        switch (value, flip) {
+            case ("RING",   false): raw2map_ffrp(buffer, output, nside, &minval, &maxval)
+            case ("RING",   true ): raw2map_ffrn(buffer, output, nside, &minval, &maxval)
+            case ("NESTED", false): raw2map_ffnp(buffer, output, nside, &minval, &maxval)
+            case ("NESTED", true ): raw2map_ffnn(buffer, output, nside, &minval, &maxval)
+            default: return nil
+        }
+    }
+    else
+    if type == TDOUBLE, case let .string(value) = order {
+        let buffer = ptr.bindMemory(to: Double.self, capacity: npix)
+        
+        switch (value, flip) {
+            case ("RING",   false): raw2map_fdrp(buffer, output, nside, &minval, &maxval)
+            case ("RING",   true ): raw2map_fdrn(buffer, output, nside, &minval, &maxval)
+            case ("NESTED", false): raw2map_fdnp(buffer, output, nside, &minval, &maxval)
+            case ("NESTED", true ): raw2map_fdnn(buffer, output, nside, &minval, &maxval)
+            default: return nil
+        }
+    }
+    else { return nil }
+    
+    cleanup = false; return CpuMap(nside: nside, buffer: output, min: minval, max: maxval)
+}
+
 // ...
 func getsize_fits(file: String) {
     var fptr: UnsafeMutablePointer<fitsfile>? = nil
@@ -286,6 +320,8 @@ func getsize_fits(file: String) {
     // typeset and parse header
     let info = typeset_header(header, nkeys: nkeys)
     guard let card = HpxCard.parse(fptr) else { return }
+    guard let order = card[.ordering] else { return }
+    let iau = (card[.polar] == .bool(true)) && (card[.polconv] == .string("IAU"))
     
     print(info)
     print(card)
@@ -302,15 +338,29 @@ func getsize_fits(file: String) {
     
     print(metadata)
     
+    // maps contained in the file (we will own their UnsafeBuffers!)
+    var map = [CpuMap](); map.reserveCapacity(nmaps)
+    
     // full sky map (without pixel index)
     if card[.indexing] == .string("IMPLICIT") {
         if let object = card[.object] { guard object == .string("FULLSKY") else { return } }
         
         print("Full sky map")
+        let npix = 12*nside*nside
         
-        guard let (type, data) = read_bintable(fptr, nside: nside, nmaps: nmaps, nrows: nrows, metadata: metadata) else { return }
+        // read in raw HEALPix data (we own these UnsafeBuffers!)
+        guard let (type, data) = read_bintable(fptr, npix: npix, nmaps: nmaps, nrows: nrows, metadata: metadata) else { return }
+        
+        // convert to canonical map format
+        for m in 0..<nmaps {
+            let flip =  iau && (MapCard.type(metadata[m]?[.type]) == .u)
+            
+            if let c = raw2map_full(data[m], nside: nside, type: type[m], order: order, flip: flip) { map.append(c) } else { for p in data { p.deallocate() }; return }
+        }
+        
+        for p in data { p.deallocate() }
     }
-    
+    else
     // partial sky map (first column contains pixel index)
     if card[.indexing] == .string("EXPLICIT") && nmaps > 1 {
         if let object = card[.object] { guard object == .string("PARTIAL") else { return } }
@@ -319,8 +369,8 @@ func getsize_fits(file: String) {
         let idx = metadata.removeFirst(); nmaps -= 1
         if let format = idx?[.format] { guard format == .string("J") || format == .string("K") else { return } }
         
-        print("Partial sky map")
-    }
+        print("Partial sky map is not supported yet..."); return
+    } else { return }
     
     // index named data channels
     var index = [DataSource: Int]()
