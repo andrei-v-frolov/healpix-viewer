@@ -177,6 +177,8 @@ enum MapCard: String, CaseIterable {
     
     // ID commonly used map types
     static func type(_ string: String) -> DataSource? {
+        for t in DataSource.allCases { if (string == t.rawValue) { return t } }
+        
         switch string {
             case "TEMPERATURE", "I_STOKES":     return .i
             case "Q_POLARISATION", "Q_STOKES":  return .q
