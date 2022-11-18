@@ -299,6 +299,7 @@ struct HpxFile {
     let card: Cards?
     
     let map: [Map]
+    let list: [MapData]
     let metadata: Metadata
     let channel: [DataSource: Int]
     
@@ -306,11 +307,6 @@ struct HpxFile {
     subscript(index: Int) -> Map { return map[index] }
     subscript(data: DataSource) -> Map? {
         if let c = channel[data] { return map[c] } else { return nil }
-    }
-    
-    // map data description
-    func description(_ index: Int) -> String {
-        if let t = metadata[index]?[.type], case let .string(s) = t { return s } else { return "Channel \(index)" }
     }
 }
 
@@ -363,6 +359,7 @@ func read_hpxfile(url: URL) -> HpxFile? {
     
     // maps contained in the file (we will own their UnsafeBuffers!)
     var map = [CpuMap](); map.reserveCapacity(nmaps)
+    var list = [MapData](); list.reserveCapacity(nmaps)
     
     // full sky map (without pixel index)
     if card[.indexing] == .string("IMPLICIT") {
@@ -398,9 +395,13 @@ func read_hpxfile(url: URL) -> HpxFile? {
     // index named data channels
     var index = [DataSource: Int]()
     
-    for i in 0..<nmaps {
-        if let t = metadata[i]?[.type], let type = MapCard.type(t) { index[type] = i }
+    for m in 0..<nmaps {
+        if let t = metadata[m]?[.type], let type = MapCard.type(t) { index[type] = m }
+        var desc = "CHANNEL \(m)"; if let t = metadata[m]?[.type], case let .string(s) = t { desc = s }
+        var unit = "UNKNOWN";      if let u = metadata[m]?[.unit], case let .string(s) = u { unit = s }
+        
+        list.append(MapData(id: UUID(), file: name, info: info, name: desc, unit: unit, channel: m, map: map[m]))
     }
     
-    return HpxFile(url: url, name: name, nmaps: nmaps, header: info, card: card, map: map, metadata: metadata, channel: index)
+    return HpxFile(url: url, name: name, nmaps: nmaps, header: info, card: card, map: map, list: list, metadata: metadata, channel: index)
 }

@@ -7,26 +7,25 @@
 
 import SwiftUI
 
-let lll = [
-    MapLink(file: "xxx.fits", name: "TEMPERATURE"),
-    MapLink(file: "xxx.fits", name: "POLARIZATION U"),
-    MapLink(file: "xxx.fits", name: "POLARIZATION Q"),
-]
-
-struct MapLink: Hashable, Identifiable {
-    let id = UUID()
+struct MapData: Identifiable {
+    let id: UUID
     let file: String
+    let info: String
     let name: String
+    let unit: String
+    let channel: Int
+    
+    let map: Map
 }
 
 struct NavigationRow: View {
-    var map: MapLink
+    var map: MapData
     
     var body: some View {
         HStack{
             VStack {
-                Text(map.file)
                 Text(map.name)
+                Text(map.file).font(.footnote)
             }
             Spacer()
         }
@@ -34,9 +33,10 @@ struct NavigationRow: View {
 }
 
 struct NavigationList: View {
+    @Binding var loaded: [MapData]
     @Binding var selected: UUID?
     
     var body: some View {
-        List(lll, selection: $selected) { map in NavigationRow(map: map) }
+        List(loaded, selection: $selected) { map in NavigationRow(map: map) }
     }
 }

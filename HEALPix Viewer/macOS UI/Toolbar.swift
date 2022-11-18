@@ -83,7 +83,8 @@ struct Toolbar: CustomizableToolbarContent {
             } label: {
                 Image(systemName: "info.circle")
             }
-            .help("Toggle Sidebar")
+            .help("HEALPix Header")
+            .disabled(info == nil)
         }
     }
     

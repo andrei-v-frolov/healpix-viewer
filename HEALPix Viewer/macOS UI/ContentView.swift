@@ -7,6 +7,9 @@
 
 import SwiftUI
 
+// asynchronous queue for user-initiated tasks
+let userTaskQueue = DispatchQueue.global(qos: .userInitiated)
+
 // number formatter common to most fields
 let TwoDigitNumber: NumberFormatter = {
     let format = NumberFormatter()
@@ -24,9 +27,13 @@ struct ContentView: View {
     @State private var colorbar = false
     @State private var infoview = false
     
-    // map to be displayed
+    // open files
     @State private var loading = false
+    @State private var file = [HpxFile]()
+    @State private var loaded = [MapData]()
     @State private var selected: UUID? = nil
+    
+    // map to be displayed
     @State private var map: Map? = nil
     @State private var info: String? = nil
     
@@ -89,7 +96,7 @@ struct ContentView: View {
     // view layout
     var body: some View {
         NavigationView {
-            NavigationList(selected: $selected)
+            NavigationList(loaded: $loaded, selected: $selected)
                 .frame(width: 160)
             GeometryReader { geometry in
                 ZStack {
@@ -157,6 +164,9 @@ struct ContentView: View {
             Toolbar(toolbar: $toolbar, colorbar: $colorbar, infoview: $infoview, magnification: $magnification, info: $info)
         }
         .navigationTitle(title)
+        .onChange(of: selected) { value in
+            if let map = loaded.first(where: { $0.id == value }) { info = map.info; load(map.map) }
+        }
         .task {
             colorbar = UserDefaults.standard.bool(forKey: showColorBarKey)
             projection = Projection.value
@@ -188,7 +198,23 @@ struct ContentView: View {
             }
         }
         .task {
-            load(test)
+            open()
+        }
+    }
+    
+    // flat list of maps in opened files
+    var opened: [MapData] { file.reduce([MapData]()) { $0 + $1.list } }
+    
+    // open file
+    func open() {
+        guard let url = showOpenPanel() else { return }
+        
+        userTaskQueue.async {
+            self.loading = true; defer { self.loading = false }
+            guard let file = read_hpxfile(url: url) else { return }
+            
+            self.file.append(file)
+            self.loaded = self.opened
         }
     }
     
