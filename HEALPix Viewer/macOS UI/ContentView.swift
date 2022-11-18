@@ -25,6 +25,7 @@ struct ContentView: View {
     @State private var infoview = false
     
     // map to be displayed
+    @State private var loading = false
     @State private var selected: UUID? = nil
     @State private var map: Map? = nil
     @State private var info: String? = nil
@@ -128,6 +129,13 @@ struct ContentView: View {
                                          rangemin: $rangemin, rangemax: $rangemax)
                             .onChange(of: range) { value in colorize(map) }
                         }
+                    }
+                    .sheet(isPresented: $loading) {
+                        VStack(spacing: 10) {
+                            ProgressView()
+                            Text("Loading file...")
+                        }
+                        .padding(20)
                     }
                 }
                 if (infoview) {
