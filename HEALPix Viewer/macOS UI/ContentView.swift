@@ -53,7 +53,7 @@ struct ContentView: View {
     @State private var colorscheme: ColorScheme = .defaultValue
     @State private var mincolor = Color.blue
     @State private var maxcolor = Color.red
-    @State private var nancolor = Color.green
+    @State private var nancolor = Color.gray
     @State private var bgcolor = Color.clear
     
     // range toolbar
