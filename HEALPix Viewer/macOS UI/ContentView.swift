@@ -25,6 +25,7 @@ struct ContentView: View {
     @State private var infoview = false
     
     // map to be displayed
+    @State private var selected: UUID? = nil
     @State private var map: Map? = nil
     @State private var info: String? = nil
     
@@ -87,12 +88,8 @@ struct ContentView: View {
     // view layout
     var body: some View {
         NavigationView {
-            VStack {
-                Image(systemName: "globe")
-                    .imageScale(.large)
-                    .foregroundColor(.accentColor)
-                Text("Hello, world!")
-            }
+            NavigationList(selected: $selected)
+                .frame(width: 160)
             GeometryReader { geometry in
                 ZStack {
                     VStack(spacing: 0) {
