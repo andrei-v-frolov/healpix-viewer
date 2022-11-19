@@ -8,7 +8,7 @@
 import SwiftUI
 
 // asynchronous queue for user-initiated tasks
-let userTaskQueue = DispatchQueue.global(qos: .userInitiated)
+let userTaskQueue = DispatchQueue(label: "serial", qos: .userInitiated)
 
 // number formatter common to most fields
 let TwoDigitNumber: NumberFormatter = {
@@ -209,8 +209,8 @@ struct ContentView: View {
     var opened: [MapData] { file.reduce([MapData]()) { $0 + $1.list } }
     
     // open file
-    func open() {
-        guard let url = showOpenPanel() else { return }
+    func open(_ url: URL? = nil) {
+        guard let url = url ?? showOpenPanel() else { return }
         
         userTaskQueue.async {
             self.loading = true; defer { self.loading = false }
