@@ -226,6 +226,10 @@ struct ContentView: View {
                 mincolor = colorscheme.colormap.min
                 maxcolor = colorscheme.colormap.max
             }
+            observers.add(key: DataSource.appStorage) {  old, new in
+                guard let raw = new as? String, let data = DataSource(rawValue: raw) else { return }
+                for map in loaded { if (MapCard.type(map.name) == data) { selected = map.id; break } }
+            }
         }
         .task {
             open()

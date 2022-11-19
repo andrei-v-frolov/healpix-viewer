@@ -81,7 +81,7 @@ struct DataMenus: Commands {
     var body: some Commands {
         CommandMenu("Data") {
             Group {
-                Picker("Source", selection: $dataSource) {
+                Picker("Default Source", selection: $dataSource) {
                     ForEach(DataSource.temperature, id: \.self) {
                         Text($0.rawValue).tag($0)
                     }
@@ -93,16 +93,7 @@ struct DataMenus: Commands {
                     ForEach(DataSource.vector, id: \.self) {
                         Text($0.rawValue).tag($0)
                     }
-                    Divider()
-                    ForEach(DataSource.special, id: \.self) {
-                        Text($0.rawValue).tag($0)
-                    }
-                    Divider()
-                    ForEach([DataSource.channel], id: \.self) {
-                        Text($0.rawValue).tag($0)
-                    }
                 }
-                .disabled(true)
                 Picker("Convolution", selection: $convolution) {
                     ForEach(DataConvolution.allCases, id: \.self) {
                         Text($0.rawValue).tag($0)

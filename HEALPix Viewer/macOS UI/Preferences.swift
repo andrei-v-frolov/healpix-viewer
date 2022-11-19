@@ -43,8 +43,6 @@ enum DataSource: String, CaseIterable, Preference {
     case x = "Vector Field X"
     case y = "Vector Field Y"
     case v = "Vector Field V"
-    case random = "Random Field"
-    case channel = "Channel"
     
     // default value
     static let appStorage = "dataSource"
@@ -54,7 +52,6 @@ enum DataSource: String, CaseIterable, Preference {
     static let temperature: [Self] = [.i]
     static let polarization: [Self] = [.q, .u, .e, .b, .p]
     static let vector: [Self] = [.x, .y, .v]
-    static let special: [Self] = [.random]
 }
 
 // line convolution direction to be applied
