@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import UniformTypeIdentifiers
 
 // asynchronous queue for user-initiated tasks
 let userTaskQueue = DispatchQueue(label: "serial", qos: .userInitiated)
@@ -32,6 +33,9 @@ struct ContentView: View {
     @State private var file = [HpxFile]()
     @State private var loaded = [MapData]()
     @State private var selected: UUID? = nil
+    
+    // drag and drop
+    @State private var targeted = false
     
     // map to be displayed
     @State private var map: Map? = nil
@@ -144,6 +148,13 @@ struct ContentView: View {
                         }
                         .padding(20)
                     }
+                    .sheet(isPresented: $targeted) {
+                        VStack(spacing: 10) {
+                            Image(systemName: "globe").font(.system(size: 64))
+                            Text("Drop HEALPix file to load it...")
+                        }
+                        .padding(20)
+                    }
                 }
                 if (infoview) {
                     ScrollView {
@@ -169,6 +180,22 @@ struct ContentView: View {
                 info = map.info; load(map.map)
                 title = "\(map.name)[\(map.file)]"
             }
+        }
+        .onDrop(of: [UTType.fileURL], isTargeted: $targeted) { provider in
+            guard let type = UTType.healpix.tags[UTTagClass.filenameExtension] else { return false }
+            
+            var dispatched = false
+            
+            for p in provider {
+                p.loadObject(ofClass: NSURL.self) { object, error in
+                    guard let url = object as? URL? else { return }
+                    guard let ext = url?.pathExtension.lowercased(), type.contains(ext) else { return }
+                    
+                    open(url); dispatched = true
+                }
+            }
+            
+            return dispatched
         }
         .task {
             colorbar = UserDefaults.standard.bool(forKey: showColorBarKey)
