@@ -165,7 +165,10 @@ struct ContentView: View {
         }
         .navigationTitle(title)
         .onChange(of: selected) { value in
-            if let map = loaded.first(where: { $0.id == value }) { info = map.info; load(map.map) }
+            if let map = loaded.first(where: { $0.id == value }) {
+                info = map.info; load(map.map)
+                title = "\(map.name)[\(map.file)]"
+            }
         }
         .task {
             colorbar = UserDefaults.standard.bool(forKey: showColorBarKey)
@@ -215,6 +218,10 @@ struct ContentView: View {
             
             self.file.append(file)
             self.loaded = self.opened
+            
+            for map in file.list {
+                if (MapCard.type(map.name) == DataSource.value) { self.selected = map.id; break }
+            }
         }
     }
     
