@@ -225,18 +225,22 @@ struct ContentView: View {
         }
         .task {
             observers.add(key: showColorBarKey) { old, new in
+                guard (window()?.isKeyWindow == true) else { return }
                 guard let value = new as? Bool else { return }
                 withAnimation { colorbar = value }
             }
             observers.add(key: Projection.appStorage) { old, new in
+                guard (window()?.isKeyWindow == true) else { return }
                 guard let raw = new as? String, let mode = Projection(rawValue: raw) else { return }
                 withAnimation { toolbar = .projection }; projection = mode
             }
             observers.add(key: Orientation.appStorage) { old, new in
+                guard (window()?.isKeyWindow == true) else { return }
                 guard let raw = new as? String, let mode = Orientation(rawValue: raw) else { return }
                 withAnimation { toolbar = (mode == .free) ? .orientation : .projection }; orientation = mode
             }
             observers.add(key: ColorScheme.appStorage) { old, new in
+                guard (window()?.isKeyWindow == true) else { return }
                 guard let raw = new as? String, let mode = ColorScheme(rawValue: raw) else { return }
                 withAnimation { toolbar = .color }
                 
@@ -245,6 +249,7 @@ struct ContentView: View {
                 maxcolor = colorscheme.colormap.max
             }
             observers.add(key: DataSource.appStorage) {  old, new in
+                guard (window()?.isKeyWindow == true) else { return }
                 guard let raw = new as? String, let data = DataSource(rawValue: raw) else { return }
                 for map in loaded { if (MapCard.type(map.name) == data) { selected = map.id; break } }
             }
