@@ -17,6 +17,8 @@ struct FileMenus: Commands {
         CommandGroup(before: CommandGroupPlacement.newItem) {
             Button { askToOpen = true } label: { Text("Open File...") }
                 .keyboardShortcut("O", modifiers: [.command])
+            Button { askToSave = true } label: { Text("Export To...") }
+                .keyboardShortcut("S", modifiers: [.command])
             Divider()
         }
     }

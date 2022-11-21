@@ -27,3 +27,17 @@ func showOpenPanel() -> URL? {
     let response = panel.runModal()
     return (response == .OK) ? panel.url : nil
 }
+
+// show modal Save File panel
+func showSavePanel() -> URL? {
+    let panel = NSSavePanel()
+    
+    panel.canCreateDirectories = true
+    panel.isExtensionHidden = false
+    
+    panel.allowedContentTypes = [UTType.png]
+    panel.allowsOtherFileTypes = true
+    
+    let response = panel.runModal()
+    return (response == .OK) ? panel.url : nil
+}
