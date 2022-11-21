@@ -26,10 +26,13 @@ struct MapView: NSViewRepresentable {
     @Binding var lightingLon: Double
     @Binding var lightingAmt: Double
     
+    @Binding var window: Window
+    
     typealias NSViewType = ProjectedView
     var view = ProjectedView()
     
     func makeNSView(context: Self.Context) -> Self.NSViewType {
+        DispatchQueue.main.async { window = Window { return self.view.window } }
         view.awakeFromNib(); return view
     }
     

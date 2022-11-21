@@ -11,11 +11,15 @@ import SwiftUI
 struct HEALPix_ViewerApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) var delegate
     
+    // variables signalling action
+    @State private var askToOpen = false
+    @State private var askToSave = false
+    
     var body: some Scene {
         WindowGroup {
-            ContentView()
+            ContentView(askToOpen: $askToOpen, askToSave: $askToSave)
         } .commands {
-            FileMenus()
+            FileMenus(askToOpen: $askToOpen, askToSave: $askToSave)
             ViewMenus()
             DataMenus()
         }
@@ -34,7 +38,7 @@ struct HEALPix_ViewerApp: App {
 }
 
 // AppDelegate handles lifecycle events
-class AppDelegate: NSObject, NSApplicationDelegate {
+class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
     func applicationWillFinishLaunching(_ notification: Notification) {
         NSApp.appearance = Appearance.value.appearance
     }

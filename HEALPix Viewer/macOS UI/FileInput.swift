@@ -12,6 +12,7 @@ extension UTType {
     static var healpix: UTType { UTType(exportedAs: "public.data.fits.healpix") }
 }
 
+// show modal Open File panel
 func showOpenPanel() -> URL? {
     let panel = NSOpenPanel()
     

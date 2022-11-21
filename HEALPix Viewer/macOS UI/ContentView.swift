@@ -21,6 +21,12 @@ let TwoDigitNumber: NumberFormatter = {
     return format
 }()
 
+// callback wrapper to determine view window
+struct Window {
+    let callback: () -> NSWindow?
+    func callAsFunction() -> NSWindow? { return callback() }
+}
+
 // main window view
 struct ContentView: View {
     @State private var title = "CMB Viewer"
@@ -73,6 +79,9 @@ struct ContentView: View {
     @State private var lightingLon: Double = -45.0
     @State private var lightingAmt: Double = 30.0
     
+    // window associated with the view
+    @State private var window: Window = Window { return nil }
+    
     // color mapper
     private let mapper = ColorMapper()
     
@@ -93,6 +102,10 @@ struct ContentView: View {
     }
     
     private var range: Bounds { return Bounds(min: rangemin, max: rangemax) }
+    
+    // variables signalling action
+    @Binding var askToOpen: Bool
+    @Binding var askToSave: Bool
     
     // registered observers binding to application state
     var observers = Observers()
@@ -131,7 +144,7 @@ struct ContentView: View {
                         }
                         MapView(map: $map, projection: $projection, magnification: $magnification, spin: $spin,
                                 latitude: $latitude, longitude: $longitude, azimuth: $azimuth, background: $bgcolor,
-                                lightingLat: $lightingLat, lightingLon: $lightingLon, lightingAmt: $lightingAmt)
+                                lightingLat: $lightingLat, lightingLon: $lightingLon, lightingAmt: $lightingAmt, window: $window)
                         if (colorbar) {
                             BarView(colorsheme: $colorscheme, background: $bgcolor)
                                 .frame(height: geometry.size.width/20)
@@ -179,6 +192,11 @@ struct ContentView: View {
             if let map = loaded.first(where: { $0.id == value }) {
                 info = map.info; load(map.map)
                 title = "\(map.name)[\(map.file)]"
+            }
+        }
+        .onChange(of: askToOpen) { value in
+            if (window()?.isKeyWindow == true && value) {
+                askToOpen = false; DispatchQueue.main.async { self.open() }
             }
         }
         .onDrop(of: [UTType.fileURL], isTargeted: $targeted) { provider in
@@ -230,9 +248,6 @@ struct ContentView: View {
                 guard let raw = new as? String, let data = DataSource(rawValue: raw) else { return }
                 for map in loaded { if (MapCard.type(map.name) == data) { selected = map.id; break } }
             }
-        }
-        .task {
-            open()
         }
     }
     

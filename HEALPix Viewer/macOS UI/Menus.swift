@@ -8,16 +8,15 @@
 import SwiftUI
 
 struct FileMenus: Commands {
+    // variables signalling action
+    @Binding var askToOpen: Bool
+    @Binding var askToSave: Bool
+    
     // menu commands
     var body: some Commands {
         CommandGroup(before: CommandGroupPlacement.newItem) {
-            Button {
-                print("try to open file...")
-                if let url = showOpenPanel() { read_hpxfile(url: url) }
-            } label: {
-                Text("Open File...")
-            }
-            .keyboardShortcut("O", modifiers: [.command])
+            Button { askToOpen = true } label: { Text("Open File...") }
+                .keyboardShortcut("O", modifiers: [.command])
             Divider()
         }
     }
