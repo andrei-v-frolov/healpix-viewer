@@ -39,6 +39,20 @@ func HPXTexture(nside: Int) -> MTLTexture {
     return texture
 }
 
+// PNG image texture for export
+func PNGTexture(width: Int, height: Int) -> MTLTexture {
+    // texture format
+    let desc = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: MTLPixelFormat.rgba8Unorm, width: width, height: height, mipmapped: false)
+    desc.usage = [.shaderWrite, .shaderRead]
+    
+    // initialize compute pipeline
+    guard let device = MTLCreateSystemDefaultDevice(),
+          let texture = device.makeTexture(descriptor: desc)
+          else { fatalError("Metal Framework could not be initalized") }
+    
+    return texture
+}
+
 // HEALPix map representation, based on Swift array
 final class HpxMap: Map {
     let nside: Int

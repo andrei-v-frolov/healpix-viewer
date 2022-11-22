@@ -39,7 +39,7 @@ struct MapView: NSViewRepresentable {
     func updateNSView(_ view: Self.NSViewType, context: Self.Context) {
         let radian = Double.pi/180.0
         let rotation = ang2rot(latitude*radian, longitude*radian, azimuth*radian), w = rot2gen(rotation)
-        let lighting = ang2vec((90.0-lightingLat)*radian, lightingLon*radian)
+        let lightsrc = float4(ang2vec((90.0-lightingLat)*radian, lightingLon*radian), Float(lightingAmt/100.0))
         
         view.map = map
         view.projection = projection
@@ -52,7 +52,7 @@ struct MapView: NSViewRepresentable {
         }
         
         view.background = background.components
-        view.lighting = float4(lighting, Float(lightingAmt/100.0))
+        view.lightsource = lightsrc
         
         view.draw(view.bounds)
     }
@@ -84,16 +84,21 @@ class ProjectedView: MTKView {
     var spin = false
     
     // MARK: arguments to shader
-    var transform: float3x2 {
-        let (x,y) = projection.extent, w = drawableSize.width, h = drawableSize.height
-        let s = 2.0 * (1.0+padding) * max(x/w, y/h)/exp2(magnification), dx = -s*w/2, dy = s*h/2
+    func transform(width: Double? = nil, height: Double? = nil, magnification: Double? = nil, padding: Double? = nil) -> float3x2 {
+        let (x,y) = projection.extent
+        let w = width ?? drawableSize.width, h = height ?? drawableSize.height
+        let m = magnification ?? self.magnification, p = padding ?? self.padding
+        let s = 2.0 * (1.0+p) * max(x/w, y/h)/exp2(m), dx = -s*w/2, dy = s*h/2
         
         return simd.float3x2(float2(Float(s), 0.0), float2(0.0, -Float(s)), float2(Float(dx), Float(dy)))
     }
     
     var rotation = matrix_identity_float3x3
     var background = float4(0.0)
-    var lighting = float4(0.0)
+    var lightsource = float4(0.0)
+    
+    // if lighting effects are enabled, pass lighting to the shader
+    var lighting: float4 { UserDefaults.standard.bool(forKey: lightingKey) ? lightsource : float4(0.0) }
     
     // MARK: solid body dynamics
     var w = float3.zero
@@ -145,32 +150,51 @@ class ProjectedView: MTKView {
     // MARK: render image in Metal view
     override func draw(_ rect: CGRect) {
         // check that we have a draw destination
-        guard currentRenderPassDescriptor != nil, let shader = shaders[projection], let drawable = currentDrawable else { return }
+        guard currentRenderPassDescriptor != nil, let drawable = currentDrawable else { return }
         
         // if spinning, advance the viewpoint towards target view
         if (spin) { step6(1.0/Double(preferredFramesPerSecond)); rotation = gen2rot(w) }
         
-        // if lighting effects are enabled, pass lighting to the shader
-        let lighting = UserDefaults.standard.bool(forKey: lightingKey) ? self.lighting : float4(0.0)
+        // initialize compute command buffer
+        guard let command = queue.makeCommandBuffer() else { return }
+        
+        // encode render command to drawable
+        encode(command, to: drawable.texture)
+        command.present(drawable)
+        command.commit()
+    }
+    
+    // MARK: encode render to command buffer
+    func encode(_ command: MTLCommandBuffer, to texture: MTLTexture,
+                transform: float3x2? = nil, rotation: float3x3? = nil,
+                background: float4? = nil, lighting: float4? = nil) {
+        guard let shader = shaders[projection] else { return }
         
         // load arguments to be passed to kernel
-        buffers[0].contents().storeBytes(of: transform, as: float3x2.self)
-        buffers[1].contents().storeBytes(of: rotation, as: float3x3.self)
-        buffers[2].contents().storeBytes(of: background, as: float4.self)
-        buffers[3].contents().storeBytes(of: lighting, as: float4.self)
+        buffers[0].contents().storeBytes(of: transform ?? self.transform(), as: float3x2.self)
+        buffers[1].contents().storeBytes(of: rotation ?? self.rotation, as: float3x3.self)
+        buffers[2].contents().storeBytes(of: background ?? self.background, as: float4.self)
+        buffers[3].contents().storeBytes(of: lighting ?? self.lighting, as: float4.self)
+        
+        // render map if available
+        if let map = map {
+            shader.data.encode(command: command, buffers: buffers, textures: [map.texture, texture])
+        } else {
+            shader.grid.encode(command: command, buffers: buffers, textures: [texture])
+        }
+    }
+    
+    // ...
+    func render(to texture: MTLTexture) {
+        let transform = transform(width: Double(texture.width), height: Double(texture.height), padding: 0.0)
         
         // initialize compute command buffer
         guard let command = queue.makeCommandBuffer() else { return }
         
-        // render map if available
-        if let map = map {
-            shader.data.encode(command: command, buffers: buffers, textures: [map.texture, drawable.texture])
-        } else {
-            shader.grid.encode(command: command, buffers: buffers, textures: [drawable.texture])
-        }
-        
-        command.present(drawable)
-        command.commit()
+        // encode render command
+        encode(command, to: texture, transform: transform)
+        command.commit(); command.waitUntilCompleted()
+    }
     }
 }
 
