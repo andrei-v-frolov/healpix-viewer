@@ -1,5 +1,5 @@
 //
-//  FileInput.swift
+//  FileIO.swift
 //  HEALPix Viewer
 //
 //  Created by Andrei Frolov on 2022-11-15.
