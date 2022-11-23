@@ -7,18 +7,6 @@
 
 import SwiftUI
 
-// number formatter common to most fields
-let SixDigitsScientific: NumberFormatter = {
-    let format = NumberFormatter()
-    
-    format.numberStyle = .scientific
-    format.usesSignificantDigits = true
-    format.minimumSignificantDigits = 6
-    format.maximumSignificantDigits = 6
-    
-    return format
-}()
-
 struct RangeView: View {
     var body: some View {
         Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)

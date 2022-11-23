@@ -11,16 +11,6 @@ import UniformTypeIdentifiers
 // asynchronous queue for user-initiated tasks
 let userTaskQueue = DispatchQueue(label: "serial", qos: .userInitiated)
 
-// number formatter common to most fields
-let TwoDigitNumber: NumberFormatter = {
-    let format = NumberFormatter()
-    
-    format.minimumFractionDigits = 2
-    format.maximumFractionDigits = 2
-    
-    return format
-}()
-
 // callback wrapper to determine view window
 struct Window {
     let callback: () -> NSWindow?
