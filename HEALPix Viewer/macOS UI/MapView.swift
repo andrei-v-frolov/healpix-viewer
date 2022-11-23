@@ -87,16 +87,18 @@ class ProjectedView: MTKView {
     var padding = 0.1
     var spin = false
     
-    // MARK: arguments to shader
-    func transform(width: Double? = nil, height: Double? = nil, magnification: Double? = nil, padding: Double? = nil) -> float3x2 {
+    // MARK: affine tranform mapping screen to projection plane
+    func transform(width: Double? = nil, height: Double? = nil, magnification: Double? = nil, padding: Double? = nil, anchor: Anchor = .c) -> float3x2 {
         let (x,y) = projection.extent
         let w = width ?? drawableSize.width, h = height ?? drawableSize.height
         let m = magnification ?? self.magnification, p = padding ?? self.padding
-        let s = 2.0 * (1.0+p) * max(x/w, y/h)/exp2(m), dx = -s*w/2, dy = s*h/2
+        let s = 2.0 * (1.0+p) * max(x/w, y/h)/exp2(m), x0 = -s*w/2, y0 = s*h/2
+        let dx = x0 + anchor.halign*(x0+x), dy = y0 + anchor.valign*(y0-y)
         
         return simd.float3x2(float2(Float(s), 0.0), float2(0.0, -Float(s)), float2(Float(dx), Float(dy)))
     }
     
+    // MARK: arguments to shader
     var rotation = matrix_identity_float3x3
     var background = float4(0.0)
     var lightsource = float4(0.0)
@@ -189,8 +191,8 @@ class ProjectedView: MTKView {
     }
     
     // MARK: render image to off-screen texture
-    func render(to texture: MTLTexture) {
-        let transform = transform(width: Double(texture.width), height: Double(texture.height), padding: 0.0)
+    func render(to texture: MTLTexture, anchor: Anchor = .c) {
+        let transform = transform(width: Double(texture.width), height: Double(texture.height), padding: 0.0, anchor: anchor)
         
         // initialize compute command buffer
         guard let command = queue.makeCommandBuffer() else { return }
@@ -201,9 +203,9 @@ class ProjectedView: MTKView {
     }
     
     // MARK: create map image of specified size
-    func image(width w: Int, height h: Int) -> MTLTexture {
+    func image(width w: Int, height h: Int, anchor: Anchor = .c) -> MTLTexture {
         let texture = PNGTexture(width: w, height: h)
-        render(to: texture); return texture
+        render(to: texture, anchor: anchor); return texture
     }
 }
 

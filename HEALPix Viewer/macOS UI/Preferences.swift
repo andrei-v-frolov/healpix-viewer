@@ -88,6 +88,10 @@ enum Projection: String, CaseIterable, Preference {
             default:         return (1,1)
         }
     }
+    
+    // recommended aspect ratio
+    func height(width: Double) -> Double { let (x,y) = extent; return y*width/x }
+    func width(height: Double) -> Double { let (x,y) = extent; return x*height/y }
 }
 
 // projection orientation lock
@@ -186,6 +190,16 @@ enum BoundsModifier: String, CaseIterable, Preference {
     // default value
     static let appStorage = "boundsModifier"
     static let defaultValue: Self = .full
+}
+
+// alignment tags
+enum Anchor: Int, CaseIterable {
+    case nw = 0b0000, n = 0b0001, ne = 0b0010
+    case  w = 0b0100, c = 0b0101,  e = 0b0110
+    case sw = 0b1000, s = 0b1001, se = 0b1010
+    
+    var halign: Double { Double((rawValue & 0b0011) - 1) }
+    var valign: Double { Double((rawValue & 0b1100) >> 2 - 1) }
 }
 
 // encapsulates @AppStorage preference properties
