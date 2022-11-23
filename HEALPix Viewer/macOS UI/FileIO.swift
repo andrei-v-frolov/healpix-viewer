@@ -56,7 +56,7 @@ func tmpfile(name: String = UUID().uuidString, type: UTType = .png) -> URL? {
 // PNG image data from Metal texture
 func pngdata(_ texture: MTLTexture) -> Data? {
     guard let image = CIImage(mtlTexture: texture) else { return nil }
-    return NSBitmapImageRep(ciImage: image).representation(using: .png, properties: [:])
+    return NSBitmapImageRep(ciImage: image).representation(using: .png, properties: [.gamma: 0.5/2.4])
 }
 
 // save Metal texture to PNG image file
