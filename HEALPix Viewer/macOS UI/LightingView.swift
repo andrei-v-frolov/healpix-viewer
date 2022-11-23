@@ -22,23 +22,20 @@ struct LightingToolbar: View {
     
     var body: some View {
         HStack {
-            Slider(value: $lightingLat, in: -90.0...90.0) { Text("Lat:") }.frame(width: 160)
-                .onChange(of: lightingLat) { value in focus = false }
+            Slider(value: $lightingLat, in: -90.0...90.0) { Text("Lat:") } onEditingChanged: { editing in focus = false }
+                .frame(width: 160)
             TextField("Latitude", value: $lightingLat, formatter: TwoDigitNumber)
-                .frame(width: 55).multilineTextAlignment(.trailing)
-                .focused($focus)
+                .frame(width: 55).multilineTextAlignment(.trailing).focused($focus)
             Spacer().frame(width: 30)
-            Slider(value: $lightingLon, in: -180.0...180.0) { Text("Lon:") }.frame(width: 160)
-                .onChange(of: lightingLon) { value in focus = false }
+            Slider(value: $lightingLon, in: -180.0...180.0) { Text("Lon:") } onEditingChanged: { editing in focus = false }
+                .frame(width: 160)
             TextField("Longitude", value: $lightingLon, formatter: TwoDigitNumber)
-                .frame(width: 55).multilineTextAlignment(.trailing)
-                .focused($focus)
+                .frame(width: 55).multilineTextAlignment(.trailing).focused($focus)
             Spacer().frame(width: 30)
-            Slider(value: $lightingAmt, in: 0.0...100.0) { Text("%:") }.frame(width: 160)
-                .onChange(of: lightingAmt) { value in focus = false }
+            Slider(value: $lightingAmt, in: 0.0...100.0) { Text("%:") } onEditingChanged: { editing in focus = false }
+                .frame(width: 160)
             TextField("Amount", value: $lightingAmt, formatter: TwoDigitNumber)
-                .frame(width: 55).multilineTextAlignment(.trailing)
-                .focused($focus)
+                .frame(width: 55).multilineTextAlignment(.trailing).focused($focus)
         }
         .padding(.top, 11)
         .padding(.bottom, 10)

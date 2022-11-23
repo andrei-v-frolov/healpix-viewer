@@ -22,23 +22,20 @@ struct OrientationToolbar: View {
     
     var body: some View {
         HStack {
-            Slider(value: $latitude, in: -90.0...90.0) { Text("Lat:") }.frame(width: 160)
-                .onChange(of: latitude) { value in focus = false }
+            Slider(value: $latitude, in: -90.0...90.0) { Text("Lat:") } onEditingChanged: { editing in focus = false }
+                .frame(width: 160)
             TextField("Latitude", value: $latitude, formatter: TwoDigitNumber)
-                .frame(width: 55).multilineTextAlignment(.trailing)
-                .focused($focus)
+                .frame(width: 55).multilineTextAlignment(.trailing).focused($focus)
             Spacer().frame(width: 30)
-            Slider(value: $longitude, in: -180.0...180.0) { Text("Lon:") }.frame(width: 160)
-                .onChange(of: longitude) { value in focus = false }
+            Slider(value: $longitude, in: -180.0...180.0) { Text("Lon:") } onEditingChanged: { editing in focus = false }
+                .frame(width: 160)
             TextField("Longitude", value: $longitude, formatter: TwoDigitNumber)
-                .frame(width: 55).multilineTextAlignment(.trailing)
-                .focused($focus)
+                .frame(width: 55).multilineTextAlignment(.trailing).focused($focus)
             Spacer().frame(width: 30)
-            Slider(value: $azimuth, in: -180.0...180.0) { Text("Az:") }.frame(width: 160)
-                .onChange(of: azimuth) { value in focus = false }
+            Slider(value: $azimuth, in: -180.0...180.0) { Text("Az:") } onEditingChanged: { editing in focus = false }
+                .frame(width: 160)
             TextField("Azimuth", value: $azimuth, formatter: TwoDigitNumber)
-                .frame(width: 55).multilineTextAlignment(.trailing)
-                .focused($focus)
+                .frame(width: 55).multilineTextAlignment(.trailing).focused($focus)
         }
         .padding(.top, 11)
         .padding(.bottom, 10)
