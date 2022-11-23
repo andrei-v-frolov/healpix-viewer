@@ -27,6 +27,12 @@ struct Window {
     func callAsFunction() -> NSWindow? { return callback() }
 }
 
+// callback wrapper to render off-screen texture
+struct Texture {
+    let callback: (Int, Int) -> MTLTexture?
+    func callAsFunction(width w: Int, height h: Int) -> MTLTexture? { return callback(w, h) }
+}
+
 // main window view
 struct ContentView: View {
     @State private var title = "CMB Viewer"
@@ -81,6 +87,7 @@ struct ContentView: View {
     
     // window associated with the view
     @State private var window: Window = Window { return nil }
+    @State private var mapImage: Texture = Texture { _,_ in return nil }
     
     // color mapper
     private let mapper = ColorMapper()
@@ -144,7 +151,8 @@ struct ContentView: View {
                         }
                         MapView(map: $map, projection: $projection, magnification: $magnification, spin: $spin,
                                 latitude: $latitude, longitude: $longitude, azimuth: $azimuth, background: $bgcolor,
-                                lightingLat: $lightingLat, lightingLon: $lightingLon, lightingAmt: $lightingAmt, window: $window)
+                                lightingLat: $lightingLat, lightingLon: $lightingLon, lightingAmt: $lightingAmt,
+                                window: $window, image: $mapImage)
                         if (colorbar) {
                             BarView(colorsheme: $colorscheme, background: $bgcolor)
                                 .frame(height: geometry.size.width/20)

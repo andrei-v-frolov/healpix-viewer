@@ -27,12 +27,16 @@ struct MapView: NSViewRepresentable {
     @Binding var lightingAmt: Double
     
     @Binding var window: Window
+    @Binding var image: Texture
     
     typealias NSViewType = ProjectedView
     var view = ProjectedView()
     
     func makeNSView(context: Self.Context) -> Self.NSViewType {
-        DispatchQueue.main.async { window = Window { return self.view.window } }
+        DispatchQueue.main.async {
+            window = Window { return self.view.window }
+            image = Texture { w,h in return self.view.image(width: w, height: h) }
+        }
         view.awakeFromNib(); return view
     }
     
@@ -184,7 +188,7 @@ class ProjectedView: MTKView {
         }
     }
     
-    // ...
+    // MARK: render image to off-screen texture
     func render(to texture: MTLTexture) {
         let transform = transform(width: Double(texture.width), height: Double(texture.height), padding: 0.0)
         
@@ -195,6 +199,11 @@ class ProjectedView: MTKView {
         encode(command, to: texture, transform: transform)
         command.commit(); command.waitUntilCompleted()
     }
+    
+    // MARK: create map image of specified size
+    func image(width w: Int, height h: Int) -> MTLTexture {
+        let texture = PNGTexture(width: w, height: h)
+        render(to: texture); return texture
     }
 }
 

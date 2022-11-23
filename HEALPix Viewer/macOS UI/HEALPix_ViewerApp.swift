@@ -42,6 +42,9 @@ class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
     func applicationWillFinishLaunching(_ notification: Notification) {
         NSApp.appearance = Appearance.value.appearance
     }
+    func applicationWillTerminate(_ notification: Notification) {
+        for url in tmpfiles { try? FileManager.default.removeItem(at: url) }
+    }
 }
 
 // observer for UserDefaults changes
