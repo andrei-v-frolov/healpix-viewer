@@ -36,6 +36,9 @@ struct ContentView: View {
     @State private var loaded = [MapData]()
     @State private var selected: UUID? = nil
     
+    // save images
+    @State private var saving = false
+    
     // drag and drop
     @State private var targeted = false
     
@@ -159,6 +162,19 @@ struct ContentView: View {
                         }
                         .padding(20)
                     }
+                    .sheet(isPresented: $saving) {
+                        VStack(spacing: 0) {
+                            Text("Export map as PNG image...").font(.largeTitle).padding(20)
+                            Divider()
+                            ExportView().padding(20)
+                            Divider()
+                            HStack {
+                                Button { saving = false } label: { Text("Cancel") }
+                                Button { saving = false } label: { Text("Export") }
+                            }
+                            .padding(10)
+                        }
+                    }
                     .sheet(isPresented: $targeted) {
                         VStack(spacing: 10) {
                             Image(systemName: "globe").font(.system(size: 64))
@@ -195,6 +211,11 @@ struct ContentView: View {
         .onChange(of: askToOpen) { value in
             if (window()?.isKeyWindow == true && value) {
                 askToOpen = false; DispatchQueue.main.async { self.open() }
+            }
+        }
+        .onChange(of: askToSave) { value in
+            if (window()?.isKeyWindow == true && value) {
+                askToSave = false; DispatchQueue.main.async { self.save() }
             }
         }
         .onDrop(of: [UTType.fileURL], isTargeted: $targeted) { provider in
@@ -292,5 +313,11 @@ struct ContentView: View {
         mapper.colorize(map: map, colormap: colorscheme.colormap,
                         mincolor: mincolor, maxcolor: maxcolor, nancolor: nancolor,
                         minvalue: rangemin, maxvalue: rangemax)
+    }
+    
+    // ...
+    func save(_ url: URL? = nil) {
+        print("Saving file as...")
+        saving = true
     }
 }
