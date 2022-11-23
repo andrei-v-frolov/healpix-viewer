@@ -171,7 +171,7 @@ enum DataTransform: String, CaseIterable, Preference {
 }
 
 // data bounds to be mapped to color bar
-enum DataBounds: String, CaseIterable {
+enum DataBounds: String, CaseIterable, Preference {
     case values = "Values"
     case percentile = "Percentile"
     
