@@ -7,12 +7,6 @@
 
 import SwiftUI
 
-struct OrientationView: View {
-    var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
-    }
-}
-
 struct OrientationToolbar: View {
     @Binding var latitude: Double
     @Binding var longitude: Double

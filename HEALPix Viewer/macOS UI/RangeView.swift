@@ -7,12 +7,6 @@
 
 import SwiftUI
 
-struct RangeView: View {
-    var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
-    }
-}
-
 struct RangeToolbar: View, Equatable {
     @Binding var map: Map?
     @Binding var modifier: BoundsModifier
