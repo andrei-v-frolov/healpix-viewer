@@ -146,6 +146,13 @@ struct ContentView: View {
                                 latitude: $latitude, longitude: $longitude, azimuth: $azimuth, background: $bgcolor,
                                 lightingLat: $lightingLat, lightingLon: $lightingLon, lightingAmt: $lightingAmt,
                                 window: $window, image: $mapImage)
+                        .onDrag {
+                            let w = Int(geometry.size.width), h = Int(geometry.size.height), none = NSItemProvider()
+                            guard let url = tmpfile(), let image = mapImage(width: w, height: h) else { return none }
+                            
+                            saveAsPNG(image, url: url); tmpfiles.append(url)
+                            return NSItemProvider(contentsOf: url) ?? none
+                        }
                         if (colorbar) {
                             BarView(colorsheme: $colorscheme, background: $bgcolor)
                                 .frame(height: geometry.size.width/20)
