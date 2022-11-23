@@ -19,8 +19,8 @@ struct Window {
 
 // callback wrapper to render off-screen texture
 struct Texture {
-    let callback: (Int, Int) -> MTLTexture?
-    func callAsFunction(width w: Int, height h: Int) -> MTLTexture? { return callback(w, h) }
+    let callback: (Int, Int, Anchor) -> MTLTexture?
+    func callAsFunction(width w: Int, height h: Int, anchor a: Anchor = .c) -> MTLTexture? { return callback(w, h, a) }
 }
 
 // main window view
@@ -80,7 +80,7 @@ struct ContentView: View {
     
     // window associated with the view
     @State private var window: Window = Window { return nil }
-    @State private var mapImage: Texture = Texture { _,_ in return nil }
+    @State private var mapImage: Texture = Texture { _,_,_ in return nil }
     
     // color mapper
     private let mapper = ColorMapper()

@@ -35,7 +35,7 @@ struct MapView: NSViewRepresentable {
     func makeNSView(context: Self.Context) -> Self.NSViewType {
         DispatchQueue.main.async {
             window = Window { return self.view.window }
-            image = Texture { w,h in return self.view.image(width: w, height: h) }
+            image = Texture { w,h,a in return self.view.image(width: w, height: h, anchor: a) }
         }
         view.awakeFromNib(); return view
     }
