@@ -19,12 +19,12 @@ struct DropView: View {
 }
 
 struct ExportView: View {
-    @State private var width: Double = 1920
-    @State private var oversampling: Int = 1
-    @State private var colorbar: Bool = true
-    @State private var datarange: Bool = true
-    @State private var annotation: Bool = true
-    @State private var units: String = "TEMPERATURE [μK]"
+    @Binding var width: Double
+    @Binding var oversampling: Int
+    @Binding var withColorbar: Bool
+    @Binding var withDatarange: Bool
+    @Binding var withAnnotation: Bool
+    @Binding var annotation: String
     
     let SizeFormatter = { var n = IntegerNumber; n.minimum = 0; n.maximum = 16384; return n }()
     
@@ -45,12 +45,14 @@ struct ExportView: View {
                     }
                     .frame(width: 70)
                 }
-                Toggle("Include colorbar", isOn: $colorbar)
-                Toggle("Include data limits", isOn: $datarange)
-                Toggle("Include annotation", isOn: $annotation)
-                TextField("Annotation", text: $units)
+                Toggle("Include colorbar", isOn: $withColorbar)
+                Toggle("Include data limits", isOn: $withDatarange)
+                    .disabled(!withColorbar)
+                Toggle("Include annotation", isOn: $withAnnotation)
+                    .disabled(!withColorbar)
+                TextField("Annotation", text: $annotation)
                     .frame(width: 215)
-                    .disabled(!annotation)
+                    .disabled(!(withColorbar && withAnnotation))
             }
             Spacer()
         }

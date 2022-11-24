@@ -38,6 +38,11 @@ struct ContentView: View {
     
     // save images
     @State private var saving = false
+    @State private var width: Double = 1920
+    @State private var oversampling: Int = 2
+    @State private var withColorbar: Bool = true
+    @State private var withDatarange: Bool = true
+    @State private var withAnnotation: Bool = true
     
     // drag and drop
     @State private var targeted = false
@@ -45,6 +50,7 @@ struct ContentView: View {
     // map to be displayed
     @State private var map: Map? = nil
     @State private var info: String? = nil
+    @State private var annotation: String = "TEMPERATURE [μK]"
     
     // projection toolbar
     @State private var projection: Projection = .defaultValue
@@ -181,7 +187,9 @@ struct ContentView: View {
                         VStack(spacing: 0) {
                             Text("Export map as PNG image...").font(.largeTitle).padding(20)
                             Divider()
-                            ExportView().padding(20)
+                            ExportView(width: $width, oversampling: $oversampling,
+                                       withColorbar: $withColorbar, withDatarange: $withDatarange,
+                                       withAnnotation: $withAnnotation, annotation: $annotation).padding(20)
                             Divider()
                             HStack {
                                 Button { saving = false } label: { Text("Cancel") }
@@ -217,6 +225,7 @@ struct ContentView: View {
             if let map = loaded.first(where: { $0.id == value }) {
                 info = map.info; load(map.map)
                 title = "\(map.name)[\(map.file)]"
+                annotation = "\(map.name) [\(map.unit)]"
             }
         }
         .onChange(of: askToOpen) { value in
