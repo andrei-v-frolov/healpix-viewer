@@ -81,6 +81,7 @@ struct ContentView: View {
     // window associated with the view
     @State private var window: Window = Window { return nil }
     @State private var mapImage: Texture = Texture { _,_,_ in return nil }
+    @State private var barImage: Texture = Texture { _,_,_ in return nil }
     
     // color mapper
     private let mapper = ColorMapper()
@@ -154,8 +155,15 @@ struct ContentView: View {
                             return NSItemProvider(contentsOf: url) ?? none
                         }
                         if (colorbar) {
-                            BarView(colorsheme: $colorscheme, background: $bgcolor)
+                            BarView(colorsheme: $colorscheme, background: $bgcolor, image: $barImage)
                                 .frame(height: geometry.size.width/20)
+                                .onDrag {
+                                    let w = Int(geometry.size.width), h = w/30, none = NSItemProvider()
+                                    guard let url = tmpfile(), let image = barImage(width: w, height: h) else { return none }
+                                    
+                                    saveAsPNG(image, url: url); tmpfiles.append(url)
+                                    return NSItemProvider(contentsOf: url) ?? none
+                                }
                             RangeToolbar(map: $map, modifier: $modifier,
                                          datamin: $datamin, datamax: $datamax,
                                          rangemin: $rangemin, rangemax: $rangemax)

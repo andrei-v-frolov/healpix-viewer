@@ -13,10 +13,15 @@ struct BarView: NSViewRepresentable {
     @Binding var colorsheme: ColorScheme
     @Binding var background: Color
     
+    @Binding var image: Texture
+    
     typealias NSViewType = ColorbarView
     var view = ColorbarView()
     
     func makeNSView(context: Self.Context) -> Self.NSViewType {
+        DispatchQueue.main.async {
+            image = Texture { w,h,_ in return self.view.image(width: w, height: h) }
+        }
         view.awakeFromNib(); return view
     }
     
@@ -42,14 +47,16 @@ class ColorbarView: MTKView {
     var padding = 0.1
     let aspect = 30.0
     
-    // MARK: arguments to shader
-    var transform: float3x2 {
-        let x = 1.0, y = x/aspect, w = drawableSize.width, h = drawableSize.height
-        let s = max((1.0+padding) * x/w, y/h), dx = -s*w/2 + 0.5, dy = aspect*s*h/2 + 0.5
+    // MARK: affine tranform mapping screen to projection plane
+    func transform(width: Double? = nil, height: Double? = nil, padding: Double? = nil) -> float3x2 {
+        let x = 1.0, y = x/aspect, p = padding ?? self.padding
+        let w = width ?? drawableSize.width, h = height ?? drawableSize.height
+        let s = max((1.0+p) * x/w, y/h), dx = -s*w/2 + 0.5, dy = aspect*s*h/2 + 0.5
         
         return simd.float3x2(float2(Float(s), 0.0), float2(0.0, -Float(aspect*s)), float2(Float(dx), Float(dy)))
     }
     
+    // MARK: arguments to shader
     var background = float4(0.0)
     
     // MARK: initalize after being decoded
@@ -77,14 +84,39 @@ class ColorbarView: MTKView {
         // check that we have a draw destination
         guard currentRenderPassDescriptor != nil, let drawable = currentDrawable else { return }
         
+        // initialize compute command buffer
+        guard let command = queue.makeCommandBuffer() else { return }
+        
+        // encode render command to drawable
+        encode(command, to: drawable.texture)
+        command.present(drawable)
+        command.commit()
+    }
+    
+    // MARK: encode render to command buffer
+    func encode(_ command: MTLCommandBuffer, to texture: MTLTexture, transform: float3x2? = nil, background: float4? = nil) {
         // load arguments to be passed to kernel
-        buffers[0].contents().storeBytes(of: transform, as: float3x2.self)
-        buffers[1].contents().storeBytes(of: background, as: float4.self)
+        buffers[0].contents().storeBytes(of: transform ?? self.transform(), as: float3x2.self)
+        buffers[1].contents().storeBytes(of: background ?? self.background, as: float4.self)
+        
+        shader.encode(command: command, buffers: buffers, textures: [colormap.texture, texture])
+    }
+    
+    // MARK: render image to off-screen texture
+    func render(to texture: MTLTexture) {
+        let transform = transform(width: Double(texture.width), height: Double(texture.height), padding: 0.0)
         
         // initialize compute command buffer
         guard let command = queue.makeCommandBuffer() else { return }
-        shader.encode(command: command, buffers: buffers, textures: [colormap.texture, drawable.texture])
-        command.present(drawable)
-        command.commit()
+        
+        // encode render command
+        encode(command, to: texture, transform: transform)
+        command.commit(); command.waitUntilCompleted()
+    }
+    
+    // MARK: create map image of specified size
+    func image(width w: Int, height h: Int) -> MTLTexture {
+        let texture = PNGTexture(width: w, height: h)
+        render(to: texture); return texture
     }
 }
