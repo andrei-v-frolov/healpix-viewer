@@ -45,12 +45,12 @@ class ColorbarView: MTKView {
     // MARK: state variables
     var colormap = ColorScheme.defaultValue.colormap
     var padding = 0.1
-    let aspect = 30.0
+    static let aspect = 30.0
     
     // MARK: affine tranform mapping screen to projection plane
     func transform(width: Double? = nil, height: Double? = nil, padding: Double? = nil) -> float3x2 {
-        let x = 1.0, y = x/aspect, p = padding ?? self.padding
         let w = width ?? drawableSize.width, h = height ?? drawableSize.height
+        let aspect = ColorbarView.aspect, x = 1.0, y = x/aspect, p = padding ?? self.padding
         let s = max((1.0+p) * x/w, y/h), dx = -s*w/2 + 0.5, dy = aspect*s*h/2 + 0.5
         
         return simd.float3x2(float2(Float(s), 0.0), float2(0.0, -Float(aspect*s)), float2(Float(dx), Float(dy)))

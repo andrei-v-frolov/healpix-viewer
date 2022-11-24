@@ -148,22 +148,22 @@ struct ContentView: View {
                                 lightingLat: $lightingLat, lightingLon: $lightingLon, lightingAmt: $lightingAmt,
                                 window: $window, image: $mapImage)
                         .onDrag {
-                            let w = Int(geometry.size.width), h = Int(geometry.size.height), none = NSItemProvider()
-                            guard let url = tmpfile(), let image = mapImage(width: w, height: h) else { return none }
+                            let w = geometry.size.width, h = projection.height(width: w), none = NSItemProvider()
+                            guard let url = tmpfile(), let image = mapImage(width: Int(w), height: Int(h)) else { return none }
                             
                             saveAsPNG(image, url: url); tmpfiles.append(url)
                             return NSItemProvider(contentsOf: url) ?? none
                         }
                         if (colorbar) {
                             BarView(colorsheme: $colorscheme, background: $bgcolor, image: $barImage)
-                                .frame(height: geometry.size.width/20)
-                                .onDrag {
-                                    let w = Int(geometry.size.width), h = w/30, none = NSItemProvider()
-                                    guard let url = tmpfile(), let image = barImage(width: w, height: h) else { return none }
-                                    
-                                    saveAsPNG(image, url: url); tmpfiles.append(url)
-                                    return NSItemProvider(contentsOf: url) ?? none
-                                }
+                            .frame(height: 1.5*geometry.size.width/ColorbarView.aspect)
+                            .onDrag {
+                                let w = geometry.size.width, h = w/ColorbarView.aspect, none = NSItemProvider()
+                                guard let url = tmpfile(), let image = barImage(width: Int(w), height: Int(h)) else { return none }
+                                
+                                saveAsPNG(image, url: url); tmpfiles.append(url)
+                                return NSItemProvider(contentsOf: url) ?? none
+                            }
                             RangeToolbar(map: $map, modifier: $modifier,
                                          datamin: $datamin, datamax: $datamax,
                                          rangemin: $rangemin, rangemax: $rangemax)
