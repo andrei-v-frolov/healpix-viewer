@@ -7,6 +7,17 @@
 
 import SwiftUI
 
+struct DropView: View {
+    var body: some View {
+        VStack(spacing: 10) {
+            Image(systemName: "arrow.down.doc").font(.system(size: 64))
+            Text("Drop HEALPix file to load it...")
+        }
+        .padding(20)
+        .background(.ultraThinMaterial)
+    }
+}
+
 struct ExportView: View {
     @State private var width: Double = 1920
     @State private var oversampling: Int = 1

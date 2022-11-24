@@ -190,13 +190,6 @@ struct ContentView: View {
                             .padding(10)
                         }
                     }
-                    .sheet(isPresented: $targeted) {
-                        VStack(spacing: 10) {
-                            Image(systemName: "globe").font(.system(size: 64))
-                            Text("Drop HEALPix file to load it...")
-                        }
-                        .padding(20)
-                    }
                 }
                 if (infoview) {
                     ScrollView {
@@ -206,6 +199,9 @@ struct ContentView: View {
                             .font(Font.system(size: 13).monospaced())
                     }
                     .background(.thinMaterial)
+                }
+                if (targeted) {
+                    HStack { Spacer(); VStack { Spacer(); DropView(); Spacer() }; Spacer() }
                 }
             }
         }
