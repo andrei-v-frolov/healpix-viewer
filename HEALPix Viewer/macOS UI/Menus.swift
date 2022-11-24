@@ -15,9 +15,9 @@ struct FileMenus: Commands {
     // menu commands
     var body: some Commands {
         CommandGroup(before: CommandGroupPlacement.newItem) {
-            Button { askToOpen = true } label: { Text("Open File...") }
+            Button("Open File...") { if (NSApp.keyWindow != nil) { askToOpen = true } }
                 .keyboardShortcut("O", modifiers: [.command])
-            Button { askToSave = true } label: { Text("Export To...") }
+            Button("Export To...") { if (NSApp.keyWindow != nil) { askToSave = true } }
                 .keyboardShortcut("S", modifiers: [.command])
             Divider()
         }
