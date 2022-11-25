@@ -10,6 +10,7 @@ import SwiftUI
 struct Toolbar: CustomizableToolbarContent {
     @Binding var toolbar: ShowToolbar
     @Binding var colorbar: Bool
+    @Binding var lighting: Bool
     @Binding var infoview: Bool
     @Binding var magnification: Double
     @Binding var info: String?
@@ -73,6 +74,7 @@ struct Toolbar: CustomizableToolbarContent {
                 Image(systemName: "sun.max")
             }
             .help("Lighting Effects")
+            .disabled(!lighting)
         }
         ToolbarItem(id: "spacer", placement: .principal, showsByDefault: true) {
             Spacer()

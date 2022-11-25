@@ -81,6 +81,7 @@ struct ContentView: View {
     @State private var modifier: BoundsModifier = .defaultValue
     
     // lighting toolbar
+    @State private var useLighting: Bool = false
     @State private var lightingLat: Double = 45.0
     @State private var lightingLon: Double = -45.0
     @State private var lightingAmt: Double = 30.0
@@ -219,7 +220,7 @@ struct ContentView: View {
             minHeight: 600, idealHeight: 800, maxHeight: .infinity
         )
         .toolbar(id: "mainToolbar") {
-            Toolbar(toolbar: $toolbar, colorbar: $colorbar, infoview: $infoview, magnification: $magnification, info: $info)
+            Toolbar(toolbar: $toolbar, colorbar: $colorbar, lighting: $useLighting, infoview: $infoview, magnification: $magnification, info: $info)
         }
         .navigationTitle(title)
         .onChange(of: selected) { value in
@@ -257,6 +258,7 @@ struct ContentView: View {
         }
         .task {
             colorbar = UserDefaults.standard.bool(forKey: showColorBarKey)
+            useLighting = UserDefaults.standard.bool(forKey: lightingKey)
             projection = Projection.value
             orientation = Orientation.value
             colorscheme = ColorScheme.value
@@ -268,6 +270,10 @@ struct ContentView: View {
                 guard (window()?.isKeyWindow == true) else { return }
                 guard let value = new as? Bool else { return }
                 withAnimation { colorbar = value }
+            }
+            observers.add(key: lightingKey) { old, new in
+                guard let value = new as? Bool else { return }
+                useLighting = value
             }
             observers.add(key: Projection.appStorage) { old, new in
                 guard (window()?.isKeyWindow == true) else { return }
