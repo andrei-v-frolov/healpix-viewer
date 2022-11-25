@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import MetalKit
 import UniformTypeIdentifiers
 
 // asynchronous queue for user-initiated tasks
@@ -38,7 +39,7 @@ struct ContentView: View {
     
     // save images
     @State private var saving = false
-    @State private var width: Double = 1920
+    @State private var width: Int = 1920
     @State private var oversampling: Int = 2
     @State private var withColorbar: Bool = true
     @State private var withDatarange: Bool = true
@@ -192,8 +193,8 @@ struct ContentView: View {
                                        withAnnotation: $withAnnotation, annotation: $annotation).padding(20)
                             Divider()
                             HStack {
-                                Button { saving = false } label: { Text("Cancel") }
-                                Button { saving = false } label: { Text("Export") }
+                                Button("Cancel", role: .cancel) { saving = false }
+                                Button("Export") { saving = false; self.save() }
                             }
                             .padding(10)
                         }
@@ -235,7 +236,7 @@ struct ContentView: View {
         }
         .onChange(of: askToSave) { value in
             if (window()?.isKeyWindow == true && value) {
-                askToSave = false; DispatchQueue.main.async { self.save() }
+                askToSave = false; DispatchQueue.main.async { self.saving = true }
             }
         }
         .onDrop(of: [UTType.fileURL], isTargeted: $targeted) { provider in
@@ -338,6 +339,91 @@ struct ContentView: View {
     // ...
     func save(_ url: URL? = nil) {
         print("Saving file as...")
-        saving = true
+        
+        let width = Double(width*oversampling)
+        var height = projection.height(width: width)
+        let thickness = width/ColorbarView.aspect
+        if (withColorbar) { height += 2.0*thickness}
+        if (withColorbar && withDatarange) { height += thickness }
+        
+        let w = Int(width), h = Int(height), t = Int(thickness)
+        
+        guard let texture = mapImage(width: w, height: h, anchor: .n),
+              let bar = barImage(width: w, height: 2*t) else { return }
+        
+        if (withColorbar && withDatarange) {
+            annotate(texture, height: t, min: rangemin, max: rangemax, annotation: withAnnotation ? annotation : nil)
+        }
+        
+        guard let device = MTLCreateSystemDefaultDevice(),
+              let queue = device.makeCommandQueue(),
+              let command = queue.makeCommandBuffer(),
+              let encoder = command.makeBlitCommandEncoder() else { return }
+        
+        if (withColorbar) {
+            encoder.copy(from: bar, sourceSlice: 0, sourceLevel: 0,
+                         sourceOrigin: MTLOriginMake(0,0,0), sourceSize: MTLSizeMake(w,2*t,1),
+                         to: texture, destinationSlice: 0, destinationLevel: 0,
+                         destinationOrigin: MTLOriginMake(0,t,0))
+            encoder.endEncoding()
+        }
+        
+        command.commit()
+        command.waitUntilCompleted()
+        
+        saveAsPNG(texture, url: (url ?? showSavePanel())!)
     }
+}
+
+// ...
+func annotate(_ texture: MTLTexture, height h: Int, min: Double, max: Double, format: String = "%+.6g", annotation: String? = nil, font fontname: String = "SF Compact", color: CGColor = .black) {
+    let w = texture.width, region = MTLRegionMake2D(0,0,w,h)
+    
+    // allocate buffer for the annotation region
+    let buffer = UnsafeMutableRawPointer.allocate(byteCount: 4*w*h, alignment: 1024)
+    texture.getBytes(buffer, bytesPerRow: 4*w, from: region, mipmapLevel: 0)
+    defer { buffer.deallocate() }
+    
+    // create graphics context
+    let rgba = CGImageAlphaInfo.premultipliedLast.rawValue
+    
+    guard let srgb = CGColorSpace(name: CGColorSpace.sRGB),
+          let context = CGContext(data: buffer, width: w, height: h,
+                                  bitsPerComponent: 8, bytesPerRow: 4*w,
+                                  space: srgb, bitmapInfo: rgba) else { return }
+    
+    // set up coordinates for off-screen image
+    context.translateBy(x: 0.0, y: CGFloat(h))
+    context.scaleBy(x: 1.0, y: -1.0)
+    
+    // set up font for annotations
+    let font = CTFontCreateWithName(fontname as CFString, CGFloat(h)/1.2, nil)
+    let attr: [NSAttributedString.Key : Any] = [.font: font, .foregroundColor: color]
+    
+    // data range labels
+    let min = NSAttributedString(string: String(format: format, min), attributes: attr)
+    let max = NSAttributedString(string: String(format: format, max), attributes: attr)
+    
+    // compute bounding rectangles
+    let minline = CTLineCreateWithAttributedString(min), minrect = CTLineGetImageBounds(minline, context)
+    let maxline = CTLineCreateWithAttributedString(max), maxrect = CTLineGetImageBounds(maxline, context)
+    
+    // common baseline for the labels
+    let base = CGFloat(h)/2.0 - (minrect.minY+minrect.height+maxrect.minY+maxrect.height)/4.0
+    
+    // render data bounds labels
+    context.textPosition = CGPoint(x: base, y: base); CTLineDraw(minline, context)
+    context.textPosition = CGPoint(x: CGFloat(w)-maxrect.width-base, y: base); CTLineDraw(maxline, context)
+    
+    // render annotation if supplied
+    if let annotation = annotation {
+        let string = NSAttributedString(string: annotation, attributes: attr)
+        let line = CTLineCreateWithAttributedString(string), rect = CTLineGetImageBounds(line, context)
+        
+        context.textPosition = CGPoint(x: (CGFloat(w)-rect.width)/2.0, y: base); CTLineDraw(line, context)
+    }
+    
+    context.flush()
+    
+    texture.replace(region: region, mipmapLevel: 0, withBytes: buffer, bytesPerRow: w*4)
 }

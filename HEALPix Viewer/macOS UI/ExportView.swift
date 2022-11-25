@@ -19,7 +19,7 @@ struct DropView: View {
 }
 
 struct ExportView: View {
-    @Binding var width: Double
+    @Binding var width: Int
     @Binding var oversampling: Int
     @Binding var withColorbar: Bool
     @Binding var withDatarange: Bool
