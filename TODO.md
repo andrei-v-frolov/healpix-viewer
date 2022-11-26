@@ -1,13 +1,8 @@
 # HEALPix Viewer TODO
 
-### Current Status (Build 002)
+### Current Status (Build 003)
 
-- `File Open` is implemented
-- `Export As` is implemented
-- Drag and Drop support is implemented
-- saving textures as PNG is implemented
-- text annotations render to bitmap image
-- oversampling using Lanczos algorithm
+- export crashes on Intel GPU (rebuild and debug on Mac Mini?)
 
 ### Public Release Blocking
 
@@ -23,3 +18,4 @@
 ### Bug Fixes
 
 - modal NSOpenPanel and NSSavePanel are called within transaction
+- export crashes on Intel GPU (rebuild and debug on Mac Mini?)
