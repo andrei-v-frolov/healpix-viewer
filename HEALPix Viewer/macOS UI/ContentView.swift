@@ -346,10 +346,9 @@ struct ContentView: View {
                         minvalue: rangemin, maxvalue: rangemax)
     }
     
-    // ...
-    func save(_ url: URL? = nil) {
-        print("Saving file as...")
-        
+    // render annotated map texture for export
+    func render() -> MTLTexture? {
+        // set up dimensions for borderless map
         let width = Double(width*oversampling)
         var height = projection.height(width: width)
         let thickness = width/ColorbarView.aspect
@@ -357,22 +356,23 @@ struct ContentView: View {
         if (colorbar && withDatarange) { height += thickness }
         let w = Int(width), h = Int(height), t = Int(thickness)
         
-        guard let texture = mapImage(width: w, height: h, anchor: .n) else { return }
+        // render map texture and annotate it if requested
+        guard let texture = mapImage(width: w, height: h, anchor: .n) else { return nil }
         let output = (oversampling > 1) ? PNGTexture(width: w/oversampling, height: h/oversampling) : texture
         
         if (colorbar && withDatarange) {
             annotate(texture, height: t, min: rangemin, max: rangemax, annotation: withAnnotation ? annotation : nil)
         }
         
-        
         if (colorbar || oversampling > 1) {
             guard let device = MTLCreateSystemDefaultDevice(),
                   let queue = device.makeCommandQueue(),
-                  let command = queue.makeCommandBuffer() else { return }
+                  let command = queue.makeCommandBuffer() else { return nil }
             
+            // render colorbar and copy it in
             if (colorbar) {
                 guard let bar = barImage(width: w, height: 2*t),
-                      let encoder = command.makeBlitCommandEncoder() else { return }
+                      let encoder = command.makeBlitCommandEncoder() else { return nil }
                 
                 encoder.copy(from: bar, sourceSlice: 0, sourceLevel: 0,
                              sourceOrigin: MTLOriginMake(0,0,0), sourceSize: MTLSizeMake(w,2*t,1),
@@ -381,6 +381,7 @@ struct ContentView: View {
                 encoder.endEncoding()
             }
             
+            // scale down oversampled texture
             if (oversampling > 1) {
                 let scaler = MPSImageLanczosScale(device: device)
                 let input = MPSImage(texture: texture, featureChannels: 4)
@@ -393,7 +394,13 @@ struct ContentView: View {
             command.waitUntilCompleted()
         }
         
-        saveAsPNG(output, url: (url ?? showSavePanel())!)
+        return output
+    }
+    
+    // save annotated map
+    func save(_ url: URL? = nil) {
+        guard let url = url ?? showSavePanel() else { return }
+        if let output = render() { saveAsPNG(output, url: url) }
     }
 }
 
