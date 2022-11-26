@@ -197,7 +197,7 @@ struct ContentView: View {
                                 Button { saving = false } label: {
                                     Text("Cancel").padding(20)
                                 }
-                                Button { saving = false; self.save() } label: {
+                                Button { saving = false; DispatchQueue.main.async { self.save() } } label: {
                                     Text("Export").foregroundColor(Color.accentColor).padding(20)
                                 }
                             }
@@ -241,7 +241,7 @@ struct ContentView: View {
         }
         .onChange(of: askToSave) { value in
             if (window()?.isKeyWindow == true && value) {
-                askToSave = false; DispatchQueue.main.async { self.saving = true }
+                askToSave = false; saving = true
             }
         }
         .onDrop(of: [UTType.fileURL], isTargeted: $targeted) { provider in
