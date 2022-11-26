@@ -42,7 +42,6 @@ struct ContentView: View {
     @State private var saving = false
     @State private var width: Int = 1920
     @State private var oversampling: Int = 2
-    @State private var withColorbar: Bool = true
     @State private var withDatarange: Bool = true
     @State private var withAnnotation: Bool = true
     
@@ -191,7 +190,7 @@ struct ContentView: View {
                             Text("Export map as PNG image...").font(.largeTitle).padding(20)
                             Divider()
                             ExportView(width: $width, oversampling: $oversampling,
-                                       withColorbar: $withColorbar, withDatarange: $withDatarange,
+                                       withColorbar: $colorbar, withDatarange: $withDatarange,
                                        withAnnotation: $withAnnotation, annotation: $annotation).padding(20)
                             Divider()
                             HStack {
@@ -354,25 +353,24 @@ struct ContentView: View {
         let width = Double(width*oversampling)
         var height = projection.height(width: width)
         let thickness = width/ColorbarView.aspect
-        if (withColorbar) { height += 2.0*thickness}
-        if (withColorbar && withDatarange) { height += thickness }
-        
+        if (colorbar) { height += 2.0*thickness}
+        if (colorbar && withDatarange) { height += thickness }
         let w = Int(width), h = Int(height), t = Int(thickness)
         
         guard let texture = mapImage(width: w, height: h, anchor: .n) else { return }
         let output = (oversampling > 1) ? PNGTexture(width: w/oversampling, height: h/oversampling) : texture
         
-        if (withColorbar && withDatarange) {
+        if (colorbar && withDatarange) {
             annotate(texture, height: t, min: rangemin, max: rangemax, annotation: withAnnotation ? annotation : nil)
         }
         
         
-        if (withColorbar || oversampling > 1) {
+        if (colorbar || oversampling > 1) {
             guard let device = MTLCreateSystemDefaultDevice(),
                   let queue = device.makeCommandQueue(),
                   let command = queue.makeCommandBuffer() else { return }
             
-            if (withColorbar) {
+            if (colorbar) {
                 guard let bar = barImage(width: w, height: 2*t),
                       let encoder = command.makeBlitCommandEncoder() else { return }
                 

@@ -45,7 +45,7 @@ struct ExportView: View {
                     }
                     .frame(width: 70)
                 }
-                Toggle("Include colorbar", isOn: $withColorbar)
+                Toggle("Include colorbar", isOn: $withColorbar.animation())
                 Toggle("Include data limits", isOn: $withDatarange)
                     .disabled(!withColorbar)
                 Toggle("Include annotation", isOn: $withAnnotation)
