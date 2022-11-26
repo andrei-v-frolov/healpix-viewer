@@ -7,6 +7,7 @@
 
 import SwiftUI
 import MetalKit
+import MetalPerformanceShaders
 import UniformTypeIdentifiers
 
 // asynchronous queue for user-initiated tasks
@@ -358,34 +359,47 @@ struct ContentView: View {
         
         let w = Int(width), h = Int(height), t = Int(thickness)
         
-        guard let texture = mapImage(width: w, height: h, anchor: .n),
-              let bar = barImage(width: w, height: 2*t) else { return }
+        guard let texture = mapImage(width: w, height: h, anchor: .n) else { return }
+        let output = (oversampling > 1) ? PNGTexture(width: w/oversampling, height: h/oversampling) : texture
         
         if (withColorbar && withDatarange) {
             annotate(texture, height: t, min: rangemin, max: rangemax, annotation: withAnnotation ? annotation : nil)
         }
         
-        guard let device = MTLCreateSystemDefaultDevice(),
-              let queue = device.makeCommandQueue(),
-              let command = queue.makeCommandBuffer(),
-              let encoder = command.makeBlitCommandEncoder() else { return }
         
-        if (withColorbar) {
-            encoder.copy(from: bar, sourceSlice: 0, sourceLevel: 0,
-                         sourceOrigin: MTLOriginMake(0,0,0), sourceSize: MTLSizeMake(w,2*t,1),
-                         to: texture, destinationSlice: 0, destinationLevel: 0,
-                         destinationOrigin: MTLOriginMake(0,t,0))
-            encoder.endEncoding()
+        if (withColorbar || oversampling > 1) {
+            guard let device = MTLCreateSystemDefaultDevice(),
+                  let queue = device.makeCommandQueue(),
+                  let command = queue.makeCommandBuffer() else { return }
+            
+            if (withColorbar) {
+                guard let bar = barImage(width: w, height: 2*t),
+                      let encoder = command.makeBlitCommandEncoder() else { return }
+                
+                encoder.copy(from: bar, sourceSlice: 0, sourceLevel: 0,
+                             sourceOrigin: MTLOriginMake(0,0,0), sourceSize: MTLSizeMake(w,2*t,1),
+                             to: texture, destinationSlice: 0, destinationLevel: 0,
+                             destinationOrigin: MTLOriginMake(0, withDatarange ? t : 0, 0))
+                encoder.endEncoding()
+            }
+            
+            if (oversampling > 1) {
+                let scaler = MPSImageLanczosScale(device: device)
+                let input = MPSImage(texture: texture, featureChannels: 4)
+                let output = MPSImage(texture: output, featureChannels: 4)
+                
+                scaler.encode(commandBuffer: command, sourceImage: input, destinationImage: output)
+            }
+            
+            command.commit()
+            command.waitUntilCompleted()
         }
         
-        command.commit()
-        command.waitUntilCompleted()
-        
-        saveAsPNG(texture, url: (url ?? showSavePanel())!)
+        saveAsPNG(output, url: (url ?? showSavePanel())!)
     }
 }
 
-// ...
+// annotate bottom part of a texture with data range labels and (optionally) a string
 func annotate(_ texture: MTLTexture, height h: Int, min: Double, max: Double, format: String = "%+.6g", annotation: String? = nil, font fontname: String = "SF Compact", color: CGColor = .black) {
     let w = texture.width, region = MTLRegionMake2D(0,0,w,h)
     
