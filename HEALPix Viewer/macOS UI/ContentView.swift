@@ -194,8 +194,12 @@ struct ContentView: View {
                                        withAnnotation: $withAnnotation, annotation: $annotation).padding(20)
                             Divider()
                             HStack {
-                                Button("Cancel", role: .cancel) { saving = false }
-                                Button("Export") { saving = false; self.save() }
+                                Button { saving = false } label: {
+                                    Text("Cancel").padding(20)
+                                }
+                                Button { saving = false; self.save() } label: {
+                                    Text("Export").foregroundColor(Color.accentColor).padding(20)
+                                }
                             }
                             .padding(10)
                         }

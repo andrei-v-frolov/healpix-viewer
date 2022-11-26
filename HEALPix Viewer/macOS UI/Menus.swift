@@ -17,7 +17,7 @@ struct FileMenus: Commands {
         CommandGroup(before: CommandGroupPlacement.newItem) {
             Button("Open File...") { if (NSApp.keyWindow != nil) { askToOpen = true } }
                 .keyboardShortcut("O", modifiers: [.command])
-            Button("Export To...") { if (NSApp.keyWindow != nil) { askToSave = true } }
+            Button("Export As...") { if (NSApp.keyWindow != nil) { askToSave = true } }
                 .keyboardShortcut("S", modifiers: [.command])
             Divider()
         }

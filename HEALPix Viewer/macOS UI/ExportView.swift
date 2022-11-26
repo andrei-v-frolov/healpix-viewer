@@ -49,10 +49,10 @@ struct ExportView: View {
                 Toggle("Include data limits", isOn: $withDatarange)
                     .disabled(!withColorbar)
                 Toggle("Include annotation", isOn: $withAnnotation)
-                    .disabled(!withColorbar)
+                    .disabled(!withColorbar || !withDatarange)
                 TextField("Annotation", text: $annotation)
                     .frame(width: 215)
-                    .disabled(!(withColorbar && withAnnotation))
+                    .disabled(!withColorbar || !withDatarange || !withAnnotation)
             }
             Spacer()
         }
