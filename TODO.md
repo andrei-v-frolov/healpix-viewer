@@ -3,9 +3,11 @@
 ### Current Status (Build 002)
 
 - `File Open` is implemented
+- `Export As` is implemented
+- Drag and Drop support is implemented
 - saving textures as PNG is implemented
-- compositing textures for proper `Export To` is in the works
-- Drag and Drop support is implemented (needs more testing)...
+- text annotations render to bitmap image
+- oversampling using Lanczos algorithm
 
 ### Public Release Blocking
 
@@ -20,4 +22,4 @@
 
 ### Bug Fixes
 
-- currently clean
+- modal NSOpenPanel and NSSavePanel are called within transaction
