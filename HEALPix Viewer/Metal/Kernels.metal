@@ -6,11 +6,13 @@
 //
 
 #include <metal_stdlib>
+#include <metal_math>
 using namespace metal;
 
 // include Metal functions
 #include "Common.metal"
 #include "Healpix.metal"
+#include "Transforms.metal"
 #include "Projections.metal"
 
 // checkerboard grid colors
