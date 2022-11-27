@@ -142,14 +142,7 @@ struct DataMenus: Commands {
                     ForEach(DataTransform.allCases, id: \.self) {
                         Text($0.rawValue).tag($0)
                     }
-                    Divider()
-                    Picker("Apply...", selection: $dataTransform) {
-                        Text("After Convolving")
-                        Text("Before Convolving")
-                    }
-                    .disabled(true)
                 }
-                .disabled(true)
                 Picker("Bounds", selection: $dataBounds) {
                     ForEach(DataBounds.allCases, id: \.self) {
                         Text($0.rawValue).tag($0)

@@ -160,7 +160,7 @@ enum ColorScheme: String, CaseIterable, Preference {
 // color scheme
 enum DataTransform: String, CaseIterable, Preference {
     case none = "None"
-    case log = "ln(x-μ)"
+    case log = "ln[x-μ]"
     case asinh = "asinh[(x-μ)/σ]"
     case equalize = "Equalize"
     case normalize = "Normalize"

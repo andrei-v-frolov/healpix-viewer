@@ -80,6 +80,11 @@ struct ContentView: View {
     
     @State private var modifier: BoundsModifier = .defaultValue
     
+    // transform toolbar
+    @State private var transform: DataTransform = .defaultValue
+    @State private var mu: Double = 0.0
+    @State private var sigma: Double = 1.0
+    
     // lighting toolbar
     @State private var useLighting: Bool = false
     @State private var lightingLat: Double = 45.0
@@ -149,7 +154,7 @@ struct ContentView: View {
                             .onChange(of: colors) { value in colorize(map) }
                         }
                         if (toolbar == .transform) {
-                            TransformToolbar(datamin: $datamin, datamax: $datamax)
+                            TransformToolbar(transform: $transform, mu: $mu, sigma: $sigma, datamin: $datamin, datamax: $datamax)
                         }
                         if (toolbar == .lighting) {
                             LightingToolbar(lightingLat: $lightingLat, lightingLon: $lightingLon, lightingAmt: $lightingAmt)
@@ -272,6 +277,7 @@ struct ContentView: View {
             colorscheme = ColorScheme.value
             mincolor = colorscheme.colormap.min
             maxcolor = colorscheme.colormap.max
+            transform = DataTransform.value
         }
         .task {
             observers.add(key: showColorBarKey) { old, new in
@@ -306,6 +312,11 @@ struct ContentView: View {
                 guard (window()?.isKeyWindow == true) else { return }
                 guard let raw = new as? String, let data = DataSource(rawValue: raw) else { return }
                 for map in loaded { if (MapCard.type(map.name) == data) { selected = map.id; break } }
+            }
+            observers.add(key: DataTransform.appStorage) {  old, new in
+                guard (window()?.isKeyWindow == true) else { return }
+                guard let raw = new as? String, let mode = DataTransform(rawValue: raw) else { return }
+                withAnimation { toolbar = .transform }; transform = mode
             }
         }
     }

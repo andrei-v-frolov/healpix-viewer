@@ -8,9 +8,9 @@
 import SwiftUI
 
 struct TransformToolbar: View {
-    @State private var transform: DataTransform = .defaultValue
-    @State private var mu: Double = 0.0
-    @State private var sigma: Double = 1.0
+    @Binding var transform: DataTransform
+    @Binding var mu: Double
+    @Binding var sigma: Double
     
     @Binding var datamin: Double
     @Binding var datamax: Double
