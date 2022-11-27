@@ -12,6 +12,7 @@
 		500F99B3292553730097695C /* rawmap.c in Sources */ = {isa = PBXBuildFile; fileRef = 500F99B2292553730097695C /* rawmap.c */; };
 		501A6CD6292EBC9400E931A3 /* ExportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 501A6CD5292EBC9400E931A3 /* ExportView.swift */; };
 		501A6CDA292EC74400E931A3 /* Formatters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 501A6CD9292EC74400E931A3 /* Formatters.swift */; };
+		5036E7FA2932FC22006AE59E /* TransformView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5036E7F92932FC22006AE59E /* TransformView.swift */; };
 		503C675E28FF89C1002D4314 /* MapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 503C675D28FF89C1002D4314 /* MapView.swift */; };
 		50563E592901E19A00B316CA /* MetalShader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50563E582901E19A00B316CA /* MetalShader.swift */; };
 		50563E5B2901E38F00B316CA /* Kernels.metal in Sources */ = {isa = PBXBuildFile; fileRef = 50563E5A2901E38F00B316CA /* Kernels.metal */; };
@@ -92,6 +93,7 @@
 		500F99B2292553730097695C /* rawmap.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = rawmap.c; sourceTree = "<group>"; };
 		501A6CD5292EBC9400E931A3 /* ExportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportView.swift; sourceTree = "<group>"; };
 		501A6CD9292EC74400E931A3 /* Formatters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Formatters.swift; sourceTree = "<group>"; };
+		5036E7F92932FC22006AE59E /* TransformView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransformView.swift; sourceTree = "<group>"; };
 		503C675D28FF89C1002D4314 /* MapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapView.swift; sourceTree = "<group>"; };
 		50563E582901E19A00B316CA /* MetalShader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetalShader.swift; sourceTree = "<group>"; };
 		50563E5A2901E38F00B316CA /* Kernels.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Kernels.metal; sourceTree = "<group>"; };
@@ -163,6 +165,7 @@
 				50C513122907DFDC00BB6B51 /* OrientationView.swift */,
 				5009BB132912ECEB006DE835 /* ColorView.swift */,
 				508D56BE291309DA0099C3A0 /* LightingView.swift */,
+				5036E7F92932FC22006AE59E /* TransformView.swift */,
 				503C675D28FF89C1002D4314 /* MapView.swift */,
 				508910B1291B077E00E33CB6 /* ColorbarView.swift */,
 				50A94797291B3AEB00F6F1BA /* RangeView.swift */,
@@ -425,6 +428,7 @@
 				508BBA8B28FF2764004B1A9C /* HEALPix App.swift in Sources */,
 				503C675E28FF89C1002D4314 /* MapView.swift in Sources */,
 				508D56DA29131FBA0099C3A0 /* HEALPix BGRY.swift in Sources */,
+				5036E7FA2932FC22006AE59E /* TransformView.swift in Sources */,
 				508D56BF291309DA0099C3A0 /* LightingView.swift in Sources */,
 				508D56CE29131D530099C3A0 /* Planck FreqMap.swift in Sources */,
 				5065EE80292044D000AD46CD /* Preferences.swift in Sources */,

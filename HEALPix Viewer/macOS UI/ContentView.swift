@@ -148,6 +148,9 @@ struct ContentView: View {
                                          nancolor: $nancolor, bgcolor: $bgcolor)
                             .onChange(of: colors) { value in colorize(map) }
                         }
+                        if (toolbar == .transform) {
+                            TransformToolbar(datamin: $datamin, datamax: $datamax)
+                        }
                         if (toolbar == .lighting) {
                             LightingToolbar(lightingLat: $lightingLat, lightingLon: $lightingLon, lightingAmt: $lightingAmt)
                         }
@@ -197,6 +200,7 @@ struct ContentView: View {
                                 Button { saving = false } label: {
                                     Text("Cancel").padding(20)
                                 }
+                                Spacer().frame(width: 30)
                                 Button { saving = false; DispatchQueue.main.async { self.save() } } label: {
                                     Text("Export").foregroundColor(Color.accentColor).padding(20)
                                 }
@@ -220,7 +224,7 @@ struct ContentView: View {
             }
         }
         .frame(
-            minWidth:  800, idealWidth: 1280, maxWidth:  .infinity,
+            minWidth:  940, idealWidth: 1280, maxWidth:  .infinity,
             minHeight: 600, idealHeight: 800, maxHeight: .infinity
         )
         .toolbar(id: "mainToolbar") {

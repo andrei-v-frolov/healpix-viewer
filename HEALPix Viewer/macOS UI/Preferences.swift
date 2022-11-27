@@ -159,15 +159,30 @@ enum ColorScheme: String, CaseIterable, Preference {
 
 // color scheme
 enum DataTransform: String, CaseIterable, Preference {
-    case linear = "Linear"
-    case log = "Logarithmic"
-    case asinh = "asinh scaling"
+    case none = "None"
+    case log = "ln(x-μ)"
+    case asinh = "asinh[(x-μ)/σ]"
     case equalize = "Equalize"
     case normalize = "Normalize"
     
     // default value
     static let appStorage = "dataTransform"
-    static let defaultValue: Self = .linear
+    static let defaultValue: Self = .none
+    
+    // parameter needs
+    var mu: Bool {
+        switch self {
+            case .log, .asinh: return true
+            default: return false
+        }
+    }
+    
+    var sigma: Bool {
+        switch self {
+            case .asinh: return true
+            default: return false
+        }
+    }
 }
 
 // data bounds to be mapped to color bar

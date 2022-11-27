@@ -1,8 +1,8 @@
 # HEALPix Viewer TODO
 
-### Current Status (Build 003)
+### Current Status (Build 004)
 
-- export crash on Intel GPU fixed
+- started work on data transforms...
 
 ### Public Release Blocking
 
