@@ -1,3 +1,7 @@
+### Version 1.0 (Build 003)
+
+- export crash on Intel GPU fixed
+
 ### Version 1.0 (Build 002)
 
 - `File Open` is implemented

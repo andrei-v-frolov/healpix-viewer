@@ -2,7 +2,7 @@
 
 ### Current Status (Build 003)
 
-- export crashes on Intel GPU (rebuild and debug on Mac Mini?)
+- export crash on Intel GPU fixed
 
 ### Public Release Blocking
 
@@ -18,4 +18,3 @@
 ### Bug Fixes
 
 - modal NSOpenPanel and NSSavePanel are called within transaction
-- export crashes on Intel GPU (rebuild and debug on Mac Mini?)
