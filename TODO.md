@@ -17,4 +17,5 @@
 
 ### Bug Fixes
 
+- CMB convention is looking from INSIDE - flip the maps!
 - modal NSOpenPanel and NSSavePanel are called within transaction
