@@ -68,11 +68,9 @@ final class HpxMap: Map {
     
     // Metal buffer containing map data
     lazy var buffer: MTLBuffer = {
-        guard let device = MTLCreateSystemDefaultDevice()
+        guard let device = MTLCreateSystemDefaultDevice(),
+              let buffer = (data.withUnsafeBytes { device.makeBuffer(bytes: $0.baseAddress!, length: size) })
               else { fatalError("Metal Framework could not be initalized") }
-        
-        let buffer = data.withUnsafeBytes { return device.makeBuffer(bytes: $0.baseAddress!, length: size) }
-        guard let buffer = buffer else { fatalError("Metal Framework could not be initalized") }
         
         return buffer
     }()
@@ -136,8 +134,8 @@ final class GpuMap: Map {
     var size: Int { npix * MemoryLayout<Float>.size }
     
     // data bounds
-    let min: Double
-    let max: Double
+    var min: Double
+    var max: Double
     
     // array representing buffer data
     lazy var data: [Float] = {
@@ -188,6 +186,48 @@ struct ColorMapper {
         
         shader.encode(command: command, buffers: [map.buffer, buffers[0], buffers[1]], textures: [colormap.texture, map.texture], threadsPerGrid: MTLSize(width: map.nside, height: map.nside, depth: 12))
         command.commit()
+    }
+}
+
+// data transformer applies a poitwise function to a map
+struct DataTransformer {
+    // compute pipeline
+    let device: MTLDevice
+    let buffer: MTLBuffer
+    let queue: MTLCommandQueue
+    
+    let shaders: [DataTransform: MetalKernel] = [
+        .log:   MetalKernel(kernel: "log_transform"),
+        .asinh: MetalKernel(kernel: "asinh_transform")
+    ]
+    
+    init() {
+        guard let device = MTLCreateSystemDefaultDevice(),
+              let params = device.makeBuffer(length: MemoryLayout<float2>.size),
+              let queue = device.makeCommandQueue()
+              else { fatalError("Metal Framework could not be initalized") }
+        
+        self.device = device
+        self.buffer = params
+        self.queue = queue
+    }
+    
+    func transform(map: Map, function: DataTransform, mu: Double = 0.0, sigma: Double = 0.0, recycle: GpuMap? = nil) -> GpuMap? {
+        guard let shader = shaders[function],
+              let buffer = recycle?.buffer ?? device.makeBuffer(length: map.size),
+              let command = queue.makeCommandBuffer() else { return nil }
+        
+        let output = recycle ?? GpuMap(nside: map.nside, buffer: buffer, min: 0.0, max: 0.0)
+        let params = float2(Float(mu), Float(exp(sigma)))
+        
+        self.buffer.contents().storeBytes(of: params, as: float2.self)
+        shader.encode(command: command, buffers: [map.buffer, output.buffer, self.buffer])
+        command.commit()
+        
+        output.min = function.f(map.min, mu: mu, sigma: sigma)
+        output.max = function.f(map.max, mu: mu, sigma: sigma)
+        
+        return output
     }
 }
 

@@ -157,17 +157,32 @@ enum ColorScheme: String, CaseIterable, Preference {
     }
 }
 
-// color scheme
+// data transform
 enum DataTransform: String, CaseIterable, Preference {
     case none = "None"
-    case log = "ln[x-μ]"
-    case asinh = "asinh[(x-μ)/σ]"
+    case log = "Logarithmic"
+    case asinh = "Arcsinh"
     case equalize = "Equalize"
     case normalize = "Normalize"
     
     // default value
     static let appStorage = "dataTransform"
     static let defaultValue: Self = .none
+    
+    // collections
+    static let flatten: [DataTransform] = [.log, .asinh]
+    static let expand: [DataTransform] = []
+    static let function: [DataTransform] = flatten + expand
+    static let cdf: [DataTransform] = [.equalize, .normalize]
+    
+    // transform formula
+    var formula: String {
+        switch self {
+            case .log: return "ln[x-μ]"
+            case .asinh: return "asinh[(x-μ)/σ]"
+            default: return rawValue
+        }
+    }
     
     // parameter needs
     var mu: Bool {
@@ -181,6 +196,17 @@ enum DataTransform: String, CaseIterable, Preference {
         switch self {
             case .asinh: return true
             default: return false
+        }
+    }
+    
+    // functional transform
+    func f(_ x: Double, mu: Double = 0.0, sigma: Double = 0.0) -> Double {
+        let sigma = exp(sigma), epsilon = Double(Float.leastNormalMagnitude)
+        
+        switch self {
+            case .log:      return Foundation.log(max(x-mu,epsilon))
+            case .asinh:    return Foundation.asinh((x-mu)/sigma)
+            default:        return x
         }
     }
 }
