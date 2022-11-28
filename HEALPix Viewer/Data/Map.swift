@@ -198,7 +198,9 @@ struct DataTransformer {
     
     let shaders: [DataTransform: MetalKernel] = [
         .log:   MetalKernel(kernel: "log_transform"),
-        .asinh: MetalKernel(kernel: "asinh_transform")
+        .asinh: MetalKernel(kernel: "asinh_transform"),
+        .atan:  MetalKernel(kernel: "atan_transform"),
+        .tanh:  MetalKernel(kernel: "tanh_transform")
     ]
     
     init() {

@@ -160,8 +160,10 @@ enum ColorScheme: String, CaseIterable, Preference {
 // data transform
 enum DataTransform: String, CaseIterable, Preference {
     case none = "None"
-    case log = "Logarithmic"
+    case log = "Logarithm"
     case asinh = "Arcsinh"
+    case atan = "Arctan"
+    case tanh = "Tanh"
     case equalize = "Equalize"
     case normalize = "Normalize"
     
@@ -170,7 +172,7 @@ enum DataTransform: String, CaseIterable, Preference {
     static let defaultValue: Self = .none
     
     // collections
-    static let flatten: [DataTransform] = [.log, .asinh]
+    static let flatten: [DataTransform] = [.log, .asinh, .atan, .tanh]
     static let expand: [DataTransform] = []
     static let function: [DataTransform] = flatten + expand
     static let cdf: [DataTransform] = [.equalize, .normalize]
@@ -178,8 +180,10 @@ enum DataTransform: String, CaseIterable, Preference {
     // transform formula
     var formula: String {
         switch self {
-            case .log: return "ln[x-μ]"
-            case .asinh: return "asinh[(x-μ)/σ]"
+            case .log:      return "ln[x-μ]"
+            case .asinh:    return "asinh[(x-μ)/σ]"
+            case .atan:     return "atan[(x-μ)/σ]"
+            case .tanh:     return "tanh[(x-μ)/σ]"
             default: return rawValue
         }
     }
@@ -187,14 +191,14 @@ enum DataTransform: String, CaseIterable, Preference {
     // parameter needs
     var mu: Bool {
         switch self {
-            case .log, .asinh: return true
+            case .log, .asinh, .atan, .tanh: return true
             default: return false
         }
     }
     
     var sigma: Bool {
         switch self {
-            case .asinh: return true
+            case .asinh, .atan, .tanh: return true
             default: return false
         }
     }
@@ -206,6 +210,8 @@ enum DataTransform: String, CaseIterable, Preference {
         switch self {
             case .log:      return Foundation.log(max(x-mu,epsilon))
             case .asinh:    return Foundation.asinh((x-mu)/sigma)
+            case .atan:     return Foundation.atan((x-mu)/sigma)
+            case .tanh:     return Foundation.tanh((x-mu)/sigma)
             default:        return x
         }
     }
