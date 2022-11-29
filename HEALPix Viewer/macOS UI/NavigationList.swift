@@ -15,7 +15,7 @@ struct MapData: Identifiable {
     let unit: String
     let channel: Int
     
-    let map: any Map
+    let map: Map
 }
 
 struct NavigationRow: View {

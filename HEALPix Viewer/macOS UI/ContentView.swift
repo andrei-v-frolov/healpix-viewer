@@ -49,7 +49,7 @@ struct ContentView: View {
     @State private var targeted = false
     
     // map to be displayed
-    @State private var map: (any Map)? = nil
+    @State private var map: Map? = nil
     @State private var info: String? = nil
     @State private var annotation: String = "TEMPERATURE [μK]"
     
@@ -360,7 +360,7 @@ struct ContentView: View {
     }
     
     // load map to view
-    func load(_ map: any Map) {
+    func load(_ map: Map) {
         self.map = map
         
         modifier = .full
@@ -371,7 +371,7 @@ struct ContentView: View {
     }
     
     // colorize map with current settings
-    func colorize(_ map: (any Map)?) {
+    func colorize(_ map: Map?) {
         guard let map = map else { return }
         
         mapper.colorize(map: map, colormap: colorscheme.colormap,

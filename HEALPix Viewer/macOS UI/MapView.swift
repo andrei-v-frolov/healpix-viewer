@@ -10,7 +10,7 @@ import MetalKit
 
 // MARK: SwiftUI wrapper for ProjectedView
 struct MapView: NSViewRepresentable {
-    @Binding var map: (any Map)?
+    @Binding var map: Map?
     
     @Binding var projection: Projection
     @Binding var magnification: Double
@@ -65,7 +65,7 @@ struct MapView: NSViewRepresentable {
 // MARK: Metal renderer for projected maps
 class ProjectedView: MTKView {
     // MARK: map
-    var map: (any Map)? = nil
+    var map: Map? = nil
     
     // MARK: compute pipeline
     var queue: MTLCommandQueue! = nil
