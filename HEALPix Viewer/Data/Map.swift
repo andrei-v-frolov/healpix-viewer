@@ -9,7 +9,9 @@ import SwiftUI
 import MetalKit
 
 // HEALPix map representation
-protocol Map {
+protocol Map: Identifiable, Equatable {
+    var id: UUID { get }
+    
     var nside: Int { get }
     var npix: Int { get }
     var size: Int { get }
@@ -55,6 +57,7 @@ func PNGTexture(width: Int, height: Int) -> MTLTexture {
 
 // HEALPix map representation, based on Swift array
 final class HpxMap: Map {
+    let id: UUID
     let nside: Int
     let data: [Float]
     
@@ -80,16 +83,20 @@ final class HpxMap: Map {
     
     // initialize map from array
     init(nside: Int, data: [Float], min: Double? = nil, max: Double? = nil) {
+        self.id = UUID()
         self.nside = nside
         self.data = data
         
         self.min = min ?? Double(data.min() ?? 0.0)
         self.max = max ?? Double(data.max() ?? 0.0)
     }
+    
+    static func == (a: HpxMap, b: HpxMap) -> Bool { return (a.id == b.id) && (a.nside == b.nside) }
 }
 
 // HEALPix map representation, based on CPU data
 final class CpuMap: Map {
+    let id: UUID
     let nside: Int
     let ptr: UnsafePointer<Float>
     lazy var data: [Float] = { Array(UnsafeBufferPointer(start: ptr, count: npix)) }()
@@ -116,16 +123,20 @@ final class CpuMap: Map {
     
     // initialize map from array
     init(nside: Int, buffer: UnsafePointer<Float>, min: Double, max: Double) {
+        self.id = UUID()
         self.nside = nside
         self.ptr = buffer
         
         self.min = min
         self.max = max
     }
+    
+    static func == (a: CpuMap, b: CpuMap) -> Bool { return (a.id == b.id) && (a.nside == b.nside) }
 }
 
 // HEALPix map representation, based on GPU data
 final class GpuMap: Map {
+    let id: UUID
     let nside: Int
     let buffer: MTLBuffer
     
@@ -148,12 +159,15 @@ final class GpuMap: Map {
     
     // initialize map from buffer
     init(nside: Int, buffer: MTLBuffer, min: Double, max: Double) {
+        self.id = UUID()
         self.nside = nside
         self.buffer = buffer
         
         self.min = min
         self.max = max
     }
+    
+    static func == (a: GpuMap, b: GpuMap) -> Bool { return (a.id == b.id) && (a.nside == b.nside) }
 }
 
 // color mapper transforms data to rendered texture array
@@ -174,7 +188,7 @@ struct ColorMapper {
         self.queue = queue
     }
     
-    func colorize(map: Map, colormap: Colormap, mincolor: Color, maxcolor: Color, nancolor: Color, minvalue: Double, maxvalue: Double) {
+    func colorize(map: any Map, colormap: Colormap, mincolor: Color, maxcolor: Color, nancolor: Color, minvalue: Double, maxvalue: Double) {
         let colors = float3x4(mincolor.components, maxcolor.components, nancolor.components)
         let range = float2(Float(minvalue), Float(maxvalue))
         
@@ -214,7 +228,7 @@ struct DataTransformer {
         self.queue = queue
     }
     
-    func transform(map: Map, function: DataTransform, mu: Double = 0.0, sigma: Double = 0.0, recycle: GpuMap? = nil) -> GpuMap? {
+    func transform(map: any Map, function: DataTransform, mu: Double = 0.0, sigma: Double = 0.0, recycle: GpuMap? = nil) -> GpuMap? {
         guard let shader = shaders[function],
               let buffer = recycle?.buffer ?? device.makeBuffer(length: map.size),
               let command = queue.makeCommandBuffer() else { return nil }
@@ -234,7 +248,7 @@ struct DataTransformer {
 }
 
 // test map
-var test: Map = {
+var test: HpxMap = {
     let nside = 32
     let seq = [Int](0..<12*nside*nside)
     let data = seq.map { Float($0)/Float(12*nside*nside-1) }

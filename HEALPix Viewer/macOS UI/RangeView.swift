@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct RangeToolbar: View, Equatable {
-    @Binding var map: Map?
+    @Binding var map: (any Map)?
     @Binding var modifier: BoundsModifier
     
     @Binding var datamin: Double
