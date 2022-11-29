@@ -19,4 +19,3 @@
 
 - CMB convention is looking from INSIDE - option to flip the maps!
 - modal NSOpenPanel and NSSavePanel are called within transaction
-- check if recoloring is triggered twice on (transformed) map loading

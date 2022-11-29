@@ -53,6 +53,9 @@ struct ContentView: View {
     @State private var info: String? = nil
     @State private var annotation: String = "TEMPERATURE [μK]"
     
+    // computed map cache
+    @State private var transformed: [UUID: GpuMap] = [UUID: GpuMap]()
+    
     // projection toolbar
     @State private var projection: Projection = .defaultValue
     @State private var orientation: Orientation = .defaultValue
@@ -83,7 +86,9 @@ struct ContentView: View {
     // transform toolbar
     @State private var transform: DataTransform = .defaultValue
     @State private var mu: Double = 0.0
-    @State private var sigma: Double = 1.0
+    @State private var sigma: Double = 0.0
+    @State private var mumin: Double = 0.0
+    @State private var mumax: Double = 0.0
     
     // lighting toolbar
     @State private var useLighting: Bool = false
@@ -172,7 +177,10 @@ struct ContentView: View {
                             .onChange(of: colors) { value in colorize(map) }
                         }
                         if (toolbar == .transform) {
-                            TransformToolbar(transform: $transform, mu: $mu, sigma: $sigma, datamin: $datamin, datamax: $datamax)
+                            TransformToolbar(transform: $transform, mu: $mu, sigma: $sigma, mumin: $mumin, mumax: $mumax)
+                            .onChange(of: function) { value in
+                                if let id = selected, let map = loaded.first(where: { $0.id == id })?.map { transform(map) }
+                            }
                         }
                         if (toolbar == .lighting) {
                             LightingToolbar(lightingLat: $lightingLat, lightingLon: $lightingLon, lightingAmt: $lightingAmt)
@@ -256,9 +264,10 @@ struct ContentView: View {
         .navigationTitle(title)
         .onChange(of: selected) { value in
             if let map = loaded.first(where: { $0.id == value }) {
-                info = map.info; load(map.map)
+                info = map.info; transform(map.map)
                 title = "\(map.name)[\(map.file)]"
                 annotation = "\(map.name) [\(map.unit)]"
+                mumin = map.map.min; mumax = map.map.max
             }
         }
         .onChange(of: askToOpen) { value in
@@ -363,11 +372,13 @@ struct ContentView: View {
     func load(_ map: Map) {
         self.map = map
         
+        let later = colorbar && (rangemin != map.min || rangemax != map.max)
+        
         modifier = .full
         datamin = map.min; rangemin = datamin
         datamax = map.max; rangemax = datamax
         
-        colorize(self.map)
+        if !later { colorize(self.map) }
     }
     
     // colorize map with current settings
@@ -377,6 +388,14 @@ struct ContentView: View {
         mapper.colorize(map: map, colormap: colorscheme.colormap,
                         mincolor: mincolor, maxcolor: maxcolor, nancolor: nancolor,
                         minvalue: rangemin, maxvalue: rangemax)
+    }
+    
+    // transform map with current settings
+    func transform(_ map: Map?) {
+        guard let map = map else { return }
+        if (transform == .none) { load(map); return }
+        
+        if let output = transformer.transform(map: map, function: transform, mu: mu, sigma: sigma, recycle: transformed[map.id]) { transformed[map.id] = output; load(output) }
     }
     
     // render annotated map texture for export

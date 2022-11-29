@@ -12,32 +12,44 @@ struct TransformToolbar: View {
     @Binding var mu: Double
     @Binding var sigma: Double
     
-    @Binding var datamin: Double
-    @Binding var datamax: Double
+    @Binding var mumin: Double
+    @Binding var mumax: Double
     
     @FocusState private var focus: Bool
     
     var body: some View {
         HStack {
             Picker("Transform:", selection: $transform) {
-                ForEach(DataTransform.allCases, id: \.self) {
-                    Text($0.rawValue).tag($0)
+                ForEach([DataTransform.none], id: \.self) {
+                    Text($0.formula).tag($0)
+                }
+                Divider()
+                Group {
+                    ForEach(DataTransform.flatten, id: \.self) {
+                        Text($0.formula).tag($0)
+                    }
+                }
+                Divider()
+                Group {
+                    ForEach(DataTransform.cdf, id: \.self) {
+                        Text($0.formula).tag($0)
+                    }
                 }
             }
             .frame(width: 190)
             Spacer().frame(width: 30)
-            Slider(value: $mu, in: datamin...datamax) { Text("μ:") } onEditingChanged: { editing in focus = false }
+            Slider(value: $mu, in: mumin...mumax) { Text("μ:") } onEditingChanged: { editing in focus = false }
                 .frame(width: 160)
                 .disabled(!transform.mu)
             TextField("μ", value: $mu, formatter: SixDigitsScientific)
                 .frame(width: 95).multilineTextAlignment(.trailing).focused($focus)
                 .disabled(!transform.mu)
             Spacer().frame(width: 30)
-            Slider(value: $sigma, in: 0.0...max(abs(datamin),abs(datamax))) { Text("σ:") } onEditingChanged: { editing in focus = false }
+            Slider(value: $sigma, in: -10.0...10.0) { Text("log σ:") } onEditingChanged: { editing in focus = false }
                 .frame(width: 160)
                 .disabled(!transform.sigma)
-            TextField("σ", value: $sigma, formatter: SixDigitsScientific)
-                .frame(width: 95).multilineTextAlignment(.trailing).focused($focus)
+            TextField("σ", value: $sigma, formatter: TwoDigitNumber)
+                .frame(width: 55).multilineTextAlignment(.trailing).focused($focus)
                 .disabled(!transform.sigma)
         }
         .padding(.top, 11)
