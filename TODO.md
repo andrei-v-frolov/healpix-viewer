@@ -19,5 +19,4 @@
 
 - CMB convention is looking from INSIDE - option to flip the maps!
 - modal NSOpenPanel and NSSavePanel are called within transaction
-- release UnsafeMutableBuffers backing maps in HpXFile on deinitialization
 - check if recoloring is triggered twice on (transformed) map loading

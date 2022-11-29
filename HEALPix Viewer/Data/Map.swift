@@ -131,6 +131,9 @@ final class CpuMap: Map {
         self.max = max
     }
     
+    // clean up on deinitialization
+    deinit { ptr.deallocate() }
+    
     static func == (a: CpuMap, b: CpuMap) -> Bool { return (a.id == b.id) && (a.nside == b.nside) }
 }
 
