@@ -9,7 +9,7 @@ import SwiftUI
 import MetalKit
 
 // HEALPix map representation
-protocol Map: Identifiable, Equatable {
+protocol Map {
     var id: UUID { get }
     
     var nside: Int { get }
@@ -90,8 +90,6 @@ final class HpxMap: Map {
         self.min = min ?? Double(data.min() ?? 0.0)
         self.max = max ?? Double(data.max() ?? 0.0)
     }
-    
-    static func == (a: HpxMap, b: HpxMap) -> Bool { return (a.id == b.id) && (a.nside == b.nside) }
 }
 
 // HEALPix map representation, based on CPU data
@@ -133,8 +131,6 @@ final class CpuMap: Map {
     
     // clean up on deinitialization
     deinit { ptr.deallocate() }
-    
-    static func == (a: CpuMap, b: CpuMap) -> Bool { return (a.id == b.id) && (a.nside == b.nside) }
 }
 
 // HEALPix map representation, based on GPU data
@@ -169,8 +165,6 @@ final class GpuMap: Map {
         self.min = min
         self.max = max
     }
-    
-    static func == (a: GpuMap, b: GpuMap) -> Bool { return (a.id == b.id) && (a.nside == b.nside) }
 }
 
 // color mapper transforms data to rendered texture array
@@ -191,7 +185,7 @@ struct ColorMapper {
         self.queue = queue
     }
     
-    func colorize(map: any Map, colormap: Colormap, mincolor: Color, maxcolor: Color, nancolor: Color, minvalue: Double, maxvalue: Double) {
+    func colorize(map: Map, colormap: Colormap, mincolor: Color, maxcolor: Color, nancolor: Color, minvalue: Double, maxvalue: Double) {
         let colors = float3x4(mincolor.components, maxcolor.components, nancolor.components)
         let range = float2(Float(minvalue), Float(maxvalue))
         
@@ -231,7 +225,7 @@ struct DataTransformer {
         self.queue = queue
     }
     
-    func transform(map: any Map, function: DataTransform, mu: Double = 0.0, sigma: Double = 0.0, recycle: GpuMap? = nil) -> GpuMap? {
+    func transform(map: Map, function: DataTransform, mu: Double = 0.0, sigma: Double = 0.0, recycle: GpuMap? = nil) -> GpuMap? {
         guard let shader = shaders[function],
               let buffer = recycle?.buffer ?? device.makeBuffer(length: map.size),
               let command = queue.makeCommandBuffer() else { return nil }
