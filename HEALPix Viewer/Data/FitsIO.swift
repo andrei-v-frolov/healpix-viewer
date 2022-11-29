@@ -372,15 +372,14 @@ func read_hpxfile(url: URL) -> HpxFile? {
         
         // read in raw HEALPix data (we own these UnsafeBuffers!)
         guard let (type, data) = read_bintable(fptr, npix: npix, nmaps: nmaps, nrows: nrows, metadata: metadata) else { return nil }
+        defer { for p in data { p.deallocate() } }
         
         // convert to canonical map format
         for m in 0..<nmaps {
             let flip =  iau && (MapCard.type(metadata[m]?[.type]) == .u)
             
-            if let c = raw2map_full(data[m], nside: nside, type: type[m], order: order, flip: flip) { map.append(c) } else { for p in data { p.deallocate() }; return nil }
+            if let c = raw2map_full(data[m], nside: nside, type: type[m], order: order, flip: flip) { map.append(c) } else { return nil }
         }
-        
-        for p in data { p.deallocate() }
     }
     else
     // partial sky map (first column contains pixel index)
