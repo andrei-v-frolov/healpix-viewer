@@ -2,7 +2,7 @@
 
 ### Current Status (Build 004)
 
-- started work on data transforms...
+- pointwise function transforms implemented
 
 ### Public Release Blocking
 
