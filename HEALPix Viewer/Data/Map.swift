@@ -97,6 +97,7 @@ final class CpuMap: Map {
     let id: UUID
     let nside: Int
     let ptr: UnsafePointer<Float>
+    lazy var idx: UnsafeMutablePointer<Int32> = { UnsafeMutablePointer<Int32>.allocate(capacity: npix) }()
     lazy var data: [Float] = { Array(UnsafeBufferPointer(start: ptr, count: npix)) }()
     
     // computed properties
@@ -130,7 +131,18 @@ final class CpuMap: Map {
     }
     
     // clean up on deinitialization
-    deinit { ptr.deallocate() }
+    deinit { ptr.deallocate(); idx.deallocate() }
+    
+    // index map (i.e. compute CDF)
+    func index() { index_map(ptr, idx, Int32(npix)) }
+    
+    // ranked map (i.e. equalize PDF)
+    func ranked() -> CpuMap {
+        let ranked = UnsafeMutablePointer<Float>.allocate(capacity: npix)
+        rank_map(idx, ranked, Int32(npix))
+        
+        return CpuMap(nside: nside, buffer: ranked, min: 0.0, max: 1.0)
+    }
 }
 
 // HEALPix map representation, based on GPU data

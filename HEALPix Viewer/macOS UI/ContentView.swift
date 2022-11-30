@@ -55,6 +55,7 @@ struct ContentView: View {
     @State private var annotation: String = "TEMPERATURE [μK]"
     
     // computed map cache
+    @State private var ranked: [UUID: CpuMap] = [UUID: CpuMap]()
     @State private var transformed: [UUID: GpuMap] = [UUID: GpuMap]()
     
     // progress analyzing data
@@ -381,8 +382,10 @@ struct ContentView: View {
             }
             
             for map in file.list {
-                let workload = map.map.npix
-                scheduled += workload; backgroundQueue.async { sleep(2); completed += workload }
+                let map = map.map, w = Double(map.npix), workload = Int(w*log(1+w))
+                scheduled += workload; backgroundQueue.async {
+                    map.index(); ranked[map.id] = map.ranked(); completed += workload
+                }
             }
         }
     }

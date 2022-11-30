@@ -19,3 +19,7 @@ void index_map(const float *data, int *index, int npix) {
     for (int i = 0; i < npix; i++) { index[i] = i; }
     quadsort(index, npix, sizeof(int), compare);
 }
+
+void rank_map(const int *index, float *ranked, int npix) {
+    for (int i = 0; i < npix; i++) { ranked[index[i]] = i/(npix-1.0); }
+}
