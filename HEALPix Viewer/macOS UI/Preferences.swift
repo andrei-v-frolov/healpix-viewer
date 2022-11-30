@@ -160,12 +160,12 @@ enum ColorScheme: String, CaseIterable, Preference {
 // data transform
 enum DataTransform: String, CaseIterable, Preference {
     case none = "None"
-    case log = "Logarithm"
+    case log = "Log"
     case asinh = "Arcsinh"
     case atan = "Arctan"
     case tanh = "Tanh"
-    case equalize = "Equalize"
-    case normalize = "Normalize"
+    case equalize = "Equalized"
+    case normalize = "Normalized"
     
     // default value
     static let appStorage = "dataTransform"

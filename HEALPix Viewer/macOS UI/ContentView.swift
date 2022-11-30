@@ -370,10 +370,9 @@ struct ContentView: View {
     
     // load map to view
     func load(_ map: Map) {
-        self.map = map
-        
         let later = colorbar && (rangemin != map.min || rangemax != map.max)
         
+        self.map = map
         modifier = .full
         datamin = map.min; rangemin = datamin
         datamax = map.max; rangemax = datamax
@@ -413,6 +412,8 @@ struct ContentView: View {
         let output = (oversampling > 1) ? PNGTexture(width: w/oversampling, height: h/oversampling) : texture
         
         if (colorbar && withDatarange) {
+            let scale = " (\(transform.rawValue.lowercased()) scale)"
+            let annotation = (transform != .none) ? annotation + scale : annotation
             annotate(texture, height: t, min: rangemin, max: rangemax, annotation: withAnnotation ? annotation : nil)
         }
         
