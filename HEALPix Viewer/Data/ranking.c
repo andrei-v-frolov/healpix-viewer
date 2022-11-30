@@ -8,16 +8,9 @@
 #include "ranking.h"
 #include "quadsort.h"
 
-float *map;
-
-int compare(const int *a, const int *b) {
-    return map[*a] > map[*b];
-}
-
 void index_map(const float *data, int *index, int npix) {
-    map = data;
     for (int i = 0; i < npix; i++) { index[i] = i; }
-    quadsort(index, npix, sizeof(int), compare);
+    quadsort(index, npix, sizeof(int), data);
 }
 
 void rank_map(const int *index, float *ranked, int npix) {

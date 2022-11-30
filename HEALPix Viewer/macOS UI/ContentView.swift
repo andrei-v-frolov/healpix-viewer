@@ -12,7 +12,7 @@ import UniformTypeIdentifiers
 
 // asynchronous queue for user-initiated tasks
 let userTaskQueue = DispatchQueue(label: "serial", qos: .userInitiated)
-let backgroundQueue = DispatchQueue(label: "background", qos: .background)
+let analysisQueue = DispatchQueue(label: "background", qos: .userInitiated, attributes: [.concurrent])
 
 // callback wrapper to determine view window
 struct Window {
@@ -383,7 +383,7 @@ struct ContentView: View {
             
             for map in file.list {
                 let map = map.map, w = Double(map.npix), workload = Int(w*log(1+w))
-                scheduled += workload; backgroundQueue.async {
+                scheduled += workload; analysisQueue.async {
                     map.index(); ranked[map.id] = map.ranked(); completed += workload
                 }
             }

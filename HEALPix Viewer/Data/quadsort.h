@@ -36,11 +36,10 @@
 #include <assert.h>
 #include <errno.h>
 
-typedef int CMPFUNC (const void *a, const void *b);
+typedef const float CMPDATA;
+#define cmp(a,b) (data[*(a)] > data[*(b)])
 
-//#define cmp(a,b) (*(a) > *(b))
-
-#define parity_merge_two(array, swap, x, y, ptl, ptr, pts, cmp)  \
+#define parity_merge_two(array, swap, x, y, ptl, ptr, pts)  \
 {  \
 	ptl = array + 0; ptr = array + 2; pts = swap + 0;  \
 	x = cmp(ptl, ptr) <= 0; y = !x; pts[x] = *ptr; ptr += y; pts[y] = *ptl; ptl += x; pts++;  \
@@ -51,7 +50,7 @@ typedef int CMPFUNC (const void *a, const void *b);
 	*pts = cmp(ptl, ptr)  > 0 ? *ptl : *ptr;  \
 }
 
-#define parity_merge_four(array, swap, x, y, ptl, ptr, pts, cmp)  \
+#define parity_merge_four(array, swap, x, y, ptl, ptr, pts)  \
 {  \
 	ptl = array + 0; ptr = array + 4; pts = swap;  \
 	x = cmp(ptl, ptr) <= 0; y = !x; pts[x] = *ptr; ptr += y; pts[y] = *ptl; ptl += x; pts++;  \
@@ -85,7 +84,7 @@ typedef int CMPFUNC (const void *a, const void *b);
 #define FUNC(NAME) NAME##8
 #define STRUCT(NAME) struct NAME##8
 
-#include "quadsort.c"
+//#include "quadsort.c"
 
 //////////////////////////////////////////////////////////
 //┌────────────────────────────────────────────────────┐//
@@ -106,7 +105,7 @@ typedef int CMPFUNC (const void *a, const void *b);
 #define FUNC(NAME) NAME##16
 #define STRUCT(NAME) struct NAME##16
 
-#include "quadsort.c"
+//#include "quadsort.c"
 
 //////////////////////////////////////////////////////////
 // ┌───────────────────────────────────────────────────┐//
@@ -148,7 +147,7 @@ typedef int CMPFUNC (const void *a, const void *b);
 #define FUNC(NAME) NAME##64
 #define STRUCT(NAME) struct NAME##64
 
-#include "quadsort.c"
+//#include "quadsort.c"
 
 //////////////////////////////////////////////////////////
 //┌────────────────────────────────────────────────────┐//
@@ -169,7 +168,7 @@ typedef int CMPFUNC (const void *a, const void *b);
 #define FUNC(NAME) NAME##128
 #define STRUCT(NAME) struct NAME##128
 
-#include "quadsort.c"
+//#include "quadsort.c"
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -183,7 +182,7 @@ typedef int CMPFUNC (const void *a, const void *b);
 //└─────────────────────────────────────────────────────────────────────────┘//
 ///////////////////////////////////////////////////////////////////////////////
 
-void quadsort(void *array, size_t nmemb, size_t size, CMPFUNC *cmp)
+void quadsort(void *array, size_t nmemb, size_t size, CMPDATA *data)
 {
 	if (nmemb < 2)
 	{
@@ -192,20 +191,20 @@ void quadsort(void *array, size_t nmemb, size_t size, CMPFUNC *cmp)
 
 	switch (size)
 	{
-		case sizeof(char):
-			return quadsort8(array, nmemb, cmp);
+		//case sizeof(char):
+		//	return quadsort8(array, nmemb, data);
 
-		case sizeof(short):
-			return quadsort16(array, nmemb, cmp);
+		//case sizeof(short):
+		//	return quadsort16(array, nmemb, data);
 
 		case sizeof(int):
-			return quadsort32(array, nmemb, cmp);
+			return quadsort32(array, nmemb, data);
 
-		case sizeof(long long):
-			return quadsort64(array, nmemb, cmp);
+		//case sizeof(long long):
+		//	return quadsort64(array, nmemb, data);
 
 		//case sizeof(long double):
-		//	return quadsort128(array, nmemb, cmp);
+		//	return quadsort128(array, nmemb, data);
 
 		default:
 			return assert(size == sizeof(char) || size == sizeof(short) || size == sizeof(int) || size == sizeof(long long) || size == sizeof(long double));
