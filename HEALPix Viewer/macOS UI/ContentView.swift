@@ -12,6 +12,7 @@ import UniformTypeIdentifiers
 
 // asynchronous queue for user-initiated tasks
 let userTaskQueue = DispatchQueue(label: "serial", qos: .userInitiated)
+let backgroundQueue = DispatchQueue(label: "background", qos: .background)
 
 // callback wrapper to determine view window
 struct Window {
@@ -55,6 +56,11 @@ struct ContentView: View {
     
     // computed map cache
     @State private var transformed: [UUID: GpuMap] = [UUID: GpuMap]()
+    
+    // progress analyzing data
+    @State private var scheduled: Int = 0
+    @State private var completed: Int = 0
+    private var progress: Double { Double(completed)/Double(scheduled) }
     
     // projection toolbar
     @State private var projection: Projection = .defaultValue
@@ -150,8 +156,16 @@ struct ContentView: View {
     // view layout
     var body: some View {
         NavigationView {
-            NavigationList(loaded: $loaded, selected: $selected)
-                .frame(width: 160)
+            VStack(spacing: 0) {
+                NavigationList(loaded: $loaded, selected: $selected)
+                    .frame(width: 160)
+                if (scheduled > 0) {
+                    Divider()
+                    Text("Analyzing Data...").padding([.top], 5)
+                    ProgressView(value: progress).padding([.leading,.trailing], 10).padding([.bottom], 2)
+                    .onChange(of: progress) { value in if (value == 1.0) { scheduled = 0; completed = 0 } }
+                }
+            }
             GeometryReader { geometry in
                 ZStack {
                     VStack(spacing: 0) {
@@ -364,6 +378,11 @@ struct ContentView: View {
             
             for map in file.list {
                 if (MapCard.type(map.name) == DataSource.value) { self.selected = map.id; break }
+            }
+            
+            for map in file.list {
+                let workload = map.map.npix
+                scheduled += workload; backgroundQueue.async { sleep(2); completed += workload }
             }
         }
     }
