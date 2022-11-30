@@ -255,17 +255,3 @@ struct DataTransformer {
         return output
     }
 }
-
-// test map
-var test: HpxMap = {
-    let nside = 32
-    let seq = [Int](0..<12*nside*nside)
-    let data = seq.map { Float($0)/Float(12*nside*nside-1) }
-    let map = HpxMap(nside: nside, data: data, min: 0.0, max: 1.0)
-    
-    let mapper = ColorMapper()
-    
-    mapper.colorize(map: map, colormap: Colormap.planck, mincolor: Color.blue, maxcolor: Color.red, nancolor: Color.green, minvalue: 0.0, maxvalue: 1.0)
-    
-    return map
-}()
