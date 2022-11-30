@@ -10,6 +10,7 @@
 		5009BB142912ECEB006DE835 /* ColorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5009BB132912ECEB006DE835 /* ColorView.swift */; };
 		500EFDBD29270B66002B6057 /* NavigationList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500EFDBC29270B66002B6057 /* NavigationList.swift */; };
 		500F99B3292553730097695C /* rawmap.c in Sources */ = {isa = PBXBuildFile; fileRef = 500F99B2292553730097695C /* rawmap.c */; };
+		50138E552937026500E8C33B /* ranking.c in Sources */ = {isa = PBXBuildFile; fileRef = 50138E542937026500E8C33B /* ranking.c */; };
 		501A6CD6292EBC9400E931A3 /* ExportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 501A6CD5292EBC9400E931A3 /* ExportView.swift */; };
 		501A6CDA292EC74400E931A3 /* Formatters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 501A6CD9292EC74400E931A3 /* Formatters.swift */; };
 		5036E7FA2932FC22006AE59E /* TransformView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5036E7F92932FC22006AE59E /* TransformView.swift */; };
@@ -91,6 +92,8 @@
 		500F99AE292553720097695C /* Bridging Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Bridging Header.h"; sourceTree = "<group>"; };
 		500F99B1292553730097695C /* rawmap.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = rawmap.h; sourceTree = "<group>"; };
 		500F99B2292553730097695C /* rawmap.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = rawmap.c; sourceTree = "<group>"; };
+		50138E532937026500E8C33B /* ranking.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ranking.h; sourceTree = "<group>"; };
+		50138E542937026500E8C33B /* ranking.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = ranking.c; sourceTree = "<group>"; };
 		501A6CD5292EBC9400E931A3 /* ExportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportView.swift; sourceTree = "<group>"; };
 		501A6CD9292EC74400E931A3 /* Formatters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Formatters.swift; sourceTree = "<group>"; };
 		5036E7F92932FC22006AE59E /* TransformView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransformView.swift; sourceTree = "<group>"; };
@@ -284,6 +287,8 @@
 				50C1FBBE2922B7C7009A3C99 /* FitsIO.swift */,
 				500F99B1292553730097695C /* rawmap.h */,
 				500F99B2292553730097695C /* rawmap.c */,
+				50138E532937026500E8C33B /* ranking.h */,
+				50138E542937026500E8C33B /* ranking.c */,
 				50D29750291C39AA00E18C08 /* Map.swift */,
 				500F99AE292553720097695C /* Bridging Header.h */,
 			);
@@ -420,6 +425,7 @@
 				508D56D029131DB10099C3A0 /* HEALPix CMB.swift in Sources */,
 				50F1F27829134E2500FBF00D /* Colormap.swift in Sources */,
 				508910B2291B077E00E33CB6 /* ColorbarView.swift in Sources */,
+				50138E552937026500E8C33B /* ranking.c in Sources */,
 				508D56D629131F050099C3A0 /* HEALPix Cold.swift in Sources */,
 				508D56D429131EB80099C3A0 /* HEALPix Hot.swift in Sources */,
 				508BBA8D28FF2764004B1A9C /* ContentView.swift in Sources */,

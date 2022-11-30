@@ -3,3 +3,4 @@
 //
 
 #include "rawmap.h"
+#include "ranking.h"
