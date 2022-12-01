@@ -220,10 +220,11 @@ struct DataTransformer {
     let queue: MTLCommandQueue
     
     let shaders: [DataTransform: MetalKernel] = [
-        .log:   MetalKernel(kernel: "log_transform"),
-        .asinh: MetalKernel(kernel: "asinh_transform"),
-        .atan:  MetalKernel(kernel: "atan_transform"),
-        .tanh:  MetalKernel(kernel: "tanh_transform")
+        .log:       MetalKernel(kernel: "log_transform"),
+        .asinh:     MetalKernel(kernel: "asinh_transform"),
+        .atan:      MetalKernel(kernel: "atan_transform"),
+        .tanh:      MetalKernel(kernel: "tanh_transform"),
+        .normalize: MetalKernel(kernel: "norm_transform")
     ]
     
     init() {

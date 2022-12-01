@@ -377,12 +377,14 @@ struct ContentView: View {
             self.file.append(file)
             self.loaded = self.opened
             
+            // select default data source
             for map in file.list {
                 if (MapCard.type(map.name) == DataSource.value) { self.selected = map.id; break }
             }
             
+            // dispatch maps for analysis
             for map in file.list {
-                let map = map.map, w = Double(map.npix), workload = Int(w*log(1+w))
+                let map = map.map, n = Double(map.npix), workload = Int(n*log(1+n))
                 scheduled += workload; analysisQueue.async {
                     map.index(); ranked[map.id] = map.ranked(); completed += workload
                 }
@@ -415,6 +417,11 @@ struct ContentView: View {
     func transform(_ map: Map?) {
         guard let map = map else { return }
         if (transform == .none) { load(map); return }
+        if (transform == .equalize), let map = ranked[map.id] { load(map); return }
+        if (transform == .normalize), let map = ranked[map.id],
+           let output = transformer.transform(map: map, function: transform, recycle: transformed[map.id]) {
+            transformed[map.id] = output; load(output); return
+        }
         
         if let output = transformer.transform(map: map, function: transform, mu: mu, sigma: sigma, recycle: transformed[map.id]) { transformed[map.id] = output; load(output) }
     }
