@@ -11,9 +11,14 @@ struct Toolbar: CustomizableToolbarContent {
     @Binding var toolbar: ShowToolbar
     @Binding var colorbar: Bool
     @Binding var lighting: Bool
+    @Binding var statview: Bool
     @Binding var infoview: Bool
     @Binding var magnification: Double
     @Binding var info: String?
+    
+    private let havecharts = {
+        if #available(macOS 13.0, *) { return true } else { return false }
+    }()
     
     var body: some CustomizableToolbarContent {
         ToolbarItem(id: "toggleSidebar", placement: .navigation, showsByDefault: true) {
@@ -92,12 +97,12 @@ struct Toolbar: CustomizableToolbarContent {
         Group {
             ToolbarItem(id: "statistics", placement: .principal, showsByDefault: true) {
                 Button {
-                    withAnimation { toggleInfoView() }
+                    withAnimation { toggleStatView() }
                 } label: {
                     Image(systemName: "waveform.path.ecg")
                 }
                 .help("Data Statistics")
-                .disabled(true)
+                .disabled(false || !havecharts)
             }
             ToolbarItem(id: "info", placement: .principal, showsByDefault: true) {
                 Button {
@@ -117,6 +122,10 @@ struct Toolbar: CustomizableToolbarContent {
     
     func toggleColorbar() {
         colorbar = !colorbar
+    }
+    
+    func toggleStatView() {
+        statview = (!statview)
     }
     
     func toggleInfoView() {

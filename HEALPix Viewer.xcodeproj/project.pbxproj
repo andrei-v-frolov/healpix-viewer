@@ -13,6 +13,7 @@
 		50138E552937026500E8C33B /* ranking.c in Sources */ = {isa = PBXBuildFile; fileRef = 50138E542937026500E8C33B /* ranking.c */; };
 		501A6CD6292EBC9400E931A3 /* ExportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 501A6CD5292EBC9400E931A3 /* ExportView.swift */; };
 		501A6CDA292EC74400E931A3 /* Formatters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 501A6CD9292EC74400E931A3 /* Formatters.swift */; };
+		502A8B67293AA00A008CAE63 /* StatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 502A8B66293AA00A008CAE63 /* StatView.swift */; };
 		5036E7FA2932FC22006AE59E /* TransformView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5036E7F92932FC22006AE59E /* TransformView.swift */; };
 		503C675E28FF89C1002D4314 /* MapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 503C675D28FF89C1002D4314 /* MapView.swift */; };
 		50563E592901E19A00B316CA /* MetalShader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50563E582901E19A00B316CA /* MetalShader.swift */; };
@@ -96,6 +97,7 @@
 		50138E542937026500E8C33B /* ranking.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = ranking.c; sourceTree = "<group>"; };
 		501A6CD5292EBC9400E931A3 /* ExportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportView.swift; sourceTree = "<group>"; };
 		501A6CD9292EC74400E931A3 /* Formatters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Formatters.swift; sourceTree = "<group>"; };
+		502A8B66293AA00A008CAE63 /* StatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatView.swift; sourceTree = "<group>"; };
 		5036E7F92932FC22006AE59E /* TransformView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransformView.swift; sourceTree = "<group>"; };
 		5036E7FD2933193B006AE59E /* Transforms.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Transforms.metal; sourceTree = "<group>"; };
 		503C675D28FF89C1002D4314 /* MapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapView.swift; sourceTree = "<group>"; };
@@ -176,6 +178,7 @@
 				508910B1291B077E00E33CB6 /* ColorbarView.swift */,
 				50A94797291B3AEB00F6F1BA /* RangeView.swift */,
 				501A6CD5292EBC9400E931A3 /* ExportView.swift */,
+				502A8B66293AA00A008CAE63 /* StatView.swift */,
 				50ECD2B128FF31260008F915 /* Toolbar.swift */,
 				50ECD2AF28FF2A9C0008F915 /* Menus.swift */,
 				5065EE7F292044D000AD46CD /* Preferences.swift */,
@@ -425,6 +428,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				502A8B67293AA00A008CAE63 /* StatView.swift in Sources */,
 				508D56C729131C270099C3A0 /* Planck Parchment.swift in Sources */,
 				508D56D029131DB10099C3A0 /* HEALPix CMB.swift in Sources */,
 				50F1F27829134E2500FBF00D /* Colormap.swift in Sources */,

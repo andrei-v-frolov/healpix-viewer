@@ -31,6 +31,7 @@ struct ContentView: View {
     @State private var title = "CMB Viewer"
     @State private var toolbar = ShowToolbar.none
     @State private var colorbar = false
+    @State private var statview = false
     @State private var infoview = false
     
     // open files
@@ -255,14 +256,21 @@ struct ContentView: View {
                         }
                     }
                 }
-                if (infoview) {
-                    ScrollView {
-                        Text(info ?? "")
-                            .lineLimit(nil)
-                            .frame(width: geometry.size.width)
-                            .font(Font.system(size: 13).monospaced())
+                Group {
+                    if #available(macOS 13.0, *) {
+                    if (statview) {
+                        StatView()
+                        .background(.thinMaterial)
+                    } }
+                    if (infoview) {
+                        ScrollView {
+                            Text(info ?? "")
+                                .lineLimit(nil)
+                                .frame(width: geometry.size.width)
+                                .font(Font.system(size: 13).monospaced())
+                        }
+                        .background(.thinMaterial)
                     }
-                    .background(.thinMaterial)
                 }
                 if (targeted) {
                     HStack { Spacer(); VStack { Spacer(); DropView(); Spacer() }; Spacer() }
@@ -274,7 +282,7 @@ struct ContentView: View {
             minHeight: 600, idealHeight: 800, maxHeight: .infinity
         )
         .toolbar(id: "mainToolbar") {
-            Toolbar(toolbar: $toolbar, colorbar: $colorbar, lighting: $useLighting, infoview: $infoview, magnification: $magnification, info: $info)
+            Toolbar(toolbar: $toolbar, colorbar: $colorbar, lighting: $useLighting, statview: $statview, infoview: $infoview, magnification: $magnification, info: $info)
         }
         .navigationTitle(title)
         .onChange(of: selected) { value in
