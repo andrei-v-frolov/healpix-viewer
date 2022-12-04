@@ -30,9 +30,8 @@ struct Texture {
 struct ContentView: View {
     @State private var title = "CMB Viewer"
     @State private var toolbar = ShowToolbar.none
+    @State private var overlay = ShowOverlay.none
     @State private var colorbar = false
-    @State private var statview = false
-    @State private var infoview = false
     
     // open files
     @State private var loading = false
@@ -52,6 +51,7 @@ struct ContentView: View {
     
     // map to be displayed
     @State private var map: Map? = nil
+    @State private var cdf: [Double]? = nil
     @State private var info: String? = nil
     @State private var annotation: String = "TEMPERATURE [μK]"
     
@@ -258,11 +258,11 @@ struct ContentView: View {
                 }
                 Group {
                     if #available(macOS 13.0, *) {
-                    if (statview) {
-                        StatView()
+                    if (overlay == .statview) {
+                        StatView(cdf: $cdf)
                         .background(.thinMaterial)
                     } }
-                    if (infoview) {
+                    if (overlay == .infoview) {
                         ScrollView {
                             Text(info ?? "")
                                 .lineLimit(nil)
@@ -282,7 +282,7 @@ struct ContentView: View {
             minHeight: 600, idealHeight: 800, maxHeight: .infinity
         )
         .toolbar(id: "mainToolbar") {
-            Toolbar(toolbar: $toolbar, colorbar: $colorbar, lighting: $useLighting, statview: $statview, infoview: $infoview, magnification: $magnification, info: $info)
+            Toolbar(toolbar: $toolbar, overlay: $overlay, colorbar: $colorbar, lighting: $useLighting, magnification: $magnification, cdf: $cdf, info: $info)
         }
         .navigationTitle(title)
         .onChange(of: selected) { value in

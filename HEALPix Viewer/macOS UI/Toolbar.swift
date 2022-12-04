@@ -9,14 +9,14 @@ import SwiftUI
 
 struct Toolbar: CustomizableToolbarContent {
     @Binding var toolbar: ShowToolbar
+    @Binding var overlay: ShowOverlay
     @Binding var colorbar: Bool
     @Binding var lighting: Bool
-    @Binding var statview: Bool
-    @Binding var infoview: Bool
     @Binding var magnification: Double
+    @Binding var cdf: [Double]?
     @Binding var info: String?
     
-    private let havecharts = {
+    private let havecharts: Bool = {
         if #available(macOS 13.0, *) { return true } else { return false }
     }()
     
@@ -102,7 +102,7 @@ struct Toolbar: CustomizableToolbarContent {
                     Image(systemName: "waveform.path.ecg")
                 }
                 .help("Data Statistics")
-                .disabled(false || !havecharts)
+                .disabled(cdf == nil || !havecharts)
             }
             ToolbarItem(id: "info", placement: .principal, showsByDefault: true) {
                 Button {
@@ -117,19 +117,19 @@ struct Toolbar: CustomizableToolbarContent {
     }
     
     func toggleToolbar(_ bar: ShowToolbar) {
-        toolbar = (toolbar == bar) ? .none : bar
+        toolbar = (toolbar == bar && overlay == .none) ? .none : bar; overlay = .none
     }
     
     func toggleColorbar() {
-        colorbar = !colorbar
+        colorbar = (overlay == .none) ? !colorbar : true; overlay = .none
     }
     
     func toggleStatView() {
-        statview = (!statview)
+        if (cdf != nil) { overlay = (overlay == .statview) ? .none : .statview }
     }
     
     func toggleInfoView() {
-        infoview = (!infoview) && (info != nil)
+        if (info != nil) { overlay = (overlay == .infoview) ? .none : .infoview }
     }
 }
 
@@ -140,4 +140,8 @@ func toggleSidebar() {
 
 enum ShowToolbar {
     case none, projection, orientation, color, transform, lighting
+}
+
+enum ShowOverlay {
+    case none, statview, infoview
 }
