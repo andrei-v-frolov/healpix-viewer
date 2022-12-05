@@ -18,6 +18,7 @@ protocol Map {
     
     var min: Double { get }
     var max: Double { get }
+    var cdf: [Double]? { get }
     
     var data: [Float] { get }
     var buffer: MTLBuffer { get }
@@ -68,6 +69,7 @@ final class HpxMap: Map {
     // data bounds
     let min: Double
     let max: Double
+    var cdf: [Double]? = nil
     
     // Metal buffer containing map data
     lazy var buffer: MTLBuffer = {
@@ -107,6 +109,7 @@ final class CpuMap: Map {
     // data bounds
     let min: Double
     let max: Double
+    var cdf: [Double]? = nil
     
     // Metal buffer containing map data
     lazy var buffer: MTLBuffer = {
@@ -134,7 +137,7 @@ final class CpuMap: Map {
     deinit { ptr.deallocate(); idx.deallocate() }
     
     // index map (i.e. compute CDF)
-    func index() { index_map(ptr, idx, Int32(npix)) }
+    func index() { index_map(ptr, idx, Int32(npix)); makecdf(intervals: 1<<12) }
     
     // ranked map (i.e. equalize PDF)
     func ranked() -> CpuMap {
@@ -142,6 +145,18 @@ final class CpuMap: Map {
         rank_map(idx, ranked, Int32(npix))
         
         return CpuMap(nside: nside, buffer: ranked, min: 0.0, max: 1.0)
+    }
+    
+    // decimate index to produce light-weight CDF representation
+    func makecdf(intervals n: Int) {
+        var cdf = [Double](); cdf.reserveCapacity(n+1)
+        
+        for i in stride(from: 0, through: npix, by: Swift.max(npix/n,1)) {
+            let j = Swift.min(i,npix-1), x = (ptr + Int(idx[j])).pointee
+            if (!x.isNaN) { cdf.append(Double(x)) }
+        }
+        
+        self.cdf = cdf
     }
 }
 
@@ -158,6 +173,7 @@ final class GpuMap: Map {
     // data bounds
     var min: Double
     var max: Double
+    var cdf: [Double]? = nil
     
     // array representing buffer data
     lazy var data: [Float] = {
@@ -252,6 +268,7 @@ struct DataTransformer {
         
         output.min = function.f(map.min, mu: mu, sigma: sigma)
         output.max = function.f(map.max, mu: mu, sigma: sigma)
+        output.cdf = map.cdf?.map { function.f($0, mu: mu, sigma: sigma) }
         
         return output
     }
