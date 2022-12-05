@@ -2,12 +2,14 @@
 
 ### Current Status (Build 004)
 
+- background map analysis implemented
 - pointwise function transforms implemented
+- equalization and normalization implemented
+- statistical analysis overlay being worked on
 
 ### Public Release Blocking
 
 - partial sky (`INDXSCHM = 'EXPLICIT'`) HEALPix file support
-- data analysis features (functional map transforms, equalization, etc.)
 
 ### Planned Features
 
@@ -17,12 +19,14 @@
 
 ### Feature Requests
 
-- `Open File...` should open a new window if none available
 - option to drag the map with colorbar...
 
 ### Bug Fixes
 
+- `Open File...` should open a new window if none available
 - CMB convention is looking from INSIDE - option to flip the maps!
 - modal NSOpenPanel and NSSavePanel are called within transaction
-- export with magnification is broken?
-- range on equalized map is not set...
+- export with magnification is broken? confirmed .n tag in render()
+- delta PDFs need special handling (common with masks)...
+- range on equalized map is not set properly...
+- CDF loading is broken...
