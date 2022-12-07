@@ -257,7 +257,7 @@ struct ContentView: View {
                 Group {
                     if #available(macOS 13.0, *) {
                     if (overlay == .statview) {
-                        StatView(cdf: $cdf)
+                        StatView(overlay: $overlay, cdf: $cdf, rangemin: $rangemin, rangemax: $rangemax)
                         .background(.thinMaterial)
                     } }
                     if (overlay == .infoview) {

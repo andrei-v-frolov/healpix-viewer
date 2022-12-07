@@ -35,7 +35,11 @@ struct Statistics {
 
 @available(macOS 13.0, *)
 struct StatView: View {
+    @Binding var overlay: ShowOverlay
     @Binding var cdf: [Double]?
+    
+    @Binding var rangemin: Double
+    @Binding var rangemax: Double
     
     // summary statistics from CDF compendium
     var stat: Statistics {
@@ -184,6 +188,31 @@ struct StatView: View {
                 Spacer()
             }
             .font(Font.system(size: 13).monospaced())
+            .padding(10)
+            HStack {
+                Button("Set range to μ±5σ") {
+                    let stat = stat
+                    rangemin = stat.mean - 5*stat.sigma
+                    rangemax = stat.mean + 5*stat.sigma
+                    withAnimation { overlay = .none }
+                }
+                Button("Set range to μ±3σ") {
+                    let stat = stat
+                    rangemin = stat.mean - 3*stat.sigma
+                    rangemax = stat.mean + 3*stat.sigma
+                    withAnimation { overlay = .none }
+                }
+                Button("Set range to 99.73%") {
+                    rangemin = percentile(0.0013498980)
+                    rangemax = percentile(0.9986501020)
+                    withAnimation { overlay = .none }
+                }
+                Button("Set range to 99.99994267%") {
+                    rangemin = percentile(2.8665157187919391167375234e-7)
+                    rangemax = percentile(0.99999971334842812080608832624766)
+                    withAnimation { overlay = .none }
+                }
+            }
             .padding(10)
         }
     }
