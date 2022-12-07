@@ -12,6 +12,10 @@ struct TransformToolbar: View {
     @Binding var mu: Double
     @Binding var sigma: Double
     
+    @Binding var selected: UUID?
+    @Binding var ranked: [UUID: CpuMap]
+    var ranking: Bool { if let id = selected, ranked[id] != nil { return true } else { return false } }
+    
     @Binding var mumin: Double
     @Binding var mumax: Double
     
@@ -32,7 +36,7 @@ struct TransformToolbar: View {
                 Divider()
                 Group {
                     ForEach(DataTransform.cdf, id: \.self) {
-                        Text($0.formula).tag($0)
+                        Text($0.formula).foregroundColor(ranking ? .primary : .secondary).tag($0)
                     }
                 }
             }

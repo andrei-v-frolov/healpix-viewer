@@ -193,10 +193,8 @@ struct ContentView: View {
                             .onChange(of: colors) { value in colorize(map) }
                         }
                         if (toolbar == .transform) {
-                            TransformToolbar(transform: $transform, mu: $mu, sigma: $sigma, mumin: $mumin, mumax: $mumax)
-                            .onChange(of: function) { value in
-                                if let id = selected, let map = loaded.first(where: { $0.id == id })?.map { transform(map) }
-                            }
+                            TransformToolbar(transform: $transform, mu: $mu, sigma: $sigma, selected: $selected, ranked: $ranked, mumin: $mumin, mumax: $mumax)
+                            .onChange(of: function) { value in transform() }
                         }
                         if (toolbar == .lighting) {
                             LightingToolbar(lightingLat: $lightingLat, lightingLon: $lightingLon, lightingAmt: $lightingAmt)
@@ -394,7 +392,9 @@ struct ContentView: View {
             for map in file.list {
                 let map = map.map, n = Double(map.npix), workload = Int(n*log(1+n))
                 scheduled += workload; analysisQueue.async {
-                    map.index(); ranked[map.id] = map.ranked(); completed += workload
+                    map.index(); if (map.id == selected) { cdf = map.cdf?.map { transform.f($0, mu: mu, sigma: sigma) } }
+                    ranked[map.id] = map.ranked(); if DataTransform.cdf.contains(transform) { transform() }
+                    completed += workload
                 }
             }
         }
@@ -404,7 +404,8 @@ struct ContentView: View {
     func load(_ map: Map) {
         let later = colorbar && (rangemin != map.min || rangemax != map.max)
         
-        self.map = map
+        self.map = map; self.cdf = map.cdf
+        
         modifier = .full
         datamin = map.min; rangemin = datamin
         datamax = map.max; rangemax = datamax
@@ -422,8 +423,9 @@ struct ContentView: View {
     }
     
     // transform map with current settings
-    func transform(_ map: Map?) {
-        guard let map = map else { return }
+    func transform(_ map: Map? = nil) {
+        guard let map = map ?? loaded.first(where: { $0.id == selected })?.map else { return }
+        
         if (transform == .none) { load(map); return }
         if (transform == .equalize), let map = ranked[map.id] { load(map); return }
         if (transform == .normalize), let map = ranked[map.id],
