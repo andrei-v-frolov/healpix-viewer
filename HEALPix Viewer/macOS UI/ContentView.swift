@@ -10,9 +10,9 @@ import MetalKit
 import MetalPerformanceShaders
 import UniformTypeIdentifiers
 
-// asynchronous queue for user-initiated tasks
+// asynchronous queues for user-initiated tasks
 let userTaskQueue = DispatchQueue(label: "serial", qos: .userInitiated)
-let analysisQueue = DispatchQueue(label: "background", qos: .userInitiated, attributes: [.concurrent])
+let analysisQueue = DispatchQueue(label: "analysis", qos: .userInitiated, attributes: [.concurrent])
 
 // callback wrapper to determine view window
 struct Window {
