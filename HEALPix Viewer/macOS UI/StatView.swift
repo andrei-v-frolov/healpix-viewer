@@ -205,7 +205,6 @@ struct StatView: View {
         if (n > 0) { dist.append(Distribution(x: cdf[0], cdf: Double(offset)/Double(samples-1), pdf: (offset == 0 ? 0.0 : -1.0), delta: 0.0)) }
         
         for i in stride(from: (n/2) % k, to: n, by: k) {
-            print(n,i)
             if (i-k >= 0 && i+k < n) {
                 let x = cdf[i]
                 let F = Double(i+offset)/Double(samples-1)
