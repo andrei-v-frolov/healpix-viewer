@@ -27,4 +27,3 @@
 - CMB convention is looking from INSIDE - option to flip the maps!
 - modal NSOpenPanel and NSSavePanel are called within transaction
 - export with magnification is broken? confirmed .n tag in render()
-- range on equalized map is not set properly...
