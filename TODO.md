@@ -5,7 +5,7 @@
 - background map analysis implemented
 - pointwise function transforms implemented
 - equalization and normalization implemented
-- statistical analysis overlay being worked on
+- statistical analysis overlay is implemented
 
 ### Public Release Blocking
 

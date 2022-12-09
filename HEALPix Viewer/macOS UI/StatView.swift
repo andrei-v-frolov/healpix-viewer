@@ -128,7 +128,7 @@ struct StatView: View {
                     .foregroundStyle(Color(.red))
                 }
             }
-            .chartXScale(domain: percentile(0.0)...percentile(1.0))
+            .chartXScale(domain: rangemin...rangemax)
             .padding([.leading,.trailing,.top], 30)
             HStack {
                 Spacer()
@@ -207,9 +207,9 @@ struct StatView: View {
                     rangemax = percentile(0.9986501020)
                     withAnimation { overlay = .none }
                 }
-                Button("Set range to 99.99994267%") {
-                    rangemin = percentile(2.8665157187919391167375234e-7)
-                    rangemax = percentile(0.99999971334842812080608832624766)
+                Button("Set range to 99.99%") {
+                    rangemin = percentile(0.00005)
+                    rangemax = percentile(0.99995)
                     withAnimation { overlay = .none }
                 }
             }
