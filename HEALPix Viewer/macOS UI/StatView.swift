@@ -35,9 +35,7 @@ struct Statistics {
 
 @available(macOS 13.0, *)
 struct StatView: View {
-    @Binding var overlay: ShowOverlay
     @Binding var cdf: [Double]?
-    
     @Binding var rangemin: Double
     @Binding var rangemax: Double
     
@@ -100,36 +98,49 @@ struct StatView: View {
         return (maxpdf > 0.0) ? dist.map { rescale($0, maxpdf: maxpdf) } : dist
     }
     
+    // chart contents
+    var chart: some View {
+        Chart(data) {
+            if ($0.cdf >= 0.0) {
+                LineMark(
+                    x: .value("Value", $0.x),
+                    y: .value("CDF", $0.cdf)
+                )
+                .interpolationMethod(.monotone)
+                .lineStyle(.init(lineWidth: 5))
+                .foregroundStyle(Gradient(colors: [.red, .white, .blue]))
+            }
+            if ($0.pdf >= 0.0) {
+                AreaMark(
+                    x: .value("Value", $0.x),
+                    y: .value("PDF", $0.pdf)
+                )
+                .foregroundStyle(Gradient(colors: [.primary.opacity(0.5), .secondary.opacity(0.5)]))
+            }
+            if ($0.delta > 0.0) {
+                BarMark(
+                    x: .value("Value", $0.x),
+                    y: .value("delta", $0.delta)
+                )
+                .foregroundStyle(Color(.red))
+            }
+        }
+        .chartXScale(domain: rangemin...rangemax)
+    }
+    
     // chart view body
     var body: some View {
         VStack(spacing: 0) {
-            Chart(data) {
-                if ($0.cdf >= 0.0) {
-                    LineMark(
-                        x: .value("Value", $0.x),
-                        y: .value("CDF", $0.cdf)
-                    )
-                    .interpolationMethod(.monotone)
-                    .lineStyle(.init(lineWidth: 5))
-                    .foregroundStyle(Gradient(colors: [.red, .white, .blue]))
-                }
-                if ($0.pdf >= 0.0) {
-                    AreaMark(
-                        x: .value("Value", $0.x),
-                        y: .value("PDF", $0.pdf)
-                    )
-                    .foregroundStyle(Gradient(colors: [.primary.opacity(0.5), .secondary.opacity(0.5)]))
-                }
-                if ($0.delta > 0.0) {
-                    BarMark(
-                        x: .value("Value", $0.x),
-                        y: .value("delta", $0.delta)
-                    )
-                    .foregroundStyle(Color(.red))
+            GeometryReader { geometry in
+                chart.padding([.leading,.trailing,.top], 30)
+                .onDrag {
+                    let chart = chart.frame(width: geometry.size.width, height: geometry.size.height), none = NSItemProvider()
+                    guard let url = tmpfile(type: .pdf) else { return none }
+                    
+                    render(content: chart, url: url); tmpfiles.append(url)
+                    return NSItemProvider(contentsOf: url) ?? none
                 }
             }
-            .chartXScale(domain: rangemin...rangemax)
-            .padding([.leading,.trailing,.top], 30)
             HStack {
                 Spacer()
                 VStack {
@@ -252,5 +263,22 @@ struct StatView: View {
     // delta-like contribution to CDF is represented as a bar
     func dbar(x: Double, delta: Double) -> Distribution {
         return Distribution(x: x, cdf: -1.0, pdf: -1.0, delta: delta)
+    }
+    
+    // render chart content to an URL
+    @MainActor func render(content: some View, url: URL) {
+        let renderer = ImageRenderer(content: content)
+        
+        renderer.render { size, renderer in
+            var box = CGRect(origin: .zero, size: size)
+            
+            guard let consumer = CGDataConsumer(url: url as CFURL),
+                  let context =  CGContext(consumer: consumer, mediaBox: &box, nil) else { return }
+            
+            context.beginPDFPage(nil)
+            renderer(context)
+            context.endPDFPage()
+            context.closePDF()
+        }
     }
 }
