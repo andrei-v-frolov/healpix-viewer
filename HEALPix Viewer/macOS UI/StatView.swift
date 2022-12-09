@@ -194,23 +194,19 @@ struct StatView: View {
                     let stat = stat
                     rangemin = stat.mean - 5*stat.sigma
                     rangemax = stat.mean + 5*stat.sigma
-                    withAnimation { overlay = .none }
                 }
                 Button("Set range to μ±3σ") {
                     let stat = stat
                     rangemin = stat.mean - 3*stat.sigma
                     rangemax = stat.mean + 3*stat.sigma
-                    withAnimation { overlay = .none }
                 }
                 Button("Set range to 99.73%") {
                     rangemin = percentile(0.0013498980)
                     rangemax = percentile(0.9986501020)
-                    withAnimation { overlay = .none }
                 }
                 Button("Set range to 99.99%") {
                     rangemin = percentile(0.00005)
                     rangemax = percentile(0.99995)
-                    withAnimation { overlay = .none }
                 }
             }
             .padding(10)
