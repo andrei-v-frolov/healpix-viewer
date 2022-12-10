@@ -134,7 +134,7 @@ struct StatView: View {
             GeometryReader { geometry in
                 chart.padding([.leading,.trailing,.top], 30)
                 .onDrag {
-                    let chart = chart.frame(width: geometry.size.width, height: geometry.size.height), none = NSItemProvider()
+                    let chart = chart.frame(width: geometry.size.width, height: geometry.size.height).padding(10), none = NSItemProvider()
                     guard let url = tmpfile(type: .pdf) else { return none }
                     
                     render(content: chart, url: url); tmpfiles.append(url)
