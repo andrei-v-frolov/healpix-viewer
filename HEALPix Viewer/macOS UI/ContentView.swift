@@ -453,7 +453,7 @@ struct ContentView: View {
         if (colorbar && withDatarange) {
             let scale = " (\(transform.rawValue.lowercased()) scale)"
             let annotation = (transform != .none) ? annotation + scale : annotation
-            annotate(texture, height: t, min: rangemin, max: rangemax, annotation: withAnnotation ? annotation : nil)
+            annotate(texture, height: t, min: rangemin, max: rangemax, annotation: withAnnotation ? annotation : nil, background: bgcolor.cgColor)
         }
         
         if (colorbar || oversampling > 1) {
@@ -497,7 +497,7 @@ struct ContentView: View {
 }
 
 // annotate bottom part of a texture with data range labels and (optionally) a string
-func annotate(_ texture: MTLTexture, height h: Int, min: Double, max: Double, format: String = "%+.6g", annotation: String? = nil, font fontname: String = "SF Compact", color: CGColor = .black) {
+func annotate(_ texture: MTLTexture, height h: Int, min: Double, max: Double, format: String = "%+.6g", annotation: String? = nil, font fontname: String = "SF Compact", color: CGColor = .black, background: CGColor? = nil) {
     let w = texture.width, region = MTLRegionMake2D(0,0,w,h)
     
     // allocate buffer for the annotation region
@@ -516,6 +516,12 @@ func annotate(_ texture: MTLTexture, height h: Int, min: Double, max: Double, fo
     // set up coordinates for off-screen image
     context.translateBy(x: 0.0, y: CGFloat(h))
     context.scaleBy(x: 1.0, y: -1.0)
+    
+    // clear the background texture content
+    let rect = CGRect(x: 0, y: 0, width: w, height: h); context.clear(rect)
+    
+    // fill the background if requested
+    if let background = background { context.setFillColor(background); context.fill(rect) }
     
     // set up font for annotations
     let font = CTFontCreateWithName(fontname as CFString, CGFloat(h)/1.2, nil)
