@@ -6,6 +6,7 @@
 - pointwise function transforms implemented
 - equalization and normalization implemented
 - statistical analysis overlay is implemented
+- Drag and Drop of charts as PDF is implemented
 
 ### Public Release Blocking
 
