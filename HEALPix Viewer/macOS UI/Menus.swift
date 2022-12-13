@@ -124,31 +124,25 @@ struct DataMenus: Commands {
                         Text($0.rawValue).tag($0)
                     }
                 }
-            }
                 Picker("Color Scheme", selection: $colorScheme) {
                     ForEach(ColorScheme.allCases, id: \.self) {
                         Text($0.rawValue).tag($0)
                     }
                 }
+            }
+            Divider()
+            Picker("Transform", selection: $dataTransform) {
+                ForEach([DataTransform.none], id: \.self) {
+                    Text($0.rawValue).tag($0)
+                }
                 Divider()
-                Group {
-                Picker("Data Range", selection: $boundsModifier) {
-                    ForEach(BoundsModifier.allCases, id: \.self) {
-                        Text($0.rawValue).tag($0)
-                    }
+                ForEach(DataTransform.flatten, id: \.self) {
+                    Text($0.rawValue).tag($0)
                 }
-                .disabled(true)
-                Picker("Transform", selection: $dataTransform) {
-                    ForEach(DataTransform.allCases, id: \.self) {
-                        Text($0.rawValue).tag($0)
-                    }
+                Divider()
+                ForEach(DataTransform.cdf, id: \.self) {
+                    Text($0.rawValue).tag($0)
                 }
-                Picker("Bounds", selection: $dataBounds) {
-                    ForEach(DataBounds.allCases, id: \.self) {
-                        Text($0.rawValue).tag($0)
-                    }
-                }
-                .disabled(true)
             }
         }
     }
