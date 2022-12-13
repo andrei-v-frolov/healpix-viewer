@@ -5,8 +5,8 @@
 - background map analysis implemented
 - pointwise function transforms implemented
 - equalization and normalization implemented
-- statistical analysis overlay is implemented
-- Drag and Drop of charts as PDF is implemented
+- statistical analysis overlay is implemented (macOS 13 only)
+- Drag and Drop of charts as PDF is implemented (no transparency)
 
 ### Public Release Blocking
 
@@ -28,3 +28,5 @@
 - CMB convention is looking from INSIDE - option to flip the maps!
 - modal NSOpenPanel and NSSavePanel are called within transaction
 - export with magnification is broken? confirmed .n tag in render()
+- equalized map loading still broken - test more on exactly why...
+- set range results in blanck PDF chart for COM_CMB_IQU-sevem_2048_R3.00_hm1.fits
