@@ -30,7 +30,6 @@ struct ViewMenus: Commands {
     
     // render colorbar?
     @AppStorage(showColorBarKey) var showColorBar = false
-    @AppStorage(showDataBarKey) var showDataBar = false
     @AppStorage(lightingKey) var lightingEffects = false
     
     // menu commands
@@ -56,11 +55,6 @@ struct ViewMenus: Commands {
                 Text("Show Color Bar")
             }
             .keyboardShortcut("C", modifiers: [.option, .command])
-            Toggle(isOn: $showDataBar) {
-                Text("Show Data Sidebar")
-            }
-            .keyboardShortcut("D", modifiers: [.option, .command])
-            .disabled(true)
         }
     }
 }

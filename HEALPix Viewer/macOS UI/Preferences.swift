@@ -9,7 +9,6 @@ import SwiftUI
 
 // boolean application storage keys
 let showColorBarKey = "showColorBar"
-let showDataBarKey = "showDataBar"
 let lightingKey = "lighting"
 
 // application appearance
