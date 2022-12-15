@@ -101,7 +101,7 @@ struct ContentView: View {
     // lighting toolbar
     @State private var useLighting: Bool = false
     @State private var lightingLat: Double = 45.0
-    @State private var lightingLon: Double = -45.0
+    @State private var lightingLon: Double = 45.0
     @State private var lightingAmt: Double = 30.0
     
     // window associated with the view

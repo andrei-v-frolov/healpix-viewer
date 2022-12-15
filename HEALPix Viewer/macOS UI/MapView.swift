@@ -42,7 +42,7 @@ struct MapView: NSViewRepresentable {
     
     func updateNSView(_ view: Self.NSViewType, context: Self.Context) {
         let radian = Double.pi/180.0
-        let rotation = ang2rot(latitude*radian, longitude*radian, azimuth*radian), w = rot2gen(rotation)
+        let rotation = ang2rot(latitude*radian, -longitude*radian, -azimuth*radian), w = rot2gen(rotation)
         let lightsrc = float4(ang2vec((90.0-lightingLat)*radian, lightingLon*radian), Float(lightingAmt/100.0))
         
         view.map = map
@@ -88,14 +88,15 @@ class ProjectedView: MTKView {
     var spin = false
     
     // MARK: affine tranform mapping screen to projection plane
-    func transform(width: Double? = nil, height: Double? = nil, magnification: Double? = nil, padding: Double? = nil, anchor: Anchor = .c, flip: Bool = true) -> float3x2 {
-        let (x,y) = projection.extent, sign = flip ? -1.0 : 1.0
+    func transform(width: Double? = nil, height: Double? = nil, magnification: Double? = nil, padding: Double? = nil, anchor: Anchor = .c, flipx: Bool? = nil, flipy: Bool = true) -> float3x2 {
+        let flipx = flipx ?? UserDefaults.standard.bool(forKey: viewFromInsideKey)
+        let (x,y) = projection.extent, signx = flipx ? -1.0 : 1.0, signy = flipy ? -1.0 : 1.0
         let w = width ?? drawableSize.width, h = height ?? drawableSize.height
         let m = magnification ?? self.magnification, p = padding ?? self.padding
         let s = 2.0 * (1.0+p) * max(x/w, y/h)/exp2(m), x0 = -s*w/2, y0 = -s*h/2
-        let dx = x0 + anchor.halign*(x0+x), dy = y0 - sign*anchor.valign*(y0+y)
+        let dx = signx*(x0 + anchor.halign*(x0+x)), dy = signy*y0 - anchor.valign*(y0+y)
         
-        return simd.float3x2(float2(Float(s), 0.0), float2(0.0, Float(flip ? -s : s)), float2(Float(dx), Float(flip ? -dy : dy)))
+        return simd.float3x2(float2(Float(flipx ? -s : s), 0.0), float2(0.0, Float(flipy ? -s : s)), float2(Float(dx), Float(dy)))
     }
     
     // MARK: arguments to shader
@@ -192,7 +193,7 @@ class ProjectedView: MTKView {
     
     // MARK: render image to off-screen texture
     func render(to texture: MTLTexture, anchor: Anchor = .c) {
-        let transform = transform(width: Double(texture.width), height: Double(texture.height), padding: 0.0, anchor: anchor, flip: false)
+        let transform = transform(width: Double(texture.width), height: Double(texture.height), padding: 0.0, anchor: anchor, flipy: false)
         
         // initialize compute command buffer
         guard let command = queue.makeCommandBuffer() else { return }

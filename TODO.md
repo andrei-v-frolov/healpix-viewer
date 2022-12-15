@@ -7,6 +7,7 @@
 - equalization and normalization implemented
 - statistical analysis overlay is implemented (macOS 13 only)
 - Drag and Drop of charts as PDF is implemented (no transparency)
+- option to flip the view from inside & outside of celestial sphere added
 
 ### Public Release Blocking
 
@@ -25,7 +26,6 @@
 ### Bug Fixes
 
 - `Open File...` should open a new window if none available
-- CMB convention is looking from INSIDE - option to flip the maps!
 - modal NSOpenPanel and NSSavePanel are called within transaction
 - export with magnification is broken? confirmed .n tag in render()
 - equalized map loading still broken - test more on exactly why...

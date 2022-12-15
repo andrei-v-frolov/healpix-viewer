@@ -29,6 +29,7 @@ struct ViewMenus: Commands {
     @AppStorage(Appearance.appStorage) var appearance = Appearance.defaultValue
     
     // render colorbar?
+    @AppStorage(viewFromInsideKey) var viewFromInside = true
     @AppStorage(showColorBarKey) var showColorBar = false
     @AppStorage(lightingKey) var lightingEffects = false
     
@@ -46,6 +47,10 @@ struct ViewMenus: Commands {
                 }
             }
             Divider()
+            Toggle(isOn: $viewFromInside) {
+                Text("View From Inside")
+            }
+            .keyboardShortcut("I", modifiers: [.option, .command])
             Toggle(isOn: $lightingEffects) {
                 Text("Lighting Effects")
             }

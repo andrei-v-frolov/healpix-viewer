@@ -8,6 +8,7 @@
 import SwiftUI
 
 // boolean application storage keys
+let viewFromInsideKey = "viewFromInside"
 let showColorBarKey = "showColorBar"
 let lightingKey = "lighting"
 
