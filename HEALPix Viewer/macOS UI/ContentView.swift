@@ -190,11 +190,9 @@ struct ContentView: View {
                             ColorToolbar(colorscheme: $colorscheme,
                                          mincolor: $mincolor, maxcolor: $maxcolor,
                                          nancolor: $nancolor, bgcolor: $bgcolor)
-                            .onChange(of: colors) { value in colorize(map) }
                         }
                         if (toolbar == .transform) {
                             TransformToolbar(transform: $transform, mu: $mu, sigma: $sigma, selected: $selected, ranked: $ranked, mumin: $mumin, mumax: $mumax)
-                            .onChange(of: function) { value in transform() }
                         }
                         if (toolbar == .lighting) {
                             LightingToolbar(lightingLat: $lightingLat, lightingLon: $lightingLon, lightingAmt: $lightingAmt)
@@ -223,7 +221,6 @@ struct ContentView: View {
                             RangeToolbar(map: $map, modifier: $modifier,
                                          datamin: $datamin, datamax: $datamax,
                                          rangemin: $rangemin, rangemax: $rangemax)
-                            .onChange(of: range) { value in colorize(map) }
                         }
                     }
                     .sheet(isPresented: $loading) {
@@ -291,6 +288,9 @@ struct ContentView: View {
                 mumin = map.map.min; mumax = map.map.max
             }
         }
+        .onChange(of: function) { value in transform() }
+        .onChange(of: colors) { value in colorize() }
+        .onChange(of: range) { value in colorize() }
         .onChange(of: askToOpen) { value in
             if (window()?.isKeyWindow == true && value) {
                 askToOpen = false; DispatchQueue.main.async { self.open() }
@@ -414,8 +414,8 @@ struct ContentView: View {
     }
     
     // colorize map with current settings
-    func colorize(_ map: Map?) {
-        guard let map = map else { return }
+    func colorize(_ map: Map? = nil) {
+        guard let map = map ?? self.map else { return }
         
         mapper.colorize(map: map, colormap: colorscheme.colormap,
                         mincolor: mincolor, maxcolor: maxcolor, nancolor: nancolor,
