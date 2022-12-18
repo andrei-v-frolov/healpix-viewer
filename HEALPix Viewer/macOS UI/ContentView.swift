@@ -426,14 +426,12 @@ struct ContentView: View {
     func transform(_ map: Map? = nil) {
         guard let map = map ?? loaded.first(where: { $0.id == selected })?.map else { return }
         
-        if (transform == .none) { load(map); return }
-        if (transform == .equalize), let map = ranked[map.id] { load(map); return }
-        if (transform == .normalize), let map = ranked[map.id],
-           let output = transformer.transform(map: map, function: transform, recycle: transformed[map.id]) {
-            transformed[map.id] = output; load(output); return
+        switch transform {
+            case .none: load(map)
+            case .equalize: if let map = ranked[map.id] { load(map) }
+            case .normalize: if let map = ranked[map.id], let output = transformer.transform(map: map, function: transform, recycle: transformed[map.id]) { transformed[map.id] = output; load(output) }
+            default: if let output = transformer.transform(map: map, function: transform, mu: mu, sigma: sigma, recycle: transformed[map.id]) { transformed[map.id] = output; load(output) }
         }
-        
-        if let output = transformer.transform(map: map, function: transform, mu: mu, sigma: sigma, recycle: transformed[map.id]) { transformed[map.id] = output; load(output) }
     }
     
     // render annotated map texture for export
