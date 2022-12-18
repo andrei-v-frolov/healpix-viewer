@@ -65,14 +65,6 @@ struct Toolbar: CustomizableToolbarContent {
                 }
                 .help("Color Scheme")
             }
-            ToolbarItem(id: "range", placement: .principal, showsByDefault: true) {
-                Button {
-                    withAnimation { toggleColorbar() }
-                } label: {
-                    Image(systemName: "ruler")
-                }
-                .help("Colorbar & Range")
-            }
             ToolbarItem(id: "transform", placement: .principal, showsByDefault: true) {
                 Button {
                     withAnimation { toggleToolbar(.transform) }
@@ -80,6 +72,14 @@ struct Toolbar: CustomizableToolbarContent {
                     Image(systemName: "function")
                 }
                 .help("Data Transform")
+            }
+            ToolbarItem(id: "range", placement: .principal, showsByDefault: true) {
+                Button {
+                    withAnimation { toggleColorbar() }
+                } label: {
+                    Image(systemName: "ruler")
+                }
+                .help("Colorbar & Range")
             }
             ToolbarItem(id: "lighting", placement: .principal, showsByDefault: true) {
                 Button {

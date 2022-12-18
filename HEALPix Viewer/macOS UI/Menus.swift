@@ -81,7 +81,7 @@ struct DataMenus: Commands {
     var body: some Commands {
         CommandMenu("Data") {
             Group {
-                Picker("Default Data", selection: $dataSource) {
+                Picker("Default Source", selection: $dataSource) {
                     ForEach(DataSource.temperature, id: \.self) {
                         Text($0.rawValue).tag($0)
                     }
