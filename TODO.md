@@ -28,4 +28,5 @@
 - `Open File...` should open a new window if none available
 - modal NSOpenPanel and NSSavePanel are called within transaction
 - export with magnification is broken? confirmed .n tag in render()
-- set range results in blanck PDF chart for COM_CMB_IQU-sevem_2048_R3.00_hm1.fits
+- set range results in blanck PDF chart - this is a bug in Charts trying
+  to allocate texture for entire data range & exceeding Metal size limits

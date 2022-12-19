@@ -100,7 +100,7 @@ struct StatView: View {
     
     // chart contents
     var chart: some View {
-        Chart(data) {
+        Chart(data.filter {$0.x >= rangemin && $0.x <= rangemax} ) {
             if ($0.cdf >= 0.0) {
                 LineMark(
                     x: .value("Value", $0.x),
