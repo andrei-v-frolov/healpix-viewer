@@ -57,6 +57,6 @@ struct TransformToolbar: View {
                 .disabled(!transform.sigma)
         }
         .padding(.top, 11)
-        .padding(.bottom, 11)
+        .padding(.bottom, 10)
     }
 }
