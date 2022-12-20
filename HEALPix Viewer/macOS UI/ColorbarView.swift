@@ -20,7 +20,7 @@ struct BarView: NSViewRepresentable {
     
     func makeNSView(context: Self.Context) -> Self.NSViewType {
         DispatchQueue.main.async {
-            image = Texture { w,h,_ in return self.view.image(width: w, height: h) }
+            image = Texture { w,h,_,_ in return self.view.image(width: w, height: h) }
         }
         view.awakeFromNib(); return view
     }

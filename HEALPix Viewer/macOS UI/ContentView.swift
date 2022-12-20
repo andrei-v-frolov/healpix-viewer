@@ -22,8 +22,9 @@ struct Window {
 
 // callback wrapper to render off-screen texture
 struct Texture {
-    let callback: (Int, Int, Anchor) -> MTLTexture?
-    func callAsFunction(width w: Int, height h: Int, anchor a: Anchor = .c) -> MTLTexture? { return callback(w, h, a) }
+    typealias Shift = (x: Double, y: Double)
+    let callback: (Int, Int, Anchor, Shift) -> MTLTexture?
+    func callAsFunction(width w: Int, height h: Int, anchor a: Anchor = .c, shift s: Shift = (0,0)) -> MTLTexture? { return callback(w, h, a, s) }
 }
 
 // main window view
@@ -106,8 +107,8 @@ struct ContentView: View {
     
     // window associated with the view
     @State private var window: Window = Window { return nil }
-    @State private var mapImage: Texture = Texture { _,_,_ in return nil }
-    @State private var barImage: Texture = Texture { _,_,_ in return nil }
+    @State private var mapImage: Texture = Texture { _,_,_,_ in return nil }
+    @State private var barImage: Texture = Texture { _,_,_,_ in return nil }
     
     // data transformer
     private let transformer = DataTransformer()
@@ -438,14 +439,14 @@ struct ContentView: View {
     func render() -> MTLTexture? {
         // set up dimensions for borderless map
         let width = Double(width*oversampling)
-        var height = projection.height(width: width)
+        var height = projection.height(width: width), shift = 0.0
         let thickness = width/ColorbarView.aspect
-        if (colorbar) { height += 2.0*thickness}
-        if (colorbar && withDatarange) { height += thickness }
+        if (colorbar) { height += 2.0*thickness; shift += thickness }
+        if (colorbar && withDatarange) { height += thickness; shift += thickness/2.0 }
         let w = Int(width), h = Int(height), t = Int(thickness)
         
         // render map texture and annotate it if requested
-        guard let texture = mapImage(width: w, height: h, anchor: .n) else { return nil }
+        guard let texture = mapImage(width: w, height: h, shift: (0,shift)) else { return nil }
         let output = (oversampling > 1) ? PNGTexture(width: w/oversampling, height: h/oversampling) : texture
         
         if (colorbar && withDatarange) {

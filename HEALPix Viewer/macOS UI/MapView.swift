@@ -35,7 +35,7 @@ struct MapView: NSViewRepresentable {
     func makeNSView(context: Self.Context) -> Self.NSViewType {
         DispatchQueue.main.async {
             window = Window { return self.view.window }
-            image = Texture { w,h,a in return self.view.image(width: w, height: h, anchor: a) }
+            image = Texture { w,h,a,s in return self.view.image(width: w, height: h, anchor: a, shift: s) }
         }
         view.awakeFromNib(); return view
     }
@@ -88,13 +88,14 @@ class ProjectedView: MTKView {
     var spin = false
     
     // MARK: affine tranform mapping screen to projection plane
-    func transform(width: Double? = nil, height: Double? = nil, magnification: Double? = nil, padding: Double? = nil, anchor: Anchor = .c, flipx: Bool? = nil, flipy: Bool = true) -> float3x2 {
+    func transform(width: Double? = nil, height: Double? = nil, magnification: Double? = nil, padding: Double? = nil, anchor: Anchor = .c, flipx: Bool? = nil, flipy: Bool = true, shiftx: Double = 0.0, shifty: Double = 0.0) -> float3x2 {
         let flipx = flipx ?? UserDefaults.standard.bool(forKey: viewFromInsideKey)
         let (x,y) = projection.extent, signx = flipx ? -1.0 : 1.0, signy = flipy ? -1.0 : 1.0
         let w = width ?? drawableSize.width, h = height ?? drawableSize.height
         let m = magnification ?? self.magnification, p = padding ?? self.padding
         let s = 2.0 * (1.0+p) * max(x/w, y/h)/exp2(m), x0 = -s*w/2, y0 = -s*h/2
-        let dx = signx*(x0 + anchor.halign*(x0+x)), dy = signy*y0 - anchor.valign*(y0+y)
+        let dx = signx*(x0 + anchor.halign*(x0+x) - s*shiftx)
+        let dy = signy*(y0 - anchor.valign*(y0+y) - s*shifty)
         
         return simd.float3x2(float2(Float(flipx ? -s : s), 0.0), float2(0.0, Float(flipy ? -s : s)), float2(Float(dx), Float(dy)))
     }
@@ -192,8 +193,8 @@ class ProjectedView: MTKView {
     }
     
     // MARK: render image to off-screen texture
-    func render(to texture: MTLTexture, anchor: Anchor = .c) {
-        let transform = transform(width: Double(texture.width), height: Double(texture.height), padding: 0.0, anchor: anchor, flipy: false)
+    func render(to texture: MTLTexture, anchor: Anchor = .c, shift: Texture.Shift = (0,0)) {
+        let transform = transform(width: Double(texture.width), height: Double(texture.height), padding: 0.0, anchor: anchor, flipy: false, shiftx: shift.x, shifty: shift.y)
         
         // initialize compute command buffer
         guard let command = queue.makeCommandBuffer() else { return }
@@ -204,9 +205,9 @@ class ProjectedView: MTKView {
     }
     
     // MARK: create map image of specified size
-    func image(width w: Int, height h: Int, anchor: Anchor = .c) -> MTLTexture {
+    func image(width w: Int, height h: Int, anchor: Anchor = .c, shift: Texture.Shift = (0,0)) -> MTLTexture {
         let texture = PNGTexture(width: w, height: h)
-        render(to: texture, anchor: anchor); return texture
+        render(to: texture, anchor: anchor, shift: shift); return texture
     }
 }
 
