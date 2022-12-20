@@ -29,3 +29,4 @@
 - modal NSOpenPanel and NSSavePanel are called within transaction
 - set range results in blanck PDF chart - this is a bug in Charts trying
   to allocate texture for entire data range & exceeding Metal size limits
+- file load in stats overlay locks the UI until analysis is done
