@@ -31,6 +31,9 @@ struct Statistics {
     let scale: Double
     let tau3: Double
     let tau4: Double
+    
+    // zero singleton
+    static var zero: Statistics { Statistics(mean: 0.0, sigma: 0.0, skewness: 0.0, kurtosis: 0.0, median: 0.0, scale: 0.0, tau3: 0.0, tau4: 0.0) }
 }
 
 @available(macOS 13.0, *)
@@ -41,7 +44,7 @@ struct StatView: View {
     
     // summary statistics from CDF compendium
     var stat: Statistics {
-        guard let cdf = cdf, cdf.count > 8 else { return Statistics(mean: 0.0, sigma: 0.0, skewness: 0.0, kurtosis: 0.0, median: 0.0, scale: 0.0, tau3: 0.0, tau4: 0.0) }
+        guard let cdf = cdf, cdf.count > 8 else { return Statistics.zero }
         let n = cdf.count, u = [0.0, 55.0/24.0, -4.0/24.0, 33.0/24.0, 1.0].map { $0/Double(n-1) }
         
         // initialize accumulators
@@ -100,7 +103,7 @@ struct StatView: View {
     
     // chart contents
     var chart: some View {
-        Chart(data.filter {$0.x >= rangemin && $0.x <= rangemax} ) {
+        Chart(squish(data)) {
             if ($0.cdf >= 0.0) {
                 LineMark(
                     x: .value("Value", $0.x),
@@ -263,6 +266,20 @@ struct StatView: View {
     // delta-like contribution to CDF is represented as a bar
     func dbar(x: Double, delta: Double) -> Distribution {
         return Distribution(x: x, cdf: -1.0, pdf: -1.0, delta: delta)
+    }
+    
+    // squish off-screen arguments so that the total span is no more than twice as wide as visible part
+    func squish(_ x: Double) -> Double {
+        let range = rangemax - rangemin; guard (range > 0.0) else { return x }
+        
+        if (x < rangemin) { let y = (x-rangemin)/range; return rangemin + range * y/sqrt(1.0+4.0*y*y) }
+        if (x > rangemax) { let y = (x-rangemax)/range; return rangemax + range * y/sqrt(1.0+4.0*y*y) }
+        
+        return x
+    }
+    
+    func squish(_ data: [Distribution]) -> [Distribution] {
+        return data.map { Distribution(x: squish($0.x), cdf: $0.cdf, pdf: $0.pdf, delta: $0.delta) }
     }
     
     // render chart content to an URL
