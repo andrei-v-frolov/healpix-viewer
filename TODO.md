@@ -27,4 +27,3 @@
 
 - `Open File...` should open a new window if none available
 - modal NSOpenPanel and NSSavePanel are called within transaction
-- file load in stats overlay locks the UI until analysis is done

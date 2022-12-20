@@ -257,6 +257,7 @@ struct ContentView: View {
                     if (overlay == .statview) {
                         StatView(cdf: $cdf, rangemin: $rangemin, rangemax: $rangemax)
                         .background(.thinMaterial)
+                        .onChange(of: cdf) { value in if (value == nil) { overlay = .none } }
                     } }
                     if (overlay == .infoview) {
                         ScrollView {
