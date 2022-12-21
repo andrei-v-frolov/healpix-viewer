@@ -14,5 +14,5 @@ HEALPix [[Gorski et. al.](https://healpix.jpl.nasa.gov)] is a de-facto standard 
 
 ### Caveats:
 - this is a one man show, so no heavy testing on different platforms so far
-- feature requests are welcome, but some are harder to impement than others
+- feature requests are welcome, but some are harder to implement than others
 - some bugs surely remain, but I would like to release widely in hopes of feedback
