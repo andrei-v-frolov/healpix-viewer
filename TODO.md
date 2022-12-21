@@ -8,6 +8,7 @@
 - statistical analysis overlay is implemented (macOS 13 only)
 - Drag and Drop of charts as PDF is implemented (no transparency)
 - option to flip the view from inside & outside of celestial sphere added
+- CFITSIO updated to version 4.2.0
 
 ### Public Release Blocking
 
