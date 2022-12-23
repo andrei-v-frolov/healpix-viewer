@@ -42,7 +42,7 @@ struct MapView: NSViewRepresentable {
     
     func updateNSView(_ view: Self.NSViewType, context: Self.Context) {
         let radian = Double.pi/180.0
-        let rotation = ang2rot(latitude*radian, -longitude*radian, -azimuth*radian), w = rot2gen(rotation)
+        let rotation = ang2rot(latitude*radian, longitude*radian, -azimuth*radian), w = rot2gen(rotation)
         let lightsrc = float4(ang2vec((90.0-lightingLat)*radian, lightingLon*radian), Float(lightingAmt/100.0))
         
         view.map = map
@@ -230,7 +230,7 @@ func ang2rot(_ theta: Double, _ phi: Double, _ psi: Double) -> float3x3 {
     let xy = float3x3(float3(cp,sp,0), float3(-sp,cp,0), float3(0,0,1))
     let yz = float3x3(float3(1,0,0), float3(0,ca,sa), float3(0,-sa,ca))
     
-    return xz*xy*yz
+    return xy*xz*yz
 }
 
 // generator of rotation to rotation matrix

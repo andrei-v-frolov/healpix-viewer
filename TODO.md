@@ -1,14 +1,8 @@
 # HEALPix Viewer TODO
 
-### Current Status (Build 004)
+### Current Status (Build 005)
 
-- background map analysis implemented
-- pointwise function transforms implemented
-- equalization and normalization implemented
-- statistical analysis overlay is implemented (macOS 13 only)
-- Drag and Drop of charts as PDF is implemented (no transparency)
-- option to flip the view from inside & outside of celestial sphere added
-- CFITSIO updated to version 4.2.0
+- longitude and latitude parametrization fixed (hopefully once and for all now)!
 
 ### Public Release Blocking
 
