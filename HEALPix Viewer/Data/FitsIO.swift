@@ -180,15 +180,15 @@ enum MapCard: String, CaseIterable {
         for t in DataSource.allCases { if (string == t.rawValue) { return t } }
         
         switch string {
-            case "TEMPERATURE", "I_STOKES":     return .i
-            case "Q_POLARISATION", "Q_STOKES":  return .q
-            case "U_POLARISATION", "U_STOKES":  return .u
-            case "E_POLARISATION":              return .e
-            case "B_POLARISATION":              return .b
-            case "P_POLARISATION":              return .p
-            case "X_VECTOR":                    return .x
-            case "Y_VECTOR":                    return .y
-            case "V_VECTOR":                    return .v
+            case "TEMPERATURE", "I_STOKES", "I", "T":   return .i
+            case "Q_POLARISATION", "Q_STOKES", "Q":     return .q
+            case "U_POLARISATION", "U_STOKES", "U":     return .u
+            case "E_POLARISATION", "E":                 return .e
+            case "B_POLARISATION", "B":                 return .b
+            case "P_POLARISATION", "P":                 return .p
+            case "X_VECTOR", "X":                       return .x
+            case "Y_VECTOR", "Y":                       return .y
+            case "V_VECTOR", "V":                       return .v
             default: return nil
         }
     }
