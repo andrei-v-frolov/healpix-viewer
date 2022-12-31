@@ -154,7 +154,7 @@ struct ContentView: View {
     @Binding var askToSave: Bool
     
     // registered observers binding to application state
-    var observers = Observers()
+    @State private var observers: Observers? = nil
     
     // view layout
     var body: some View {
@@ -330,6 +330,8 @@ struct ContentView: View {
             transform = DataTransform.value
         }
         .task {
+            let observers = Observers(); self.observers = observers
+            
             observers.add(key: showColorBarKey) { old, new in
                 guard (window()?.isKeyWindow == true) else { return }
                 guard let value = new as? Bool else { return }
