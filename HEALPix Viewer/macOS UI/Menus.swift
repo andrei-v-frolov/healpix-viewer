@@ -74,8 +74,6 @@ struct DataMenus: Commands {
     // colorbar properties
     @AppStorage(ColorScheme.appStorage) var colorScheme = ColorScheme.defaultValue
     @AppStorage(DataTransform.appStorage) var dataTransform = DataTransform.defaultValue
-    @AppStorage(DataBounds.appStorage) var dataBounds = DataBounds.defaultValue
-    @AppStorage(BoundsModifier.appStorage) var boundsModifier = BoundsModifier.defaultValue
     
     // menu commands
     var body: some Commands {

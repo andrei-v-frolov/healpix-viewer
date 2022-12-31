@@ -217,16 +217,6 @@ enum DataTransform: String, CaseIterable, Preference {
     }
 }
 
-// data bounds to be mapped to color bar
-enum DataBounds: String, CaseIterable, Preference {
-    case values = "Values"
-    case percentile = "Percentile"
-    
-    // default value
-    static let appStorage = "dataBounds"
-    static let defaultValue: Self = .values
-}
-
 // data bounds modifier
 enum BoundsModifier: String, CaseIterable, Preference {
     case full = "Full"
