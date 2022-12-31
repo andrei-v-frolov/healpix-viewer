@@ -17,8 +17,13 @@
 ### Feature Requests
 
 - option to drag the map with colorbar...
+- cursor readout (latitude, longitude & map value) and magnifier
+- false color map support (e.g. RGB = 100,147,217GHz channels)
+- antialiasing of very large maps (i.e. LOD pyramid in MapView)
+- command line interface
 
 ### Bug Fixes
 
 - `Open File...` should open a new window if none available
 - modal NSOpenPanel and NSSavePanel are called within transaction
+- gesture support seems to be broken? retest and confirm later...
