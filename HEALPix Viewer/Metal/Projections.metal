@@ -28,14 +28,9 @@ inline float3 mollweide(float2 v) {
 
 // Hammer-Aitoff projection
 inline float3 hammer(float2 v) {
-    const float q = 1.0 - v.x*v.x/16.0 - v.y*v.y/4.0, z = sqrt(q);
+    const float q = 1.0 - (v.x*v.x/4.0 + v.y*v.y)/4.0, z = sqrt(q);
     const float theta = acos(z*v.y), phi = 2.0*atan(z*v.x/(2.0*q-1.0)/2.0);
     return select(ang2vec(float2(theta,phi)), OUT_OF_BOUNDS, v.x*v.x/4.0 + v.y*v.y > 2.0);
-}
-
-// Gnomonic projection
-inline float3 gnomonic(float2 v) {
-    return normalize(float3(1.0,v.x,v.y));
 }
 
 // Lambert projection
@@ -50,10 +45,21 @@ inline float3 isometric(float2 v) {
     return select(float3(sqrt(x2),v.x,v.y), OUT_OF_BOUNDS, x2 < 0.0);
 }
 
+// Gnomonic projection
+inline float3 gnomonic(float2 v) {
+    return normalize(float3(1.0,v.x,v.y));
+}
+
 // Mercator projection
 inline float3 mercator(float2 v) {
     const float phi = v.x, theta = halfpi - atan(sinh(v.y));
     return select(ang2vec(float2(theta,phi)), OUT_OF_BOUNDS, phi < -pi || phi > pi);
+}
+
+// Equirectangular (aka cylindrical) projection
+inline float3 cylindrical(float2 v) {
+    const float phi = v.x, theta = halfpi - v.y;
+    return select(ang2vec(float2(theta,phi)), OUT_OF_BOUNDS, phi < -pi || phi > pi || theta < 0.0 || theta > pi);
 }
 
 // Werner projection
