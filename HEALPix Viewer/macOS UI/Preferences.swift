@@ -68,6 +68,7 @@ enum DataConvolution: String, CaseIterable, Preference {
 // spherical projection to be used
 enum Projection: String, CaseIterable, Preference {
     case mollweide = "Mollweide"
+    case hammer = "Hammer"
     case gnomonic = "Gnomonic"
     case lambert = "Lambert"
     case isometric = "Isometric"
@@ -82,6 +83,7 @@ enum Projection: String, CaseIterable, Preference {
     var extent: (x: Double, y: Double) {
         switch self {
             case .mollweide: return (2,1)
+            case .hammer:    return (sqrt(8.0),sqrt(2.0))
             case .lambert:   return (2,2)
             case .mercator:  return (Double.pi,2)
             case .werner:    return (2.021610497,2.029609241)

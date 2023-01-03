@@ -26,6 +26,13 @@ inline float3 mollweide(float2 v) {
     return select(ang2vec(float2(theta,phi)), OUT_OF_BOUNDS, v.y < -1.0 || v.y > 1.0 || phi < -pi || phi > pi);
 }
 
+// Hammer-Aitoff projection
+inline float3 hammer(float2 v) {
+    const float q = 1.0 - v.x*v.x/16.0 - v.y*v.y/4.0, z = sqrt(q);
+    const float theta = acos(z*v.y), phi = 2.0*atan(z*v.x/(2.0*q-1.0)/2.0);
+    return select(ang2vec(float2(theta,phi)), OUT_OF_BOUNDS, v.x*v.x/4.0 + v.y*v.y > 2.0);
+}
+
 // Gnomonic projection
 inline float3 gnomonic(float2 v) {
     return normalize(float3(1.0,v.x,v.y));
