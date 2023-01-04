@@ -21,7 +21,7 @@ theta = np.linspace(0, np.pi, num=4*ny)[:,None]
 phi = np.linspace(-np.pi, np.pi, num=6*nx)
 
 # output map (at downsampled resolution)
-nside = 2048; npix = hp.nside2npix(nside)
+nside = 4*2048; npix = hp.nside2npix(nside)
 map = np.zeros(npix); w = np.zeros(npix)
 
 # load up tiles
@@ -39,7 +39,7 @@ for j in range(4):
 map /= w
 
 # output HEALPix map (in NESTED order, double precision)
-hp.fitsfunc.write_map("earth.fits", map, nest=True, overwrite=True)
+hp.fitsfunc.write_map(f'earth-{nside}.fits', map, nest=True, dtype=np.float32, overwrite=True)
 
 #######################################################################
 # plot map data
