@@ -2,7 +2,8 @@
 
 ### Current Status (Build 005)
 
-- longitude and latitude parametrization fixed (hopefully once and for all now)!
+- Hammer and equirectangular (aka cylindrical) projections added
+- longitude and latitude parametrization fixed
 
 ### Public Release Blocking
 
