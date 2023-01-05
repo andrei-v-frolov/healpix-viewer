@@ -14,19 +14,6 @@ import UniformTypeIdentifiers
 let userTaskQueue = DispatchQueue(label: "serial", qos: .userInitiated)
 let analysisQueue = DispatchQueue(label: "analysis", qos: .userInitiated, attributes: [.concurrent])
 
-// callback wrapper to determine view window
-struct Window {
-    let callback: () -> NSWindow?
-    func callAsFunction() -> NSWindow? { return callback() }
-}
-
-// callback wrapper to render off-screen texture
-struct Texture {
-    typealias Shift = (x: Double, y: Double)
-    let callback: (Int, Int, Anchor, Shift) -> MTLTexture?
-    func callAsFunction(width w: Int, height h: Int, anchor a: Anchor = .c, shift s: Shift = (0,0)) -> MTLTexture? { return callback(w, h, a, s) }
-}
-
 // main window view
 struct ContentView: View {
     @State private var title = "CMB Viewer"
@@ -105,10 +92,10 @@ struct ContentView: View {
     @State private var lightingLon: Double = 45.0
     @State private var lightingAmt: Double = 30.0
     
-    // window associated with the view
-    @State private var window: Window = Window { return nil }
-    @State private var mapImage: Texture = Texture { _,_,_,_ in return nil }
-    @State private var barImage: Texture = Texture { _,_,_,_ in return nil }
+    // associated views
+    @State private var mapview: ProjectedView? = nil
+    @State private var barview: ColorbarView? = nil
+    private var window: NSWindow? { mapview?.window }
     
     // data transformer
     private let transformer = DataTransformer()
@@ -201,20 +188,20 @@ struct ContentView: View {
                         MapView(map: $map, projection: $projection, magnification: $magnification, spin: $spin,
                                 latitude: $latitude, longitude: $longitude, azimuth: $azimuth, background: $bgcolor,
                                 lightingLat: $lightingLat, lightingLon: $lightingLon, lightingAmt: $lightingAmt,
-                                window: $window, image: $mapImage)
+                                mapview: $mapview)
                         .onDrag {
                             let w = geometry.size.width, h = projection.height(width: w), none = NSItemProvider()
-                            guard let url = tmpfile(), let image = mapImage(width: Int(w), height: Int(h)) else { return none }
+                            guard let url = tmpfile(), let image = mapview?.image(width: Int(w), height: Int(h)) else { return none }
                             
                             saveAsPNG(image, url: url); tmpfiles.append(url)
                             return NSItemProvider(contentsOf: url) ?? none
                         }
                         if (colorbar) {
-                            BarView(colorsheme: $colorscheme, background: $bgcolor, image: $barImage)
+                            BarView(colorsheme: $colorscheme, background: $bgcolor, barview: $barview)
                             .frame(height: 1.5*geometry.size.width/ColorbarView.aspect)
                             .onDrag {
                                 let w = geometry.size.width, h = w/ColorbarView.aspect, none = NSItemProvider()
-                                guard let url = tmpfile(), let image = barImage(width: Int(w), height: Int(h)) else { return none }
+                                guard let url = tmpfile(), let image = barview?.image(width: Int(w), height: Int(h)) else { return none }
                                 
                                 saveAsPNG(image, url: url); tmpfiles.append(url)
                                 return NSItemProvider(contentsOf: url) ?? none
@@ -294,12 +281,12 @@ struct ContentView: View {
         .onChange(of: colors) { value in colorize() }
         .onChange(of: range) { value in colorize() }
         .onChange(of: askToOpen) { value in
-            if (window()?.isKeyWindow == true && value) {
+            if (window?.isKeyWindow == true && value) {
                 askToOpen = false; DispatchQueue.main.async { self.open() }
             }
         }
         .onChange(of: askToSave) { value in
-            if (window()?.isKeyWindow == true && value) {
+            if (window?.isKeyWindow == true && value) {
                 askToSave = false; saving = true
             }
         }
@@ -333,7 +320,7 @@ struct ContentView: View {
             let observers = Observers(); self.observers = observers
             
             observers.add(key: showColorBarKey) { old, new in
-                guard (window()?.isKeyWindow == true) else { return }
+                guard (window?.isKeyWindow == true) else { return }
                 guard let value = new as? Bool else { return }
                 withAnimation { colorbar = value }
             }
@@ -342,17 +329,17 @@ struct ContentView: View {
                 useLighting = value
             }
             observers.add(key: Projection.appStorage) { old, new in
-                guard (window()?.isKeyWindow == true) else { return }
+                guard (window?.isKeyWindow == true) else { return }
                 guard let raw = new as? String, let mode = Projection(rawValue: raw) else { return }
                 withAnimation { toolbar = .projection }; projection = mode
             }
             observers.add(key: Orientation.appStorage) { old, new in
-                guard (window()?.isKeyWindow == true) else { return }
+                guard (window?.isKeyWindow == true) else { return }
                 guard let raw = new as? String, let mode = Orientation(rawValue: raw) else { return }
                 withAnimation { toolbar = (mode == .free) ? .orientation : .projection }; orientation = mode
             }
             observers.add(key: ColorScheme.appStorage) { old, new in
-                guard (window()?.isKeyWindow == true) else { return }
+                guard (window?.isKeyWindow == true) else { return }
                 guard let raw = new as? String, let mode = ColorScheme(rawValue: raw) else { return }
                 withAnimation { toolbar = .color }
                 
@@ -361,12 +348,12 @@ struct ContentView: View {
                 maxcolor = colorscheme.colormap.max
             }
             observers.add(key: DataSource.appStorage) {  old, new in
-                guard (window()?.isKeyWindow == true) else { return }
+                guard (window?.isKeyWindow == true) else { return }
                 guard let raw = new as? String, let data = DataSource(rawValue: raw) else { return }
                 for map in loaded { if (MapCard.type(map.name) == data) { selected = map.id; break } }
             }
             observers.add(key: DataTransform.appStorage) {  old, new in
-                guard (window()?.isKeyWindow == true) else { return }
+                guard (window?.isKeyWindow == true) else { return }
                 guard let raw = new as? String, let mode = DataTransform(rawValue: raw) else { return }
                 withAnimation { toolbar = .transform }; transform = mode
             }
@@ -449,7 +436,7 @@ struct ContentView: View {
         let w = Int(width), h = Int(height), t = Int(thickness)
         
         // render map texture and annotate it if requested
-        guard let texture = mapImage(width: w, height: h, shift: (0,shift)) else { return nil }
+        guard let texture = mapview?.image(width: w, height: h, shift: (0,shift)) else { return nil }
         let output = (oversampling > 1) ? PNGTexture(width: w/oversampling, height: h/oversampling) : texture
         
         if (colorbar && withDatarange) {
@@ -465,7 +452,7 @@ struct ContentView: View {
             
             // render colorbar and copy it in
             if (colorbar) {
-                guard let bar = barImage(width: w, height: 2*t),
+                guard let bar = barview?.image(width: w, height: 2*t),
                       let encoder = command.makeBlitCommandEncoder() else { return nil }
                 
                 encoder.copy(from: bar, sourceSlice: 0, sourceLevel: 0,

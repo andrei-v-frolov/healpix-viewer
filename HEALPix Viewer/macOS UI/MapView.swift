@@ -26,17 +26,13 @@ struct MapView: NSViewRepresentable {
     @Binding var lightingLon: Double
     @Binding var lightingAmt: Double
     
-    @Binding var window: Window
-    @Binding var image: Texture
+    @Binding var mapview: ProjectedView?
     
     typealias NSViewType = ProjectedView
     var view = ProjectedView()
     
     func makeNSView(context: Self.Context) -> Self.NSViewType {
-        DispatchQueue.main.async {
-            window = Window { return self.view.window }
-            image = Texture { w,h,a,s in return self.view.image(width: w, height: h, anchor: a, shift: s) }
-        }
+        DispatchQueue.main.async { mapview = view }
         view.awakeFromNib(); return view
     }
     
@@ -195,7 +191,7 @@ class ProjectedView: MTKView {
     }
     
     // MARK: render image to off-screen texture
-    func render(to texture: MTLTexture, anchor: Anchor = .c, shift: Texture.Shift = (0,0)) {
+    func render(to texture: MTLTexture, anchor: Anchor = .c, shift: (x: Double, y: Double) = (0,0)) {
         let transform = transform(width: Double(texture.width), height: Double(texture.height), padding: 0.0, anchor: anchor, flipy: false, shiftx: shift.x, shifty: shift.y)
         
         // initialize compute command buffer
@@ -207,7 +203,7 @@ class ProjectedView: MTKView {
     }
     
     // MARK: create map image of specified size
-    func image(width w: Int, height h: Int, anchor: Anchor = .c, shift: Texture.Shift = (0,0)) -> MTLTexture {
+    func image(width w: Int, height h: Int, anchor: Anchor = .c, shift: (x: Double, y: Double) = (0,0)) -> MTLTexture {
         let texture = PNGTexture(width: w, height: h)
         render(to: texture, anchor: anchor, shift: shift); return texture
     }

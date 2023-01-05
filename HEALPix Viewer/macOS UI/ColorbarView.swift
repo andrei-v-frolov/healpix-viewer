@@ -12,16 +12,13 @@ import MetalKit
 struct BarView: NSViewRepresentable {
     @Binding var colorsheme: ColorScheme
     @Binding var background: Color
-    
-    @Binding var image: Texture
+    @Binding var barview: ColorbarView?
     
     typealias NSViewType = ColorbarView
     var view = ColorbarView()
     
     func makeNSView(context: Self.Context) -> Self.NSViewType {
-        DispatchQueue.main.async {
-            image = Texture { w,h,_,_ in return self.view.image(width: w, height: h) }
-        }
+        DispatchQueue.main.async { barview = view }
         view.awakeFromNib(); return view
     }
     
