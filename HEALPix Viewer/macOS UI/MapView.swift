@@ -93,7 +93,7 @@ class ProjectedView: MTKView {
         let m = magnification ?? self.magnification, p = padding ?? self.padding
         let s = 2.0 * (1.0+p) * max(x/w, y/h)/exp2(m), x0 = -s*w/2, y0 = -s*h/2
         let dx = signx*(x0 + anchor.halign*(x0+x) - s*shiftx)
-        let dy = signy*(y0 - anchor.valign*(y0+y) - s*shifty)
+        let dy = signy*y0  - anchor.valign*(y0+y) - s*shifty
         
         return simd.float3x2(float2(Float(flipx ? -s : s), 0.0), float2(0.0, Float(flipy ? -s : s)), float2(Float(dx), Float(dy)))
     }
