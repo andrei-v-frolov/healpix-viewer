@@ -41,8 +41,8 @@ inline float3 lambert(float2 v) {
 
 // Isometric projection
 inline float3 isometric(float2 v) {
-    const float x2 = 1.0 - (v.x*v.x + v.y*v.y);
-    return select(float3(sqrt(x2),v.x,v.y), OUT_OF_BOUNDS, x2 < 0.0);
+    const float q = 1.0 - (v.x*v.x + v.y*v.y);
+    return select(float3(sqrt(q),v.x,v.y), OUT_OF_BOUNDS, q < 0.0);
 }
 
 // Gnomonic projection

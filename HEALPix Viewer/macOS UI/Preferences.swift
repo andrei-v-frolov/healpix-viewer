@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import MetalKit
 
 // boolean application storage keys
 let viewFromInsideKey = "viewFromInside"
@@ -96,6 +97,40 @@ enum Projection: String, CaseIterable, Preference {
     // recommended aspect ratio
     func height(width: Double) -> Double { let (x,y) = extent; return y*width/x }
     func width(height: Double) -> Double { let (x,y) = extent; return x*height/y }
+    
+    // projection out of bounds
+    static let outOfBounds = float3(0)
+    
+    // transform projection plane coordinates to a vector on a unit sphere
+    func xyz(x: Double, y: Double) -> float3 {
+        let pi = Double.pi, halfpi = Double.pi/2.0, OUT_OF_BOUNDS = Projection.outOfBounds
+        switch self {
+            case .mollweide:
+                let psi = asin(y), phi = halfpi*x/cos(psi), theta = acos((2.0*psi + sin(2.0*psi))/pi)
+                return (y < -1.0 || y > 1.0 || phi < -pi || phi > pi) ? OUT_OF_BOUNDS : ang2vec(theta,phi)
+            case .hammer:
+                let p = x*x/4.0 + y*y, q = 1.0 - p/4.0, z = sqrt(q)
+                let theta = acos(z*y), phi = 2.0*atan(z*x/(2.0*q-1.0)/2.0)
+                return (p > 2.0) ? OUT_OF_BOUNDS : ang2vec(theta,phi)
+            case .lambert:
+                let q = 1.0 - (x*x + y*y)/4.0, z = sqrt(q)
+                return (q < 0.0) ? OUT_OF_BOUNDS : float3(Float(2.0*q-1.0),Float(z*x),Float(z*y))
+            case .isometric:
+                let q = 1.0 - (x*x + y*y)
+                return (q < 0.0) ? OUT_OF_BOUNDS : float3(Float(sqrt(q)),Float(x),Float(y))
+            case .gnomonic:
+                return normalize(float3(1.0,Float(x),Float(y)))
+            case .mercator:
+                let phi = x, theta = halfpi - atan(sinh(y))
+                return (phi < -pi || phi > pi) ? OUT_OF_BOUNDS : ang2vec(theta,phi)
+            case .cylindrical:
+                let phi = x, theta = halfpi - y
+                return (phi < -pi || phi > pi || theta < 0.0 || theta > pi) ? OUT_OF_BOUNDS : ang2vec(theta,phi)
+            case .werner:
+                let y = y - 1.111983413, theta = sqrt(x*x+y*y), phi = theta/sin(theta)*atan2(x,-y)
+                return (theta > pi || phi < -pi || phi > pi) ? OUT_OF_BOUNDS : ang2vec(theta,phi)
+        }
+    }
 }
 
 // projection orientation lock

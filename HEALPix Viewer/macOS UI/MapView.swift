@@ -16,6 +16,7 @@ struct MapView: NSViewRepresentable {
     @Binding var magnification: Double
     @Binding var spin: Bool
     
+    @Binding var orientation: Orientation
     @Binding var latitude: Double
     @Binding var longitude: Double
     @Binding var azimuth: Double
@@ -32,7 +33,7 @@ struct MapView: NSViewRepresentable {
     var view = ProjectedView()
     
     func makeNSView(context: Self.Context) -> Self.NSViewType {
-        DispatchQueue.main.async { mapview = view }
+        DispatchQueue.main.async { mapview = view; view.mapview = self }
         view.awakeFromNib(); return view
     }
     
@@ -62,6 +63,9 @@ struct MapView: NSViewRepresentable {
 class ProjectedView: MTKView {
     // MARK: map
     var map: Map? = nil
+    
+    // MARK: SwiftUI MapView
+    var mapview: MapView? = nil
     
     // MARK: compute pipeline
     var queue: MTLCommandQueue! = nil
@@ -207,6 +211,19 @@ class ProjectedView: MTKView {
         let texture = PNGTexture(width: w, height: h)
         render(to: texture, anchor: anchor, shift: shift); return texture
     }
+    
+    // MARK: center map on the location of a right click
+    override func rightMouseUp(with event: NSEvent) {
+        let location = convertToBacking(convert(event.locationInWindow, from: nil))
+        let v = transform(flipy: isFlipped) * float3(Float(location.x), Float(location.y), 1)
+        let u = rotation * projection.xyz(x: Double(v.x), y: Double(v.y))
+        
+        guard (u != Projection.outOfBounds) else { return }
+        let (theta,phi) = vec2ang(u), radian = 180.0/Double.pi
+        mapview?.latitude = (Double.pi/2.0 - theta) * radian
+        mapview?.longitude = phi * radian
+        mapview?.orientation = .free
+    }
 }
 
 // MARK: SO(3) group representations
@@ -216,6 +233,13 @@ func ang2vec(_ theta: Double, _ phi: Double) -> float3 {
     let z = cos(theta), r = sin(theta)
     
     return float3(Float(r*cos(phi)), Float(r*sin(phi)), Float(z))
+}
+
+// unit vector to spherical coordinates
+func vec2ang(_ v: float3) -> (theta: Double, phi: Double) {
+    let x = Double(v.x), y = Double(v.y), z = Double(v.z)
+    
+    return (atan2(sqrt(x*x+y*y),z), atan2(y,x))
 }
 
 // latitude, longitude and azimuth to rotation matrix

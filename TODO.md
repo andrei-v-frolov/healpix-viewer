@@ -2,6 +2,7 @@
 
 ### Current Status (Build 005)
 
+- center map projection on location of a right click of a mouse
 - Hammer and equirectangular (aka cylindrical) projections added
 - longitude and latitude parametrization fixed
 

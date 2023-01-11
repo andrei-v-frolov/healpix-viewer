@@ -103,6 +103,15 @@ struct ContentView: View {
     // color mapper
     private let mapper = ColorMapper()
     
+    // convenience wrapper for tracking viewpoint changes
+    private struct Viewpoint: Equatable {
+        let latitude: Double
+        let longitude: Double
+        let azimuth: Double
+    }
+    
+    private var viewpoint: Viewpoint { Viewpoint(latitude: latitude, longitude: longitude, azimuth: azimuth) }
+    
     // convenience wrapper for tracking color changes
     private struct Palette: Equatable {
         let colorscheme: ColorScheme
@@ -170,9 +179,7 @@ struct ContentView: View {
                         }
                         if (toolbar == .orientation) {
                             OrientationToolbar(latitude: $latitude, longitude: $longitude, azimuth: $azimuth)
-                            .onChange(of: latitude)  { value in orientation = .free }
-                            .onChange(of: longitude) { value in orientation = .free }
-                            .onChange(of: azimuth)   { value in orientation = .free }
+                            .onChange(of: viewpoint)  { value in orientation = .free }
                         }
                         if (toolbar == .color) {
                             ColorToolbar(colorscheme: $colorscheme,
@@ -186,9 +193,8 @@ struct ContentView: View {
                             LightingToolbar(lightingLat: $lightingLat, lightingLon: $lightingLon, lightingAmt: $lightingAmt)
                         }
                         MapView(map: $map, projection: $projection, magnification: $magnification, spin: $spin,
-                                latitude: $latitude, longitude: $longitude, azimuth: $azimuth, background: $bgcolor,
-                                lightingLat: $lightingLat, lightingLon: $lightingLon, lightingAmt: $lightingAmt,
-                                mapview: $mapview)
+                                orientation: $orientation, latitude: $latitude, longitude: $longitude, azimuth: $azimuth,
+                                background: $bgcolor, lightingLat: $lightingLat, lightingLon: $lightingLon, lightingAmt: $lightingAmt, mapview: $mapview)
                         .onDrag {
                             let w = geometry.size.width, h = projection.height(width: w), none = NSItemProvider()
                             guard let url = tmpfile(), let image = mapview?.image(width: Int(w), height: Int(h)) else { return none }
