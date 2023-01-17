@@ -1,3 +1,9 @@
+### Version 1.0 (Build 005)
+
+- center map projection on location of a right click of a mouse
+- Hammer and equirectangular (aka cylindrical) projections added
+- longitude and latitude parametrization fixed
+
 ### Version 1.0 (Build 004)
 
 - background map analysis implemented
