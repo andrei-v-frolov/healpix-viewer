@@ -87,10 +87,7 @@ struct ContentView: View {
     @State private var mumax: Double = 0.0
     
     // lighting toolbar
-    @State private var useLighting: Bool = false
-    @State private var lightingLat: Double = 45.0
-    @State private var lightingLon: Double = 45.0
-    @State private var lightingAmt: Double = 30.0
+    @State private var lighting = Lighting(enabled: false, lat: 45.0, lon: 45.0, amt: 30.0)
     
     // associated views
     @State private var mapview: ProjectedView? = nil
@@ -190,11 +187,11 @@ struct ContentView: View {
                             TransformToolbar(transform: $transform, mu: $mu, sigma: $sigma, selected: $selected, ranked: $ranked, mumin: $mumin, mumax: $mumax)
                         }
                         if (toolbar == .lighting) {
-                            LightingToolbar(lightingLat: $lightingLat, lightingLon: $lightingLon, lightingAmt: $lightingAmt)
+                            LightingToolbar(lighting: $lighting)
                         }
                         MapView(map: $map, projection: $projection, magnification: $magnification, spin: $spin,
                                 orientation: $orientation, latitude: $latitude, longitude: $longitude, azimuth: $azimuth,
-                                background: $bgcolor, lightingLat: $lightingLat, lightingLon: $lightingLon, lightingAmt: $lightingAmt, mapview: $mapview)
+                                background: $bgcolor, lighting: $lighting, mapview: $mapview)
                         .onDrag {
                             let w = geometry.size.width, h = projection.height(width: w), none = NSItemProvider()
                             guard let url = tmpfile(), let image = mapview?.image(width: Int(w), height: Int(h)) else { return none }
@@ -272,7 +269,7 @@ struct ContentView: View {
             minHeight: 600, idealHeight: 800, maxHeight: .infinity
         )
         .toolbar(id: "mainToolbar") {
-            Toolbar(toolbar: $toolbar, overlay: $overlay, colorbar: $colorbar, lighting: $useLighting, magnification: $magnification, cdf: $cdf, info: $info)
+            Toolbar(toolbar: $toolbar, overlay: $overlay, colorbar: $colorbar, lighting: $lighting.enabled, magnification: $magnification, cdf: $cdf, info: $info)
         }
         .navigationTitle(title)
         .onChange(of: selected) { value in
@@ -314,7 +311,7 @@ struct ContentView: View {
         }
         .task {
             colorbar = UserDefaults.standard.bool(forKey: showColorBarKey)
-            useLighting = UserDefaults.standard.bool(forKey: lightingKey)
+            lighting.enabled = UserDefaults.standard.bool(forKey: lightingKey)
             projection = Projection.value
             orientation = Orientation.value
             colorscheme = ColorScheme.value
@@ -332,7 +329,7 @@ struct ContentView: View {
             }
             observers.add(key: lightingKey) { old, new in
                 guard let value = new as? Bool else { return }
-                useLighting = value
+                lighting.enabled = value
             }
             observers.add(key: Projection.appStorage) { old, new in
                 guard (window?.isKeyWindow == true) else { return }

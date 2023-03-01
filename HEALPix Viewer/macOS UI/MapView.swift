@@ -23,9 +23,7 @@ struct MapView: NSViewRepresentable {
     
     @Binding var background: Color
     
-    @Binding var lightingLat: Double
-    @Binding var lightingLon: Double
-    @Binding var lightingAmt: Double
+    @Binding var lighting: Lighting
     
     @Binding var mapview: ProjectedView?
     
@@ -40,7 +38,7 @@ struct MapView: NSViewRepresentable {
     func updateNSView(_ view: Self.NSViewType, context: Self.Context) {
         let radian = Double.pi/180.0
         let rotation = ang2rot(latitude*radian, longitude*radian, -azimuth*radian), w = rot2gen(rotation)
-        let lightsrc = float4(ang2vec((90.0-lightingLat)*radian, lightingLon*radian), Float(lightingAmt/100.0))
+        let lightsrc = float4(ang2vec((90.0-lighting.lat)*radian, lighting.lon*radian), Float(lighting.amt/100.0))
         
         view.map = map
         view.projection = projection

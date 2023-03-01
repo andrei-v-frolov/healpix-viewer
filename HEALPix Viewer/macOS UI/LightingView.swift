@@ -7,28 +7,32 @@
 
 import SwiftUI
 
+struct Lighting {
+    var enabled: Bool
+    var lat: Double
+    var lon: Double
+    var amt: Double
+}
+
 struct LightingToolbar: View {
-    @Binding var lightingLat: Double
-    @Binding var lightingLon: Double
-    @Binding var lightingAmt: Double
-    
+    @Binding var lighting: Lighting
     @FocusState private var focus: Bool
     
     var body: some View {
         HStack {
-            Slider(value: $lightingLat, in: -90.0...90.0) { Text("Lat:") } onEditingChanged: { editing in focus = false }
+            Slider(value: $lighting.lat, in: -90.0...90.0) { Text("Lat:") } onEditingChanged: { editing in focus = false }
                 .frame(width: 160)
-            TextField("Latitude", value: $lightingLat, formatter: TwoDigitNumber)
+            TextField("Latitude", value: $lighting.lat, formatter: TwoDigitNumber)
                 .frame(width: 55).multilineTextAlignment(.trailing).focused($focus)
             Spacer().frame(width: 30)
-            Slider(value: $lightingLon, in: -180.0...180.0) { Text("Lon:") } onEditingChanged: { editing in focus = false }
+            Slider(value: $lighting.lon, in: -180.0...180.0) { Text("Lon:") } onEditingChanged: { editing in focus = false }
                 .frame(width: 160)
-            TextField("Longitude", value: $lightingLon, formatter: TwoDigitNumber)
+            TextField("Longitude", value: $lighting.lon, formatter: TwoDigitNumber)
                 .frame(width: 55).multilineTextAlignment(.trailing).focused($focus)
             Spacer().frame(width: 30)
-            Slider(value: $lightingAmt, in: 0.0...100.0) { Text("%:") } onEditingChanged: { editing in focus = false }
+            Slider(value: $lighting.amt, in: 0.0...100.0) { Text("%:") } onEditingChanged: { editing in focus = false }
                 .frame(width: 160)
-            TextField("Amount", value: $lightingAmt, formatter: TwoDigitNumber)
+            TextField("Amount", value: $lighting.amt, formatter: TwoDigitNumber)
                 .frame(width: 55).multilineTextAlignment(.trailing).focused($focus)
         }
         .padding(.top, 11)
