@@ -32,6 +32,7 @@ struct ViewMenus: Commands {
     @AppStorage(viewFromInsideKey) var viewFromInside = true
     @AppStorage(showColorBarKey) var showColorBar = false
     @AppStorage(lightingKey) var lightingEffects = false
+    @AppStorage(cursorKey) var cursorReadout = false
     
     // menu commands
     var body: some Commands {
@@ -51,6 +52,10 @@ struct ViewMenus: Commands {
                 Text("View From Inside")
             }
             .keyboardShortcut("I", modifiers: [.option, .command])
+            Toggle(isOn: $cursorReadout) {
+                Text("Cursor Readout")
+            }
+            .keyboardShortcut("R", modifiers: [.option, .command])
             Toggle(isOn: $lightingEffects) {
                 Text("Lighting Effects")
             }

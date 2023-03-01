@@ -1,3 +1,7 @@
+### Version 1.0 (Build 006)
+
+- cursor readout (latitude, longitude, pixel number & map value)
+
 ### Version 1.0 (Build 005)
 
 - center map projection on location of a right click of a mouse

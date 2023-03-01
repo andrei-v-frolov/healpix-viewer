@@ -1,10 +1,8 @@
 # HEALPix Viewer TODO
 
-### Current Status (Build 005)
+### Current Status (Build 006)
 
-- center map projection on location of a right click of a mouse
-- Hammer and equirectangular (aka cylindrical) projections added
-- longitude and latitude parametrization fixed
+- cursor readout (latitude, longitude, pixel number & map value)
 
 ### Public Release Blocking
 
@@ -18,8 +16,8 @@
 
 ### Feature Requests
 
+- magnifier glass
 - option to drag the map with colorbar...
-- cursor readout (latitude, longitude & map value) and magnifier
 - false color map support (e.g. RGB = 100,147,217GHz channels)
 - antialiasing of very large maps (i.e. LOD pyramid in MapView)
 - command line interface

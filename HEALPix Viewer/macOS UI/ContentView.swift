@@ -89,6 +89,9 @@ struct ContentView: View {
     // lighting toolbar
     @State private var lighting = Lighting(enabled: false, lat: 45.0, lon: 45.0, amt: 30.0)
     
+    // cursor readout
+    @State private var cursor = Cursor(hover: false, lat: 0.0, lon: 0.0, pix: 0, val: 0.0)
+    
     // associated views
     @State private var mapview: ProjectedView? = nil
     @State private var barview: ColorbarView? = nil
@@ -189,15 +192,20 @@ struct ContentView: View {
                         if (toolbar == .lighting) {
                             LightingToolbar(lighting: $lighting)
                         }
-                        MapView(map: $map, projection: $projection, magnification: $magnification, spin: $spin,
-                                orientation: $orientation, latitude: $latitude, longitude: $longitude, azimuth: $azimuth,
-                                background: $bgcolor, lighting: $lighting, mapview: $mapview)
-                        .onDrag {
-                            let w = geometry.size.width, h = projection.height(width: w), none = NSItemProvider()
-                            guard let url = tmpfile(), let image = mapview?.image(width: Int(w), height: Int(h)) else { return none }
-                            
-                            saveAsPNG(image, url: url); tmpfiles.append(url)
-                            return NSItemProvider(contentsOf: url) ?? none
+                        ZStack(alignment: .top) {
+                            MapView(map: $map, projection: $projection, magnification: $magnification, spin: $spin,
+                                    orientation: $orientation, latitude: $latitude, longitude: $longitude, azimuth: $azimuth,
+                                    background: $bgcolor, lighting: $lighting, cursor: $cursor, mapview: $mapview)
+                            .onDrag {
+                                let w = geometry.size.width, h = projection.height(width: w), none = NSItemProvider()
+                                guard let url = tmpfile(), let image = mapview?.image(width: Int(w), height: Int(h)) else { return none }
+                                
+                                saveAsPNG(image, url: url); tmpfiles.append(url)
+                                return NSItemProvider(contentsOf: url) ?? none
+                            }
+                            if (cursor.hover) {
+                                CursorView(cursor: $cursor)
+                            }
                         }
                         if (colorbar) {
                             BarView(colorsheme: $colorscheme, background: $bgcolor, barview: $barview)

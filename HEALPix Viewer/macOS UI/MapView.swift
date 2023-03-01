@@ -7,6 +7,7 @@
 
 import SwiftUI
 import MetalKit
+import CFitsIO
 
 // MARK: SwiftUI wrapper for ProjectedView
 struct MapView: NSViewRepresentable {
@@ -24,6 +25,7 @@ struct MapView: NSViewRepresentable {
     @Binding var background: Color
     
     @Binding var lighting: Lighting
+    @Binding var cursor: Cursor
     
     @Binding var mapview: ProjectedView?
     
@@ -153,6 +155,10 @@ class ProjectedView: MTKView {
         
         layer?.isOpaque = false
         framebufferOnly = false
+        
+        // respond to mouse movement events
+        let options: NSTrackingArea.Options = [.mouseMoved, .cursorUpdate, .activeInKeyWindow, .inVisibleRect]
+        self.addTrackingArea(NSTrackingArea.init(rect: .zero, options: options, owner: self, userInfo: nil))
     }
     
     // MARK: render image in Metal view
@@ -210,17 +216,48 @@ class ProjectedView: MTKView {
         render(to: texture, anchor: anchor, shift: shift); return texture
     }
     
-    // MARK: center map on the location of a right click
-    override func rightMouseUp(with event: NSEvent) {
+    // MARK: spherical coordinates from event location
+    func coordinates(_ event: NSEvent) -> (Double,Double)? {
         let location = convertToBacking(convert(event.locationInWindow, from: nil))
         let v = transform(flipy: isFlipped) * float3(Float(location.x), Float(location.y), 1)
         let u = rotation * projection.xyz(x: Double(v.x), y: Double(v.y))
         
-        guard (u != Projection.outOfBounds) else { return }
-        let (theta,phi) = vec2ang(u), radian = 180.0/Double.pi
+        return (u != Projection.outOfBounds) ? vec2ang(u) : nil
+    }
+    
+    // MARK: center map on the location of a right click
+    override func rightMouseUp(with event: NSEvent) {
+        guard let (theta,phi) = coordinates(event) else { return }
+        
+        let radian = 180.0/Double.pi
         mapview?.latitude = (Double.pi/2.0 - theta) * radian
         mapview?.longitude = phi * radian
         mapview?.orientation = .free
+    }
+    
+    // MARK: cursor readout from projected map
+    override func mouseMoved(with event: NSEvent) {
+        guard UserDefaults.standard.bool(forKey: cursorKey), let (theta,phi) = coordinates(event) else { mapview?.cursor.hover = false; return }
+        
+        // cursor coordinates
+        let radian = 180.0/Double.pi
+        mapview?.cursor.hover = true
+        mapview?.cursor.lat = (Double.pi/2.0 - theta) * radian
+        mapview?.cursor.lon = phi * radian
+        
+        // map pixel referenced
+        var p = -1, v = 0.0; if let map = map {
+            ang2pix_nest(map.nside, theta, phi, &p)
+            v = Double(map.data[p])
+        }
+        
+        mapview?.cursor.pix = p
+        mapview?.cursor.val = v
+    }
+    
+    // MARK: cursor is cross-hairs when readout is enabled
+    override func cursorUpdate(with event: NSEvent) {
+        if UserDefaults.standard.bool(forKey: cursorKey) { NSCursor.crosshair.set() }
     }
 }
 

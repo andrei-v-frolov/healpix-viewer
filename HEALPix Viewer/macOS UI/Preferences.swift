@@ -12,6 +12,7 @@ import MetalKit
 let viewFromInsideKey = "viewFromInside"
 let showColorBarKey = "showColorBar"
 let lightingKey = "lighting"
+let cursorKey = "cursor"
 
 // application appearance
 enum Appearance: String, CaseIterable, Preference {
