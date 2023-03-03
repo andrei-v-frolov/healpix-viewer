@@ -27,3 +27,4 @@
 - `Open File...` should open a new window if none available
 - modal NSOpenPanel and NSSavePanel are called within transaction
 - gesture support seems to be broken? retest and confirm later...
+- default orientation setting gets ignored in new window
