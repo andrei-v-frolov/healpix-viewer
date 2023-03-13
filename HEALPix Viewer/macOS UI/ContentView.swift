@@ -55,7 +55,7 @@ struct ContentView: View {
     // projection toolbar
     @State private var projection: Projection = .defaultValue
     @State private var orientation: Orientation = .defaultValue
-    @State private var spin: Bool = true
+    @State private var spin: Bool = false
     
     // magnification and orientation toolbar
     @State private var magnification: Double = 0.0
@@ -170,12 +170,6 @@ struct ContentView: View {
                     VStack(spacing: 0) {
                         if (toolbar == .projection) {
                             ProjectionToolbar(projection: $projection, orientation: $orientation, spin: $spin)
-                            .onChange(of: orientation) {
-                                if ($0 != .free) {
-                                    let (lat,lon,az) = $0.coords
-                                    latitude = lat; longitude = lon; azimuth = az
-                                }
-                            }
                         }
                         if (toolbar == .orientation) {
                             OrientationToolbar(latitude: $latitude, longitude: $longitude, azimuth: $azimuth)
@@ -288,6 +282,12 @@ struct ContentView: View {
                 mumin = map.map.min; mumax = map.map.max
             }
         }
+        .onChange(of: orientation) { value in
+            guard (value != .free) else { return }
+            
+            let (lat,lon,az) = value.coords
+            latitude = lat; longitude = lon; azimuth = az
+        }
         .onChange(of: function) { value in transform() }
         .onChange(of: colors) { value in colorize() }
         .onChange(of: range) { value in colorize() }
@@ -326,6 +326,8 @@ struct ContentView: View {
             mincolor = colorscheme.colormap.min
             maxcolor = colorscheme.colormap.max
             transform = DataTransform.value
+            
+            DispatchQueue.main.async { spin = true }
         }
         .task {
             let observers = Observers(); self.observers = observers
