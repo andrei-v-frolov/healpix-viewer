@@ -135,6 +135,13 @@ class ProjectedView: MTKView {
         for i in -3...3 { step2(w[abs(i)]*dt) }
     }
     
+    // MARK: timing between the frames
+    private var lastframe: CFTimeInterval = 0.0
+    var dt: CFTimeInterval {
+        let last = lastframe, now = CACurrentMediaTime(); lastframe = now
+        return min(now-last, 5.0/Double(preferredFramesPerSecond))
+    }
+    
     // MARK: initalize after being decoded
     override func awakeFromNib() {
         // initialize MTKView
@@ -167,7 +174,7 @@ class ProjectedView: MTKView {
         guard currentRenderPassDescriptor != nil, let drawable = currentDrawable else { return }
         
         // if spinning, advance the viewpoint towards target view
-        if (spin) { step6(1.0/Double(preferredFramesPerSecond)); rotation = gen2rot(w) }
+        if (spin) { step6(dt); rotation = gen2rot(w) }
         
         // initialize compute command buffer
         guard let command = queue.makeCommandBuffer() else { return }
