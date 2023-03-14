@@ -113,7 +113,7 @@ class ProjectedView: MTKView {
     // MARK: solid body dynamics
     var w = float3.zero
     var omega = float3.zero
-    var target = float3.zero
+    var target = float3.zero { didSet { w = unwind(w, target: target) } }
     
     private let gamma: Float = 8.0
     private let kappa: Float = 16.0
@@ -124,15 +124,15 @@ class ProjectedView: MTKView {
         w += omega * Float(dt/2.0)
     }
     
-    func step6(_ dt: Double) {
-        let w: [Double] = [
+    func step6(_ dt: Double, steps n: Int = 1) {
+        let dt = dt/Double(n), w: [Double] = [
              1.31518632068391121888424972823886251,
             -1.17767998417887100694641568096431573,
              0.235573213359358133684793182978534602,
              0.784513610477557263819497633866349876
         ]
         
-        for i in -3...3 { step2(w[abs(i)]*dt) }
+        for _ in 0..<n { for i in -3...3 { step2(w[abs(i)]*dt) } }
     }
     
     // MARK: timing between the frames
@@ -174,7 +174,7 @@ class ProjectedView: MTKView {
         guard currentRenderPassDescriptor != nil, let drawable = currentDrawable else { return }
         
         // if spinning, advance the viewpoint towards target view
-        if (spin) { step6(dt); rotation = gen2rot(w) }
+        if (spin) { step6(dt, steps: 3); rotation = gen2rot(w) }
         
         // initialize compute command buffer
         guard let command = queue.makeCommandBuffer() else { return }
@@ -313,4 +313,11 @@ func rot2gen(_ R: float3x3) -> float3 {
     let trace = R[0,0]+R[1,1]+R[2,2], t = (trace-1.0)/2.0
     
     return atan2(s,t)/s * w
+}
+
+// shift generator of rotation by a multiple of 2*pi to be closest to target one
+func unwind(_ w: float3, target t: float3) -> float3 {
+    let l = length(w); guard l > 0.0 else { return w }
+    let n = round(dot(t-w,w)/(2.0*Float.pi*l))
+    return (1.0 + 2.0*Float.pi*n/l) * w
 }
