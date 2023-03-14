@@ -302,6 +302,7 @@ class ProjectedView: MTKView {
         view.orientation = .free
         view.cursor.hover = false
     }
+        
 }
 
 // MARK: SO(3) group representations
