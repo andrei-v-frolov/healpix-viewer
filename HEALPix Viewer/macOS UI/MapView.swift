@@ -234,7 +234,7 @@ class ProjectedView: MTKView {
     
     // MARK: center map on the location of a right click
     override func rightMouseUp(with event: NSEvent) {
-        guard let (theta,phi) = coordinates(event) else { return }
+        guard let view = mapview, let (theta,phi) = coordinates(event) else { return }
         
         let radian = 180.0/Double.pi
         
@@ -245,24 +245,25 @@ class ProjectedView: MTKView {
             let omega = (s != 0.0) ? atan2(s,c)/s * w : w
             
             let (_,_,psi) = rot2ang(gen2rot(omega)*R)
-            mapview?.azimuth = -psi * radian
+            view.azimuth = -psi * radian
         }
         
-        mapview?.latitude = (Double.pi/2.0 - theta) * radian
-        mapview?.longitude = phi * radian
-        mapview?.orientation = .free
-        mapview?.cursor.hover = false
+        view.latitude = (Double.pi/2.0 - theta) * radian
+        view.longitude = phi * radian
+        view.orientation = .free
+        view.cursor.hover = false
     }
     
     // MARK: cursor readout from projected map
     override func mouseMoved(with event: NSEvent) {
-        guard UserDefaults.standard.bool(forKey: cursorKey), let (theta,phi) = coordinates(event) else { mapview?.cursor.hover = false; return }
+        guard let view = mapview, UserDefaults.standard.bool(forKey: cursorKey) else { return }
+        guard let (theta,phi) = coordinates(event) else { view.cursor.hover = false; return }
         
         // cursor coordinates
         let radian = 180.0/Double.pi
-        mapview?.cursor.hover = true
-        mapview?.cursor.lat = (Double.pi/2.0 - theta) * radian
-        mapview?.cursor.lon = phi * radian
+        view.cursor.hover = true
+        view.cursor.lat = (Double.pi/2.0 - theta) * radian
+        view.cursor.lon = phi * radian
         
         // map pixel referenced
         var p = -1, v = 0.0; if let map = map {
@@ -270,8 +271,8 @@ class ProjectedView: MTKView {
             v = Double(map.data[p])
         }
         
-        mapview?.cursor.pix = p
-        mapview?.cursor.val = v
+        view.cursor.pix = p
+        view.cursor.val = v
     }
     
     // MARK: cursor is cross-hairs when readout is enabled
@@ -286,6 +287,8 @@ class ProjectedView: MTKView {
         view.magnification += event.magnification
         if (view.magnification <  0.0) { view.magnification =  0.0 }
         if (view.magnification > 10.0) { view.magnification = 10.0 }
+        
+        view.cursor.hover = false
     }
     
     override func rotate(with event: NSEvent) {
@@ -295,6 +298,9 @@ class ProjectedView: MTKView {
         view.azimuth += Double(flipx ? -event.rotation : event.rotation)
         if (view.azimuth >  180.0) { view.azimuth -= 360.0 }
         if (view.azimuth < -180.0) { view.azimuth += 360.0 }
+        
+        view.orientation = .free
+        view.cursor.hover = false
     }
 }
 

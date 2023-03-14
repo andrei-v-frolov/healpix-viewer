@@ -4,6 +4,7 @@
 
 - cursor readout (latitude, longitude, pixel number & map value)
 - gesture support for magnification and rotation (azimuth) added
+- right click centers along geodesic, option to keep azimuth locked
 
 ### Public Release Blocking
 

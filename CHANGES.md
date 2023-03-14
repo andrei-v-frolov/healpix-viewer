@@ -1,6 +1,8 @@
 ### Version 1.0 (Build 006)
 
 - cursor readout (latitude, longitude, pixel number & map value)
+- gesture support for magnification and rotation (azimuth) added
+- right click centers along geodesic, option to keep azimuth locked
 
 ### Version 1.0 (Build 005)
 
