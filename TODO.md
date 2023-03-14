@@ -3,6 +3,7 @@
 ### Current Status (Build 006)
 
 - cursor readout (latitude, longitude, pixel number & map value)
+- gesture support for magnification and rotation (azimuth) added
 
 ### Public Release Blocking
 
@@ -26,4 +27,3 @@
 
 - `Open File...` should open a new window if none available
 - modal NSOpenPanel and NSSavePanel are called within transaction
-- gesture support seems to be broken? retest and confirm later...

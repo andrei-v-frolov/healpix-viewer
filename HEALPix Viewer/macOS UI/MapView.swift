@@ -266,6 +266,24 @@ class ProjectedView: MTKView {
     override func cursorUpdate(with event: NSEvent) {
         if UserDefaults.standard.bool(forKey: cursorKey) { NSCursor.crosshair.set() }
     }
+    
+    // MARK: gesture support
+    override func magnify(with event: NSEvent) {
+        guard let view = mapview else { return }
+        
+        view.magnification += event.magnification
+        if (view.magnification <  0.0) { view.magnification =  0.0 }
+        if (view.magnification > 10.0) { view.magnification = 10.0 }
+    }
+    
+    override func rotate(with event: NSEvent) {
+        guard let view = mapview else { return }
+        
+        let flipx = UserDefaults.standard.bool(forKey: viewFromInsideKey)
+        view.azimuth += Double(flipx ? -event.rotation : event.rotation)
+        if (view.azimuth >  180.0) { view.azimuth -= 360.0 }
+        if (view.azimuth < -180.0) { view.azimuth += 360.0 }
+    }
 }
 
 // MARK: SO(3) group representations
