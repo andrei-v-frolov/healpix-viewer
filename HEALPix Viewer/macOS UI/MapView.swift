@@ -237,9 +237,21 @@ class ProjectedView: MTKView {
         guard let (theta,phi) = coordinates(event) else { return }
         
         let radian = 180.0/Double.pi
+        
+        // geodesic rotation between two orientations
+        if (!event.modifierFlags.contains(.option)) {
+            let R = rotation, u = R[0], v = ang2vec(theta,phi)
+            let w = cross(u,v), s = length(w), c = dot(u,v)
+            let omega = (s != 0.0) ? atan2(s,c)/s * w : w
+            
+            let (_,_,psi) = rot2ang(gen2rot(omega)*R)
+            mapview?.azimuth = -psi * radian
+        }
+        
         mapview?.latitude = (Double.pi/2.0 - theta) * radian
         mapview?.longitude = phi * radian
         mapview?.orientation = .free
+        mapview?.cursor.hover = false
     }
     
     // MARK: cursor readout from projected map
@@ -315,10 +327,19 @@ func ang2rot(_ theta: Double, _ phi: Double, _ psi: Double) -> float3x3 {
     return xy*xz*yz
 }
 
+// rotation matrix to latitude, longitude and azimuth
+func rot2ang(_ R: float3x3) -> (theta: Double, phi: Double, psi: Double) {
+    let theta = asin(Double(R[0,2]))
+    let psi = atan2(Double(R[1,2]),Double(R[2,2]))
+    let phi = atan2(Double(R[0,1]),Double(R[0,0]))
+    
+    return (theta,phi,psi)
+}
+
 // generator of rotation to rotation matrix
 func gen2rot(_ w: float3) -> float3x3 {
     let theta = length(w); guard (theta > 0.0) else { return matrix_identity_float3x3 }
-    let W = float3x3( float3(0.0,w.z,-w.y), float3(-w.z,0.0,w.x), float3(w.y,-w.x,0.0))
+    let W = float3x3(float3(0.0,w.z,-w.y), float3(-w.z,0.0,w.x), float3(w.y,-w.x,0.0))
     let q = sin(theta)/theta, s = sin(theta/2.0)/theta, p = 2.0*s*s
     
     return matrix_identity_float3x3 + q*W + p*(W*W)
