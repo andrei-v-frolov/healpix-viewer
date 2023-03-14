@@ -302,7 +302,18 @@ class ProjectedView: MTKView {
         view.orientation = .free
         view.cursor.hover = false
     }
+    
+    override func scrollWheel(with event: NSEvent) {
+        guard spin else { return }
         
+        let epsilon = Float(3.0e-2/exp2(magnification/2.0))
+        let flipx = UserDefaults.standard.bool(forKey: viewFromInsideKey)
+        let v = float3(0.0, Float(-event.deltaY), Float(flipx ? event.deltaX : -event.deltaX))
+        let R = rotation, w = rot2gen(gen2rot(epsilon*R*v) * R)
+        omega += unwind(w, target: self.w) - self.w
+        
+        mapview?.cursor.hover = false
+    }
 }
 
 // MARK: SO(3) group representations
