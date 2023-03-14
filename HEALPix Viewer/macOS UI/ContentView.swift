@@ -332,6 +332,10 @@ struct ContentView: View {
         .task {
             let observers = Observers(); self.observers = observers
             
+            observers.add(key: cursorKey) { old, new in
+                guard let value = new as? Bool else { return }
+                if (!value) { cursor.hover = false }
+            }
             observers.add(key: showColorBarKey) { old, new in
                 guard (window?.isKeyWindow == true) else { return }
                 guard let value = new as? Bool else { return }
