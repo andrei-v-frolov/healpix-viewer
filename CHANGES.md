@@ -1,3 +1,8 @@
+### Version 1.0 (Build 007)
+
+- **first public release**
+- action of `Cursor Readout` menu item fixed
+
 ### Version 1.0 (Build 006)
 
 - cursor readout (latitude, longitude, pixel number & map value)
