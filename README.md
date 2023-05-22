@@ -20,3 +20,5 @@ HEALPix [[Gorski et. al.](https://healpix.jpl.nasa.gov)] is a de-facto standard 
 - maximal texture size and output image dimensions are limited to 16384
 - this is a one man show, so no heavy testing on different platforms so far
 - feature requests are welcome, but some are harder to implement than others
+
+If you use HEALPix Viewer in your research, please cite [arXiv:2305.11507](https://arxiv.org/abs/2305.11507).
