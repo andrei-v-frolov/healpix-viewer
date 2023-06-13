@@ -24,6 +24,12 @@
 - antialiasing of very large maps (i.e. LOD pyramid in MapView)
 - command line interface
 
+### Long Term Targets
+
+- proper support of other coordinate systems (equatorial and ecliptic)
+- integrate with PLA/LAMBDA for data loading?
+- integrate with CADC database for object lookup?
+
 ### Bug Fixes
 
 - `Open File...` should open a new window if none available
