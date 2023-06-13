@@ -1,9 +1,8 @@
 # HEALPix Viewer TODO
 
-### Current Status (Build 007)
+### Current Status (Build 008)
 
-- **first public release**
-- action of `Cursor Readout` menu item fixed
+- build bumped to 008
 
 ### Public Release Blocking
 
@@ -19,6 +18,8 @@
 - magnifier glass
 - selectable annotation font
 - option to drag the map with colorbar...
+- copy and paste setting sets between loaded maps
+- keep colorbar and transform settings for each loaded map
 - false color map support (e.g. RGB = 100,147,217GHz channels)
 - antialiasing of very large maps (i.e. LOD pyramid in MapView)
 - command line interface
@@ -27,3 +28,5 @@
 
 - `Open File...` should open a new window if none available
 - modal NSOpenPanel and NSSavePanel are called within transaction
+- display alert if FITS format is not HEALPix (or unsopported scheme)
+- fix crash on out-of-memory, display alert and refuse to load instead
