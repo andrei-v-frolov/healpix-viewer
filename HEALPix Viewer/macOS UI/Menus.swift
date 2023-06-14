@@ -24,6 +24,21 @@ struct FileMenus: Commands {
     }
 }
 
+struct EditMenus: Commands {
+    // menu commands
+    var body: some Commands {
+        CommandGroup(replacing: CommandGroupPlacement.pasteboard) {
+            Button("Copy Style") { }
+                .keyboardShortcut("C", modifiers: [.command])
+            Button("Paste Style") { }
+                .keyboardShortcut("V", modifiers: [.command])
+            Button("Select All") { }
+                .keyboardShortcut("A", modifiers: [.command])
+            Divider()
+        }
+    }
+}
+
 struct ViewMenus: Commands {
     // application defaults
     @AppStorage(Appearance.appStorage) var appearance = Appearance.defaultValue

@@ -20,6 +20,7 @@ struct HEALPix_ViewerApp: App {
             ContentView(askToOpen: $askToOpen, askToSave: $askToSave)
         } .commands {
             FileMenus(askToOpen: $askToOpen, askToSave: $askToSave)
+            EditMenus()
             ViewMenus()
             DataMenus()
         }
