@@ -10,18 +10,23 @@
 
 ### Planned Features
 
+- proper Settings window
+- add power function transform
 - line convolution for polarization and vector maps
 - arithmetic operations on loaded map data (ala fcalc)
 
 ### Feature Requests
 
 - magnifier glass
+- selectable GPU device (e.g. discrete/external unit)
+- selectable color texture precision (memory footprint)
 - selectable annotation font
 - option to drag the map with colorbar...
 - copy and paste setting sets between loaded maps
 - keep colorbar and transform settings for each loaded map
 - false color map support (e.g. RGB = 100,147,217GHz channels)
 - antialiasing of very large maps (i.e. LOD pyramid in MapView)
+- proxy map to improve percieved transform performance
 - command line interface
 
 ### Long Term Targets
