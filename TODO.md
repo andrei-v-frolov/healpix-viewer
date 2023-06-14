@@ -2,7 +2,7 @@
 
 ### Current Status (Build 008)
 
-- build bumped to 008
+- proper Settings window added
 
 ### Public Release Blocking
 
@@ -10,7 +10,6 @@
 
 ### Planned Features
 
-- proper Settings window
 - add power function transform
 - line convolution for polarization and vector maps
 - arithmetic operations on loaded map data (ala fcalc)

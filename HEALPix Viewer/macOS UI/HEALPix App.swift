@@ -23,6 +23,7 @@ struct HEALPix_ViewerApp: App {
             ViewMenus()
             DataMenus()
         }
+        Settings { SettingsView() }
     }
     
     init() {
