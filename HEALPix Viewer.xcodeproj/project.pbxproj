@@ -14,6 +14,8 @@
 		501A6CD6292EBC9400E931A3 /* ExportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 501A6CD5292EBC9400E931A3 /* ExportView.swift */; };
 		501A6CDA292EC74400E931A3 /* Formatters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 501A6CD9292EC74400E931A3 /* Formatters.swift */; };
 		502A8B67293AA00A008CAE63 /* StatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 502A8B66293AA00A008CAE63 /* StatView.swift */; };
+		502F9D602A3A31050008FC42 /* FontPopUp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 502F9D5E2A3A31050008FC42 /* FontPopUp.swift */; };
+		502F9D612A3A31050008FC42 /* FontPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 502F9D5F2A3A31050008FC42 /* FontPicker.swift */; };
 		5036E7FA2932FC22006AE59E /* TransformView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5036E7F92932FC22006AE59E /* TransformView.swift */; };
 		503C675E28FF89C1002D4314 /* MapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 503C675D28FF89C1002D4314 /* MapView.swift */; };
 		5041397229AFF1A2006D372C /* CursorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5041397129AFF1A2006D372C /* CursorView.swift */; };
@@ -100,6 +102,8 @@
 		501A6CD5292EBC9400E931A3 /* ExportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportView.swift; sourceTree = "<group>"; };
 		501A6CD9292EC74400E931A3 /* Formatters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Formatters.swift; sourceTree = "<group>"; };
 		502A8B66293AA00A008CAE63 /* StatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatView.swift; sourceTree = "<group>"; };
+		502F9D5E2A3A31050008FC42 /* FontPopUp.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = FontPopUp.swift; path = FontPopUp/Sources/FontPopUp/FontPopUp.swift; sourceTree = SOURCE_ROOT; };
+		502F9D5F2A3A31050008FC42 /* FontPicker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = FontPicker.swift; path = FontPopUp/Sources/FontPopUp/FontPicker.swift; sourceTree = SOURCE_ROOT; };
 		5036E7F92932FC22006AE59E /* TransformView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransformView.swift; sourceTree = "<group>"; };
 		5036E7FD2933193B006AE59E /* Transforms.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Transforms.metal; sourceTree = "<group>"; };
 		503C675D28FF89C1002D4314 /* MapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapView.swift; sourceTree = "<group>"; };
@@ -166,6 +170,15 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		502F9D5B2A3A30EB0008FC42 /* FontPicker */ = {
+			isa = PBXGroup;
+			children = (
+				502F9D5F2A3A31050008FC42 /* FontPicker.swift */,
+				502F9D5E2A3A31050008FC42 /* FontPopUp.swift */,
+			);
+			name = FontPicker;
+			sourceTree = "<group>";
+		};
 		50563E5C29023D7300B316CA /* macOS UI */ = {
 			isa = PBXGroup;
 			children = (
@@ -189,6 +202,7 @@
 				50ECD2AF28FF2A9C0008F915 /* Menus.swift */,
 				5065EE7F292044D000AD46CD /* Preferences.swift */,
 				501A6CD9292EC74400E931A3 /* Formatters.swift */,
+				502F9D5B2A3A30EB0008FC42 /* FontPicker */,
 			);
 			path = "macOS UI";
 			sourceTree = "<group>";
@@ -450,6 +464,7 @@
 				501A6CD6292EBC9400E931A3 /* ExportView.swift in Sources */,
 				508BBA8B28FF2764004B1A9C /* HEALPix App.swift in Sources */,
 				503C675E28FF89C1002D4314 /* MapView.swift in Sources */,
+				502F9D612A3A31050008FC42 /* FontPicker.swift in Sources */,
 				508D56DA29131FBA0099C3A0 /* HEALPix BGRY.swift in Sources */,
 				5041397229AFF1A2006D372C /* CursorView.swift in Sources */,
 				5036E7FA2932FC22006AE59E /* TransformView.swift in Sources */,
@@ -467,6 +482,7 @@
 				500EFDBD29270B66002B6057 /* NavigationList.swift in Sources */,
 				50C513132907DFDC00BB6B51 /* OrientationView.swift in Sources */,
 				508D56D829131F7E0099C3A0 /* HEALPix GRV.swift in Sources */,
+				502F9D602A3A31050008FC42 /* FontPopUp.swift in Sources */,
 				508D56D229131E7E0099C3A0 /* HEALPix Grey.swift in Sources */,
 				500F99B3292553730097695C /* rawmap.c in Sources */,
 			);
