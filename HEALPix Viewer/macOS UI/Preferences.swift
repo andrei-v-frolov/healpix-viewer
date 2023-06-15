@@ -293,6 +293,26 @@ enum Anchor: Int, CaseIterable {
     var valign: Double { Double((rawValue & 0b1100) >> 2 - 1) }
 }
 
+// font encoded for @AppStorage
+struct FontPreference: RawRepresentable, Preference {
+    var nsFont: NSFont?
+    var ctFont: CTFont? {
+        get { nsFont as CTFont? }
+        set { nsFont = newValue }
+    }
+    
+    // initializer wrappers
+    public init() { self.nsFont = nil }
+    public init(nsFont: NSFont?) { self.nsFont = nsFont }
+    public init(ctFont: NSFont?) { self.nsFont = ctFont }
+    public init(rawValue: String) { self.nsFont = NSFont(name: rawValue, size: 0.0) }
+    
+    // default value
+    static let key = "font"
+    static let defaultValue = Self()
+    public var rawValue: String { nsFont?.fontName ?? ""}
+}
+
 // encapsulates @AppStorage preference properties
 protocol Preference {
     static var key: String { get }
