@@ -108,7 +108,10 @@ class ProjectedView: MTKView {
     var lightsource = float4(0.0)
     
     // if lighting effects are enabled, pass lighting to the shader
-    var lighting: float4 { UserDefaults.standard.bool(forKey: lightingKey) ? lightsource : float4(0.0) }
+    var lighting: float4 {
+        let flip = UserDefaults.standard.bool(forKey: viewFromInsideKey) ? float4(1,-1,1,1) : float4(1)
+        return UserDefaults.standard.bool(forKey: lightingKey) ? flip*lightsource : float4(0.0)
+    }
     
     // MARK: solid body dynamics
     var w = float3.zero

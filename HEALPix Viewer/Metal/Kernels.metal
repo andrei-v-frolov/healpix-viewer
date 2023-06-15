@@ -27,7 +27,7 @@ inline float4 grid(float2 ang) {
 
 // lighting effect applied from a particular direction
 inline float4 lighted(float4 pixel, float4 light, float3 v) {
-    return select(float4((1.0 + light.w * dot(light.xyz, v))*pixel.xyz, pixel.w), pixel, light.w == 0.0);
+    return select(float4(pow(1.0 + light.w * (dot(light.xyz, v)-1.0)/2.0, 0.45454545)*pixel.xyz, pixel.w), pixel, light.w == 0.0);
 }
 
 // MARK: shader kernels for all projections

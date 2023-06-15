@@ -87,7 +87,7 @@ struct ContentView: View {
     @State private var mumax: Double = 0.0
     
     // lighting toolbar
-    @State private var lighting = Lighting(enabled: false, lat: 45.0, lon: 45.0, amt: 30.0)
+    @State private var lighting = Lighting(enabled: false, lat: 45.0, lon: -90.0, amt: 60.0)
     
     // cursor readout
     @State private var cursor = Cursor(hover: false, lat: 0.0, lon: 0.0, pix: 0, val: 0.0)
