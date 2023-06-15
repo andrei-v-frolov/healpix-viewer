@@ -9,7 +9,7 @@ import SwiftUI
 
 struct SettingsView: View {
     // application color scheme
-    @AppStorage(Appearance.appStorage) var appearance = Appearance.defaultValue
+    @AppStorage(Appearance.key) var appearance = Appearance.defaultValue
     @AppStorage(viewFromInsideKey) var viewFromInside = true
     @AppStorage(lightingKey) var lightingEffects = false
 

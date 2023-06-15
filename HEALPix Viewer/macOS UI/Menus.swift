@@ -41,7 +41,7 @@ struct EditMenus: Commands {
 
 struct ViewMenus: Commands {
     // application defaults
-    @AppStorage(Appearance.appStorage) var appearance = Appearance.defaultValue
+    @AppStorage(Appearance.key) var appearance = Appearance.defaultValue
     
     // render colorbar?
     @AppStorage(viewFromInsideKey) var viewFromInside = true
@@ -86,14 +86,14 @@ struct ViewMenus: Commands {
 
 struct DataMenus: Commands {
     // data source and projection
-    @AppStorage(DataSource.appStorage) var dataSource = DataSource.defaultValue
-    @AppStorage(DataConvolution.appStorage) var convolution = DataConvolution.defaultValue
-    @AppStorage(Projection.appStorage) var projection = Projection.defaultValue
-    @AppStorage(Orientation.appStorage) var orientation = Orientation.defaultValue
+    @AppStorage(DataSource.key) var dataSource = DataSource.defaultValue
+    @AppStorage(DataConvolution.key) var convolution = DataConvolution.defaultValue
+    @AppStorage(Projection.key) var projection = Projection.defaultValue
+    @AppStorage(Orientation.key) var orientation = Orientation.defaultValue
     
     // colorbar properties
-    @AppStorage(ColorScheme.appStorage) var colorScheme = ColorScheme.defaultValue
-    @AppStorage(DataTransform.appStorage) var dataTransform = DataTransform.defaultValue
+    @AppStorage(ColorScheme.key) var colorScheme = ColorScheme.defaultValue
+    @AppStorage(DataTransform.key) var dataTransform = DataTransform.defaultValue
     
     // menu commands
     var body: some Commands {

@@ -32,7 +32,7 @@ struct HEALPix_ViewerApp: App {
     }
     
     // application appearance
-    let appearanceObserver = AppStorageObserver(key: Appearance.appStorage) { old, new in
+    let appearanceObserver = AppStorageObserver(key: Appearance.key) { old, new in
         guard let raw = new as? String, let mode = Appearance(rawValue: raw) else { return }
         
         NSApp.appearance = mode.appearance

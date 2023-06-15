@@ -21,7 +21,7 @@ enum Appearance: String, CaseIterable, Preference {
     case system = "System Mode"
     
     // default value
-    static let appStorage = "appearance"
+    static let key = "appearance"
     static let defaultValue: Self = .system
     
     // associated value
@@ -47,7 +47,7 @@ enum DataSource: String, CaseIterable, Preference {
     case v = "Vector Field V"
     
     // default value
-    static let appStorage = "dataSource"
+    static let key = "dataSource"
     static let defaultValue: Self = .i
     
     // collections
@@ -63,7 +63,7 @@ enum DataConvolution: String, CaseIterable, Preference {
     case vector = "Vector Field"
     
     // default value
-    static let appStorage = "convolution"
+    static let key = "convolution"
     static let defaultValue: Self = .none
 }
 
@@ -79,7 +79,7 @@ enum Projection: String, CaseIterable, Preference {
     case werner = "Werner"
     
     // default value
-    static let appStorage = "projection"
+    static let key = "projection"
     static let defaultValue: Self = .mollweide
     
     // projection bounds
@@ -145,7 +145,7 @@ enum Orientation: String, CaseIterable, Preference {
     case eclipticSouth = "Ecliptic South"
     
     // default value
-    static let appStorage = "orientation"
+    static let key = "orientation"
     static let defaultValue: Self = .equator
     
     // collections
@@ -178,7 +178,7 @@ enum ColorScheme: String, CaseIterable, Preference {
     case bgry = "BGRY"
     
     // default value
-    static let appStorage = "colorScheme"
+    static let key = "colorScheme"
     static let defaultValue: Self = .planck
     
     // colormap singletons
@@ -210,7 +210,7 @@ enum DataTransform: String, CaseIterable, Preference {
     case normalize = "Normalized"
     
     // default value
-    static let appStorage = "dataTransform"
+    static let key = "dataTransform"
     static let defaultValue: Self = .none
     
     // collections
@@ -279,7 +279,7 @@ enum BoundsModifier: String, CaseIterable, Preference {
     case negative = "Negative"
     
     // default value
-    static let appStorage = "boundsModifier"
+    static let key = "boundsModifier"
     static let defaultValue: Self = .full
 }
 
@@ -295,9 +295,9 @@ enum Anchor: Int, CaseIterable {
 
 // encapsulates @AppStorage preference properties
 protocol Preference {
-    static var appStorage: String { get }
-    static var defaultValue: Self { get }
+    static var key: String { get }
     static var value: Self { get }
+    static var defaultValue: Self { get }
     
     init?(rawValue: String)
 }
@@ -305,7 +305,7 @@ protocol Preference {
 // default implementation of current value access
 extension Preference {
     static var value: Self {
-        guard let raw = UserDefaults.standard.string(forKey: Self.appStorage),
+        guard let raw = UserDefaults.standard.string(forKey: Self.key),
               let value = Self(rawValue: raw) else { return Self.defaultValue }
         
         return value
