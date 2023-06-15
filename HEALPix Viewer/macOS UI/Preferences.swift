@@ -331,3 +331,22 @@ extension Preference {
         return value
     }
 }
+
+// color encoded for @AppStorage
+extension Color: RawRepresentable, Preference {
+    public init(rawValue: String) {
+        guard let data = Data(base64Encoded: rawValue),
+              let color = try? NSKeyedUnarchiver.unarchivedObject(ofClass: NSColor.self, from: data) else { self = .defaultValue; return }
+        self = Color(nsColor: color)
+    }
+    
+    public var rawValue: String {
+        guard let data = try? NSKeyedArchiver.archivedData(withRootObject: NSColor(self), requiringSecureCoding: false) else { return "" }
+        print(data)
+        return data.base64EncodedString()
+    }
+    
+    // default value
+    static let key = "font"
+    static var defaultValue = Color.primary
+}
