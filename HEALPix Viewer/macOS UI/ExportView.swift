@@ -25,8 +25,9 @@ struct ExportView: View {
     @Binding var withDatarange: Bool
     @Binding var withAnnotation: Bool
     @Binding var annotation: String
-    @Binding var font: NSFont?
-    @Binding var textcolor: Color
+    
+    @AppStorage(textFontKey) var font = FontPreference.defaultValue
+    @AppStorage(textColorKey) var color = Color.defaultValue
     
     let SizeFormatter = { var n = IntegerNumber; n.minimum = 0; n.maximum = 16384; return n }()
     
@@ -57,13 +58,13 @@ struct ExportView: View {
                             .disabled(!withColorbar || !withDatarange)
                     }
                     Spacer()
-                    ColorPicker("", selection: $textcolor)
+                    ColorPicker("", selection: $color)
                         .disabled(!withColorbar || !withDatarange)
                         .opacity(!withColorbar || !withDatarange ? 0.1 : 1.0)
                 }
                 TextField("Annotation", text: $annotation)
                     .disabled(!withColorbar || !withDatarange || !withAnnotation)
-                FontPicker(font: $font)
+                FontPicker(font: $font.nsFont)
                     .disabled(!withColorbar || !withDatarange)
             }
             Spacer()

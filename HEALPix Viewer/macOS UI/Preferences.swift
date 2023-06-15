@@ -14,6 +14,10 @@ let showColorBarKey = "showColorBar"
 let lightingKey = "lighting"
 let cursorKey = "cursor"
 
+// encodable type storage keys
+let textFontKey = "textFont"
+let textColorKey = "textColor"
+
 // application appearance
 enum Appearance: String, CaseIterable, Preference {
     case dark = "Dark Mode"

@@ -231,8 +231,7 @@ struct ContentView: View {
                             Divider()
                             ExportView(width: $width, oversampling: $oversampling,
                                        withColorbar: $colorbar, withDatarange: $withDatarange,
-                                       withAnnotation: $withAnnotation, annotation: $annotation,
-                                       font: $font, textcolor: $textcolor).padding(20)
+                                       withAnnotation: $withAnnotation, annotation: $annotation).padding(20)
                             Divider()
                             HStack {
                                 Button { saving = false } label: {

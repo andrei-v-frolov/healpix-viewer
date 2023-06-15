@@ -12,9 +12,10 @@ struct SettingsView: View {
     @AppStorage(Appearance.key) var appearance = Appearance.defaultValue
     @AppStorage(viewFromInsideKey) var viewFromInside = true
     @AppStorage(lightingKey) var lightingEffects = false
-
-    @State private var font: NSFont? = nil
-    @State private var fontcolor = Color.black
+    
+    @AppStorage(textFontKey) var font = FontPreference.defaultValue
+    @AppStorage(textColorKey) var color = Color.defaultValue
+    
     @State private var separate: Bool = true
     
     @State private var bbb: Bool = true
@@ -57,8 +58,8 @@ struct SettingsView: View {
                     VStack {
                         HStack {
                             Text("Annotation:")
-                            FontPicker(font: $font)
-                            ColorPicker("", selection: $fontcolor)
+                            FontPicker(font: $font.nsFont)
+                            ColorPicker("", selection: $color)
                         }.frame(width: 210)
                         Toggle(" Drag & drop color bar separately", isOn: $separate)
                     }.padding(corner).frame(width: 380).overlay(
