@@ -3,6 +3,7 @@
 ### Current Status (Build 008)
 
 - proper Settings window added
+- more realistic lighting (Lambert reflection, gamma corrected)
 
 ### Public Release Blocking
 
@@ -40,4 +41,3 @@
 - modal NSOpenPanel and NSSavePanel are called within transaction
 - display alert if FITS format is not HEALPix (or unsopported scheme)
 - fix crash on out-of-memory, display alert and refuse to load instead
-- modify lighting effect to avoid clipping (darken only or color-map?)

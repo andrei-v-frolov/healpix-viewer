@@ -48,7 +48,7 @@ struct SettingsView: View {
                         Text("When rendering the map...").font(.title3)
                         Group {
                             Toggle(" View from inside (enable for CMB)", isOn: $viewFromInside)
-                            Toggle(" Apply lighting effects (shading)", isOn: $lightingEffects)
+                            Toggle(" Apply lighting effects (sphere shading)", isOn: $lightingEffects)
                         }.padding(.leading, offset)
                     }.padding(corner).frame(width: 380, alignment: .center).overlay(
                         RoundedRectangle(cornerRadius: corner)
