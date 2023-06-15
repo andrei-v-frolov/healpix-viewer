@@ -76,6 +76,25 @@ kernel void tanh_transform(
     output[gid] = tanh((input[gid] - param.x)/param.y);
 }
 
+kernel void pow_transform(
+    constant float *input               [[ buffer(0) ]],
+    device float *output                [[ buffer(1) ]],
+    constant float2 &param              [[ buffer(2) ]],
+    uint gid                            [[ thread_position_in_grid ]]
+) {
+    const float x = input[gid] - param.x;
+    output[gid] = copysign(pow(abs(x), param.y), x);
+}
+
+kernel void exp_transform(
+    constant float *input               [[ buffer(0) ]],
+    device float *output                [[ buffer(1) ]],
+    constant float2 &param              [[ buffer(2) ]],
+    uint gid                            [[ thread_position_in_grid ]]
+) {
+    output[gid] = exp((input[gid] - param.x)/param.y);
+}
+
 kernel void norm_transform(
     constant float *input               [[ buffer(0) ]],
     device float *output                [[ buffer(1) ]],

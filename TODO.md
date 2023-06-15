@@ -3,6 +3,7 @@
 ### Current Status (Build 008)
 
 - proper Settings window added
+- power law and exponential transforms added
 - more realistic lighting (Lambert reflection, gamma corrected)
 
 ### Public Release Blocking
@@ -11,7 +12,6 @@
 
 ### Planned Features
 
-- add power function transform
 - line convolution for polarization and vector maps
 - arithmetic operations on loaded map data (ala fcalc)
 

@@ -35,6 +35,12 @@ struct TransformToolbar: View {
                 }
                 Divider()
                 Group {
+                    ForEach(DataTransform.expand, id: \.self) {
+                        Text($0.formula).tag($0)
+                    }
+                }
+                Divider()
+                Group {
                     ForEach(DataTransform.cdf, id: \.self) {
                         Text($0.formula).foregroundColor(ranking ? .primary : .secondary).tag($0)
                     }
@@ -49,7 +55,7 @@ struct TransformToolbar: View {
                 .frame(width: 95).multilineTextAlignment(.trailing).focused($focus)
                 .disabled(!transform.mu)
             Spacer().frame(width: 30)
-            Slider(value: $sigma, in: -10.0...10.0) { Text("log σ:") } onEditingChanged: { editing in focus = false }
+            Slider(value: $sigma, in: transform.range) { Text("log σ:") } onEditingChanged: { editing in focus = false }
                 .frame(width: 160)
                 .disabled(!transform.sigma)
             TextField("σ", value: $sigma, formatter: TwoDigitNumber)

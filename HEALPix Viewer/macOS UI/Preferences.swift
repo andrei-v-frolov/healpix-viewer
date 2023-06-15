@@ -204,6 +204,8 @@ enum DataTransform: String, CaseIterable, Preference {
     case asinh = "Arcsinh"
     case atan = "Arctan"
     case tanh = "Tanh"
+    case power = "Power"
+    case exp = "Exponent"
     case equalize = "Equalized"
     case normalize = "Normalized"
     
@@ -213,7 +215,7 @@ enum DataTransform: String, CaseIterable, Preference {
     
     // collections
     static let flatten: [DataTransform] = [.log, .asinh, .atan, .tanh]
-    static let expand: [DataTransform] = []
+    static let expand: [DataTransform] = [.power, .exp]
     static let function: [DataTransform] = flatten + expand
     static let cdf: [DataTransform] = [.equalize, .normalize]
     
@@ -224,6 +226,8 @@ enum DataTransform: String, CaseIterable, Preference {
             case .asinh:    return "asinh[(x-μ)/σ]"
             case .atan:     return "atan[(x-μ)/σ]"
             case .tanh:     return "tanh[(x-μ)/σ]"
+            case .power:    return "±|x-μ|^σ"
+            case .exp:      return "exp[(x-μ)/σ]"
             default: return rawValue
         }
     }
@@ -231,27 +235,37 @@ enum DataTransform: String, CaseIterable, Preference {
     // parameter needs
     var mu: Bool {
         switch self {
-            case .log, .asinh, .atan, .tanh: return true
+            case .log, .asinh, .atan, .tanh, .power, .exp: return true
             default: return false
         }
     }
     
     var sigma: Bool {
         switch self {
-            case .asinh, .atan, .tanh: return true
+            case .asinh, .atan, .tanh, .power, .exp: return true
             default: return false
+        }
+    }
+    
+    // parameter ranges
+    var range: ClosedRange<Double> {
+        switch self {
+            case .power:    return -2.00...2.00
+            default:        return -10.0...10.0
         }
     }
     
     // functional transform
     func f(_ x: Double, mu: Double = 0.0, sigma: Double = 0.0) -> Double {
-        let sigma = exp(sigma), epsilon = Double(Float.leastNormalMagnitude)
+        let sigma = Foundation.exp(sigma), epsilon = Double(Float.leastNormalMagnitude)
         
         switch self {
             case .log:      return Foundation.log(max(x-mu,epsilon))
             case .asinh:    return Foundation.asinh((x-mu)/sigma)
             case .atan:     return Foundation.atan((x-mu)/sigma)
             case .tanh:     return Foundation.tanh((x-mu)/sigma)
+            case .power:    return copysign(pow(abs(x-mu),sigma),x-mu)
+            case .exp:      return Foundation.exp((x-mu)/sigma)
             default:        return x
         }
     }

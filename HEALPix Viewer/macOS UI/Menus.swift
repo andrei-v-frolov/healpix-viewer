@@ -157,6 +157,10 @@ struct DataMenus: Commands {
                     Text($0.rawValue).tag($0)
                 }
                 Divider()
+                ForEach(DataTransform.expand, id: \.self) {
+                    Text($0.rawValue).tag($0)
+                }
+                Divider()
                 ForEach(DataTransform.cdf, id: \.self) {
                     Text($0.rawValue).tag($0)
                 }

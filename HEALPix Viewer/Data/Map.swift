@@ -240,6 +240,8 @@ struct DataTransformer {
         .asinh:     MetalKernel(kernel: "asinh_transform"),
         .atan:      MetalKernel(kernel: "atan_transform"),
         .tanh:      MetalKernel(kernel: "tanh_transform"),
+        .power:     MetalKernel(kernel: "pow_transform"),
+        .exp:       MetalKernel(kernel: "exp_transform"),
         .normalize: MetalKernel(kernel: "norm_transform")
     ]
     
