@@ -3,6 +3,7 @@
 ### Current Status (Build 008)
 
 - proper Settings window added
+- selectable annotation font and color
 - power law and exponential transforms added
 - more realistic lighting (Lambert reflection, gamma corrected)
 
@@ -20,7 +21,6 @@
 - magnifier glass
 - selectable GPU device (e.g. discrete/external unit)
 - selectable color texture precision (memory footprint)
-- selectable annotation font
 - option to drag the map with colorbar...
 - copy and paste setting sets between loaded maps
 - keep colorbar and transform settings for each loaded map

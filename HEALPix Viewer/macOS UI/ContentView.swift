@@ -42,6 +42,8 @@ struct ContentView: View {
     @State private var cdf: [Double]? = nil
     @State private var info: String? = nil
     @State private var annotation: String = "TEMPERATURE [μK]"
+    @State private var font: NSFont? = nil
+    @State private var textcolor = Color.black
     
     // computed map cache
     @State private var ranked: [UUID: CpuMap] = [UUID: CpuMap]()
@@ -225,11 +227,12 @@ struct ContentView: View {
                     }
                     .sheet(isPresented: $saving) {
                         VStack(spacing: 0) {
-                            Text("Export map as PNG image...").font(.largeTitle).padding(20)
+                            Text("Export map as PNG image...").font(.largeTitle).padding(20).frame(minWidth: 380)
                             Divider()
                             ExportView(width: $width, oversampling: $oversampling,
                                        withColorbar: $colorbar, withDatarange: $withDatarange,
-                                       withAnnotation: $withAnnotation, annotation: $annotation).padding(20)
+                                       withAnnotation: $withAnnotation, annotation: $annotation,
+                                       font: $font, textcolor: $textcolor).padding(20)
                             Divider()
                             HStack {
                                 Button { saving = false } label: {
@@ -459,7 +462,7 @@ struct ContentView: View {
         if (colorbar && withDatarange) {
             let scale = " (\(transform.rawValue.lowercased()) scale)"
             let annotation = (transform != .none) ? annotation + scale : annotation
-            annotate(texture, height: t, min: rangemin, max: rangemax, annotation: withAnnotation ? annotation : nil, background: bgcolor.cgColor)
+            annotate(texture, height: t, min: rangemin, max: rangemax, annotation: withAnnotation ? annotation : nil, font: font, color: textcolor.cgColor, background: bgcolor.cgColor)
         }
         
         if (colorbar || oversampling > 1) {
@@ -503,7 +506,7 @@ struct ContentView: View {
 }
 
 // annotate bottom part of a texture with data range labels and (optionally) a string
-func annotate(_ texture: MTLTexture, height h: Int, min: Double, max: Double, format: String = "%+.6g", annotation: String? = nil, font fontname: String = "SF Compact", color: CGColor = .black, background: CGColor? = nil) {
+func annotate(_ texture: MTLTexture, height h: Int, min: Double, max: Double, format: String = "%+.6g", annotation: String? = nil, font: NSFont? = nil, fontname: String = "SF Compact", color: CGColor? = nil, background: CGColor? = nil) {
     let w = texture.width, region = MTLRegionMake2D(0,0,w,h)
     
     // allocate buffer for the annotation region
@@ -530,8 +533,9 @@ func annotate(_ texture: MTLTexture, height h: Int, min: Double, max: Double, fo
     if let background = background { context.setFillColor(background); context.fill(rect) }
     
     // set up font for annotations
-    let font = CTFontCreateWithName(fontname as CFString, CGFloat(h)/1.2, nil)
-    let attr: [NSAttributedString.Key : Any] = [.font: font, .foregroundColor: color]
+    let size = CGFloat(h)/1.2, scaled = font?.withSize(size)
+    let font = scaled ?? CTFontCreateWithName(fontname as CFString, size, nil)
+    let attr: [NSAttributedString.Key : Any] = [.font: font, .foregroundColor: color ?? .black]
     
     // data range labels
     let min = NSAttributedString(string: String(format: format, min), attributes: attr)

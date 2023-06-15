@@ -25,6 +25,8 @@ struct ExportView: View {
     @Binding var withDatarange: Bool
     @Binding var withAnnotation: Bool
     @Binding var annotation: String
+    @Binding var font: NSFont?
+    @Binding var textcolor: Color
     
     let SizeFormatter = { var n = IntegerNumber; n.minimum = 0; n.maximum = 16384; return n }()
     
@@ -35,6 +37,7 @@ struct ExportView: View {
             VStack(alignment: .leading) {
                 HStack {
                     Text("Image width:")
+                    Spacer(minLength: 10)
                     TextField("Width", value: $width, formatter: SizeFormatter)
                         .frame(width: 50)
                     Picker("@", selection: $oversampling) {
@@ -45,14 +48,23 @@ struct ExportView: View {
                     }
                     .frame(width: 70)
                 }
-                Toggle("Include colorbar", isOn: $withColorbar.animation())
-                Toggle("Include data limits", isOn: $withDatarange)
-                    .disabled(!withColorbar)
-                Toggle("Include annotation", isOn: $withAnnotation)
-                    .disabled(!withColorbar || !withDatarange)
+                HStack(alignment: .bottom) {
+                    VStack(alignment: .leading) {
+                        Toggle("Include colorbar", isOn: $withColorbar.animation())
+                        Toggle("Include data limits", isOn: $withDatarange)
+                            .disabled(!withColorbar)
+                        Toggle("Include annotation", isOn: $withAnnotation)
+                            .disabled(!withColorbar || !withDatarange)
+                    }
+                    Spacer()
+                    ColorPicker("", selection: $textcolor)
+                        .disabled(!withColorbar || !withDatarange)
+                        .opacity(!withColorbar || !withDatarange ? 0.1 : 1.0)
+                }
                 TextField("Annotation", text: $annotation)
-                    .frame(width: 215)
                     .disabled(!withColorbar || !withDatarange || !withAnnotation)
+                FontPicker(font: $font)
+                    .disabled(!withColorbar || !withDatarange)
             }
             Spacer()
         }
