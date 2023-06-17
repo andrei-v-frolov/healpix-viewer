@@ -10,7 +10,7 @@ import SwiftUI
 struct ProjectionToolbar: View {
     @Binding var projection: Projection
     @Binding var orientation: Orientation
-    @Binding var spin: Bool
+    @Binding var animate: Bool
     
     var body: some View {
         HStack {
@@ -36,7 +36,7 @@ struct ProjectionToolbar: View {
             }
             .frame(width: 190)
             Spacer().frame(width: 50)
-            Toggle(" Spin to viewpoint", isOn: $spin)
+            Toggle(" Animate rotation", isOn: $animate)
         }
         .padding(.top, 11)
         .padding(.bottom, 11)

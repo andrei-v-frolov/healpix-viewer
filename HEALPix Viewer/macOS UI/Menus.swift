@@ -48,6 +48,7 @@ struct ViewMenus: Commands {
     @AppStorage(showColorBarKey) var showColorBar = false
     @AppStorage(lightingKey) var lightingEffects = false
     @AppStorage(cursorKey) var cursorReadout = false
+    @AppStorage(animateKey) var animate = true
     
     // menu commands
     var body: some Commands {
@@ -63,6 +64,10 @@ struct ViewMenus: Commands {
                 }
             }
             Divider()
+            Toggle(isOn: $animate) {
+                Text("Animate Rotation")
+            }
+            .keyboardShortcut("A", modifiers: [.option, .command])
             Toggle(isOn: $viewFromInside) {
                 Text("View From Inside")
             }

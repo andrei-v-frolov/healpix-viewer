@@ -57,7 +57,7 @@ struct ContentView: View {
     // projection toolbar
     @State private var projection: Projection = .defaultValue
     @State private var orientation: Orientation = .defaultValue
-    @State private var spin: Bool = false
+    @AppStorage(animateKey) var animate = true
     
     // magnification and orientation toolbar
     @State private var magnification: Double = 0.0
@@ -137,7 +137,7 @@ struct ContentView: View {
                 ZStack {
                     VStack(spacing: 0) {
                         if (toolbar == .projection) {
-                            ProjectionToolbar(projection: $projection, orientation: $orientation, spin: $spin)
+                            ProjectionToolbar(projection: $projection, orientation: $orientation, animate: $animate)
                         }
                         if (toolbar == .orientation) {
                             OrientationToolbar(latitude: $latitude, longitude: $longitude, azimuth: $azimuth)
@@ -155,7 +155,7 @@ struct ContentView: View {
                             LightingToolbar(lighting: $lighting)
                         }
                         ZStack(alignment: .top) {
-                            MapView(map: $map, projection: $projection, magnification: $magnification, spin: $spin,
+                            MapView(map: $map, projection: $projection, magnification: $magnification, animate: $animate,
                                     orientation: $orientation, latitude: $latitude, longitude: $longitude, azimuth: $azimuth,
                                     background: $bgcolor, lighting: $lighting, cursor: $cursor, mapview: $mapview)
                             .onDrag {
@@ -295,7 +295,7 @@ struct ContentView: View {
             maxcolor = colorscheme.colormap.max
             transform = DataTransform.value
             
-            DispatchQueue.main.async { spin = true }
+            DispatchQueue.main.async { animate = true }
         }
         .task {
             let observers = Observers(); self.observers = observers

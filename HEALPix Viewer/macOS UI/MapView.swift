@@ -15,7 +15,7 @@ struct MapView: NSViewRepresentable {
     
     @Binding var projection: Projection
     @Binding var magnification: Double
-    @Binding var spin: Bool
+    @Binding var animate: Bool
     
     @Binding var orientation: Orientation
     @Binding var latitude: Double
@@ -45,9 +45,9 @@ struct MapView: NSViewRepresentable {
         view.map = map
         view.projection = projection
         view.magnification = magnification
-        view.spin = spin
+        view.animate = animate
         
-        if (spin) { view.target = w } else {
+        if (animate) { view.target = w } else {
             view.w = w; view.omega = float3(0.0)
             view.rotation = rotation
         }
@@ -87,7 +87,7 @@ class ProjectedView: MTKView {
     var projection = Projection.defaultValue
     var magnification = 0.0
     var padding = 0.1
-    var spin = false
+    var animate = false
     
     // MARK: affine tranform mapping screen to projection plane
     func transform(width: Double? = nil, height: Double? = nil, magnification: Double? = nil, padding: Double? = nil, anchor: Anchor = .c, flipx: Bool? = nil, flipy: Bool = true, shiftx: Double = 0.0, shifty: Double = 0.0) -> float3x2 {
@@ -177,7 +177,7 @@ class ProjectedView: MTKView {
         guard currentRenderPassDescriptor != nil, let drawable = currentDrawable else { return }
         
         // if spinning, advance the viewpoint towards target view
-        if (spin) { step6(dt, steps: 3); rotation = gen2rot(w) }
+        if (animate) { step6(dt, steps: 3); rotation = gen2rot(w) }
         
         // initialize compute command buffer
         guard let command = queue.makeCommandBuffer() else { return }
@@ -307,7 +307,7 @@ class ProjectedView: MTKView {
     }
     
     override func scrollWheel(with event: NSEvent) {
-        guard spin else { return }
+        guard animate else { return }
         
         let epsilon = Float(3.0e-2/exp2(magnification/2.0))
         let flipx = UserDefaults.standard.bool(forKey: viewFromInsideKey)

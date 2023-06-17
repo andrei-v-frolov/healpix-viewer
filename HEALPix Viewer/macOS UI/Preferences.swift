@@ -17,6 +17,7 @@ let cursorKey = "cursor"
 // encodable type storage keys
 let textFontKey = "textFont"
 let textColorKey = "textColor"
+let animateKey = "animate"
 
 // application appearance
 enum Appearance: String, CaseIterable, Preference {
