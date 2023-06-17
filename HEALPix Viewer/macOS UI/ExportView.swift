@@ -21,8 +21,8 @@ struct DropView: View {
 struct ExportView: View {
     @Binding var width: Int
     @Binding var oversampling: Int
-    @Binding var withColorbar: Bool
-    @Binding var withDatarange: Bool
+    @Binding var withColorBar: Bool
+    @Binding var withDataRange: Bool
     @Binding var withAnnotation: Bool
     @Binding var annotation: String
     
@@ -51,21 +51,21 @@ struct ExportView: View {
                 }
                 HStack(alignment: .bottom) {
                     VStack(alignment: .leading) {
-                        Toggle("Include colorbar", isOn: $withColorbar.animation())
-                        Toggle("Include data limits", isOn: $withDatarange)
-                            .disabled(!withColorbar)
+                        Toggle("Include colorbar", isOn: $withColorBar.animation())
+                        Toggle("Include data limits", isOn: $withDataRange)
+                            .disabled(!withColorBar)
                         Toggle("Include annotation", isOn: $withAnnotation)
-                            .disabled(!withColorbar || !withDatarange)
+                            .disabled(!withColorBar || !withDataRange)
                     }
                     Spacer()
                     ColorPicker("", selection: $color)
-                        .disabled(!withColorbar || !withDatarange)
-                        .opacity(!withColorbar || !withDatarange ? 0.1 : 1.0)
+                        .disabled(!withColorBar || !withDataRange)
+                        .opacity(!withColorBar || !withDataRange ? 0.1 : 1.0)
                 }
                 TextField("Annotation", text: $annotation)
-                    .disabled(!withColorbar || !withDatarange || !withAnnotation)
-                FontPicker(font: $font.nsFont)
-                    .disabled(!withColorbar || !withDatarange)
+                    .disabled(!withColorBar || !withDataRange || !withAnnotation)
+                FontPicker(font: $font)
+                    .disabled(!withColorBar || !withDataRange)
             }
             Spacer()
         }

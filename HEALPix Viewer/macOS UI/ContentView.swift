@@ -31,7 +31,7 @@ struct ContentView: View {
     @State private var saving = false
     @State private var width: Int = 1920
     @State private var oversampling: Int = 2
-    @State private var withDatarange: Bool = true
+    @State private var withDataRange: Bool = true
     @State private var withAnnotation: Bool = true
     
     // drag and drop
@@ -196,8 +196,8 @@ struct ContentView: View {
                             Text("Export map as PNG image...").font(.largeTitle).padding(20).frame(minWidth: 380)
                             Divider()
                             ExportView(width: $width, oversampling: $oversampling,
-                                       withColorbar: $colorbar, withDatarange: $withDatarange,
                                        withAnnotation: $withAnnotation, annotation: $annotation).padding(20)
+                                       withColorBar: $colorbar, withDataRange: $withDataRange,
                             Divider()
                             HStack {
                                 Button { saving = false } label: {
@@ -417,14 +417,14 @@ struct ContentView: View {
         var height = projection.height(width: width), shift = 0.0
         let thickness = width/ColorbarView.aspect
         if (colorbar) { height += 2.0*thickness; shift += thickness }
-        if (colorbar && withDatarange) { height += thickness; shift += thickness/2.0 }
+        if (colorbar && withDataRange) { height += thickness; shift += thickness/2.0 }
         let w = Int(width), h = Int(height), t = Int(thickness)
         
         // render map texture and annotate it if requested
         guard let texture = mapview?.image(width: w, height: h, shift: (0,shift)) else { return nil }
         let output = (oversampling > 1) ? PNGTexture(width: w/oversampling, height: h/oversampling) : texture
         
-        if (colorbar && withDatarange) {
+        if (colorbar && withDataRange) {
             let scale = " (\(transform.rawValue.lowercased()) scale)"
             let annotation = (transform != .none) ? annotation + scale : annotation
             annotate(texture, height: t, min: rangemin, max: rangemax, annotation: withAnnotation ? annotation : nil, font: font, color: textcolor.cgColor, background: bgcolor.cgColor)
@@ -443,7 +443,7 @@ struct ContentView: View {
                 encoder.copy(from: bar, sourceSlice: 0, sourceLevel: 0,
                              sourceOrigin: MTLOriginMake(0,0,0), sourceSize: MTLSizeMake(w,2*t,1),
                              to: texture, destinationSlice: 0, destinationLevel: 0,
-                             destinationOrigin: MTLOriginMake(0, withDatarange ? t : 0, 0))
+                             destinationOrigin: MTLOriginMake(0, withDataRange ? t : 0, 0))
                 encoder.endEncoding()
             }
             
