@@ -7,13 +7,6 @@
 
 import SwiftUI
 
-struct Lighting {
-    var enabled: Bool
-    var lat: Double
-    var lon: Double
-    var amt: Double
-}
-
 struct LightingToolbar: View {
     @Binding var lighting: Lighting
     @FocusState private var focus: Bool

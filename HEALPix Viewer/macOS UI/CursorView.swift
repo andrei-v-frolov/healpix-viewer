@@ -7,14 +7,6 @@
 
 import SwiftUI
 
-struct Cursor {
-    var hover: Bool
-    var lat: Double
-    var lon: Double
-    var pix: Int
-    var val: Double
-}
-
 struct CursorView: View {
     @Binding var cursor: Cursor
     

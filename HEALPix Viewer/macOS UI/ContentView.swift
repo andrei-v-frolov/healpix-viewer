@@ -105,45 +105,11 @@ struct ContentView: View {
     // color mapper
     private let mapper = ColorMapper()
     
-    // convenience wrapper for tracking viewpoint changes
-    private struct Viewpoint: Equatable {
-        let latitude: Double
-        let longitude: Double
-        let azimuth: Double
-    }
-    
     private var viewpoint: Viewpoint { Viewpoint(latitude: latitude, longitude: longitude, azimuth: azimuth) }
-    
-    // convenience wrapper for tracking color changes
-    private struct Palette: Equatable {
-        let colorscheme: ColorScheme
-        let mincolor: Color
-        let maxcolor: Color
-        let nancolor: Color
-    }
     
     private var colors: Palette { Palette(colorscheme: colorscheme, mincolor: mincolor, maxcolor: maxcolor, nancolor: nancolor) }
     
-    // convenience wrapper for tracking range changes
-    private struct Bounds: Equatable {
-        let min: Double
-        let max: Double
-    }
-    
     private var range: Bounds { Bounds(min: rangemin, max: rangemax) }
-    
-    // convenience wrapper for tracking transform changes
-    private struct Transform: Equatable {
-        let transform: DataTransform
-        let mu: Double
-        let sigma: Double
-        
-        static func == (a: Self, b: Self) -> Bool {
-            return (a.transform == b.transform) &&
-                   (a.transform.mu ? a.mu == b.mu : true) &&
-                   (a.transform.sigma ? a.sigma == b.sigma : true)
-        }
-    }
     
     private var function: Transform { Transform(transform: transform, mu: mu, sigma: sigma) }
     
