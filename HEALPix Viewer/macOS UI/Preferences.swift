@@ -173,7 +173,8 @@ enum Orientation: String, CaseIterable, Preference {
 // color scheme
 enum ColorScheme: String, CaseIterable, Preference {
     case planck = "Planck"
-    case cmb = "HEALPix CMB"
+    case cmb = "HEALPix"
+    case diff = "Difference"
     case grey = "Greyscale"
     case hot = "Hot"
     case cold = "Cold"
@@ -189,14 +190,14 @@ enum ColorScheme: String, CaseIterable, Preference {
     var colormap: Colormap {
         switch self {
             case .planck:   return Colormap.planck
-            case .freq:     return Colormap.freq
             case .cmb:      return Colormap.cmb
+            case .diff:     return Colormap.diff
             case .grey:     return Colormap.grey
             case .hot:      return Colormap.hot
             case .cold:     return Colormap.cold
+            case .freq:     return Colormap.freq
             case .grv:      return Colormap.GRV
             case .bgry:     return Colormap.BGRY
-            default:        return Colormap.cmb
         }
     }
 }
