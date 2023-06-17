@@ -15,6 +15,7 @@ final class Colormap {
     // singleton colormaps
     static let planck = Colormap(lut: Planck_Parchment_LUT)
     static let freq = Colormap(lut: Planck_FreqMap_LUT)
+    static let diff = Colormap(lut: Python_Difference_LUT)
     static let cmb = Colormap(lut: HEALPix_CMB_LUT)
     static let grey = Colormap(lut: HEALPix_Grey_LUT)
     static let hot = Colormap(lut: HEALPix_Hot_LUT)

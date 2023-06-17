@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		500338E92A3D8FBD001EC910 /* Python Difference.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500338E82A3D8FBD001EC910 /* Python Difference.swift */; };
 		5009BB142912ECEB006DE835 /* ColorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5009BB132912ECEB006DE835 /* ColorView.swift */; };
 		500EFDBD29270B66002B6057 /* NavigationList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500EFDBC29270B66002B6057 /* NavigationList.swift */; };
 		500F99B3292553730097695C /* rawmap.c in Sources */ = {isa = PBXBuildFile; fileRef = 500F99B2292553730097695C /* rawmap.c */; };
@@ -92,6 +93,7 @@
 /* End PBXCopyFilesBuildPhase section */
 
 /* Begin PBXFileReference section */
+		500338E82A3D8FBD001EC910 /* Python Difference.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Python Difference.swift"; sourceTree = "<group>"; };
 		5009BB132912ECEB006DE835 /* ColorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorView.swift; sourceTree = "<group>"; };
 		500EFDBC29270B66002B6057 /* NavigationList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationList.swift; sourceTree = "<group>"; };
 		500F99AE292553720097695C /* Bridging Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Bridging Header.h"; sourceTree = "<group>"; };
@@ -281,6 +283,7 @@
 			children = (
 				508D56C629131C270099C3A0 /* Planck Parchment.swift */,
 				508D56CD29131D530099C3A0 /* Planck FreqMap.swift */,
+				500338E82A3D8FBD001EC910 /* Python Difference.swift */,
 				508D56CF29131DB10099C3A0 /* HEALPix CMB.swift */,
 				508D56D129131E7E0099C3A0 /* HEALPix Grey.swift */,
 				508D56D329131EB80099C3A0 /* HEALPix Hot.swift */,
@@ -469,6 +472,7 @@
 				5041397229AFF1A2006D372C /* CursorView.swift in Sources */,
 				5036E7FA2932FC22006AE59E /* TransformView.swift in Sources */,
 				508D56BF291309DA0099C3A0 /* LightingView.swift in Sources */,
+				500338E92A3D8FBD001EC910 /* Python Difference.swift in Sources */,
 				508D56CE29131D530099C3A0 /* Planck FreqMap.swift in Sources */,
 				5065EE80292044D000AD46CD /* Preferences.swift in Sources */,
 				5009BB142912ECEB006DE835 /* ColorView.swift in Sources */,

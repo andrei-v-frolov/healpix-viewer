@@ -1,11 +1,15 @@
-# import libraries
+#!/usr/bin/env python
+
+import matplotlib
 import numpy as np
 
-lut = np.loadtxt("../../../cmb-peaks/libs/colormaps/Planck_Parchment.rgb")
+gradient = ["blue", "white", "red"]
+colormap = matplotlib.colors.LinearSegmentedColormap.from_list("difference", gradient)
 
 print("let xxx = [")
 
-for x in lut:
-	print(f"    SIMD4<Float>({x[0]}/255.0, {x[1]}/255.0, {x[2]}/255.0, 1.0),")
+for x in np.linspace(0.0,1.0,256):
+	(r,g,b,a) = colormap(x)
+	print(f"    SIMD4<Float>({r}, {g}, {b}, {a}),")
 
 print("]")

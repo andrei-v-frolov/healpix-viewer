@@ -4,6 +4,7 @@
 
 - proper Settings window added
 - selectable annotation font and color
+- Python difference (RWB) colormap added
 - power law and exponential transforms added
 - more realistic lighting (Lambert reflection, gamma corrected)
 
