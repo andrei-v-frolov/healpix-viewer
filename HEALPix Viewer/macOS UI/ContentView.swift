@@ -42,8 +42,8 @@ struct ContentView: View {
     @State private var cdf: [Double]? = nil
     @State private var info: String? = nil
     @State private var annotation: String = "TEMPERATURE [μK]"
-    @State private var font: NSFont? = nil
-    @State private var textcolor = Color.black
+    @AppStorage(annotationFontKey) var font = FontPreference.defaultValue
+    @AppStorage(annotationColorKey) var color = Color.defaultValue
     
     // computed map cache
     @State private var ranked: [UUID: CpuMap] = [UUID: CpuMap]()
@@ -196,8 +196,9 @@ struct ContentView: View {
                             Text("Export map as PNG image...").font(.largeTitle).padding(20).frame(minWidth: 380)
                             Divider()
                             ExportView(width: $width, oversampling: $oversampling,
-                                       withAnnotation: $withAnnotation, annotation: $annotation).padding(20)
                                        withColorBar: $colorbar, withDataRange: $withDataRange,
+                                       withAnnotation: $withAnnotation, annotation: $annotation,
+                                       font: $font.nsFont, color: $color).padding(20)
                             Divider()
                             HStack {
                                 Button { saving = false } label: {
@@ -427,7 +428,7 @@ struct ContentView: View {
         if (colorbar && withDataRange) {
             let scale = " (\(transform.rawValue.lowercased()) scale)"
             let annotation = (transform != .none) ? annotation + scale : annotation
-            annotate(texture, height: t, min: rangemin, max: rangemax, annotation: withAnnotation ? annotation : nil, font: font, color: textcolor.cgColor, background: bgcolor.cgColor)
+            annotate(texture, height: t, min: rangemin, max: rangemax, annotation: withAnnotation ? annotation : nil, font: font.nsFont, color: color.cgColor, background: bgcolor.cgColor)
         }
         
         if (colorbar || oversampling > 1) {

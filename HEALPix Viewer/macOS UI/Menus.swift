@@ -40,14 +40,14 @@ struct EditMenus: Commands {
 }
 
 struct ViewMenus: Commands {
-    // application defaults
+    // application appearance
     @AppStorage(Appearance.key) var appearance = Appearance.defaultValue
     
     // render colorbar?
     @AppStorage(viewFromInsideKey) var viewFromInside = true
-    @AppStorage(showColorBarKey) var showColorBar = false
-    @AppStorage(lightingKey) var lightingEffects = false
-    @AppStorage(cursorKey) var cursorReadout = false
+    @AppStorage(showColorBarKey) var colorbar = false
+    @AppStorage(lightingKey) var lighting = false
+    @AppStorage(cursorKey) var cursor = false
     @AppStorage(animateKey) var animate = true
     
     // menu commands
@@ -72,19 +72,19 @@ struct ViewMenus: Commands {
                 Text("View From Inside")
             }
             .keyboardShortcut("I", modifiers: [.option, .command])
-            Toggle(isOn: $cursorReadout) {
-                Text("Cursor Readout")
-            }
-            .keyboardShortcut("R", modifiers: [.option, .command])
-            Toggle(isOn: $lightingEffects) {
+            Toggle(isOn: $lighting) {
                 Text("Lighting Effects")
             }
             .keyboardShortcut("L", modifiers: [.option, .command])
+            Toggle(isOn: $cursor) {
+                Text("Cursor Readout")
+            }
+            .keyboardShortcut("R", modifiers: [.option, .command])
             Divider()
-            Toggle(isOn: $showColorBar) {
+            Toggle(isOn: $colorbar) {
                 Text("Show Color Bar")
             }
-            .keyboardShortcut("C", modifiers: [.option, .command])
+            .keyboardShortcut("B", modifiers: [.option, .command])
         }
     }
 }

@@ -8,13 +8,15 @@
 import SwiftUI
 
 struct SettingsView: View {
-    // application color scheme
+    // appearance tab
     @AppStorage(Appearance.key) var appearance = Appearance.defaultValue
     @AppStorage(viewFromInsideKey) var viewFromInside = true
     @AppStorage(lightingKey) var lightingEffects = false
+    @AppStorage(annotationFontKey) var font = FontPreference.defaultValue
+    @AppStorage(annotationColorKey) var color = Color.defaultValue
+    @AppStorage(dragWithColorBarKey) var dragColorBar = false
+    @AppStorage(dragWithAnnotationKey) var dragAnnotation = false
     
-    @AppStorage(textFontKey) var font = FontPreference.defaultValue
-    @AppStorage(textColorKey) var color = Color.defaultValue
     
     @State private var separate: Bool = true
     
@@ -30,43 +32,43 @@ struct SettingsView: View {
     
     var body: some View {
         TabView {
-            // application color scheme
-            // selectable annotation font
-            // option to drag the map with colorbar...
-            Group {
+            // appearance tab
+            VStack {
                 VStack {
-                    VStack {
-                        Picker("App Appearance:", selection: $appearance) {
-                            ForEach(Appearance.allCases, id: \.self) {
-                                Text($0.rawValue).tag($0)
-                            }
-                        }.frame(width: 230)
-                    }.padding(corner).frame(width: 380).overlay(
-                        RoundedRectangle(cornerRadius: corner)
+                    Picker("App Appearance:", selection: $appearance) {
+                        ForEach(Appearance.allCases, id: \.self) {
+                            Text($0.rawValue).tag($0)
+                        }
+                    }.frame(width: 230)
+                }.padding(corner).frame(width: 380).overlay(
+                    RoundedRectangle(cornerRadius: corner)
                         .stroke(Color.secondary.opacity(0.2), lineWidth: 1)
-                    )
-                    VStack(alignment: .leading) {
-                        Text("When rendering the map...").font(.title3)
-                        Group {
-                            Toggle(" View from inside (enable for CMB)", isOn: $viewFromInside)
-                            Toggle(" Apply lighting effects (sphere shading)", isOn: $lightingEffects)
-                        }.padding(.leading, offset)
-                    }.padding(corner).frame(width: 380, alignment: .center).overlay(
-                        RoundedRectangle(cornerRadius: corner)
+                )
+                VStack(alignment: .leading) {
+                    Text("When rendering the map...").font(.title3)
+                    Group {
+                        Toggle(" View from inside (enable for CMB)", isOn: $viewFromInside)
+                        Toggle(" Apply lighting effects (sphere shading)", isOn: $lightingEffects)
+                    }.padding(.leading, offset)
+                }.padding(corner).frame(width: 380, alignment: .center).overlay(
+                    RoundedRectangle(cornerRadius: corner)
                         .stroke(Color.secondary.opacity(0.2), lineWidth: 1)
-                    )
-                    VStack {
-                        HStack {
-                            Text("Annotation:")
-                            FontPicker(font: $font.nsFont)
-                            ColorPicker("", selection: $color)
-                        }.frame(width: 210)
-                        Toggle(" Drag & drop color bar separately", isOn: $separate)
-                    }.padding(corner).frame(width: 380).overlay(
-                        RoundedRectangle(cornerRadius: corner)
+                )
+                VStack {
+                    HStack {
+                        Text("Annotation:")
+                        FontPicker(font: $font.nsFont)
+                        ColorPicker("", selection: $color)
+                    }.frame(width: 210)
+                    HStack {
+                        Text("Drag & drop map with")
+                        Toggle("color bar", isOn: $dragColorBar)
+                        Toggle("annotation", isOn: $dragAnnotation).disabled(!dragColorBar)
+                    }
+                }.padding(corner).frame(width: 380).overlay(
+                    RoundedRectangle(cornerRadius: corner)
                         .stroke(Color.secondary.opacity(0.2), lineWidth: 1)
-                    )
-                }
+                )
             }
             .tabItem { Label("Appearance", systemImage: "eye") }
             // copy and paste setting sets between loaded maps

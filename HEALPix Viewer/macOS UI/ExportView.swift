@@ -25,9 +25,8 @@ struct ExportView: View {
     @Binding var withDataRange: Bool
     @Binding var withAnnotation: Bool
     @Binding var annotation: String
-    
-    @AppStorage(textFontKey) var font = FontPreference.defaultValue
-    @AppStorage(textColorKey) var color = Color.defaultValue
+    @Binding var font: NSFont?
+    @Binding var color: Color
     
     let SizeFormatter = { var n = IntegerNumber; n.minimum = 0; n.maximum = 16384; return n }()
     

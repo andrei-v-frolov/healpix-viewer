@@ -8,13 +8,14 @@
 import SwiftUI
 import MetalKit
 
-// boolean application storage keys
+// settings - appearance
 let viewFromInsideKey = "viewFromInside"
 let lightingKey = "lighting"
+let annotationFontKey = "annotationFont"
+let annotationColorKey = "annotationColor"
+let dragWithColorBarKey = "dragWithColorBar"
+let dragWithAnnotationKey = "dragWithAnnotation"
 
-// encodable type storage keys
-let textFontKey = "textFont"
-let textColorKey = "textColor"
 
 // settings - view menu
 let cursorKey = "cursor"
