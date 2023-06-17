@@ -32,8 +32,15 @@ struct EditMenus: Commands {
                 .keyboardShortcut("C", modifiers: [.command])
             Button("Paste Style") { }
                 .keyboardShortcut("V", modifiers: [.command])
-            Button("Select All") { }
-                .keyboardShortcut("A", modifiers: [.command])
+            Button("Paste View") { }
+                .keyboardShortcut("V", modifiers: [.shift,.command])
+            Button("Paste Color") { }
+                .keyboardShortcut("C", modifiers: [.shift,.command])
+            Button("Paste Light") { }
+                .keyboardShortcut("L", modifiers: [.shift,.command])
+            Divider()
+            Button("Paste All") { }
+                .keyboardShortcut("V", modifiers: [.shift,.option,.command])
             Divider()
         }
     }

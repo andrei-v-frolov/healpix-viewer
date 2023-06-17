@@ -16,6 +16,21 @@ let annotationColorKey = "annotationColor"
 let dragWithColorBarKey = "dragWithColorBar"
 let dragWithAnnotationKey = "dragWithAnnotation"
 
+// settings - behavior
+let keepProjectionKey = "keepProjection"
+let keepViewpointKey = "keepViewpoint"
+let keepColorSchemeKey = "keepColorScheme"
+let keepMapTransformKey = "keepMapTransform"
+let keepColorBarRangeKey = "keepColorBarRange"
+let keepMapLightingKey = "keepMapLighting"
+
+let copyProjectionKey = "copyProjection"
+let copyViewpointKey = "copyViewpoint"
+let copyColorSchemeKey = "copyColorScheme"
+let copyMapTransformKey = "copyMapTransform"
+let copyColorBarRangeKey = "copyColorBarRange"
+let copyMapLightingKey = "copyMapLighting"
+
 
 // settings - view menu
 let cursorKey = "cursor"
