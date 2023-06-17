@@ -10,14 +10,16 @@ import MetalKit
 
 // boolean application storage keys
 let viewFromInsideKey = "viewFromInside"
-let showColorBarKey = "showColorBar"
 let lightingKey = "lighting"
-let cursorKey = "cursor"
 
 // encodable type storage keys
 let textFontKey = "textFont"
 let textColorKey = "textColor"
+
+// settings - view menu
+let cursorKey = "cursor"
 let animateKey = "animate"
+let showColorBarKey = "showColorBar"
 
 // application appearance
 enum Appearance: String, CaseIterable, Preference {
@@ -39,7 +41,7 @@ enum Appearance: String, CaseIterable, Preference {
     }
 }
 
-// scalar data sources
+// data sources
 enum DataSource: String, CaseIterable, Preference {
     case i = "Temperature I"
     case q = "Polarization Q"
@@ -52,7 +54,7 @@ enum DataSource: String, CaseIterable, Preference {
     case v = "Vector Field V"
     
     // default value
-    static let key = "dataSource"
+    static let key = "source"
     static let defaultValue: Self = .i
     
     // collections
@@ -61,7 +63,7 @@ enum DataSource: String, CaseIterable, Preference {
     static let vector: [Self] = [.x, .y, .v]
 }
 
-// spherical projection to be used
+// spherical projection
 enum Projection: String, CaseIterable, Preference {
     case mollweide = "Mollweide"
     case hammer = "Hammer"
@@ -128,7 +130,7 @@ enum Projection: String, CaseIterable, Preference {
     }
 }
 
-// projection orientation lock
+// orientation presets
 enum Orientation: String, CaseIterable, Preference {
     case free = "As Specified"
     case equator = "Equator"
@@ -205,7 +207,7 @@ enum DataTransform: String, CaseIterable, Preference {
     case normalize = "Normalized"
     
     // default value
-    static let key = "dataTransform"
+    static let key = "transform"
     static let defaultValue: Self = .none
     
     // collections
@@ -242,7 +244,7 @@ enum DataTransform: String, CaseIterable, Preference {
         }
     }
     
-    // parameter ranges
+    // sigma range
     var range: ClosedRange<Double> {
         switch self {
             case .power:    return -2.00...2.00
@@ -285,7 +287,7 @@ enum BoundsModifier: String, CaseIterable, Preference {
     case negative = "Negative"
     
     // default value
-    static let key = "boundsModifier"
+    static let key = "bounds"
     static let defaultValue: Self = .full
 }
 
@@ -328,7 +330,7 @@ protocol Preference {
     init?(rawValue: String)
 }
 
-// default implementation of current value access
+// default implementation of preference value access
 extension Preference {
     static var value: Self {
         guard let raw = UserDefaults.standard.string(forKey: Self.key),
@@ -348,11 +350,10 @@ extension Color: RawRepresentable, Preference {
     
     public var rawValue: String {
         guard let data = try? NSKeyedArchiver.archivedData(withRootObject: NSColor(self), requiringSecureCoding: false) else { return "" }
-        print(data)
         return data.base64EncodedString()
     }
     
     // default value
-    static let key = "font"
+    static let key = "color"
     static var defaultValue = Color.primary
 }
