@@ -7,6 +7,7 @@
 
 import SwiftUI
 import MetalKit
+import UniformTypeIdentifiers
 
 // settings - appearance
 let viewFromInsideKey = "viewFromInside"
@@ -53,6 +54,35 @@ enum Appearance: String, CaseIterable, Preference {
             case .dark: return NSAppearance(named: .darkAqua)
             case .light: return NSAppearance(named: .aqua)
             default: return nil
+        }
+    }
+}
+
+enum ImageFormat: String, CaseIterable, Preference {
+    case gif = "GIF"
+    case png = "PNG"
+    case heif = "HEIF"
+    case tiff = "TIFF"
+    
+    // default value
+    static let key = "format"
+    static let defaultValue: Self = .png
+    
+    // associated file type
+    var type: UTType {
+        switch self {
+            case .gif: return .gif
+            case .png: return .png
+            case .heif: return .heif
+            case .tiff: return .tiff
+        }
+    }
+    
+    // backing texture format
+    var pixel: MTLPixelFormat {
+        switch self {
+            case .tiff: return .rgba16Unorm
+            default:    return .rgba8Unorm
         }
     }
 }

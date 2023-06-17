@@ -113,7 +113,7 @@ class ColorbarView: MTKView {
     
     // MARK: create map image of specified size
     func image(width w: Int, height h: Int) -> MTLTexture {
-        let texture = PNGTexture(width: w, height: h)
+        let texture = IMGTexture(width: w, height: h)
         render(to: texture); return texture
     }
 }

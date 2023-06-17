@@ -25,6 +25,7 @@ struct ContentView: View {
     
     // save images
     @State private var saving = false
+    @AppStorage(ImageFormat.key) var format = ImageFormat.defaultValue
     @State private var width: Int = 1920
     @State private var oversampling: Int = 2
     @State private var withDataRange: Bool = true
@@ -158,7 +159,7 @@ struct ContentView: View {
                                 let w = geometry.size.width, h = projection.height(width: w), none = NSItemProvider()
                                 guard let url = tmpfile(), let image = mapview?.image(width: Int(w), height: Int(h)) else { return none }
                                 
-                                saveAsPNG(image, url: url); tmpfiles.append(url)
+                                saveAsImage(image, url: url); tmpfiles.append(url)
                                 return NSItemProvider(contentsOf: url) ?? none
                             }
                             if (cursor.hover) {
@@ -172,7 +173,7 @@ struct ContentView: View {
                                 let w = geometry.size.width, h = w/ColorbarView.aspect, none = NSItemProvider()
                                 guard let url = tmpfile(), let image = barview?.image(width: Int(w), height: Int(h)) else { return none }
                                 
-                                saveAsPNG(image, url: url); tmpfiles.append(url)
+                                saveAsImage(image, url: url); tmpfiles.append(url)
                                 return NSItemProvider(contentsOf: url) ?? none
                             }
                             RangeToolbar(map: $map, modifier: $modifier,
@@ -189,9 +190,9 @@ struct ContentView: View {
                     }
                     .sheet(isPresented: $saving) {
                         VStack(spacing: 0) {
-                            Text("Export map as PNG image...").font(.largeTitle).padding(20).frame(minWidth: 380)
+                            Text("Export map as \(format.rawValue) image...").font(.largeTitle).padding(20).frame(minWidth: 380)
                             Divider()
-                            ExportView(width: $width, oversampling: $oversampling,
+                            ExportView(format: $format, width: $width, oversampling: $oversampling,
                                        withColorBar: $colorbar, withDataRange: $withDataRange,
                                        withAnnotation: $withAnnotation, annotation: $annotation,
                                        font: $font.nsFont, color: $color).padding(20)
@@ -419,7 +420,7 @@ struct ContentView: View {
         
         // render map texture and annotate it if requested
         guard let texture = mapview?.image(width: w, height: h, shift: (0,shift)) else { return nil }
-        let output = (oversampling > 1) ? PNGTexture(width: w/oversampling, height: h/oversampling) : texture
+        let output = (oversampling > 1) ? IMGTexture(width: w/oversampling, height: h/oversampling) : texture
         
         if (colorbar && withDataRange) {
             let scale = " (\(transform.rawValue.lowercased()) scale)"
@@ -462,8 +463,8 @@ struct ContentView: View {
     
     // save annotated map
     func save(_ url: URL? = nil) {
-        guard let url = url ?? showSavePanel() else { return }
-        if let output = render() { saveAsPNG(output, url: url) }
+        guard let url = url ?? showSavePanel(type: format.type) else { return }
+        if let output = render() { saveAsImage(output, url: url, format: format) }
     }
 }
 

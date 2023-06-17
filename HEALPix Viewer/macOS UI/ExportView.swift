@@ -19,6 +19,7 @@ struct DropView: View {
 }
 
 struct ExportView: View {
+    @Binding var format: ImageFormat
     @Binding var width: Int
     @Binding var oversampling: Int
     @Binding var withColorBar: Bool
@@ -32,7 +33,15 @@ struct ExportView: View {
     
     var body: some View {
         HStack(spacing: 0) {
-            Image(systemName: "globe").font(.system(size: 64))
+            VStack {
+                Image(systemName: "globe").font(.system(size: 64))
+                Image(systemName: "arrow.down").font(.system(size: 48))
+                Picker("", selection: $format) {
+                    ForEach(ImageFormat.allCases, id: \.self) {
+                        Text($0.rawValue).tag($0)
+                    }
+                }.frame(width: 70)
+            }
             Spacer(minLength: 20)
             VStack(alignment: .leading) {
                 HStack {

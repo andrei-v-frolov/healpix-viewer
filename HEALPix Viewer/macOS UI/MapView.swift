@@ -222,7 +222,7 @@ class ProjectedView: MTKView {
     
     // MARK: create map image of specified size
     func image(width w: Int, height h: Int, anchor: Anchor = .c, shift: (x: Double, y: Double) = (0,0)) -> MTLTexture {
-        let texture = PNGTexture(width: w, height: h)
+        let texture = IMGTexture(width: w, height: h)
         render(to: texture, anchor: anchor, shift: shift); return texture
     }
     

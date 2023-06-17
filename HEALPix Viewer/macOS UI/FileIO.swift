@@ -32,13 +32,13 @@ func showOpenPanel() -> URL? {
 }
 
 // show modal Save File panel
-func showSavePanel() -> URL? {
+func showSavePanel(type: UTType = .png) -> URL? {
     let panel = NSSavePanel()
     
     panel.canCreateDirectories = true
     panel.isExtensionHidden = false
     
-    panel.allowedContentTypes = [UTType.png]
+    panel.allowedContentTypes = [type]
     panel.allowsOtherFileTypes = true
     
     let response = panel.runModal()
@@ -53,15 +53,21 @@ func tmpfile(name: String = UUID().uuidString, type: UTType = .png) -> URL? {
     return dir?.appendingPathComponent(name, conformingTo: type)
 }
 
-// PNG image data from Metal texture
-func pngdata(_ texture: MTLTexture) -> Data? {
+// image data from Metal texture
+func imagedata(_ texture: MTLTexture, format: ImageFormat = .png) -> Data? {
     guard let srgb = CGColorSpace(name: CGColorSpace.sRGB),
           let image = CIImage(mtlTexture: texture, options: [.colorSpace: srgb]) else { return nil }
-    return NSBitmapImageRep(ciImage: image).representation(using: .png, properties: [:])
+    
+    switch format {
+        case .gif: return NSBitmapImageRep(ciImage: image).representation(using: .gif, properties: [:])
+        case .png: return NSBitmapImageRep(ciImage: image).representation(using: .png, properties: [:])
+        case .heif: return CIContext().heifRepresentation(of: image, format: .RGBA8, colorSpace: srgb)
+        case .tiff: return CIContext().tiffRepresentation(of: image, format: .RGBA16, colorSpace: srgb)
+    }
 }
 
-// save Metal texture to PNG image file
-func saveAsPNG(_ texture: MTLTexture, url: URL? = nil) {
-    guard let url = url ?? showSavePanel() else { return }
-    try? pngdata(texture)?.write(to: url)
+// save Metal texture to image file
+func saveAsImage(_ texture: MTLTexture, url: URL? = nil, format: ImageFormat = .png) {
+    guard let url = url ?? showSavePanel(type: format.type) else { return }
+    userTaskQueue.async { try? imagedata(texture, format: format)?.write(to: url) }
 }
