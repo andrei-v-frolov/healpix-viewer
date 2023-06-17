@@ -499,7 +499,7 @@ func annotate(_ texture: MTLTexture, height h: Int, min: Double, max: Double, fo
     if let background = background { context.setFillColor(background); context.fill(rect) }
     
     // set up font for annotations
-    let size = CGFloat(h)/1.2, scaled = font?.withSize(size)
+    let size = CGFloat(h)/1.1, scaled = font?.withSize(size)
     let font = scaled ?? CTFontCreateWithName(fontname as CFString, size, nil)
     let attr: [NSAttributedString.Key : Any] = [.font: font, .foregroundColor: color ?? .black]
     
