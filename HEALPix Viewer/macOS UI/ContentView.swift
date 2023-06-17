@@ -10,10 +10,6 @@ import MetalKit
 import MetalPerformanceShaders
 import UniformTypeIdentifiers
 
-// asynchronous queues for user-initiated tasks
-let userTaskQueue = DispatchQueue(label: "serial", qos: .userInitiated)
-let analysisQueue = DispatchQueue(label: "analysis", qos: .userInitiated, attributes: [.concurrent])
-
 // main window view
 struct ContentView: View {
     @State private var title = "CMB Viewer"

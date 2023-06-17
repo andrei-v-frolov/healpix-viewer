@@ -7,8 +7,12 @@
 
 import SwiftUI
 
-@main
-struct HEALPix_ViewerApp: App {
+// asynchronous queues for user-initiated tasks
+let userTaskQueue = DispatchQueue(label: "serial", qos: .userInitiated)
+let analysisQueue = DispatchQueue(label: "analysis", qos: .userInitiated, attributes: [.concurrent])
+
+// main application entry point
+@main struct HEALPixViewerApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) var delegate
     
     // variables signalling action
