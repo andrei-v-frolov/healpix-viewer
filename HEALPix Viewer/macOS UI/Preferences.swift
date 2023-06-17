@@ -61,17 +61,6 @@ enum DataSource: String, CaseIterable, Preference {
     static let vector: [Self] = [.x, .y, .v]
 }
 
-// line convolution direction to be applied
-enum DataConvolution: String, CaseIterable, Preference {
-    case none = "None"
-    case polarization = "Polarization"
-    case vector = "Vector Field"
-    
-    // default value
-    static let key = "convolution"
-    static let defaultValue: Self = .none
-}
-
 // spherical projection to be used
 enum Projection: String, CaseIterable, Preference {
     case mollweide = "Mollweide"
@@ -275,6 +264,17 @@ enum DataTransform: String, CaseIterable, Preference {
             default:        return x
         }
     }
+}
+
+// line convolution
+enum LineConvolution: String, CaseIterable, Preference {
+    case none = "None"
+    case vector = "Vector Field"
+    case polarization = "Polarization"
+    
+    // default value
+    static let key = "convolution"
+    static let defaultValue: Self = .none
 }
 
 // data bounds modifier

@@ -92,7 +92,7 @@ struct ViewMenus: Commands {
 struct DataMenus: Commands {
     // data source and projection
     @AppStorage(DataSource.key) var dataSource = DataSource.defaultValue
-    @AppStorage(DataConvolution.key) var convolution = DataConvolution.defaultValue
+    @AppStorage(LineConvolution.key) var convolution = LineConvolution.defaultValue
     @AppStorage(Projection.key) var projection = Projection.defaultValue
     @AppStorage(Orientation.key) var orientation = Orientation.defaultValue
     
@@ -118,7 +118,7 @@ struct DataMenus: Commands {
                     }
                 }
                 Picker("Convolution", selection: $convolution) {
-                    ForEach(DataConvolution.allCases, id: \.self) {
+                    ForEach(LineConvolution.allCases, id: \.self) {
                         Text($0.rawValue).tag($0)
                     }
                     Divider()
