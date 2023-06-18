@@ -7,17 +7,21 @@
 
 import SwiftUI
 
+// variable signalling action
+enum MenuAction {
+    case none
+    case open, save
+    case copyStyle, pasteStyle, pasteView, pasteColor, pasteLight, pasteAll
+}
+
 struct FileMenus: Commands {
-    // variables signalling action
-    @Binding var askToOpen: Bool
-    @Binding var askToSave: Bool
+    @Binding var action: MenuAction
     
-    // menu commands
     var body: some Commands {
         CommandGroup(before: CommandGroupPlacement.newItem) {
-            Button("Open File...") { if (NSApp.keyWindow != nil) { askToOpen = true } }
+            Button("Open File...") { if (NSApp.keyWindow != nil) { action = .open } }
                 .keyboardShortcut("O", modifiers: [.command])
-            Button("Export As...") { if (NSApp.keyWindow != nil) { askToSave = true } }
+            Button("Export As...") { if (NSApp.keyWindow != nil) { action = .save } }
                 .keyboardShortcut("S", modifiers: [.command])
             Divider()
         }
@@ -25,21 +29,24 @@ struct FileMenus: Commands {
 }
 
 struct EditMenus: Commands {
-    // menu commands
+    @Binding var action: MenuAction
+    @AppStorage(lightingKey) var lighting = false
+    
     var body: some Commands {
         CommandGroup(replacing: CommandGroupPlacement.pasteboard) {
-            Button("Copy Style") { }
+            Button("Copy Style") { if (NSApp.keyWindow != nil) { action = .copyStyle } }
                 .keyboardShortcut("C", modifiers: [.command])
-            Button("Paste Style") { }
+            Button("Paste Style") { if (NSApp.keyWindow != nil) { action = .pasteStyle } }
                 .keyboardShortcut("V", modifiers: [.command])
-            Button("Paste View") { }
+            Button("Paste View") { if (NSApp.keyWindow != nil) { action = .pasteView } }
                 .keyboardShortcut("V", modifiers: [.shift,.command])
-            Button("Paste Color") { }
+            Button("Paste Color") { if (NSApp.keyWindow != nil) { action = .pasteColor } }
                 .keyboardShortcut("C", modifiers: [.shift,.command])
-            Button("Paste Light") { }
+            Button("Paste Light") { if (NSApp.keyWindow != nil) { action = .pasteLight } }
                 .keyboardShortcut("L", modifiers: [.shift,.command])
+                .disabled(!lighting)
             Divider()
-            Button("Paste All") { }
+            Button("Paste All") { if (NSApp.keyWindow != nil) { action = .pasteAll } }
                 .keyboardShortcut("V", modifiers: [.shift,.option,.command])
             Divider()
         }

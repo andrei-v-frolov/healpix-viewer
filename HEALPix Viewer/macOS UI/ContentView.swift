@@ -81,9 +81,8 @@ struct ContentView: View {
     // color mapper
     private let mapper = ColorMapper()
     
-    // variables signalling action
-    @Binding var askToOpen: Bool
-    @Binding var askToSave: Bool
+    // variable signalling action
+    @Binding var action: MenuAction
     
     // registered observers binding to application state
     @State private var observers: Observers? = nil
@@ -221,15 +220,16 @@ struct ContentView: View {
         .onChange(of: state.transform) { value in transform() }
         .onChange(of: state.palette) { value in colorize() }
         .onChange(of: state.range) { value in colorize() }
-        .onChange(of: askToOpen) { value in
-            if (window?.isKeyWindow == true && value) {
-                askToOpen = false; DispatchQueue.main.async { self.open() }
+        .onChange(of: action) { value in
+            guard (value != .none && window?.isKeyWindow == true) else { return }
+            
+            switch value {
+                case .open: DispatchQueue.main.async { self.open() }
+                case .save: saving = true
+                default: break
             }
-        }
-        .onChange(of: askToSave) { value in
-            if (window?.isKeyWindow == true && value) {
-                askToSave = false; saving = true
-            }
+            
+            action = .none
         }
         .onDrop(of: [UTType.fileURL], isTargeted: $targeted) { provider in
             guard let type = UTType.healpix.tags[UTTagClass.filenameExtension] else { return false }

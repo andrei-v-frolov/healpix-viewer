@@ -15,16 +15,15 @@ let analysisQueue = DispatchQueue(label: "analysis", qos: .userInitiated, attrib
 @main struct HEALPixViewerApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) var delegate
     
-    // variables signalling action
-    @State private var askToOpen = false
-    @State private var askToSave = false
+    // variable signalling action
+    @State private var action: MenuAction = .none
     
     var body: some Scene {
         WindowGroup {
-            ContentView(askToOpen: $askToOpen, askToSave: $askToSave)
+            ContentView(action: $action)
         } .commands {
-            FileMenus(askToOpen: $askToOpen, askToSave: $askToSave)
-            EditMenus()
+            FileMenus(action: $action)
+            EditMenus(action: $action)
             ViewMenus()
             DataMenus()
         }
