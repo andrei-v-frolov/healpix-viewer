@@ -31,16 +31,18 @@ struct Bounds: Equatable {
     let max: Double
 }
 
-// convenience wrapper for tracking transform changes
-struct Transform: Equatable {
-    let transform: DataTransform
-    let mu: Double
-    let sigma: Double
+// data transform state
+struct Transform: Equatable, Codable {
+    var f: Function = .defaultValue
+    var mu: Double = 0.0
+    var sigma: Double = 0.0
+    
+    func eval(_ x: Double) -> Double { return f.eval(x, mu: mu, sigma: sigma) }
     
     static func == (a: Self, b: Self) -> Bool {
-        return (a.transform == b.transform) &&
-               (a.transform.mu ? a.mu == b.mu : true) &&
-               (a.transform.sigma ? a.sigma == b.sigma : true)
+        return (a.f == b.f) &&
+               (a.f.mu ? a.mu == b.mu : true) &&
+               (a.f.sigma ? a.sigma == b.sigma : true)
     }
 }
 

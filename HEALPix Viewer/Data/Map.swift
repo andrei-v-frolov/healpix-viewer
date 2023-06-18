@@ -235,7 +235,7 @@ struct DataTransformer {
     let buffer: MTLBuffer
     let queue: MTLCommandQueue
     
-    let shaders: [DataTransform: MetalKernel] = [
+    let shaders: [Function: MetalKernel] = [
         .log:       MetalKernel(kernel: "log_transform"),
         .asinh:     MetalKernel(kernel: "asinh_transform"),
         .atan:      MetalKernel(kernel: "atan_transform"),
@@ -256,26 +256,26 @@ struct DataTransformer {
         self.queue = queue
     }
     
-    func transform(map: Map, function: DataTransform, mu: Double = 0.0, sigma: Double = 0.0, recycle: GpuMap? = nil) -> GpuMap? {
-        guard let shader = shaders[function],
+    func apply(map: Map, transform: Transform, recycle: GpuMap? = nil) -> GpuMap? {
+        guard let shader = shaders[transform.f],
               let buffer = recycle?.buffer ?? device.makeBuffer(length: map.size),
               let command = queue.makeCommandBuffer() else { return nil }
         
         let output = recycle ?? GpuMap(nside: map.nside, buffer: buffer, min: 0.0, max: 0.0)
-        let params = float2(Float(mu), Float(exp(sigma)))
+        let params = float2(Float(transform.mu), Float(exp(transform.sigma)))
         
         self.buffer.contents().storeBytes(of: params, as: float2.self)
         shader.encode(command: command, buffers: [map.buffer, output.buffer, self.buffer])
         command.commit()
         
-        if (function == .normalize) {
+        if (transform.f == .normalize) {
             let sqrt2 = 1.414213562373095048801688724209698078569671875377
             output.min = sqrt2 * erfinv(2.0/Double(map.npix-1)-1.0)
             output.max = sqrt2 * erfinv(2.0 * Double(map.npix-2)/Double(map.npix-1)-1.0)
         } else {
-            output.min = function.f(map.min, mu: mu, sigma: sigma)
-            output.max = function.f(map.max, mu: mu, sigma: sigma)
-            output.cdf = map.cdf?.map { function.f($0, mu: mu, sigma: sigma) }
+            output.min = transform.eval(map.min)
+            output.max = transform.eval(map.max)
+            output.cdf = map.cdf?.map { transform.eval($0) }
         }
         
         return output

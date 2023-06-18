@@ -75,9 +75,7 @@ struct ContentView: View {
     @State private var modifier: BoundsModifier = .defaultValue
     
     // transform toolbar
-    @State private var transform: DataTransform = .defaultValue
-    @State private var mu: Double = 0.0
-    @State private var sigma: Double = 0.0
+    @State private var transform = Transform()
     @State private var mumin: Double = 0.0
     @State private var mumax: Double = 0.0
     
@@ -100,10 +98,8 @@ struct ContentView: View {
     private let mapper = ColorMapper()
     
     private var viewpoint: Viewpoint { Viewpoint(latitude: latitude, longitude: longitude, azimuth: azimuth) }
-    
     private var range: Bounds { Bounds(min: rangemin, max: rangemax) }
     
-    private var function: Transform { Transform(transform: transform, mu: mu, sigma: sigma) }
     
     // variables signalling action
     @Binding var askToOpen: Bool
@@ -139,7 +135,7 @@ struct ContentView: View {
                             ColorToolbar(palette: $colors)
                         }
                         if (toolbar == .transform) {
-                            TransformToolbar(transform: $transform, mu: $mu, sigma: $sigma, selected: $selected, ranked: $ranked, mumin: $mumin, mumax: $mumax)
+                            TransformToolbar(transform: $transform, selected: $selected, ranked: $ranked, mumin: $mumin, mumax: $mumax)
                         }
                         if (toolbar == .lighting) {
                             LightingToolbar(lighting: $lighting)
@@ -247,7 +243,7 @@ struct ContentView: View {
             let (lat,lon,az) = value.coords
             latitude = lat; longitude = lon; azimuth = az
         }
-        .onChange(of: function) { value in transform() }
+        .onChange(of: transform) { value in transform() }
         .onChange(of: colors) { value in colorize() }
         .onChange(of: range) { value in colorize() }
         .onChange(of: askToOpen) { value in
@@ -281,7 +277,7 @@ struct ContentView: View {
             projection = Projection.value
             orientation = Orientation.value
             colors.scheme = ColorScheme.value
-            transform = DataTransform.value
+            transform.f = Function.value
             
             DispatchQueue.main.async { animate = true }
         }
@@ -319,10 +315,10 @@ struct ContentView: View {
                 guard let raw = new as? String, let data = DataSource(rawValue: raw) else { return }
                 for map in loaded { if (MapCard.type(map.name) == data) { selected = map.id; break } }
             }
-            observers.add(key: DataTransform.key) {  old, new in
+            observers.add(key: Function.key) {  old, new in
                 guard (window?.isKeyWindow == true) else { return }
-                guard let raw = new as? String, let mode = DataTransform(rawValue: raw) else { return }
-                withAnimation { toolbar = .transform }; transform = mode
+                guard let raw = new as? String, let mode = Function(rawValue: raw) else { return }
+                withAnimation { toolbar = .transform }; transform.f = mode
             }
         }
     }
@@ -350,8 +346,8 @@ struct ContentView: View {
             for map in file.list {
                 let map = map.map, n = Double(map.npix), workload = Int(n*log(1+n))
                 scheduled += workload; analysisQueue.async {
-                    map.index(); if (map.id == selected) { cdf = map.cdf?.map { transform.f($0, mu: mu, sigma: sigma) } }
-                    ranked[map.id] = map.ranked(); if DataTransform.cdf.contains(transform) { transform() }
+                    map.index(); if (map.id == selected) { cdf = map.cdf?.map { transform.eval($0) } }
+                    ranked[map.id] = map.ranked(); if Function.cdf.contains(transform.f) { transform() }
                     completed += workload
                 }
             }
@@ -384,11 +380,11 @@ struct ContentView: View {
     func transform(_ map: Map? = nil) {
         guard let map = map ?? loaded.first(where: { $0.id == selected })?.map else { return }
         
-        switch transform {
+        switch transform.f {
             case .none: load(map)
             case .equalize: if let map = ranked[map.id] { load(map) }
-            case .normalize: if let map = ranked[map.id], let output = transformer.transform(map: map, function: transform, recycle: transformed[map.id]) { transformed[map.id] = output; load(output) }
-            default: if let output = transformer.transform(map: map, function: transform, mu: mu, sigma: sigma, recycle: transformed[map.id]) { transformed[map.id] = output; load(output) }
+            case .normalize: if let map = ranked[map.id], let output = transformer.apply(map: map, transform: transform, recycle: transformed[map.id]) { transformed[map.id] = output; load(output) }
+            default: if let output = transformer.apply(map: map, transform: transform, recycle: transformed[map.id]) { transformed[map.id] = output; load(output) }
         }
     }
     
@@ -407,8 +403,8 @@ struct ContentView: View {
         let output = (oversampling > 1) ? IMGTexture(width: w/oversampling, height: h/oversampling) : texture
         
         if (colorbar && withDataRange) {
-            let scale = " (\(transform.rawValue.lowercased()) scale)"
-            let annotation = (transform != .none) ? annotation + scale : annotation
+            let scale = " (\(transform.f.rawValue.lowercased()) scale)"
+            let annotation = (transform.f != .none) ? annotation + scale : annotation
             annotate(texture, height: t, min: rangemin, max: rangemax, annotation: withAnnotation ? annotation : nil, font: font.nsFont, color: color.cgColor, background: colors.bg.cgColor)
         }
         

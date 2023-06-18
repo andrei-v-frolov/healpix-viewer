@@ -241,14 +241,14 @@ enum ColorScheme: String, CaseIterable, Codable, Preference {
 }
 
 // data transform
-enum DataTransform: String, CaseIterable, Codable, Preference {
+enum Function: String, CaseIterable, Codable, Preference {
     case none = "None"
     case log = "Log"
     case asinh = "Arcsinh"
     case atan = "Arctan"
     case tanh = "Tanh"
-    case power = "Power"
-    case exp = "Exponent"
+    case power = "Power Law"
+    case exp = "Exponential"
     case equalize = "Equalized"
     case normalize = "Normalized"
     
@@ -257,10 +257,10 @@ enum DataTransform: String, CaseIterable, Codable, Preference {
     static let defaultValue: Self = .none
     
     // collections
-    static let flatten: [DataTransform] = [.log, .asinh, .atan, .tanh]
-    static let expand: [DataTransform] = [.power, .exp]
-    static let function: [DataTransform] = flatten + expand
-    static let cdf: [DataTransform] = [.equalize, .normalize]
+    static let flatten: [Self] = [.log, .asinh, .atan, .tanh]
+    static let expand: [Self] = [.power, .exp]
+    static let function: [Self] = flatten + expand
+    static let cdf: [Self] = [.equalize, .normalize]
     
     // transform formula
     var formula: String {
@@ -298,8 +298,8 @@ enum DataTransform: String, CaseIterable, Codable, Preference {
         }
     }
     
-    // functional transform
-    func f(_ x: Double, mu: Double = 0.0, sigma: Double = 0.0) -> Double {
+    // evaluate transform
+    func eval(_ x: Double, mu: Double = 0.0, sigma: Double = 0.0) -> Double {
         let sigma = Foundation.exp(sigma), epsilon = Double(Float.leastNormalMagnitude)
         
         switch self {

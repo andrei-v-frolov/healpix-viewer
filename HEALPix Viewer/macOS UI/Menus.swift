@@ -105,7 +105,7 @@ struct DataMenus: Commands {
     
     // colorbar properties
     @AppStorage(ColorScheme.key) var colorScheme = ColorScheme.defaultValue
-    @AppStorage(DataTransform.key) var dataTransform = DataTransform.defaultValue
+    @AppStorage(Function.key) var dataTransform = Function.defaultValue
     
     // menu commands
     var body: some Commands {
@@ -161,19 +161,19 @@ struct DataMenus: Commands {
             }
             Divider()
             Picker("Transform", selection: $dataTransform) {
-                ForEach([DataTransform.none], id: \.self) {
+                ForEach([Function.none], id: \.self) {
                     Text($0.rawValue).tag($0)
                 }
                 Divider()
-                ForEach(DataTransform.flatten, id: \.self) {
+                ForEach(Function.flatten, id: \.self) {
                     Text($0.rawValue).tag($0)
                 }
                 Divider()
-                ForEach(DataTransform.expand, id: \.self) {
+                ForEach(Function.expand, id: \.self) {
                     Text($0.rawValue).tag($0)
                 }
                 Divider()
-                ForEach(DataTransform.cdf, id: \.self) {
+                ForEach(Function.cdf, id: \.self) {
                     Text($0.rawValue).tag($0)
                 }
             }

@@ -8,9 +8,7 @@
 import SwiftUI
 
 struct TransformToolbar: View {
-    @Binding var transform: DataTransform
-    @Binding var mu: Double
-    @Binding var sigma: Double
+    @Binding var transform: Transform
     
     @Binding var selected: UUID?
     @Binding var ranked: [UUID: CpuMap]
@@ -23,44 +21,44 @@ struct TransformToolbar: View {
     
     var body: some View {
         HStack {
-            Picker("Transform:", selection: $transform) {
-                ForEach([DataTransform.none], id: \.self) {
+            Picker("Transform:", selection: $transform.f) {
+                ForEach([Function.none], id: \.self) {
                     Text($0.formula).tag($0)
                 }
                 Divider()
                 Group {
-                    ForEach(DataTransform.flatten, id: \.self) {
+                    ForEach(Function.flatten, id: \.self) {
                         Text($0.formula).tag($0)
                     }
                 }
                 Divider()
                 Group {
-                    ForEach(DataTransform.expand, id: \.self) {
+                    ForEach(Function.expand, id: \.self) {
                         Text($0.formula).tag($0)
                     }
                 }
                 Divider()
                 Group {
-                    ForEach(DataTransform.cdf, id: \.self) {
+                    ForEach(Function.cdf, id: \.self) {
                         Text($0.formula).foregroundColor(ranking ? .primary : .secondary).tag($0)
                     }
                 }
             }
             .frame(width: 190)
             Spacer().frame(width: 30)
-            Slider(value: $mu, in: mumin...mumax) { Text("μ:") } onEditingChanged: { editing in focus = false }
+            Slider(value: $transform.mu, in: mumin...mumax) { Text("μ:") } onEditingChanged: { editing in focus = false }
                 .frame(width: 160)
-                .disabled(!transform.mu)
-            TextField("μ", value: $mu, formatter: SixDigitsScientific)
+                .disabled(!transform.f.mu)
+            TextField("μ", value: $transform.mu, formatter: SixDigitsScientific)
                 .frame(width: 95).multilineTextAlignment(.trailing).focused($focus)
-                .disabled(!transform.mu)
+                .disabled(!transform.f.mu)
             Spacer().frame(width: 30)
-            Slider(value: $sigma, in: transform.range) { Text("log σ:") } onEditingChanged: { editing in focus = false }
+            Slider(value: $transform.sigma, in: transform.f.range) { Text("log σ:") } onEditingChanged: { editing in focus = false }
                 .frame(width: 160)
-                .disabled(!transform.sigma)
-            TextField("σ", value: $sigma, formatter: TwoDigitNumber)
+                .disabled(!transform.f.sigma)
+            TextField("σ", value: $transform.sigma, formatter: TwoDigitNumber)
                 .frame(width: 55).multilineTextAlignment(.trailing).focused($focus)
-                .disabled(!transform.sigma)
+                .disabled(!transform.f.sigma)
         }
         .padding(.top, 11)
         .padding(.bottom, 10)
