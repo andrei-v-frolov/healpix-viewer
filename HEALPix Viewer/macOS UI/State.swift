@@ -44,11 +44,11 @@ struct Transform: Equatable {
     }
 }
 
-struct Lighting {
-    var enabled: Bool
-    var lat: Double
-    var lon: Double
-    var amt: Double
+// lighting state
+struct Lighting: Equatable, Codable {
+    var lat: Double = 45.0
+    var lon: Double = -90.0
+    var amt: Double =  60.0
 }
 
 // cursor state

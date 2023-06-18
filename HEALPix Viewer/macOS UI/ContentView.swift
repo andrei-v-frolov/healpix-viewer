@@ -82,7 +82,8 @@ struct ContentView: View {
     @State private var mumax: Double = 0.0
     
     // lighting toolbar
-    @State private var lighting = Lighting(enabled: false, lat: 45.0, lon: -90.0, amt: 60.0)
+    @State private var lighting = Lighting()
+    @AppStorage(lightingKey) var lightingEffects = false
     
     // cursor readout
     @State private var cursor = Cursor()
@@ -229,7 +230,7 @@ struct ContentView: View {
             minHeight: 600, idealHeight: 800, maxHeight: .infinity
         )
         .toolbar(id: "mainToolbar") {
-            Toolbar(toolbar: $toolbar, overlay: $overlay, colorbar: $colorbar, lighting: $lighting.enabled, magnification: $magnification, cdf: $cdf, info: $info)
+            Toolbar(toolbar: $toolbar, overlay: $overlay, colorbar: $colorbar, lighting: $lightingEffects, magnification: $magnification, cdf: $cdf, info: $info)
         }
         .navigationTitle(title)
         .onChange(of: selected) { value in
@@ -277,7 +278,6 @@ struct ContentView: View {
         }
         .task {
             colorbar = UserDefaults.standard.bool(forKey: showColorBarKey)
-            lighting.enabled = UserDefaults.standard.bool(forKey: lightingKey)
             projection = Projection.value
             orientation = Orientation.value
             colors.scheme = ColorScheme.value
@@ -296,10 +296,6 @@ struct ContentView: View {
                 guard (window?.isKeyWindow == true) else { return }
                 guard let value = new as? Bool else { return }
                 withAnimation { colorbar = value }
-            }
-            observers.add(key: lightingKey) { old, new in
-                guard let value = new as? Bool else { return }
-                lighting.enabled = value
             }
             observers.add(key: Projection.key) { old, new in
                 guard (window?.isKeyWindow == true) else { return }
