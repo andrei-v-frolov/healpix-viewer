@@ -8,10 +8,12 @@
 import SwiftUI
 
 // convenience wrapper for tracking viewpoint changes
-struct Viewpoint: Equatable {
-    let latitude: Double
-    let longitude: Double
-    let azimuth: Double
+struct Viewpoint: Equatable, Codable {
+    var orientation: Orientation = .defaultValue
+    var mag: Double = 0.0
+    var lat: Double = 0.0
+    var lon: Double = 0.0
+    var az: Double = 0.0
 }
 
 // color palette state
