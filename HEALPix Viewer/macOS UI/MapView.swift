@@ -16,12 +16,11 @@ struct MapView: NSViewRepresentable {
     @Binding var projection: Projection
     @Binding var viewpoint: Viewpoint
     @Binding var magnification: Double
-    @Binding var animate: Bool
-    
     @Binding var background: Color
-    @Binding var lighting: Lighting
+    @Binding var light: Light
     @Binding var cursor: Cursor
     
+    @AppStorage(animateKey) var animate: Bool = true
     @Binding var mapview: ProjectedView?
     
     typealias NSViewType = ProjectedView
@@ -35,12 +34,11 @@ struct MapView: NSViewRepresentable {
     func updateNSView(_ view: Self.NSViewType, context: Self.Context) {
         let radian = Double.pi/180.0
         let rotation = ang2rot(viewpoint.lat*radian, viewpoint.lon*radian, -viewpoint.az*radian), w = rot2gen(rotation)
-        let lightsrc = float4(ang2vec((90.0-lighting.lat)*radian, lighting.lon*radian), Float(lighting.amt/100.0))
+        let lightsrc = float4(ang2vec((90.0-light.lat)*radian, light.lon*radian), Float(light.amt/100.0))
         
         view.map = map
         view.projection = projection
         view.magnification = magnification
-        view.animate = animate
         
         if (animate) { view.target = w } else {
             view.w = w; view.omega = float3(0.0)
@@ -82,11 +80,16 @@ class ProjectedView: MTKView {
     var projection = Projection.defaultValue
     var magnification = 0.0
     var padding = 0.1
-    var animate = false
+    
+    // MARK: global preferences
+    var animate: Bool { UserDefaults.standard.bool(forKey: animateKey) }
+    var inside: Bool { UserDefaults.standard.bool(forKey: viewFromInsideKey) }
+    var lighting: Bool { UserDefaults.standard.bool(forKey: lightingKey) }
+    var cursor: Bool { UserDefaults.standard.bool(forKey: cursorKey) }
     
     // MARK: affine tranform mapping screen to projection plane
     func transform(width: Double? = nil, height: Double? = nil, magnification: Double? = nil, padding: Double? = nil, anchor: Anchor = .c, flipx: Bool? = nil, flipy: Bool = true, shiftx: Double = 0.0, shifty: Double = 0.0) -> float3x2 {
-        let flipx = flipx ?? UserDefaults.standard.bool(forKey: viewFromInsideKey)
+        let flipx = flipx ?? inside
         let (x,y) = projection.extent, signx = flipx ? -1.0 : 1.0, signy = flipy ? -1.0 : 1.0
         let w = width ?? drawableSize.width, h = height ?? drawableSize.height
         let m = magnification ?? self.magnification, p = padding ?? self.padding
@@ -103,9 +106,9 @@ class ProjectedView: MTKView {
     var lightsource = float4(0.0)
     
     // if lighting effects are enabled, pass lighting to the shader
-    var lighting: float4 {
-        let flip = UserDefaults.standard.bool(forKey: viewFromInsideKey) ? float4(1,-1,1,1) : float4(1)
-        return UserDefaults.standard.bool(forKey: lightingKey) ? flip*lightsource : float4(0.0)
+    var light: float4 {
+        let flip = inside ? float4(1,-1,1,1) : float4(1)
+        return lighting ? flip*lightsource : float4(0.0)
     }
     
     // MARK: solid body dynamics
@@ -193,7 +196,7 @@ class ProjectedView: MTKView {
         buffers[0].contents().storeBytes(of: transform ?? self.transform(), as: float3x2.self)
         buffers[1].contents().storeBytes(of: rotation ?? self.rotation, as: float3x3.self)
         buffers[2].contents().storeBytes(of: background ?? self.background, as: float4.self)
-        buffers[3].contents().storeBytes(of: lighting ?? self.lighting, as: float4.self)
+        buffers[3].contents().storeBytes(of: lighting ?? self.light, as: float4.self)
         
         // render map if available
         if let map = map {
@@ -254,7 +257,7 @@ class ProjectedView: MTKView {
     
     // MARK: cursor readout from projected map
     override func mouseMoved(with event: NSEvent) {
-        guard let view = mapview, UserDefaults.standard.bool(forKey: cursorKey) else { return }
+        guard let view = mapview, cursor else { return }
         guard let (theta,phi) = coordinates(event) else { view.cursor.hover = false; return }
         
         // cursor coordinates
@@ -275,7 +278,7 @@ class ProjectedView: MTKView {
     
     // MARK: cursor is cross-hairs when readout is enabled
     override func cursorUpdate(with event: NSEvent) {
-        if UserDefaults.standard.bool(forKey: cursorKey) { NSCursor.crosshair.set() }
+        if cursor { NSCursor.crosshair.set() }
     }
     
     // MARK: gesture support
@@ -292,8 +295,7 @@ class ProjectedView: MTKView {
     override func rotate(with event: NSEvent) {
         guard let view = mapview else { return }
         
-        let flipx = UserDefaults.standard.bool(forKey: viewFromInsideKey)
-        view.viewpoint.az += Double(flipx ? -event.rotation : event.rotation)
+        view.viewpoint.az += Double(inside ? -event.rotation : event.rotation)
         if (view.viewpoint.az >  180.0) { view.viewpoint.az -= 360.0 }
         if (view.viewpoint.az < -180.0) { view.viewpoint.az += 360.0 }
         
@@ -305,8 +307,7 @@ class ProjectedView: MTKView {
         guard animate else { return }
         
         let epsilon = Float(3.0e-2/exp2(magnification/2.0))
-        let flipx = UserDefaults.standard.bool(forKey: viewFromInsideKey)
-        let v = float3(0.0, Float(-event.deltaY), Float(flipx ? event.deltaX : -event.deltaX))
+        let v = float3(0.0, Float(-event.deltaY), Float(inside ? event.deltaX : -event.deltaX))
         let R = rotation, w = rot2gen(gen2rot(epsilon*R*v) * R)
         omega += unwind(w, target: self.w) - self.w
         

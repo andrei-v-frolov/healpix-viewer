@@ -12,6 +12,7 @@ import UniformTypeIdentifiers
 
 // main window view
 struct ContentView: View {
+    // exposed views
     @State private var title = "CMB Viewer"
     @State private var toolbar = ShowToolbar.none
     @State private var overlay = ShowOverlay.none
@@ -51,10 +52,9 @@ struct ContentView: View {
     @State private var completed: Int = 0
     private var progress: Double { Double(completed)/Double(scheduled) }
     
-    // projection toolbar
+    // view state
     @State private var state = ViewState()
     @State private var magnification: Double = 0.0
-    @AppStorage(animateKey) var animate = true
     
     // data range
     @State private var datamin: Double = 0.0
@@ -104,7 +104,7 @@ struct ContentView: View {
                 ZStack {
                     VStack(spacing: 0) {
                         if (toolbar == .projection) {
-                            ProjectionToolbar(projection: $state.projection, orientation: $state.view.orientation, animate: $animate)
+                            ProjectionToolbar(projection: $state.projection, orientation: $state.view.orientation)
                         }
                         if (toolbar == .orientation) {
                             OrientationToolbar(view: $state.view)
@@ -117,11 +117,11 @@ struct ContentView: View {
                             TransformToolbar(transform: $state.transform, selected: $selected, ranked: $ranked, mumin: $mumin, mumax: $mumax)
                         }
                         if (toolbar == .lighting) {
-                            LightingToolbar(lighting: $state.lighting)
+                            LightingToolbar(light: $state.light)
                         }
                         ZStack(alignment: .top) {
-                            MapView(map: $map, projection: $state.projection, viewpoint: $state.view, magnification: $magnification, animate: $animate,
-                                    background: $state.palette.bg, lighting: $state.lighting, cursor: $cursor, mapview: $mapview)
+                            MapView(map: $map, projection: $state.projection, viewpoint: $state.view, magnification: $magnification,
+                                    background: $state.palette.bg, light: $state.light, cursor: $cursor, mapview: $mapview)
                             .onDrag {
                                 let w = geometry.size.width, h = state.projection.height(width: w), none = NSItemProvider()
                                 guard let url = tmpfile(), let image = mapview?.image(width: Int(w), height: Int(h)) else { return none }
@@ -253,8 +253,6 @@ struct ContentView: View {
             state.view.orientation = Orientation.value
             state.palette.scheme = ColorScheme.value
             state.transform.f = Function.value
-            
-            DispatchQueue.main.async { animate = true }
         }
         .task {
             let observers = Observers(); self.observers = observers

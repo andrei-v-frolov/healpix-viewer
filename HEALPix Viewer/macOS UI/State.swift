@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-// convenience wrapper for tracking viewpoint changes
+// viewpoint state
 struct Viewpoint: Equatable, Codable {
     var orientation: Orientation = .defaultValue
     var lat: Double = 0.0
@@ -49,7 +49,7 @@ struct Bounds: Equatable, Codable {
 }
 
 // lighting state
-struct Lighting: Equatable, Codable {
+struct Light: Equatable, Codable {
     var lat: Double = 45.0
     var lon: Double = -90.0
     var amt: Double =  60.0
@@ -62,7 +62,7 @@ struct ViewState: Equatable, Codable {
     var palette = Palette()
     var transform = Transform()
     var range = Bounds()
-    var lighting = Lighting()
+    var light = Light()
 }
 
 // cursor state
