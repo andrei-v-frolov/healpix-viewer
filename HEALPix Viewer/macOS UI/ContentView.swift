@@ -52,25 +52,19 @@ struct ContentView: View {
     private var progress: Double { Double(completed)/Double(scheduled) }
     
     // projection toolbar
-    @State private var projection: Projection = .defaultValue
-    @State private var view = Viewpoint()
+    @State private var state = ViewState()
+    @State private var magnification: Double = 0.0
     @AppStorage(animateKey) var animate = true
     
-    // color toolbar
-    @State private var colors = Palette()
-    
-    // range toolbar
-    @State private var range = Bounds()
+    // data range
     @State private var datamin: Double = 0.0
     @State private var datamax: Double = 0.0
     
-    // transform toolbar
-    @State private var transform = Transform()
+    // transform range
     @State private var mumin: Double = 0.0
     @State private var mumax: Double = 0.0
     
     // lighting toolbar
-    @State private var lighting = Lighting()
     @AppStorage(lightingKey) var lightingEffects = false
     
     // cursor readout
@@ -111,26 +105,26 @@ struct ContentView: View {
                 ZStack {
                     VStack(spacing: 0) {
                         if (toolbar == .projection) {
-                            ProjectionToolbar(projection: $projection, orientation: $view.orientation, animate: $animate)
+                            ProjectionToolbar(projection: $state.projection, orientation: $state.view.orientation, animate: $animate)
                         }
                         if (toolbar == .orientation) {
-                            OrientationToolbar(view: $view)
-                                .onChange(of: view)  { value in view.orientation = .free }
+                            OrientationToolbar(view: $state.view)
+                                .onChange(of: state.view)  { value in state.view.orientation = .free }
                         }
                         if (toolbar == .color) {
-                            ColorToolbar(palette: $colors)
+                            ColorToolbar(palette: $state.palette)
                         }
                         if (toolbar == .transform) {
-                            TransformToolbar(transform: $transform, selected: $selected, ranked: $ranked, mumin: $mumin, mumax: $mumax)
+                            TransformToolbar(transform: $state.transform, selected: $selected, ranked: $ranked, mumin: $mumin, mumax: $mumax)
                         }
                         if (toolbar == .lighting) {
-                            LightingToolbar(lighting: $lighting)
+                            LightingToolbar(lighting: $state.lighting)
                         }
                         ZStack(alignment: .top) {
-                            MapView(map: $map, projection: $projection, viewpoint: $view, animate: $animate,
-                                    background: $colors.bg, lighting: $lighting, cursor: $cursor, mapview: $mapview)
+                            MapView(map: $map, projection: $state.projection, viewpoint: $state.view, magnification: $magnification, animate: $animate,
+                                    background: $state.palette.bg, lighting: $state.lighting, cursor: $cursor, mapview: $mapview)
                             .onDrag {
-                                let w = geometry.size.width, h = projection.height(width: w), none = NSItemProvider()
+                                let w = geometry.size.width, h = state.projection.height(width: w), none = NSItemProvider()
                                 guard let url = tmpfile(), let image = mapview?.image(width: Int(w), height: Int(h)) else { return none }
                                 
                                 saveAsImage(image, url: url); tmpfiles.append(url)
@@ -141,7 +135,7 @@ struct ContentView: View {
                             }
                         }
                         if (colorbar) {
-                            BarView(colorsheme: $colors.scheme, background: $colors.bg, barview: $barview)
+                            BarView(palette: $state.palette, barview: $barview)
                             .frame(height: 1.5*geometry.size.width/ColorbarView.aspect)
                             .onDrag {
                                 let w = geometry.size.width, h = w/ColorbarView.aspect, none = NSItemProvider()
@@ -150,7 +144,7 @@ struct ContentView: View {
                                 saveAsImage(image, url: url); tmpfiles.append(url)
                                 return NSItemProvider(contentsOf: url) ?? none
                             }
-                            RangeToolbar(map: $map, range: $range, datamin: $datamin, datamax: $datamax)
+                            RangeToolbar(map: $map, range: $state.range, datamin: $datamin, datamax: $datamax)
                         }
                     }
                     .sheet(isPresented: $loading) {
@@ -185,7 +179,7 @@ struct ContentView: View {
                 Group {
                     if #available(macOS 13.0, *) {
                     if (overlay == .statview) {
-                        StatView(cdf: $cdf, rangemin: $range.min, rangemax: $range.max)
+                        StatView(cdf: $cdf, range: $state.range)
                         .background(.thinMaterial)
                         .onChange(of: cdf) { value in if (value == nil) { overlay = .none } }
                     } }
@@ -209,7 +203,7 @@ struct ContentView: View {
             minHeight: 600, idealHeight: 800, maxHeight: .infinity
         )
         .toolbar(id: "mainToolbar") {
-            Toolbar(toolbar: $toolbar, overlay: $overlay, colorbar: $colorbar, lighting: $lightingEffects, magnification: $view.mag, cdf: $cdf, info: $info)
+            Toolbar(toolbar: $toolbar, overlay: $overlay, colorbar: $colorbar, lighting: $lightingEffects, magnification: $magnification, cdf: $cdf, info: $info)
         }
         .navigationTitle(title)
         .onChange(of: selected) { value in
@@ -220,13 +214,13 @@ struct ContentView: View {
                 mumin = map.map.min; mumax = map.map.max
             }
         }
-        .onChange(of: view.orientation) { value in
+        .onChange(of: state.view.orientation) { value in
             guard (value != .free) else { return }
-            (view.lat, view.lon, view.az) = value.coords
+            (state.view.lat, state.view.lon, state.view.az) = value.coords
         }
-        .onChange(of: transform) { value in transform() }
-        .onChange(of: colors) { value in colorize() }
-        .onChange(of: range) { value in colorize() }
+        .onChange(of: state.transform) { value in transform() }
+        .onChange(of: state.palette) { value in colorize() }
+        .onChange(of: state.range) { value in colorize() }
         .onChange(of: askToOpen) { value in
             if (window?.isKeyWindow == true && value) {
                 askToOpen = false; DispatchQueue.main.async { self.open() }
@@ -255,10 +249,10 @@ struct ContentView: View {
         }
         .task {
             colorbar = UserDefaults.standard.bool(forKey: showColorBarKey)
-            projection = Projection.value
-            view.orientation = Orientation.value
-            colors.scheme = ColorScheme.value
-            transform.f = Function.value
+            state.projection = Projection.value
+            state.view.orientation = Orientation.value
+            state.palette.scheme = ColorScheme.value
+            state.transform.f = Function.value
             
             DispatchQueue.main.async { animate = true }
         }
@@ -277,19 +271,19 @@ struct ContentView: View {
             observers.add(key: Projection.key) { old, new in
                 guard (window?.isKeyWindow == true) else { return }
                 guard let raw = new as? String, let mode = Projection(rawValue: raw) else { return }
-                withAnimation { toolbar = .projection }; projection = mode
+                withAnimation { toolbar = .projection }; state.projection = mode
             }
             observers.add(key: Orientation.key) { old, new in
                 guard (window?.isKeyWindow == true) else { return }
                 guard let raw = new as? String, let mode = Orientation(rawValue: raw) else { return }
-                withAnimation { toolbar = (mode == .free) ? .orientation : .projection }; view.orientation = mode
+                withAnimation { toolbar = (mode == .free) ? .orientation : .projection }; state.view.orientation = mode
             }
             observers.add(key: ColorScheme.key) { old, new in
                 guard (window?.isKeyWindow == true) else { return }
                 guard let raw = new as? String, let mode = ColorScheme(rawValue: raw) else { return }
                 withAnimation { toolbar = .color }
                 
-                colors.scheme = mode
+                state.palette.scheme = mode
             }
             observers.add(key: DataSource.key) {  old, new in
                 guard (window?.isKeyWindow == true) else { return }
@@ -299,7 +293,7 @@ struct ContentView: View {
             observers.add(key: Function.key) {  old, new in
                 guard (window?.isKeyWindow == true) else { return }
                 guard let raw = new as? String, let mode = Function(rawValue: raw) else { return }
-                withAnimation { toolbar = .transform }; transform.f = mode
+                withAnimation { toolbar = .transform }; state.transform.f = mode
             }
         }
     }
@@ -327,8 +321,8 @@ struct ContentView: View {
             for map in file.list {
                 let map = map.map, n = Double(map.npix), workload = Int(n*log(1+n))
                 scheduled += workload; analysisQueue.async {
-                    map.index(); if (map.id == selected) { cdf = map.cdf?.map { transform.eval($0) } }
-                    ranked[map.id] = map.ranked(); if Function.cdf.contains(transform.f) { transform() }
+                    map.index(); if (map.id == selected) { cdf = map.cdf?.map { state.transform.eval($0) } }
+                    ranked[map.id] = map.ranked(); if Function.cdf.contains(state.transform.f) { transform() }
                     completed += workload
                 }
             }
@@ -337,13 +331,13 @@ struct ContentView: View {
     
     // load map to view
     func load(_ map: Map) {
-        let later = colorbar && (range.min != map.min || range.max != map.max)
+        let later = colorbar && (state.range.min != map.min || state.range.max != map.max)
         
         self.map = map; self.cdf = map.cdf
         
-        range.mode = .full
-        datamin = map.min; range.min = datamin
-        datamax = map.max; range.max = datamax
+        state.range.mode = .full
+        datamin = map.min; state.range.min = datamin
+        datamax = map.max; state.range.max = datamax
         
         if !later { colorize(self.map) }
     }
@@ -352,18 +346,18 @@ struct ContentView: View {
     func colorize(_ map: Map? = nil) {
         guard let map = map ?? self.map else { return }
         
-        mapper.colorize(map: map, color: colors, minvalue: range.min, maxvalue: range.max)
+        mapper.colorize(map: map, color: state.palette, range: state.range)
     }
     
     // transform map with current settings
     func transform(_ map: Map? = nil) {
         guard let map = map ?? loaded.first(where: { $0.id == selected })?.map else { return }
         
-        switch transform.f {
+        switch state.transform.f {
             case .none: load(map)
             case .equalize: if let map = ranked[map.id] { load(map) }
-            case .normalize: if let map = ranked[map.id], let output = transformer.apply(map: map, transform: transform, recycle: transformed[map.id]) { transformed[map.id] = output; load(output) }
-            default: if let output = transformer.apply(map: map, transform: transform, recycle: transformed[map.id]) { transformed[map.id] = output; load(output) }
+            case .normalize: if let map = ranked[map.id], let output = transformer.apply(map: map, transform: state.transform, recycle: transformed[map.id]) { transformed[map.id] = output; load(output) }
+            default: if let output = transformer.apply(map: map, transform: state.transform, recycle: transformed[map.id]) { transformed[map.id] = output; load(output) }
         }
     }
     
@@ -371,7 +365,7 @@ struct ContentView: View {
     func render() -> MTLTexture? {
         // set up dimensions for borderless map
         let width = Double(width*oversampling)
-        var height = projection.height(width: width), shift = 0.0
+        var height = state.projection.height(width: width), shift = 0.0
         let thickness = width/ColorbarView.aspect
         if (colorbar) { height += 2.0*thickness; shift += thickness }
         if (colorbar && withDataRange) { height += thickness; shift += thickness/2.0 }
@@ -382,9 +376,9 @@ struct ContentView: View {
         let output = (oversampling > 1) ? IMGTexture(width: w/oversampling, height: h/oversampling) : texture
         
         if (colorbar && withDataRange) {
-            let scale = " (\(transform.f.rawValue.lowercased()) scale)"
-            let annotation = (transform.f != .none) ? annotation + scale : annotation
-            annotate(texture, height: t, min: range.min, max: range.max, annotation: withAnnotation ? annotation : nil, font: font.nsFont, color: color.cgColor, background: colors.bg.cgColor)
+            let scale = " (\(state.transform.f.rawValue.lowercased()) scale)"
+            let annotation = (state.transform.f != .none) ? annotation + scale : annotation
+            annotate(texture, height: t, min: state.range.min, max: state.range.max, annotation: withAnnotation ? annotation : nil, font: font.nsFont, color: color.cgColor, background: state.palette.bg.cgColor)
         }
         
         if (colorbar || oversampling > 1) {

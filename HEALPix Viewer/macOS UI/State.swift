@@ -10,7 +10,6 @@ import SwiftUI
 // convenience wrapper for tracking viewpoint changes
 struct Viewpoint: Equatable, Codable {
     var orientation: Orientation = .defaultValue
-    var mag: Double = 0.0
     var lat: Double = 0.0
     var lon: Double = 0.0
     var az: Double = 0.0
@@ -54,6 +53,16 @@ struct Lighting: Equatable, Codable {
     var lat: Double = 45.0
     var lon: Double = -90.0
     var amt: Double =  60.0
+}
+
+// map view state
+struct ViewState: Equatable, Codable {
+    var projection = Projection.defaultValue
+    var view = Viewpoint()
+    var palette = Palette()
+    var transform = Transform()
+    var range = Bounds()
+    var lighting = Lighting()
 }
 
 // cursor state

@@ -10,8 +10,7 @@ import MetalKit
 
 // MARK: SwiftUI wrapper for ColorbarView
 struct BarView: NSViewRepresentable {
-    @Binding var colorsheme: ColorScheme
-    @Binding var background: Color
+    @Binding var palette: Palette
     @Binding var barview: ColorbarView?
     
     typealias NSViewType = ColorbarView
@@ -23,8 +22,8 @@ struct BarView: NSViewRepresentable {
     }
     
     func updateNSView(_ view: Self.NSViewType, context: Self.Context) {
-        view.colormap = colorsheme.colormap
-        view.background = background.components
+        view.colormap = palette.scheme.colormap
+        view.background = palette.bg.components
         
         view.draw(view.bounds)
     }

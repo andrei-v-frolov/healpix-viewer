@@ -39,8 +39,7 @@ struct Statistics {
 @available(macOS 13.0, *)
 struct StatView: View {
     @Binding var cdf: [Double]?
-    @Binding var rangemin: Double
-    @Binding var rangemax: Double
+    @Binding var range: Bounds
     
     // summary statistics from CDF compendium
     var stat: Statistics {
@@ -128,7 +127,7 @@ struct StatView: View {
                 .foregroundStyle(Color(.red))
             }
         }
-        .chartXScale(domain: rangemin...rangemax)
+        .chartXScale(domain: range.min...range.max)
     }
     
     // chart view body
@@ -206,21 +205,21 @@ struct StatView: View {
             HStack {
                 Button("Set range to μ±5σ") {
                     let stat = stat
-                    rangemin = stat.mean - 5*stat.sigma
-                    rangemax = stat.mean + 5*stat.sigma
+                    range.min = stat.mean - 5*stat.sigma
+                    range.max = stat.mean + 5*stat.sigma
                 }
                 Button("Set range to μ±3σ") {
                     let stat = stat
-                    rangemin = stat.mean - 3*stat.sigma
-                    rangemax = stat.mean + 3*stat.sigma
+                    range.min = stat.mean - 3*stat.sigma
+                    range.max = stat.mean + 3*stat.sigma
                 }
                 Button("Set range to 99.73%") {
-                    rangemin = percentile(0.0013498980)
-                    rangemax = percentile(0.9986501020)
+                    range.min = percentile(0.0013498980)
+                    range.max = percentile(0.9986501020)
                 }
                 Button("Set range to 99.99%") {
-                    rangemin = percentile(0.00005)
-                    rangemax = percentile(0.99995)
+                    range.min = percentile(0.00005)
+                    range.max = percentile(0.99995)
                 }
             }
             .padding(10)
@@ -270,10 +269,10 @@ struct StatView: View {
     
     // squish off-screen arguments so that the total span is no more than twice as wide as visible part
     func squish(_ x: Double) -> Double {
-        let range = rangemax - rangemin; guard (range > 0.0) else { return x }
+        let span = range.max - range.min; guard (span > 0.0) else { return x }
         
-        if (x < rangemin) { let y = (x-rangemin)/range; return rangemin + range * y/sqrt(1.0+4.0*y*y) }
-        if (x > rangemax) { let y = (x-rangemax)/range; return rangemax + range * y/sqrt(1.0+4.0*y*y) }
+        if (x < range.min) { let y = (x-range.min)/span; return range.min + span * y/sqrt(1.0+4.0*y*y) }
+        if (x > range.max) { let y = (x-range.max)/span; return range.max + span * y/sqrt(1.0+4.0*y*y) }
         
         return x
     }

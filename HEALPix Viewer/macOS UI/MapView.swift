@@ -15,6 +15,7 @@ struct MapView: NSViewRepresentable {
     
     @Binding var projection: Projection
     @Binding var viewpoint: Viewpoint
+    @Binding var magnification: Double
     @Binding var animate: Bool
     
     @Binding var background: Color
@@ -38,7 +39,7 @@ struct MapView: NSViewRepresentable {
         
         view.map = map
         view.projection = projection
-        view.magnification = viewpoint.mag
+        view.magnification = magnification
         view.animate = animate
         
         if (animate) { view.target = w } else {
@@ -281,9 +282,9 @@ class ProjectedView: MTKView {
     override func magnify(with event: NSEvent) {
         guard let view = mapview else { return }
         
-        view.viewpoint.mag += event.magnification
-        if (view.viewpoint.mag <  0.0) { view.viewpoint.mag =  0.0 }
-        if (view.viewpoint.mag > 10.0) { view.viewpoint.mag = 10.0 }
+        view.magnification += event.magnification
+        if (view.magnification <  0.0) { view.magnification =  0.0 }
+        if (view.magnification > 10.0) { view.magnification = 10.0 }
         
         view.cursor.hover = false
     }

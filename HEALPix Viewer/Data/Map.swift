@@ -213,9 +213,9 @@ struct ColorMapper {
         self.queue = queue
     }
     
-    func colorize(map: Map, color: Palette, minvalue: Double, maxvalue: Double) {
+    func colorize(map: Map, color: Palette, range: Bounds) {
         let colors = float3x4(color.min.components, color.max.components, color.nan.components)
-        let range = float2(Float(minvalue), Float(maxvalue))
+        let range = float2(Float(range.min), Float(range.max))
         
         buffers[0].contents().storeBytes(of: colors, as: float3x4.self)
         buffers[1].contents().storeBytes(of: range, as: float2.self)
