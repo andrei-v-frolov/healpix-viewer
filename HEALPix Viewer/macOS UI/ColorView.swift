@@ -7,40 +7,25 @@
 
 import SwiftUI
 
-struct ColorToolbar: View, Equatable {
-    @Binding var colorscheme: ColorScheme
-    
-    @Binding var mincolor: Color
-    @Binding var maxcolor: Color
-    @Binding var nancolor: Color
-    
-    @Binding var bgcolor: Color
+struct ColorToolbar: View {
+    @Binding var palette: Palette
     
     var body: some View {
         HStack {
-            Picker("Color Scheme:", selection: $colorscheme) {
+            Picker("Color Scheme:", selection: $palette.scheme) {
                 ForEach(ColorScheme.allCases, id: \.self) {
                     Text($0.rawValue).tag($0)
                 }
             }
             .frame(width: 220)
             Spacer().frame(width: 30)
-            ColorPicker("Min:", selection: $mincolor)
-                .onChange(of: colorscheme) { value in mincolor = value.colormap.min }
-            ColorPicker("Max:", selection: $maxcolor)
-                .onChange(of: colorscheme) { value in maxcolor = value.colormap.max }
-            ColorPicker("NaN:", selection: $nancolor)
+            ColorPicker("Min:", selection: $palette.min)
+            ColorPicker("Max:", selection: $palette.max)
+            ColorPicker("NaN:", selection: $palette.nan)
             Spacer().frame(width: 30)
-            ColorPicker("Background:", selection: $bgcolor)
+            ColorPicker("Background:", selection: $palette.bg)
         }
         .padding(.top, 10)
         .padding(.bottom, 9)
-    }
-    
-    // comparing view state
-    static func == (a: Self, b: Self) -> Bool {
-        return a.colorscheme == b.colorscheme &&
-        a.mincolor == b.mincolor && a.maxcolor == b.maxcolor &&
-        a.nancolor == b.nancolor && a.bgcolor == b.bgcolor
     }
 }

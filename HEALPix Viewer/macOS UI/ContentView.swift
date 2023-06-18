@@ -64,11 +64,7 @@ struct ContentView: View {
     @State private var azimuth: Double = 0.0
     
     // color toolbar
-    @State private var colorscheme: ColorScheme = .defaultValue
-    @State private var mincolor = Color.blue
-    @State private var maxcolor = Color.red
-    @State private var nancolor = Color.gray
-    @State private var bgcolor = Color.clear
+    @State private var colors = Palette()
     
     // range toolbar
     @State private var datamin: Double = 0.0
@@ -103,8 +99,6 @@ struct ContentView: View {
     private let mapper = ColorMapper()
     
     private var viewpoint: Viewpoint { Viewpoint(latitude: latitude, longitude: longitude, azimuth: azimuth) }
-    
-    private var colors: Palette { Palette(colorscheme: colorscheme, mincolor: mincolor, maxcolor: maxcolor, nancolor: nancolor) }
     
     private var range: Bounds { Bounds(min: rangemin, max: rangemax) }
     
@@ -141,9 +135,7 @@ struct ContentView: View {
                             .onChange(of: viewpoint)  { value in orientation = .free }
                         }
                         if (toolbar == .color) {
-                            ColorToolbar(colorscheme: $colorscheme,
-                                         mincolor: $mincolor, maxcolor: $maxcolor,
-                                         nancolor: $nancolor, bgcolor: $bgcolor)
+                            ColorToolbar(palette: $colors)
                         }
                         if (toolbar == .transform) {
                             TransformToolbar(transform: $transform, mu: $mu, sigma: $sigma, selected: $selected, ranked: $ranked, mumin: $mumin, mumax: $mumax)
@@ -154,7 +146,7 @@ struct ContentView: View {
                         ZStack(alignment: .top) {
                             MapView(map: $map, projection: $projection, magnification: $magnification, animate: $animate,
                                     orientation: $orientation, latitude: $latitude, longitude: $longitude, azimuth: $azimuth,
-                                    background: $bgcolor, lighting: $lighting, cursor: $cursor, mapview: $mapview)
+                                    background: $colors.bg, lighting: $lighting, cursor: $cursor, mapview: $mapview)
                             .onDrag {
                                 let w = geometry.size.width, h = projection.height(width: w), none = NSItemProvider()
                                 guard let url = tmpfile(), let image = mapview?.image(width: Int(w), height: Int(h)) else { return none }
@@ -167,7 +159,7 @@ struct ContentView: View {
                             }
                         }
                         if (colorbar) {
-                            BarView(colorsheme: $colorscheme, background: $bgcolor, barview: $barview)
+                            BarView(colorsheme: $colors.scheme, background: $colors.bg, barview: $barview)
                             .frame(height: 1.5*geometry.size.width/ColorbarView.aspect)
                             .onDrag {
                                 let w = geometry.size.width, h = w/ColorbarView.aspect, none = NSItemProvider()
@@ -288,9 +280,7 @@ struct ContentView: View {
             lighting.enabled = UserDefaults.standard.bool(forKey: lightingKey)
             projection = Projection.value
             orientation = Orientation.value
-            colorscheme = ColorScheme.value
-            mincolor = colorscheme.colormap.min
-            maxcolor = colorscheme.colormap.max
+            colors.scheme = ColorScheme.value
             transform = DataTransform.value
             
             DispatchQueue.main.async { animate = true }
@@ -326,9 +316,7 @@ struct ContentView: View {
                 guard let raw = new as? String, let mode = ColorScheme(rawValue: raw) else { return }
                 withAnimation { toolbar = .color }
                 
-                colorscheme = mode
-                mincolor = colorscheme.colormap.min
-                maxcolor = colorscheme.colormap.max
+                colors.scheme = mode
             }
             observers.add(key: DataSource.key) {  old, new in
                 guard (window?.isKeyWindow == true) else { return }
@@ -391,8 +379,8 @@ struct ContentView: View {
     func colorize(_ map: Map? = nil) {
         guard let map = map ?? self.map else { return }
         
-        mapper.colorize(map: map, colormap: colorscheme.colormap,
-                        mincolor: mincolor, maxcolor: maxcolor, nancolor: nancolor,
+        mapper.colorize(map: map, colormap: colors.scheme.colormap,
+                        mincolor: colors.min, maxcolor: colors.max, nancolor: colors.nan,
                         minvalue: rangemin, maxvalue: rangemax)
     }
     
@@ -425,7 +413,7 @@ struct ContentView: View {
         if (colorbar && withDataRange) {
             let scale = " (\(transform.rawValue.lowercased()) scale)"
             let annotation = (transform != .none) ? annotation + scale : annotation
-            annotate(texture, height: t, min: rangemin, max: rangemax, annotation: withAnnotation ? annotation : nil, font: font.nsFont, color: color.cgColor, background: bgcolor.cgColor)
+            annotate(texture, height: t, min: rangemin, max: rangemax, annotation: withAnnotation ? annotation : nil, font: font.nsFont, color: color.cgColor, background: colors.bg.cgColor)
         }
         
         if (colorbar || oversampling > 1) {

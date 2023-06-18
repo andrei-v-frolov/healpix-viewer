@@ -14,12 +14,15 @@ struct Viewpoint: Equatable {
     let azimuth: Double
 }
 
-// convenience wrapper for tracking color changes
+// color palette state
 struct Palette: Equatable {
-    let colorscheme: ColorScheme
-    let mincolor: Color
-    let maxcolor: Color
-    let nancolor: Color
+    var scheme: ColorScheme = .defaultValue {
+        didSet { min = scheme.colormap.min; max = scheme.colormap.max }
+    }
+    var min: Color = ColorScheme.defaultValue.colormap.min
+    var max: Color = ColorScheme.defaultValue.colormap.max
+    var nan: Color = .gray
+    var bg: Color = .clear
 }
 
 // convenience wrapper for tracking range changes
