@@ -15,7 +15,7 @@ struct Viewpoint: Equatable {
 }
 
 // color palette state
-struct Palette: Equatable {
+struct Palette: Equatable, Codable {
     var scheme: ColorScheme = .defaultValue {
         didSet { min = scheme.colormap.min; max = scheme.colormap.max }
     }

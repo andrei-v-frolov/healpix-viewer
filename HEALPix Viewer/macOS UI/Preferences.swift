@@ -387,16 +387,72 @@ extension Preference {
 }
 
 // color encoded for @AppStorage
-extension Color: RawRepresentable, Preference {
+extension Color: RawRepresentable, Codable, Preference {
     public init(rawValue: String) {
-        guard let data = Data(base64Encoded: rawValue),
-              let color = try? NSKeyedUnarchiver.unarchivedObject(ofClass: NSColor.self, from: data) else { self = .defaultValue; return }
-        self = Color(nsColor: color)
+        switch rawValue.lowercased() {
+            // named colors
+            case "black":   self = .black
+            case "blue":    self = .blue
+            case "brown":   self = .brown
+            case "clear":   self = .clear
+            case "cyan":    self = .cyan
+            case "gray":    self = .gray
+            case "green":   self = .green
+            case "indigo":  self = .indigo
+            case "mint":    self = .mint
+            case "orange":  self = .orange
+            case "pink":    self = .pink
+            case "purple":  self = .purple
+            case "red":     self = .red
+            case "teal":    self = .teal
+            case "white":   self = .white
+            case "yellow":  self = .yellow
+            
+            // semantic colors
+            case "accent":      self = .accentColor
+            case "primary":     self = .primary
+            case "secondary":   self = .secondary
+            
+            // device RGBA color
+            default:
+                guard let i = Int(rawValue, radix: 16) else { self = .defaultValue; return }
+                self = Color(red: Double((i >> 24) & 0xFF)/255.0,
+                             green: Double((i >> 16) & 0xFF)/255.0,
+                             blue: Double((i >> 8) & 0xFF)/255.0,
+                             opacity: Double(i & 0xFF)/255.0)
+        }
     }
     
     public var rawValue: String {
-        guard let data = try? NSKeyedArchiver.archivedData(withRootObject: NSColor(self), requiringSecureCoding: false) else { return "" }
-        return data.base64EncodedString()
+        switch self {
+            // named colors
+            case .black:    return "black"
+            case .blue:     return "blue"
+            case .brown:    return "brown"
+            case .clear:    return "clear"
+            case .cyan:     return "cyan"
+            case .gray:     return "gray"
+            case .green:    return "green"
+            case .indigo:   return "indigo"
+            case .mint:     return "mint"
+            case .orange:   return "orange"
+            case .pink:     return "pink"
+            case .purple:   return "purple"
+            case .red:      return "red"
+            case .teal:     return "teal"
+            case .white:    return "white"
+            case .yellow:   return "yellow"
+            
+            // semantic colors
+            case .accentColor:  return "accent"
+            case .primary:      return "primary"
+            case .secondary:    return "secondary"
+            
+            // device RGBA color
+            default:
+            let rgba = SIMD4<Int>(clamp(self.components, min: 0.0, max: 1.0) * 255.0)
+                return String(format:"%08X", (rgba[0] << 24) | (rgba[1] << 16) | (rgba[2] << 8) | rgba[3])
+        }
     }
     
     // default value
