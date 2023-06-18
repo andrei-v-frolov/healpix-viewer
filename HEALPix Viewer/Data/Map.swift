@@ -213,8 +213,8 @@ struct ColorMapper {
         self.queue = queue
     }
     
-    func colorize(map: Map, colormap: Colormap, mincolor: Color, maxcolor: Color, nancolor: Color, minvalue: Double, maxvalue: Double) {
-        let colors = float3x4(mincolor.components, maxcolor.components, nancolor.components)
+    func colorize(map: Map, color: Palette, minvalue: Double, maxvalue: Double) {
+        let colors = float3x4(color.min.components, color.max.components, color.nan.components)
         let range = float2(Float(minvalue), Float(maxvalue))
         
         buffers[0].contents().storeBytes(of: colors, as: float3x4.self)
@@ -223,7 +223,7 @@ struct ColorMapper {
         // initialize compute command buffer
         guard let command = queue.makeCommandBuffer() else { return }
         
-        shader.encode(command: command, buffers: [map.buffer, buffers[0], buffers[1]], textures: [colormap.texture, map.texture], threadsPerGrid: MTLSize(width: map.nside, height: map.nside, depth: 12))
+        shader.encode(command: command, buffers: [map.buffer, buffers[0], buffers[1]], textures: [color.scheme.colormap.texture, map.texture], threadsPerGrid: MTLSize(width: map.nside, height: map.nside, depth: 12))
         command.commit()
     }
 }

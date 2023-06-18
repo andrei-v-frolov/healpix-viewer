@@ -25,12 +25,6 @@ struct Palette: Equatable {
     var bg: Color = .clear
 }
 
-// convenience wrapper for tracking range changes
-struct Bounds: Equatable {
-    let min: Double
-    let max: Double
-}
-
 // data transform state
 struct Transform: Equatable, Codable {
     var f: Function = .defaultValue
@@ -44,6 +38,13 @@ struct Transform: Equatable, Codable {
                (a.f.mu ? a.mu == b.mu : true) &&
                (a.f.sigma ? a.sigma == b.sigma : true)
     }
+}
+
+// data range state
+struct Bounds: Equatable, Codable {
+    var mode: BoundsModifier = .defaultValue
+    var min: Double = 0.0
+    var max: Double = 0.0
 }
 
 // lighting state

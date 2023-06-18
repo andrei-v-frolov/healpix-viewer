@@ -67,12 +67,9 @@ struct ContentView: View {
     @State private var colors = Palette()
     
     // range toolbar
+    @State private var range = Bounds()
     @State private var datamin: Double = 0.0
     @State private var datamax: Double = 0.0
-    @State private var rangemin: Double = 0.0
-    @State private var rangemax: Double = 0.0
-    
-    @State private var modifier: BoundsModifier = .defaultValue
     
     // transform toolbar
     @State private var transform = Transform()
@@ -98,8 +95,6 @@ struct ContentView: View {
     private let mapper = ColorMapper()
     
     private var viewpoint: Viewpoint { Viewpoint(latitude: latitude, longitude: longitude, azimuth: azimuth) }
-    private var range: Bounds { Bounds(min: rangemin, max: rangemax) }
-    
     
     // variables signalling action
     @Binding var askToOpen: Bool
@@ -165,9 +160,7 @@ struct ContentView: View {
                                 saveAsImage(image, url: url); tmpfiles.append(url)
                                 return NSItemProvider(contentsOf: url) ?? none
                             }
-                            RangeToolbar(map: $map, modifier: $modifier,
-                                         datamin: $datamin, datamax: $datamax,
-                                         rangemin: $rangemin, rangemax: $rangemax)
+                            RangeToolbar(map: $map, range: $range, datamin: $datamin, datamax: $datamax)
                         }
                     }
                     .sheet(isPresented: $loading) {
@@ -202,7 +195,7 @@ struct ContentView: View {
                 Group {
                     if #available(macOS 13.0, *) {
                     if (overlay == .statview) {
-                        StatView(cdf: $cdf, rangemin: $rangemin, rangemax: $rangemax)
+                        StatView(cdf: $cdf, rangemin: $range.min, rangemax: $range.max)
                         .background(.thinMaterial)
                         .onChange(of: cdf) { value in if (value == nil) { overlay = .none } }
                     } }
@@ -356,13 +349,13 @@ struct ContentView: View {
     
     // load map to view
     func load(_ map: Map) {
-        let later = colorbar && (rangemin != map.min || rangemax != map.max)
+        let later = colorbar && (range.min != map.min || range.max != map.max)
         
         self.map = map; self.cdf = map.cdf
         
-        modifier = .full
-        datamin = map.min; rangemin = datamin
-        datamax = map.max; rangemax = datamax
+        range.mode = .full
+        datamin = map.min; range.min = datamin
+        datamax = map.max; range.max = datamax
         
         if !later { colorize(self.map) }
     }
@@ -371,9 +364,7 @@ struct ContentView: View {
     func colorize(_ map: Map? = nil) {
         guard let map = map ?? self.map else { return }
         
-        mapper.colorize(map: map, colormap: colors.scheme.colormap,
-                        mincolor: colors.min, maxcolor: colors.max, nancolor: colors.nan,
-                        minvalue: rangemin, maxvalue: rangemax)
+        mapper.colorize(map: map, color: colors, minvalue: range.min, maxvalue: range.max)
     }
     
     // transform map with current settings
@@ -405,7 +396,7 @@ struct ContentView: View {
         if (colorbar && withDataRange) {
             let scale = " (\(transform.f.rawValue.lowercased()) scale)"
             let annotation = (transform.f != .none) ? annotation + scale : annotation
-            annotate(texture, height: t, min: rangemin, max: rangemax, annotation: withAnnotation ? annotation : nil, font: font.nsFont, color: color.cgColor, background: colors.bg.cgColor)
+            annotate(texture, height: t, min: range.min, max: range.max, annotation: withAnnotation ? annotation : nil, font: font.nsFont, color: color.cgColor, background: colors.bg.cgColor)
         }
         
         if (colorbar || oversampling > 1) {
