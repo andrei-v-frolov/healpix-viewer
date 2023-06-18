@@ -53,15 +53,8 @@ struct ContentView: View {
     
     // projection toolbar
     @State private var projection: Projection = .defaultValue
-    @State private var orientation: Orientation = .defaultValue
+    @State private var view = Viewpoint()
     @AppStorage(animateKey) var animate = true
-    
-    // magnification and orientation toolbar
-    @State private var magnification: Double = 0.0
-    
-    @State private var latitude: Double = 0.0
-    @State private var longitude: Double = 0.0
-    @State private var azimuth: Double = 0.0
     
     // color toolbar
     @State private var colors = Palette()
@@ -94,8 +87,6 @@ struct ContentView: View {
     // color mapper
     private let mapper = ColorMapper()
     
-    private var viewpoint: Viewpoint { Viewpoint(latitude: latitude, longitude: longitude, azimuth: azimuth) }
-    
     // variables signalling action
     @Binding var askToOpen: Bool
     @Binding var askToSave: Bool
@@ -120,11 +111,11 @@ struct ContentView: View {
                 ZStack {
                     VStack(spacing: 0) {
                         if (toolbar == .projection) {
-                            ProjectionToolbar(projection: $projection, orientation: $orientation, animate: $animate)
+                            ProjectionToolbar(projection: $projection, orientation: $view.orientation, animate: $animate)
                         }
                         if (toolbar == .orientation) {
-                            OrientationToolbar(latitude: $latitude, longitude: $longitude, azimuth: $azimuth)
-                            .onChange(of: viewpoint)  { value in orientation = .free }
+                            OrientationToolbar(view: $view)
+                                .onChange(of: view)  { value in view.orientation = .free }
                         }
                         if (toolbar == .color) {
                             ColorToolbar(palette: $colors)
@@ -136,8 +127,7 @@ struct ContentView: View {
                             LightingToolbar(lighting: $lighting)
                         }
                         ZStack(alignment: .top) {
-                            MapView(map: $map, projection: $projection, magnification: $magnification, animate: $animate,
-                                    orientation: $orientation, latitude: $latitude, longitude: $longitude, azimuth: $azimuth,
+                            MapView(map: $map, projection: $projection, viewpoint: $view, animate: $animate,
                                     background: $colors.bg, lighting: $lighting, cursor: $cursor, mapview: $mapview)
                             .onDrag {
                                 let w = geometry.size.width, h = projection.height(width: w), none = NSItemProvider()
@@ -219,7 +209,7 @@ struct ContentView: View {
             minHeight: 600, idealHeight: 800, maxHeight: .infinity
         )
         .toolbar(id: "mainToolbar") {
-            Toolbar(toolbar: $toolbar, overlay: $overlay, colorbar: $colorbar, lighting: $lightingEffects, magnification: $magnification, cdf: $cdf, info: $info)
+            Toolbar(toolbar: $toolbar, overlay: $overlay, colorbar: $colorbar, lighting: $lightingEffects, magnification: $view.mag, cdf: $cdf, info: $info)
         }
         .navigationTitle(title)
         .onChange(of: selected) { value in
@@ -230,11 +220,9 @@ struct ContentView: View {
                 mumin = map.map.min; mumax = map.map.max
             }
         }
-        .onChange(of: orientation) { value in
+        .onChange(of: view.orientation) { value in
             guard (value != .free) else { return }
-            
-            let (lat,lon,az) = value.coords
-            latitude = lat; longitude = lon; azimuth = az
+            (view.lat, view.lon, view.az) = value.coords
         }
         .onChange(of: transform) { value in transform() }
         .onChange(of: colors) { value in colorize() }
@@ -268,7 +256,7 @@ struct ContentView: View {
         .task {
             colorbar = UserDefaults.standard.bool(forKey: showColorBarKey)
             projection = Projection.value
-            orientation = Orientation.value
+            view.orientation = Orientation.value
             colors.scheme = ColorScheme.value
             transform.f = Function.value
             
@@ -294,7 +282,7 @@ struct ContentView: View {
             observers.add(key: Orientation.key) { old, new in
                 guard (window?.isKeyWindow == true) else { return }
                 guard let raw = new as? String, let mode = Orientation(rawValue: raw) else { return }
-                withAnimation { toolbar = (mode == .free) ? .orientation : .projection }; orientation = mode
+                withAnimation { toolbar = (mode == .free) ? .orientation : .projection }; view.orientation = mode
             }
             observers.add(key: ColorScheme.key) { old, new in
                 guard (window?.isKeyWindow == true) else { return }

@@ -14,16 +14,10 @@ struct MapView: NSViewRepresentable {
     @Binding var map: Map?
     
     @Binding var projection: Projection
-    @Binding var magnification: Double
+    @Binding var viewpoint: Viewpoint
     @Binding var animate: Bool
     
-    @Binding var orientation: Orientation
-    @Binding var latitude: Double
-    @Binding var longitude: Double
-    @Binding var azimuth: Double
-    
     @Binding var background: Color
-    
     @Binding var lighting: Lighting
     @Binding var cursor: Cursor
     
@@ -39,12 +33,12 @@ struct MapView: NSViewRepresentable {
     
     func updateNSView(_ view: Self.NSViewType, context: Self.Context) {
         let radian = Double.pi/180.0
-        let rotation = ang2rot(latitude*radian, longitude*radian, -azimuth*radian), w = rot2gen(rotation)
+        let rotation = ang2rot(viewpoint.lat*radian, viewpoint.lon*radian, -viewpoint.az*radian), w = rot2gen(rotation)
         let lightsrc = float4(ang2vec((90.0-lighting.lat)*radian, lighting.lon*radian), Float(lighting.amt/100.0))
         
         view.map = map
         view.projection = projection
-        view.magnification = magnification
+        view.magnification = viewpoint.mag
         view.animate = animate
         
         if (animate) { view.target = w } else {
@@ -248,12 +242,12 @@ class ProjectedView: MTKView {
             let omega = (s != 0.0) ? atan2(s,c)/s * w : w
             
             let (_,_,psi) = rot2ang(gen2rot(omega)*R)
-            view.azimuth = -psi * radian
+            view.viewpoint.az = -psi * radian
         }
         
-        view.latitude = (Double.pi/2.0 - theta) * radian
-        view.longitude = phi * radian
-        view.orientation = .free
+        view.viewpoint.lat = (Double.pi/2.0 - theta) * radian
+        view.viewpoint.lon = phi * radian
+        view.viewpoint.orientation = .free
         view.cursor.hover = false
     }
     
@@ -287,9 +281,9 @@ class ProjectedView: MTKView {
     override func magnify(with event: NSEvent) {
         guard let view = mapview else { return }
         
-        view.magnification += event.magnification
-        if (view.magnification <  0.0) { view.magnification =  0.0 }
-        if (view.magnification > 10.0) { view.magnification = 10.0 }
+        view.viewpoint.mag += event.magnification
+        if (view.viewpoint.mag <  0.0) { view.viewpoint.mag =  0.0 }
+        if (view.viewpoint.mag > 10.0) { view.viewpoint.mag = 10.0 }
         
         view.cursor.hover = false
     }
@@ -298,11 +292,11 @@ class ProjectedView: MTKView {
         guard let view = mapview else { return }
         
         let flipx = UserDefaults.standard.bool(forKey: viewFromInsideKey)
-        view.azimuth += Double(flipx ? -event.rotation : event.rotation)
-        if (view.azimuth >  180.0) { view.azimuth -= 360.0 }
-        if (view.azimuth < -180.0) { view.azimuth += 360.0 }
+        view.viewpoint.az += Double(flipx ? -event.rotation : event.rotation)
+        if (view.viewpoint.az >  180.0) { view.viewpoint.az -= 360.0 }
+        if (view.viewpoint.az < -180.0) { view.viewpoint.az += 360.0 }
         
-        view.orientation = .free
+        view.viewpoint.orientation = .free
         view.cursor.hover = false
     }
     

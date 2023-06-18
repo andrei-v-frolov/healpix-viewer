@@ -8,27 +8,24 @@
 import SwiftUI
 
 struct OrientationToolbar: View {
-    @Binding var latitude: Double
-    @Binding var longitude: Double
-    @Binding var azimuth: Double
-    
+    @Binding var view: Viewpoint
     @FocusState private var focus: Bool
     
     var body: some View {
         HStack {
-            Slider(value: $latitude, in: -90.0...90.0) { Text("Lat:") } onEditingChanged: { editing in focus = false }
+            Slider(value: $view.lat, in: -90.0...90.0) { Text("Lat:") } onEditingChanged: { editing in focus = false }
                 .frame(width: 160)
-            TextField("Latitude", value: $latitude, formatter: TwoDigitNumber)
+            TextField("Latitude", value: $view.lat, formatter: TwoDigitNumber)
                 .frame(width: 55).multilineTextAlignment(.trailing).focused($focus)
             Spacer().frame(width: 30)
-            Slider(value: $longitude, in: -180.0...180.0) { Text("Lon:") } onEditingChanged: { editing in focus = false }
+            Slider(value: $view.lon, in: -180.0...180.0) { Text("Lon:") } onEditingChanged: { editing in focus = false }
                 .frame(width: 160)
-            TextField("Longitude", value: $longitude, formatter: TwoDigitNumber)
+            TextField("Longitude", value: $view.lon, formatter: TwoDigitNumber)
                 .frame(width: 55).multilineTextAlignment(.trailing).focused($focus)
             Spacer().frame(width: 30)
-            Slider(value: $azimuth, in: -180.0...180.0) { Text("Az:") } onEditingChanged: { editing in focus = false }
+            Slider(value: $view.az, in: -180.0...180.0) { Text("Az:") } onEditingChanged: { editing in focus = false }
                 .frame(width: 160)
-            TextField("Azimuth", value: $azimuth, formatter: TwoDigitNumber)
+            TextField("Azimuth", value: $view.az, formatter: TwoDigitNumber)
                 .frame(width: 55).multilineTextAlignment(.trailing).focused($focus)
         }
         .padding(.top, 11)
