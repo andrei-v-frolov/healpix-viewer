@@ -39,7 +39,7 @@ let animateKey = "animate"
 let showColorBarKey = "showColorBar"
 
 // application appearance
-enum Appearance: String, CaseIterable, Preference {
+enum Appearance: String, CaseIterable, Codable, Preference {
     case dark = "Dark Mode"
     case light = "Light Mode"
     case system = "System Mode"
@@ -58,7 +58,7 @@ enum Appearance: String, CaseIterable, Preference {
     }
 }
 
-enum ImageFormat: String, CaseIterable, Preference {
+enum ImageFormat: String, CaseIterable, Codable, Preference {
     case gif = "GIF"
     case png = "PNG"
     case heif = "HEIF"
@@ -88,7 +88,7 @@ enum ImageFormat: String, CaseIterable, Preference {
 }
 
 // data sources
-enum DataSource: String, CaseIterable, Preference {
+enum DataSource: String, CaseIterable, Codable, Preference {
     case i = "Temperature I"
     case q = "Polarization Q"
     case u = "Polarization U"
@@ -110,7 +110,7 @@ enum DataSource: String, CaseIterable, Preference {
 }
 
 // spherical projection
-enum Projection: String, CaseIterable, Preference {
+enum Projection: String, CaseIterable, Codable, Preference {
     case mollweide = "Mollweide"
     case hammer = "Hammer"
     case lambert = "Lambert"
@@ -177,7 +177,7 @@ enum Projection: String, CaseIterable, Preference {
 }
 
 // orientation presets
-enum Orientation: String, CaseIterable, Preference {
+enum Orientation: String, CaseIterable, Codable, Preference {
     case free = "As Specified"
     case equator = "Equator"
     case north = "North Pole"
@@ -209,7 +209,7 @@ enum Orientation: String, CaseIterable, Preference {
 }
 
 // color scheme
-enum ColorScheme: String, CaseIterable, Preference {
+enum ColorScheme: String, CaseIterable, Codable, Preference {
     case planck = "Planck"
     case cmb = "HEALPix"
     case diff = "Difference"
@@ -241,7 +241,7 @@ enum ColorScheme: String, CaseIterable, Preference {
 }
 
 // data transform
-enum DataTransform: String, CaseIterable, Preference {
+enum DataTransform: String, CaseIterable, Codable, Preference {
     case none = "None"
     case log = "Log"
     case asinh = "Arcsinh"
@@ -315,7 +315,7 @@ enum DataTransform: String, CaseIterable, Preference {
 }
 
 // line convolution
-enum LineConvolution: String, CaseIterable, Preference {
+enum LineConvolution: String, CaseIterable, Codable, Preference {
     case none = "None"
     case vector = "Vector Field"
     case polarization = "Polarization"
@@ -326,7 +326,7 @@ enum LineConvolution: String, CaseIterable, Preference {
 }
 
 // data bounds modifier
-enum BoundsModifier: String, CaseIterable, Preference {
+enum BoundsModifier: String, CaseIterable, Codable, Preference {
     case full = "Full"
     case symmetric = "Symmetric"
     case positive = "Positive"
