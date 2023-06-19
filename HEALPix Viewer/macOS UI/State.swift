@@ -102,7 +102,7 @@ struct StateMask: RawRepresentable, Equatable, Codable {
          transform = (rawValue & 0b000100) != 0
            palette = (rawValue & 0b001000) != 0
              range = (rawValue & 0b010000) != 0
-            light  = (rawValue & 0b100000) != 0
+             light = (rawValue & 0b100000) != 0
     }
     
     public var rawValue: Int {

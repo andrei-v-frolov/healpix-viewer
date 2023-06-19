@@ -11,7 +11,7 @@ struct SettingsView: View {
     // appearance tab
     @AppStorage(Appearance.key) var appearance = Appearance.defaultValue
     @AppStorage(viewFromInsideKey) var viewFromInside = true
-    @AppStorage(lightingKey) var lightingEffects = false
+    @AppStorage(lightingKey) var lighting = false
     @AppStorage(annotationFontKey) var font = FontPreference.defaultValue
     @AppStorage(annotationColorKey) var color = Color.defaultValue
     @AppStorage(dragWithColorBarKey) var dragColorBar = false
@@ -48,7 +48,7 @@ struct SettingsView: View {
                     Text("When rendering the map...").font(.title3)
                     Group {
                         Toggle(" View from inside (enable for CMB)", isOn: $viewFromInside)
-                        Toggle(" Apply lighting effects (sphere shading)", isOn: $lightingEffects)
+                        Toggle(" Apply lighting effects (sphere shading)", isOn: $lighting)
                     }.padding(.leading, offset)
                 }.padding(corner).frame(width: 380, alignment: .center).overlay(
                     RoundedRectangle(cornerRadius: corner)
@@ -82,7 +82,7 @@ struct SettingsView: View {
                             Toggle(" Color Scheme", isOn: $keepState.palette)
                             Toggle(" Map Transform", isOn: $keepState.transform)
                             Toggle(" Color Bar Range", isOn: $keepState.range)
-                            Toggle(" Map Lighting", isOn: $keepState.light).disabled(!lightingEffects)
+                            Toggle(" Map Lighting", isOn: $keepState.light).disabled(!lighting)
                         }.padding(.leading, offset)
                     }
                     Button("Reset") { keepState = StateMask() }.padding(5)
@@ -100,7 +100,7 @@ struct SettingsView: View {
                             Toggle(" Color Scheme", isOn: $copyState.palette)
                             Toggle(" Map Transform", isOn: $copyState.transform)
                             Toggle(" Color Bar Range", isOn: $copyState.range)
-                            Toggle(" Map Lighting", isOn: $copyState.light).disabled(!lightingEffects)
+                            Toggle(" Map Lighting", isOn: $copyState.light).disabled(!lighting)
                         }.padding(.leading, offset)
                     }
                     Button("Reset") { copyState = StateMask() }.padding(5)

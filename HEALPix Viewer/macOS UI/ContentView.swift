@@ -70,7 +70,7 @@ struct ContentView: View {
     @State private var mumax: Double = 0.0
     
     // lighting toolbar
-    @AppStorage(lightingKey) var lightingEffects = false
+    @AppStorage(lightingKey) var lighting = false
     
     // cursor readout
     @State private var cursor = Cursor()
@@ -207,7 +207,7 @@ struct ContentView: View {
             minHeight: 600, idealHeight: 800, maxHeight: .infinity
         )
         .toolbar(id: "mainToolbar") {
-            Toolbar(toolbar: $toolbar, overlay: $overlay, colorbar: $colorbar, lighting: $lightingEffects, magnification: $magnification, cdf: $cdf, info: $info)
+            Toolbar(toolbar: $toolbar, overlay: $overlay, colorbar: $colorbar, lighting: $lighting, magnification: $magnification, cdf: $cdf, info: $info)
         }
         .navigationTitle(title)
         .onChange(of: selected) { value in
@@ -250,6 +250,9 @@ struct ContentView: View {
             }
             
             action = .none
+        }
+        .onChange(of: lighting) { value in
+            if (!value && toolbar == .lighting) { withAnimation { toolbar = .none } }
         }
         .onDrop(of: [UTType.fileURL], isTargeted: $targeted) { provider in
             guard let type = UTType.healpix.tags[UTTagClass.filenameExtension] else { return false }
