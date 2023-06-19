@@ -59,10 +59,60 @@ struct Light: Equatable, Codable {
 struct ViewState: Equatable, Codable {
     var projection = Projection.defaultValue
     var view = Viewpoint()
-    var palette = Palette()
     var transform = Transform()
+    var palette = Palette()
     var range = Bounds()
     var light = Light()
+    
+    mutating func update(_ state: ViewState, mask: StateMask) {
+        if mask.projection { self.projection = state.projection }
+        if mask.view { self.view = state.view }
+        if mask.transform { self.transform = state.transform }
+        if mask.palette { self.palette = state.palette }
+        if mask.range { self.range = state.range }
+        if mask.light { self.light = state.light }
+    }
+    
+    func copy(_ state: ViewState, mask: StateMask) -> ViewState {
+        return ViewState(
+            projection: mask.projection ? state.projection : self.projection,
+            view: mask.view ? state.view : self.view,
+            transform: mask.transform ? state.transform : self.transform,
+            palette: mask.palette ? state.palette : self.palette,
+            range: mask.range ? state.range : self.range,
+            light: mask.light ? state.light : self.light
+        )
+    }
+}
+
+// state changes mask
+struct StateMask: RawRepresentable, Equatable, Codable {
+    var projection = false
+    var view = false
+    var transform = true
+    var palette = true
+    var range = true
+    var light = false
+    
+    public init() { }
+    
+    public init(rawValue: Int) {
+        projection = (rawValue & 0b000001) != 0
+              view = (rawValue & 0b000010) != 0
+         transform = (rawValue & 0b000100) != 0
+           palette = (rawValue & 0b001000) != 0
+             range = (rawValue & 0b010000) != 0
+            light  = (rawValue & 0b100000) != 0
+    }
+    
+    public var rawValue: Int {
+        return     (projection ? 0b000001 : 0) |
+                         (view ? 0b000010 : 0) |
+                    (transform ? 0b000100 : 0) |
+                      (palette ? 0b001000 : 0) |
+                        (range ? 0b010000 : 0) |
+                        (light ? 0b100000 : 0)
+    }
 }
 
 // cursor state

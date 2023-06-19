@@ -58,13 +58,9 @@ struct ContentView: View {
     @State private var magnification: Double = 0.0
     
     // view state preferences
-    @AppStorage(copyProjectionKey) var copyProjection = true
-    @AppStorage(copyViewpointKey) var copyViewpoint = true
-    @AppStorage(copyColorSchemeKey) var copyColorScheme = true
-    @AppStorage(copyMapTransformKey) var copyMapTransform = true
-    @AppStorage(copyColorBarRangeKey) var copyColorBarRange = true
-    @AppStorage(copyMapLightingKey) var copyMapLighting = false
-
+    @AppStorage(keepStateKey) var keepState = StateMask()
+    @AppStorage(copyStateKey) var copyState = StateMask()
+    
     // data range
     @State private var datamin: Double = 0.0
     @State private var datamax: Double = 0.0
@@ -238,12 +234,7 @@ struct ContentView: View {
                 case .copyStyle:
                     clipboard = state
                 case .pasteStyle:
-                    if copyProjection { state.projection = clipboard.projection }
-                    if copyViewpoint { state.view = clipboard.view }
-                    if copyColorScheme { state.palette = clipboard.palette }
-                    if copyMapTransform { state.transform = clipboard.transform }
-                    if copyColorBarRange { state.range = clipboard.range }
-                    if copyMapLighting { state.light = clipboard.light }
+                    state.update(clipboard, mask: copyState)
                 case .pasteView:
                     state.projection = clipboard.projection
                     state.view = clipboard.view

@@ -18,19 +18,8 @@ struct SettingsView: View {
     @AppStorage(dragWithAnnotationKey) var dragAnnotation = false
     
     // behavior tab
-    @AppStorage(keepProjectionKey) var keepProjection = false
-    @AppStorage(keepViewpointKey) var keepViewpoint = false
-    @AppStorage(keepColorSchemeKey) var keepColorScheme = true
-    @AppStorage(keepMapTransformKey) var keepMapTransform = true
-    @AppStorage(keepColorBarRangeKey) var keepColorBarRange = true
-    @AppStorage(keepMapLightingKey) var keepMapLighting = false
-    
-    @AppStorage(copyProjectionKey) var copyProjection = true
-    @AppStorage(copyViewpointKey) var copyViewpoint = true
-    @AppStorage(copyColorSchemeKey) var copyColorScheme = true
-    @AppStorage(copyMapTransformKey) var copyMapTransform = true
-    @AppStorage(copyColorBarRangeKey) var copyColorBarRange = true
-    @AppStorage(copyMapLightingKey) var copyMapLighting = false
+    @AppStorage(keepStateKey) var keepState = StateMask()
+    @AppStorage(copyStateKey) var copyState = StateMask()
     
     
     @State private var xxx = "CMB Viewer"
@@ -88,22 +77,15 @@ struct SettingsView: View {
                     VStack(alignment: .leading) {
                         Text("Map navigation remembers...").font(.title3)
                         Group {
-                            Toggle(" Projection", isOn: $keepProjection)
-                            Toggle(" Viewpoint", isOn: $keepViewpoint)
-                            Toggle(" Color Scheme", isOn: $keepColorScheme)
-                            Toggle(" Map Transform", isOn: $keepMapTransform)
-                            Toggle(" Color Bar Range", isOn: $keepColorBarRange)
-                            Toggle(" Map Lighting", isOn: $keepMapLighting).disabled(!lightingEffects)
+                            Toggle(" Projection", isOn: $keepState.projection)
+                            Toggle(" Viewpoint", isOn: $keepState.view)
+                            Toggle(" Color Scheme", isOn: $keepState.palette)
+                            Toggle(" Map Transform", isOn: $keepState.transform)
+                            Toggle(" Color Bar Range", isOn: $keepState.range)
+                            Toggle(" Map Lighting", isOn: $keepState.light).disabled(!lightingEffects)
                         }.padding(.leading, offset)
                     }
-                    Button("Reset") {
-                        keepProjection = false
-                        keepViewpoint = false
-                        keepColorScheme = true
-                        keepMapTransform = true
-                        keepColorBarRange = true
-                        keepMapLighting = false
-                    }.padding(5)
+                    Button("Reset") { keepState = StateMask() }.padding(5)
                 }
                 .padding(corner).overlay(
                     RoundedRectangle(cornerRadius: corner)
@@ -113,22 +95,15 @@ struct SettingsView: View {
                     VStack(alignment: .leading) {
                         Text("Style copy & paste transfers...").font(.title3)
                         Group {
-                            Toggle(" Projection", isOn: $copyProjection)
-                            Toggle(" Viewpoint", isOn: $copyViewpoint)
-                            Toggle(" Color Scheme", isOn: $copyColorScheme)
-                            Toggle(" Map Transform", isOn: $copyMapTransform)
-                            Toggle(" Color Bar Range", isOn: $copyColorBarRange)
-                            Toggle(" Map Lighting", isOn: $copyMapLighting).disabled(!lightingEffects)
+                            Toggle(" Projection", isOn: $copyState.projection)
+                            Toggle(" Viewpoint", isOn: $copyState.view)
+                            Toggle(" Color Scheme", isOn: $copyState.palette)
+                            Toggle(" Map Transform", isOn: $copyState.transform)
+                            Toggle(" Color Bar Range", isOn: $copyState.range)
+                            Toggle(" Map Lighting", isOn: $copyState.light).disabled(!lightingEffects)
                         }.padding(.leading, offset)
                     }
-                    Button("Reset") {
-                        copyProjection = true
-                        copyViewpoint = true
-                        copyColorScheme = true
-                        copyMapTransform = true
-                        copyColorBarRange = true
-                        copyMapLighting = false
-                    }.padding(5)
+                    Button("Reset") { copyState = StateMask() }.padding(5)
                 }
                 .padding(corner).overlay(
                     RoundedRectangle(cornerRadius: corner)
