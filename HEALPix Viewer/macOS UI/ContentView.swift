@@ -53,9 +53,18 @@ struct ContentView: View {
     private var progress: Double { Double(completed)/Double(scheduled) }
     
     // view state
+    @Binding var clipboard: ViewState
     @State private var state = ViewState()
     @State private var magnification: Double = 0.0
     
+    // view state preferences
+    @AppStorage(copyProjectionKey) var copyProjection = true
+    @AppStorage(copyViewpointKey) var copyViewpoint = true
+    @AppStorage(copyColorSchemeKey) var copyColorScheme = true
+    @AppStorage(copyMapTransformKey) var copyMapTransform = true
+    @AppStorage(copyColorBarRangeKey) var copyColorBarRange = true
+    @AppStorage(copyMapLightingKey) var copyMapLighting = false
+
     // data range
     @State private var datamin: Double = 0.0
     @State private var datamax: Double = 0.0
@@ -226,6 +235,26 @@ struct ContentView: View {
             switch value {
                 case .open: DispatchQueue.main.async { self.open() }
                 case .save: saving = true
+                case .copyStyle:
+                    clipboard = state
+                case .pasteStyle:
+                    if copyProjection { state.projection = clipboard.projection }
+                    if copyViewpoint { state.view = clipboard.view }
+                    if copyColorScheme { state.palette = clipboard.palette }
+                    if copyMapTransform { state.transform = clipboard.transform }
+                    if copyColorBarRange { state.range = clipboard.range }
+                    if copyMapLighting { state.light = clipboard.light }
+                case .pasteView:
+                    state.projection = clipboard.projection
+                    state.view = clipboard.view
+                case .pasteColor:
+                    state.palette = clipboard.palette
+                    state.transform = clipboard.transform
+                    state.range = clipboard.range
+                case .pasteLight:
+                    state.light = clipboard.light
+                case .pasteAll:
+                    state = clipboard
                 default: break
             }
             

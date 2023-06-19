@@ -27,9 +27,9 @@ struct SettingsView: View {
     
     @AppStorage(copyProjectionKey) var copyProjection = true
     @AppStorage(copyViewpointKey) var copyViewpoint = true
-    @AppStorage(copyColorSchemeKey) var copyColorScheme = false
-    @AppStorage(copyMapTransformKey) var copyMapTransform = false
-    @AppStorage(copyColorBarRangeKey) var copyColorBarRange = false
+    @AppStorage(copyColorSchemeKey) var copyColorScheme = true
+    @AppStorage(copyMapTransformKey) var copyMapTransform = true
+    @AppStorage(copyColorBarRangeKey) var copyColorBarRange = true
     @AppStorage(copyMapLightingKey) var copyMapLighting = false
     
     
@@ -124,9 +124,9 @@ struct SettingsView: View {
                     Button("Reset") {
                         copyProjection = true
                         copyViewpoint = true
-                        copyColorScheme = false
-                        copyMapTransform = false
-                        copyColorBarRange = false
+                        copyColorScheme = true
+                        copyMapTransform = true
+                        copyColorBarRange = true
                         copyMapLighting = false
                     }.padding(5)
                 }
