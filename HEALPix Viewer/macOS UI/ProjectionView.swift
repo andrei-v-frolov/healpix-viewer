@@ -10,7 +10,7 @@ import SwiftUI
 struct ProjectionToolbar: View {
     @Binding var projection: Projection
     @Binding var orientation: Orientation
-    @AppStorage(animateKey) var animate: Bool = true
+    @AppStorage(viewFromInsideKey) var inside: Bool = true
     
     var body: some View {
         HStack {
@@ -35,8 +35,12 @@ struct ProjectionToolbar: View {
                 }
             }
             .frame(width: 190)
-            Spacer().frame(width: 50)
-            Toggle(" Animate rotation", isOn: $animate)
+            Spacer().frame(width: 30)
+            Picker("View From:", selection: $inside) {
+                Text("Inside").tag(true)
+                Text("Outside").tag(false)
+            }
+            .frame(width: 190)
         }
         .padding(.top, 11)
         .padding(.bottom, 11)
