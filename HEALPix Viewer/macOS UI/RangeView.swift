@@ -8,7 +8,6 @@
 import SwiftUI
 
 struct RangeToolbar: View {
-    @Binding var map: Map?
     @Binding var range: Bounds
     @Binding var datamin: Double
     @Binding var datamax: Double
@@ -26,7 +25,7 @@ struct RangeToolbar: View {
                     switch value {
                         case .positive: range.min = 0.0
                         case .symmetric: range.min = -max(abs(range.min), abs(range.max))
-                        case .full: if let map = map { datamin = map.min; range.min = datamin }
+                        case .full: range.min = datamin
                         default: break
                     }
                 }
@@ -58,7 +57,7 @@ struct RangeToolbar: View {
                     switch value {
                         case .negative: range.max = 0.0
                         case .symmetric: range.max = max(abs(range.min), abs(range.max))
-                        case .full: if let map = map { datamax = map.max; range.max = datamax }
+                        case .full: range.max = datamax
                         default: break
                     }
                 }

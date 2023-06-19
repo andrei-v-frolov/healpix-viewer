@@ -148,7 +148,7 @@ struct ContentView: View {
                                 saveAsImage(image, url: url); tmpfiles.append(url)
                                 return NSItemProvider(contentsOf: url) ?? none
                             }
-                            RangeToolbar(map: $map, range: $state.range, datamin: $datamin, datamax: $datamax)
+                            RangeToolbar(range: $state.range, datamin: $datamin, datamax: $datamax)
                         }
                     }
                     .sheet(isPresented: $loading) {
