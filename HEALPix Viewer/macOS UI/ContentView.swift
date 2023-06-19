@@ -257,10 +257,6 @@ struct ContentView: View {
         .task {
             let observers = Observers(); self.observers = observers
             
-            observers.add(key: cursorKey) { old, new in
-                guard let value = new as? Bool else { return }
-                if (!value) { cursor.hover = false }
-            }
             observers.add(key: showColorBarKey) { old, new in
                 guard (window?.isKeyWindow == true) else { return }
                 guard let value = new as? Bool else { return }
@@ -279,9 +275,7 @@ struct ContentView: View {
             observers.add(key: ColorScheme.key) { old, new in
                 guard (window?.isKeyWindow == true) else { return }
                 guard let raw = new as? String, let mode = ColorScheme(rawValue: raw) else { return }
-                withAnimation { toolbar = .color }
-                
-                state.palette.scheme = mode
+                withAnimation { toolbar = .color }; state.palette.scheme = mode
             }
             observers.add(key: DataSource.key) {  old, new in
                 guard (window?.isKeyWindow == true) else { return }

@@ -8,6 +8,7 @@
 - power law and exponential transforms added
 - export as GIF, PNG, HEIF, and 16-bit TIFF format
 - more realistic lighting (Lambert reflection, gamma corrected)
+- code refactored to encapsulate view parameters into a struct
 
 ### Public Release Blocking
 
