@@ -347,7 +347,7 @@ struct FontPreference: RawRepresentable, Preference {
     // initializer wrappers
     public init() { self.nsFont = nil }
     public init(nsFont: NSFont?) { self.nsFont = nsFont }
-    public init(ctFont: NSFont?) { self.nsFont = ctFont }
+    public init(ctFont: CTFont?) { self.ctFont = ctFont }
     public init(rawValue: String) { self.nsFont = NSFont(name: rawValue, size: 0.0) }
     
     // default value
@@ -406,9 +406,9 @@ extension Color: RawRepresentable, Codable, Preference {
             default:
                 guard let i = Int(rawValue, radix: 16) else { self = .defaultValue; return }
                 self = Color(red: Double((i >> 24) & 0xFF)/255.0,
-                             green: Double((i >> 16) & 0xFF)/255.0,
-                             blue: Double((i >> 8) & 0xFF)/255.0,
-                             opacity: Double(i & 0xFF)/255.0)
+                           green: Double((i >> 16) & 0xFF)/255.0,
+                            blue: Double((i >> 8)  & 0xFF)/255.0,
+                         opacity: Double(i & 0xFF)/255.0)
         }
     }
     

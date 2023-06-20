@@ -315,6 +315,7 @@
 		50D29754291C3AAA00E18C08 /* Data */ = {
 			isa = PBXGroup;
 			children = (
+				50D29750291C39AA00E18C08 /* Map.swift */,
 				50C1FBBE2922B7C7009A3C99 /* FitsIO.swift */,
 				500F99B1292553730097695C /* rawmap.h */,
 				500F99B2292553730097695C /* rawmap.c */,
@@ -322,7 +323,6 @@
 				50138E542937026500E8C33B /* ranking.c */,
 				50FC4A0F29380BF800AC5D40 /* quadsort.h */,
 				50FC4A1229380BF800AC5D40 /* quadsort.c */,
-				50D29750291C39AA00E18C08 /* Map.swift */,
 				500F99AE292553720097695C /* Bridging Header.h */,
 			);
 			path = Data;

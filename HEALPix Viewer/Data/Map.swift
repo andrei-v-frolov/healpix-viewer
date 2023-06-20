@@ -25,6 +25,12 @@ protocol Map {
     var texture: MTLTexture { get }
 }
 
+extension Map {
+    // computed properties
+    var npix: Int { return 12*nside*nside }
+    var size: Int { npix * MemoryLayout<Float>.size }
+}
+
 // HEALPix map texture array
 func HPXTexture(nside: Int) -> MTLTexture {
     // texture format
@@ -62,10 +68,6 @@ final class HpxMap: Map {
     let nside: Int
     let data: [Float]
     
-    // computed properties
-    var npix: Int { return 12*nside*nside }
-    var size: Int { npix * MemoryLayout<Float>.size }
-    
     // data bounds
     let min: Double
     let max: Double
@@ -101,10 +103,6 @@ final class CpuMap: Map {
     let ptr: UnsafePointer<Float>
     lazy var idx: UnsafeMutablePointer<Int32> = { UnsafeMutablePointer<Int32>.allocate(capacity: npix) }()
     lazy var data: [Float] = { Array(UnsafeBufferPointer(start: ptr, count: npix)) }()
-    
-    // computed properties
-    var npix: Int { return 12*nside*nside }
-    var size: Int { npix * MemoryLayout<Float>.size }
     
     // data bounds
     let min: Double
@@ -165,10 +163,6 @@ final class GpuMap: Map {
     let id: UUID
     let nside: Int
     let buffer: MTLBuffer
-    
-    // computed properties
-    var npix: Int { return 12*nside*nside }
-    var size: Int { npix * MemoryLayout<Float>.size }
     
     // data bounds
     var min: Double
