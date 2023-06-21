@@ -10,8 +10,6 @@ import MetalKit
 
 // HEALPix map representation
 protocol Map {
-    var id: UUID { get }
-    
     var nside: Int { get }
     var npix: Int { get }
     var size: Int { get }
@@ -64,7 +62,6 @@ func IMGTexture(width: Int, height: Int) -> MTLTexture {
 
 // HEALPix map representation, based on Swift array
 final class HpxMap: Map {
-    let id: UUID
     let nside: Int
     let data: [Float]
     
@@ -87,7 +84,6 @@ final class HpxMap: Map {
     
     // initialize map from array
     init(nside: Int, data: [Float], min: Double? = nil, max: Double? = nil) {
-        self.id = UUID()
         self.nside = nside
         self.data = data
         
@@ -98,7 +94,6 @@ final class HpxMap: Map {
 
 // HEALPix map representation, based on CPU data
 final class CpuMap: Map {
-    let id: UUID
     let nside: Int
     let ptr: UnsafePointer<Float>
     lazy var idx: UnsafeMutablePointer<Int32> = { UnsafeMutablePointer<Int32>.allocate(capacity: npix) }()
@@ -123,7 +118,6 @@ final class CpuMap: Map {
     
     // initialize map from array
     init(nside: Int, buffer: UnsafePointer<Float>, min: Double, max: Double) {
-        self.id = UUID()
         self.nside = nside
         self.ptr = buffer
         
@@ -160,7 +154,6 @@ final class CpuMap: Map {
 
 // HEALPix map representation, based on GPU data
 final class GpuMap: Map {
-    let id: UUID
     let nside: Int
     let buffer: MTLBuffer
     
@@ -180,7 +173,6 @@ final class GpuMap: Map {
     
     // initialize map from buffer
     init(nside: Int, buffer: MTLBuffer, min: Double, max: Double) {
-        self.id = UUID()
         self.nside = nside
         self.buffer = buffer
         

@@ -9,11 +9,7 @@ import SwiftUI
 
 struct TransformToolbar: View {
     @Binding var transform: Transform
-    
-    @Binding var selected: UUID?
-    @Binding var ranked: [UUID: CpuMap]
-    var ranking: Bool { if let id = selected, ranked[id] != nil { return true } else { return false } }
-    
+    @Binding var ranked: Bool
     @Binding var mumin: Double
     @Binding var mumax: Double
     
@@ -40,7 +36,7 @@ struct TransformToolbar: View {
                 Divider()
                 Group {
                     ForEach(Function.cdf, id: \.self) {
-                        Text($0.formula).foregroundColor(ranking ? .primary : .secondary).tag($0)
+                        Text($0.formula).foregroundColor(ranked ? .primary : .secondary).tag($0)
                     }
                 }
             }

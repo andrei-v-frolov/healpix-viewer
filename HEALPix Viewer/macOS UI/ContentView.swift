@@ -39,13 +39,10 @@ struct ContentView: View {
     @State private var map: Map? = nil
     @State private var cdf: [Double]? = nil
     @State private var info: String? = nil
+    @State private var ranked: Bool = false
     @State private var annotation: String = "TEMPERATURE [μK]"
     @AppStorage(annotationFontKey) var font = FontPreference.defaultValue
     @AppStorage(annotationColorKey) var color = Color.defaultValue
-    
-    // computed map cache
-    @State private var ranked: [UUID: CpuMap] = [UUID: CpuMap]()
-    @State private var transformed: [UUID: GpuMap] = [UUID: GpuMap]()
     
     // progress analyzing data
     @State private var scheduled: Int = 0
@@ -119,7 +116,7 @@ struct ContentView: View {
                             ColorToolbar(palette: $state.palette)
                         }
                         if (toolbar == .transform) {
-                            TransformToolbar(transform: $state.transform, selected: $selected, ranked: $ranked, mumin: $mumin, mumax: $mumax)
+                            TransformToolbar(transform: $state.transform, ranked: $ranked, mumin: $mumin, mumax: $mumax)
                         }
                         if (toolbar == .lighting) {
                             LightingToolbar(light: $state.light)
@@ -212,7 +209,7 @@ struct ContentView: View {
         .navigationTitle(title)
         .onChange(of: selected) { value in
             if let map = loaded.first(where: { $0.id == value }) {
-                info = map.info; transform(map.map)
+                info = map.info; transform(map)
                 title = "\(map.name)[\(map.file)]"
                 annotation = "\(map.name) [\(map.unit)]"
                 mumin = map.map.min; mumax = map.map.max
@@ -334,25 +331,26 @@ struct ContentView: View {
             
             // dispatch maps for analysis
             for map in file.list {
-                let map = map.map, n = Double(map.npix), workload = Int(n*log(1+n))
+                let m = map.map, n = Double(m.npix), workload = Int(n*log(1+n))
                 scheduled += workload; analysisQueue.async {
-                    map.index(); if (map.id == selected) { cdf = map.cdf?.map { state.transform.eval($0) } }
-                    ranked[map.id] = map.ranked(); if Function.cdf.contains(state.transform.f) { transform() }
-                    completed += workload
+                    m.index(); map.ranked = m.ranked(); transform(); completed += workload
                 }
             }
         }
     }
     
-    // load map to view
+    // load map data to view
     func load(_ map: Map) {
         let later = colorbar && (state.range.min != map.min || state.range.max != map.max)
         
-        self.map = map; self.cdf = map.cdf
+        self.map = map
+        self.cdf = map.cdf
+        self.datamin = map.min
+        self.datamax = map.max
         
         state.range.mode = .full
-        datamin = map.min; state.range.min = datamin
-        datamax = map.max; state.range.max = datamax
+        state.range.min = datamin
+        state.range.max = datamax
         
         if !later { colorize(self.map) }
     }
@@ -365,14 +363,16 @@ struct ContentView: View {
     }
     
     // transform map with current settings
-    func transform(_ map: Map? = nil) {
-        guard let map = map ?? loaded.first(where: { $0.id == selected })?.map else { return }
+    func transform(_ map: MapData? = nil, id: UUID? = nil) {
+        guard let map = map ?? loaded.first(where: { $0.id == id ?? selected }) else { return }
+        
+        ranked = map.ranked != nil
         
         switch state.transform.f {
-            case .none: load(map)
-            case .equalize: if let map = ranked[map.id] { load(map) }
-            case .normalize: if let map = ranked[map.id], let output = transformer.apply(map: map, transform: state.transform, recycle: transformed[map.id]) { transformed[map.id] = output; load(output) }
-            default: if let output = transformer.apply(map: map, transform: state.transform, recycle: transformed[map.id]) { transformed[map.id] = output; load(output) }
+            case .none: load(map.map)
+            case .equalize: if let ranked = map.ranked { load(ranked) }
+            case .normalize: if let ranked = map.ranked, let output = transformer.apply(map: ranked, transform: state.transform, recycle: map.buffer) { map.buffer = output; load(output) }
+            default: if let output = transformer.apply(map: map.map, transform: state.transform, recycle: map.buffer) { map.buffer = output; load(output) }
         }
     }
     

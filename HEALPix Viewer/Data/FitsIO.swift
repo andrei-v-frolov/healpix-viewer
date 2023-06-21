@@ -401,7 +401,7 @@ func read_hpxfile(url: URL) -> HpxFile? {
         var desc = "CHANNEL \(m)"; if let t = metadata[m]?[.type], case let .string(s) = t { desc = s }
         var unit = "UNKNOWN";      if let u = metadata[m]?[.unit], case let .string(s) = u { unit = s }
         
-        list.append(MapData(id: map[m].id, file: name, info: info, name: desc, unit: unit, channel: m, map: map[m]))
+        list.append(MapData(file: name, info: info, name: desc, unit: unit, channel: m, map: map[m]))
     }
     
     return HpxFile(url: url, name: name, nmaps: nmaps, header: info, card: card, map: map, list: list, metadata: metadata, channel: index)

@@ -7,8 +7,9 @@
 
 import SwiftUI
 
-struct MapData: Identifiable {
-    let id: UUID
+final class MapData: Identifiable {
+    let id = UUID()
+    
     let file: String
     let info: String
     let name: String
@@ -16,6 +17,17 @@ struct MapData: Identifiable {
     let channel: Int
     
     let map: CpuMap
+    var ranked: CpuMap? = nil
+    var buffer: GpuMap? = nil
+    
+    init(file: String, info: String, name: String, unit: String, channel: Int, map: CpuMap) {
+        self.file = file
+        self.info = info
+        self.name = name
+        self.unit = unit
+        self.channel = channel
+        self.map = map
+    }
 }
 
 struct NavigationRow: View {
