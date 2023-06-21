@@ -284,6 +284,7 @@
 		508D56CA29131C2D0099C3A0 /* Colormaps */ = {
 			isa = PBXGroup;
 			children = (
+				50F1F27729134E2500FBF00D /* Colormap.swift */,
 				508D56C629131C270099C3A0 /* Planck Parchment.swift */,
 				508D56CD29131D530099C3A0 /* Planck FreqMap.swift */,
 				500338E82A3D8FBD001EC910 /* Python Difference.swift */,
@@ -293,7 +294,6 @@
 				508D56D529131F050099C3A0 /* HEALPix Cold.swift */,
 				508D56D729131F7E0099C3A0 /* HEALPix GRV.swift */,
 				508D56D929131FBA0099C3A0 /* HEALPix BGRY.swift */,
-				50F1F27729134E2500FBF00D /* Colormap.swift */,
 			);
 			path = Colormaps;
 			sourceTree = "<group>";

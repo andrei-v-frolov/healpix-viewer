@@ -194,16 +194,16 @@ struct ColorMapper {
     // compute pipeline
     let shader = MetalKernel(kernel: "colorize")
     let queue: MTLCommandQueue
-    let buffers: [MTLBuffer]
+    let buffer: (color: MTLBuffer, range: MTLBuffer)
     
     init() {
         guard let device = MTLCreateSystemDefaultDevice(),
-              let colors = device.makeBuffer(length: MemoryLayout<float3x4>.size),
+              let color = device.makeBuffer(length: MemoryLayout<float3x4>.size),
               let range = device.makeBuffer(length: MemoryLayout<float2>.size),
               let queue = device.makeCommandQueue()
               else { fatalError("Metal Framework could not be initalized") }
         
-        self.buffers = [colors, range]
+        self.buffer = (color, range)
         self.queue = queue
     }
     
@@ -211,13 +211,13 @@ struct ColorMapper {
         let colors = float3x4(color.min.components, color.max.components, color.nan.components)
         let range = float2(Float(range.min), Float(range.max))
         
-        buffers[0].contents().storeBytes(of: colors, as: float3x4.self)
-        buffers[1].contents().storeBytes(of: range, as: float2.self)
+        buffer.color.contents().storeBytes(of: colors, as: float3x4.self)
+        buffer.range.contents().storeBytes(of: range, as: float2.self)
         
         // initialize compute command buffer
         guard let command = queue.makeCommandBuffer() else { return }
         
-        shader.encode(command: command, buffers: [map.buffer, buffers[0], buffers[1]], textures: [color.scheme.colormap.texture, map.texture], threadsPerGrid: MTLSize(width: map.nside, height: map.nside, depth: 12))
+        shader.encode(command: command, buffers: [map.buffer, buffer.color, buffer.range], textures: [color.scheme.colormap.texture, map.texture], threadsPerGrid: MTLSize(width: map.nside, height: map.nside, depth: 12))
         command.commit()
     }
 }
@@ -264,8 +264,9 @@ struct DataTransformer {
         
         if (transform.f == .normalize) {
             let sqrt2 = 1.414213562373095048801688724209698078569671875377
-            output.min = sqrt2 * erfinv(2.0/Double(map.npix-1)-1.0)
-            output.max = sqrt2 * erfinv(2.0 * Double(map.npix-2)/Double(map.npix-1)-1.0)
+            let delta = 2.0/Double(map.npix-1)
+            output.min = sqrt2 * erfinv(delta - 1.0)
+            output.max = sqrt2 * erfinv(Double(map.npix-2)*delta - 1.0)
         } else {
             output.min = transform.eval(map.min)
             output.max = transform.eval(map.max)
