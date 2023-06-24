@@ -142,7 +142,7 @@ struct SettingsView: View {
                             ForEach(Interpolation.allCases, id: \.self) {
                                 Text($0.rawValue).tag($0)
                             }
-                        }.frame(width: 150)
+                        }.frame(width: 150).disabled(true)
                     }
                     Text("Balance render quality with memory footprint and performance").font(.footnote)
                 }.padding(corner).frame(width: 380).overlay(
