@@ -32,7 +32,7 @@ extension Map {
 // HEALPix map texture array
 func HPXTexture(nside: Int) -> MTLTexture {
     // texture format
-    let desc = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: MTLPixelFormat.rgba32Float, width: nside, height: nside, mipmapped: false)
+    let desc = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: TextureFormat.value.pixel, width: nside, height: nside, mipmapped: false)
     
     desc.textureType = MTLTextureType.type2DArray
     desc.usage = [.shaderWrite, .shaderRead]

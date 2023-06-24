@@ -22,6 +22,9 @@ struct SettingsView: View {
     @AppStorage(copyStateKey) var copyState = StateMask()
     
     
+    // performance tab
+    @AppStorage(TextureFormat.key) var texture = TextureFormat.defaultValue
+    @AppStorage(Interpolation.key) var interpolation = Interpolation.defaultValue
     @State private var xxx = "CMB Viewer"
     
     // view styling parameters
@@ -124,18 +127,25 @@ struct SettingsView: View {
                     }.frame(width: 190)
                     Text("Currently running on XXX").padding(10)
                     Text("Restart HEALPix Viewer to make GPU choice effective").font(.footnote)
-                }.padding(corner).frame(width: 320).overlay(
+                }.padding(corner).frame(width: 380).overlay(
                     RoundedRectangle(cornerRadius: corner)
                     .stroke(Color.secondary.opacity(0.2), lineWidth: 1)
                 )
                 VStack {
-                    Picker("Color precision:", selection: $xxx) {
-                        Text("Chocolate")
-                        Text("Vanilla")
-                        Text("Strawberry")
-                    }.frame(width: 190)
-                    Text("Balance render quality with memory footprint").font(.footnote)
-                }.padding(corner).frame(width: 320).overlay(
+                    HStack {
+                        Picker("Precision:", selection: $texture) {
+                            ForEach(TextureFormat.allCases, id: \.self) {
+                                Text($0.rawValue).tag($0)
+                            }
+                        }.frame(width: 180)
+                        Picker("", selection: $interpolation) {
+                            ForEach(Interpolation.allCases, id: \.self) {
+                                Text($0.rawValue).tag($0)
+                            }
+                        }.frame(width: 150)
+                    }
+                    Text("Balance render quality with memory footprint and performance").font(.footnote)
+                }.padding(corner).frame(width: 380).overlay(
                     RoundedRectangle(cornerRadius: corner)
                     .stroke(Color.secondary.opacity(0.2), lineWidth: 1)
                 )
@@ -148,7 +158,7 @@ struct SettingsView: View {
                         Text("xxx")
                     }.frame(width: 190)
                     Text("Increase responsiveness of parameter adjustments").font(.footnote)
-                }.padding(corner).frame(width: 320).overlay(
+                }.padding(corner).frame(width: 380).overlay(
                     RoundedRectangle(cornerRadius: corner)
                     .stroke(Color.secondary.opacity(0.2), lineWidth: 1)
                 )

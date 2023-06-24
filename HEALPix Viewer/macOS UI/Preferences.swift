@@ -47,6 +47,42 @@ enum Appearance: String, CaseIterable, Codable, Preference {
     }
 }
 
+// rendering precision
+enum TextureFormat: String, CaseIterable, Codable, Preference {
+    case uint8 = "8-bit integer"
+    case uint10 = "10-bit integer"
+    case uint16 = "16-bit integer"
+    case float16 = "16-bit float"
+    case float32 = "32-bit float"
+    
+    // default value
+    static let key = "pixel"
+    static let defaultValue: Self = .uint8
+    
+    // backing texture format
+    var pixel: MTLPixelFormat {
+        switch self {
+            case .uint8: return .rgba8Unorm
+            case .uint10: return .rgb10a2Unorm
+            case .uint16: return .rgba16Uint
+            case .float16: return .rgba16Float
+            case .float32: return .rgba32Float
+        }
+    }
+}
+
+// interpolation strategy
+enum Interpolation: String, CaseIterable, Codable, Preference {
+    case none = "nearest neighbour"
+    case linear = "linear interpolation"
+    case lod = "full anti-aliasing"
+    
+    // default value
+    static let key = "interpolation"
+    static let defaultValue: Self = .none
+}
+
+// output image format
 enum ImageFormat: String, CaseIterable, Codable, Preference {
     case gif = "GIF"
     case png = "PNG"
