@@ -68,7 +68,7 @@ struct SettingsView: View {
                         Text("Drag & drop map with")
                         Toggle("color bar", isOn: $dragColorBar)
                         Toggle("annotation", isOn: $dragAnnotation).disabled(!dragColorBar)
-                    }
+                    }.disabled(true)
                 }.padding(corner).frame(width: 380).overlay(
                     RoundedRectangle(cornerRadius: corner)
                         .stroke(Color.secondary.opacity(0.2), lineWidth: 1)
