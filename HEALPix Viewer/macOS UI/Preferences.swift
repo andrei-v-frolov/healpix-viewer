@@ -82,6 +82,15 @@ enum Interpolation: String, CaseIterable, Codable, Preference {
     static let defaultValue: Self = .none
 }
 
+// proxy map size
+enum ProxySize: String, CaseIterable, Codable, Preference {
+    case none = "None"
+    
+    // default value
+    static let key = "proxy"
+    static let defaultValue: Self = .none
+}
+
 // output image format
 enum ImageFormat: String, CaseIterable, Codable, Preference {
     case gif = "GIF"

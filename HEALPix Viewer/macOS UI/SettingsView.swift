@@ -25,6 +25,7 @@ struct SettingsView: View {
     // performance tab
     @AppStorage(TextureFormat.key) var texture = TextureFormat.defaultValue
     @AppStorage(Interpolation.key) var interpolation = Interpolation.defaultValue
+    @AppStorage(ProxySize.key) var proxy = ProxySize.defaultValue
     @State private var xxx = "CMB Viewer"
     
     // view styling parameters
@@ -150,13 +151,11 @@ struct SettingsView: View {
                     .stroke(Color.secondary.opacity(0.2), lineWidth: 1)
                 )
                 VStack {
-                    Picker("Proxy map size:", selection: $xxx) {
-                        Text("Chocolate")
-                        Text("Vanilla")
-                        Text("Strawberry")
-                        Divider()
-                        Text("xxx")
-                    }.frame(width: 190)
+                    Picker("Proxy map size:", selection: $proxy) {
+                        ForEach(ProxySize.allCases, id: \.self) {
+                            Text($0.rawValue).tag($0)
+                        }
+                    }.frame(width: 190).disabled(true)
                     Text("Increase responsiveness of parameter adjustments").font(.footnote)
                 }.padding(corner).frame(width: 380).overlay(
                     RoundedRectangle(cornerRadius: corner)
