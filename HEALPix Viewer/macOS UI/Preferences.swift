@@ -238,10 +238,10 @@ enum ColorScheme: String, CaseIterable, Codable, Preference {
     case planck = "Planck"
     case cmb = "HEALPix"
     case diff = "Difference"
+    case freq = "Frequency Map"
     case grey = "Greyscale"
     case hot = "Hot"
     case cold = "Cold"
-    case freq = "Frequency Map"
     case grv = "GRV"
     case bgry = "BGRY"
     
@@ -255,10 +255,10 @@ enum ColorScheme: String, CaseIterable, Codable, Preference {
             case .planck:   return Colormap.planck
             case .cmb:      return Colormap.cmb
             case .diff:     return Colormap.diff
+            case .freq:     return Colormap.freq
             case .grey:     return Colormap.grey
             case .hot:      return Colormap.hot
             case .cold:     return Colormap.cold
-            case .freq:     return Colormap.freq
             case .grv:      return Colormap.GRV
             case .bgry:     return Colormap.BGRY
         }
