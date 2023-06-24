@@ -35,6 +35,7 @@ func HPXTexture(nside: Int) -> MTLTexture {
     let desc = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: TextureFormat.value.pixel, width: nside, height: nside, mipmapped: false)
     
     desc.textureType = MTLTextureType.type2DArray
+    desc.storageMode = .private
     desc.usage = [.shaderWrite, .shaderRead]
     desc.arrayLength = 12
     
