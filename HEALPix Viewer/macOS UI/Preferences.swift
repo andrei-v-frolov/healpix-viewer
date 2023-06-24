@@ -64,7 +64,7 @@ enum TextureFormat: String, CaseIterable, Codable, Preference {
         switch self {
             case .uint8: return .rgba8Unorm
             case .uint10: return .rgb10a2Unorm
-            case .uint16: return .rgba16Uint
+            case .uint16: return .rgba16Unorm
             case .float16: return .rgba16Float
             case .float32: return .rgba32Float
         }
