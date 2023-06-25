@@ -60,8 +60,9 @@ class ColorbarView: MTKView {
         super.awakeFromNib()
         
         // initialize compute pipeline
-        guard let transform = metal.device.makeBuffer(length: MemoryLayout<float3x2>.size),
-              let bgcolor = metal.device.makeBuffer(length: MemoryLayout<float4>.size)
+        let options: MTLResourceOptions = [.cpuCacheModeWriteCombined, .storageModeShared]
+        guard let transform = metal.device.makeBuffer(length: MemoryLayout<float3x2>.size, options: options),
+              let bgcolor = metal.device.makeBuffer(length: MemoryLayout<float4>.size, options: options)
               else { fatalError("Could not allocate parameter buffers in colorbar view") }
         
         self.device = metal.device

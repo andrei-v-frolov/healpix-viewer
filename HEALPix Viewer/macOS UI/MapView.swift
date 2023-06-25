@@ -148,10 +148,11 @@ class ProjectedView: MTKView {
         super.awakeFromNib()
         
         // initialize compute pipeline
-        guard let transform = metal.device.makeBuffer(length: MemoryLayout<float3x2>.size),
-              let rotation = metal.device.makeBuffer(length: MemoryLayout<float3x3>.size),
-              let bgcolor = metal.device.makeBuffer(length: MemoryLayout<float4>.size),
-              let light = metal.device.makeBuffer(length: MemoryLayout<float4>.size)
+        let options: MTLResourceOptions = [.cpuCacheModeWriteCombined, .storageModeShared]
+        guard let transform = metal.device.makeBuffer(length: MemoryLayout<float3x2>.size, options: options),
+              let rotation = metal.device.makeBuffer(length: MemoryLayout<float3x3>.size, options: options),
+              let bgcolor = metal.device.makeBuffer(length: MemoryLayout<float4>.size, options: options),
+              let light = metal.device.makeBuffer(length: MemoryLayout<float4>.size, options: options)
               else { fatalError("Could not allocate parameter buffers in map view") }
         
         self.device = metal.device
@@ -161,8 +162,8 @@ class ProjectedView: MTKView {
         framebufferOnly = false
         
         // respond to mouse movement events
-        let options: NSTrackingArea.Options = [.mouseMoved, .cursorUpdate, .activeInKeyWindow, .inVisibleRect]
-        self.addTrackingArea(NSTrackingArea.init(rect: .zero, options: options, owner: self, userInfo: nil))
+        let tracking: NSTrackingArea.Options = [.mouseMoved, .cursorUpdate, .activeInKeyWindow, .inVisibleRect]
+        self.addTrackingArea(NSTrackingArea.init(rect: .zero, options: tracking, owner: self, userInfo: nil))
     }
     
     // MARK: render image in Metal view

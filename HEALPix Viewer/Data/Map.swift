@@ -185,8 +185,9 @@ struct ColorMapper {
     let buffer: (color: MTLBuffer, range: MTLBuffer)
     
     init() {
-        guard let color = metal.device.makeBuffer(length: MemoryLayout<float3x4>.size),
-              let range = metal.device.makeBuffer(length: MemoryLayout<float2>.size)
+        let options: MTLResourceOptions = [.cpuCacheModeWriteCombined, .storageModeShared]
+        guard let color = metal.device.makeBuffer(length: MemoryLayout<float3x4>.size, options: options),
+              let range = metal.device.makeBuffer(length: MemoryLayout<float2>.size, options: options)
               else { fatalError("Could not allocate parameter buffers in color mapper") }
         
         self.buffer = (color, range)
@@ -223,7 +224,8 @@ struct DataTransformer {
     let buffer: MTLBuffer
     
     init() {
-        guard let params = metal.device.makeBuffer(length: MemoryLayout<float2>.size)
+        let options: MTLResourceOptions = [.cpuCacheModeWriteCombined, .storageModeShared]
+        guard let params = metal.device.makeBuffer(length: MemoryLayout<float2>.size, options: options)
               else { fatalError("Could not allocate parameter buffers in data transformer") }
         
         self.buffer = params
