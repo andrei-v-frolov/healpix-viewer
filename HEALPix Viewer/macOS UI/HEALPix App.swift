@@ -74,12 +74,10 @@ class AppStorageObserver: NSObject {
 }
 
 // unique observer container for SwiftUI views
-class Observers {
+final class Observers {
     var registered = [String: AppStorageObserver]()
     
     func add(key: String, onChange: @escaping (Any, Any) -> Void) {
-        if registered[key] != nil { return }
-        
-        registered[key] = AppStorageObserver(key: key, onChange: onChange)
+        registered.updateValue(AppStorageObserver(key: key, onChange: onChange), forKey: key)
     }
 }
