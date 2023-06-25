@@ -15,6 +15,20 @@ extension UTType {
 // list of temporary files to clean up
 var tmpfiles = [URL]()
 
+// fatal error panel
+func abort(_ message: String) -> Never {
+    let alert = NSAlert()
+    
+    alert.alertStyle = .critical
+    alert.messageText = "Fatal Error"
+    alert.informativeText = message
+    alert.addButton(withTitle: "Exit")
+    alert.runModal()
+    
+    NSApplication.shared.terminate(nil)
+    fatalError(message)
+}
+
 // show modal Open File panel
 func showOpenPanel() -> URL? {
     let panel = NSOpenPanel()

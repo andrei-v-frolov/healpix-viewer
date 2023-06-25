@@ -40,9 +40,8 @@ func HPXTexture(nside: Int) -> MTLTexture {
     desc.arrayLength = 12
     
     // initialize compute pipeline
-    guard let device = MTLCreateSystemDefaultDevice(),
-          let texture = device.makeTexture(descriptor: desc)
-          else { fatalError("Metal Framework could not be initalized") }
+    guard let texture = metal.device.makeTexture(descriptor: desc)
+          else { fatalError("Could not allocate map texture") }
     
     return texture
 }
@@ -54,9 +53,8 @@ func IMGTexture(width: Int, height: Int) -> MTLTexture {
     desc.usage = [.shaderWrite, .shaderRead]
     
     // initialize compute pipeline
-    guard let device = MTLCreateSystemDefaultDevice(),
-          let texture = device.makeTexture(descriptor: desc)
-          else { fatalError("Metal Framework could not be initalized") }
+    guard let texture = metal.device.makeTexture(descriptor: desc)
+          else { fatalError("Could not allocate image texture") }
     
     return texture
 }
@@ -73,9 +71,8 @@ final class HpxMap: Map {
     
     // Metal buffer containing map data
     lazy var buffer: MTLBuffer = {
-        guard let device = MTLCreateSystemDefaultDevice(),
-              let buffer = (data.withUnsafeBytes { device.makeBuffer(bytes: $0.baseAddress!, length: size) })
-              else { fatalError("Metal Framework could not be initalized") }
+        guard let buffer = (data.withUnsafeBytes { metal.device.makeBuffer(bytes: $0.baseAddress!, length: size) })
+              else { fatalError("Could not allocate map buffer") }
         
         return buffer
     }()
@@ -107,9 +104,8 @@ final class CpuMap: Map {
     
     // Metal buffer containing map data
     lazy var buffer: MTLBuffer = {
-        guard let device = MTLCreateSystemDefaultDevice(),
-              let buffer = device.makeBuffer(bytes: ptr, length: size)
-              else { fatalError("Metal Framework could not be initalized") }
+        guard let buffer = metal.device.makeBuffer(bytes: ptr, length: size)
+              else { fatalError("Could not allocate map buffer") }
         
         return buffer
     }()
@@ -186,18 +182,14 @@ final class GpuMap: Map {
 struct ColorMapper {
     // compute pipeline
     let shader = MetalKernel(kernel: "colorize")
-    let queue: MTLCommandQueue
     let buffer: (color: MTLBuffer, range: MTLBuffer)
     
     init() {
-        guard let device = MTLCreateSystemDefaultDevice(),
-              let color = device.makeBuffer(length: MemoryLayout<float3x4>.size),
-              let range = device.makeBuffer(length: MemoryLayout<float2>.size),
-              let queue = device.makeCommandQueue()
-              else { fatalError("Metal Framework could not be initalized") }
+        guard let color = metal.device.makeBuffer(length: MemoryLayout<float3x4>.size),
+              let range = metal.device.makeBuffer(length: MemoryLayout<float2>.size)
+              else { fatalError("Could not allocate parameter buffers in color mapper") }
         
         self.buffer = (color, range)
-        self.queue = queue
     }
     
     func colorize(map: Map, color: Palette, range: Bounds) {
@@ -208,7 +200,7 @@ struct ColorMapper {
         buffer.range.contents().storeBytes(of: range, as: float2.self)
         
         // initialize compute command buffer
-        guard let command = queue.makeCommandBuffer() else { return }
+        guard let command = metal.queue.makeCommandBuffer() else { return }
         
         shader.encode(command: command, buffers: [map.buffer, buffer.color, buffer.range], textures: [color.scheme.colormap.texture, map.texture], threadsPerGrid: MTLSize(width: map.nside, height: map.nside, depth: 12))
         command.commit()
@@ -218,10 +210,6 @@ struct ColorMapper {
 // data transformer applies a poitwise function to a map
 struct DataTransformer {
     // compute pipeline
-    let device: MTLDevice
-    let buffer: MTLBuffer
-    let queue: MTLCommandQueue
-    
     let shaders: [Function: MetalKernel] = [
         .log:       MetalKernel(kernel: "log_transform"),
         .asinh:     MetalKernel(kernel: "asinh_transform"),
@@ -232,21 +220,19 @@ struct DataTransformer {
         .normalize: MetalKernel(kernel: "norm_transform")
     ]
     
+    let buffer: MTLBuffer
+    
     init() {
-        guard let device = MTLCreateSystemDefaultDevice(),
-              let params = device.makeBuffer(length: MemoryLayout<float2>.size),
-              let queue = device.makeCommandQueue()
-              else { fatalError("Metal Framework could not be initalized") }
+        guard let params = metal.device.makeBuffer(length: MemoryLayout<float2>.size)
+              else { fatalError("Could not allocate parameter buffers in data transformer") }
         
-        self.device = device
         self.buffer = params
-        self.queue = queue
     }
     
     func apply(map: Map, transform: Transform, recycle: GpuMap? = nil) -> GpuMap? {
         guard let shader = shaders[transform.f],
-              let buffer = recycle?.buffer ?? device.makeBuffer(length: map.size),
-              let command = queue.makeCommandBuffer() else { return nil }
+              let buffer = recycle?.buffer ?? metal.device.makeBuffer(length: map.size),
+              let command = metal.queue.makeCommandBuffer() else { return nil }
         
         let output = recycle ?? GpuMap(nside: map.nside, buffer: buffer, min: 0.0, max: 0.0)
         let params = float2(Float(transform.mu), Float(exp(transform.sigma)))

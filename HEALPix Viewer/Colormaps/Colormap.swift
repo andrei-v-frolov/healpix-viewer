@@ -32,9 +32,8 @@ final class Colormap {
         desc.usage = MTLTextureUsage.shaderRead
         
         // initialize compute pipeline
-        guard let device = MTLCreateSystemDefaultDevice(),
-              let texture = device.makeTexture(descriptor: desc)
-              else { fatalError("Metal Framework could not be initalized") }
+        guard let texture = metal.device.makeTexture(descriptor: desc)
+              else { fatalError("Could not allocate color map texture") }
         
         // load texture contents
         lut.withUnsafeBytes { data in texture.replace(region: MTLRegionMake1D(0, lut.count), mipmapLevel: 0, withBytes: data.baseAddress!, bytesPerRow: size) }

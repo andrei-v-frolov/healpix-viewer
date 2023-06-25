@@ -397,9 +397,7 @@ struct ContentView: View {
         }
         
         if (colorbar || oversampling > 1) {
-            guard let device = MTLCreateSystemDefaultDevice(),
-                  let queue = device.makeCommandQueue(),
-                  let command = queue.makeCommandBuffer() else { return nil }
+            guard let command = metal.queue.makeCommandBuffer() else { return nil }
             
             // render colorbar and copy it in
             if (colorbar) {
@@ -415,7 +413,7 @@ struct ContentView: View {
             
             // scale down oversampled texture
             if (oversampling > 1) {
-                let scaler = MPSImageLanczosScale(device: device)
+                let scaler = MPSImageLanczosScale(device: metal.device)
                 let input = MPSImage(texture: texture, featureChannels: 4)
                 let output = MPSImage(texture: output, featureChannels: 4)
                 

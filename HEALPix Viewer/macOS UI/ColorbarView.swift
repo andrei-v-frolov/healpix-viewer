@@ -32,7 +32,6 @@ struct BarView: NSViewRepresentable {
 // MARK: Metal renderer for color bar
 class ColorbarView: MTKView {
     // MARK: compute pipeline
-    var queue: MTLCommandQueue! = nil
     var buffers = [MTLBuffer]()
     
     // MARK: colorbar shader
@@ -61,14 +60,11 @@ class ColorbarView: MTKView {
         super.awakeFromNib()
         
         // initialize compute pipeline
-        guard let device = MTLCreateSystemDefaultDevice(),
-              let transform = device.makeBuffer(length: MemoryLayout<float3x2>.size),
-              let bgcolor = device.makeBuffer(length: MemoryLayout<float4>.size),
-              let queue = device.makeCommandQueue()
-              else { fatalError("Metal Framework could not be initalized") }
+        guard let transform = metal.device.makeBuffer(length: MemoryLayout<float3x2>.size),
+              let bgcolor = metal.device.makeBuffer(length: MemoryLayout<float4>.size)
+              else { fatalError("Could not allocate parameter buffers in colorbar view") }
         
-        self.device = device
-        self.queue = queue
+        self.device = metal.device
         self.buffers = [transform, bgcolor]
         
         layer?.isOpaque = false
@@ -81,7 +77,7 @@ class ColorbarView: MTKView {
         guard currentRenderPassDescriptor != nil, let drawable = currentDrawable else { return }
         
         // initialize compute command buffer
-        guard let command = queue.makeCommandBuffer() else { return }
+        guard let command = metal.queue.makeCommandBuffer() else { return }
         
         // encode render command to drawable
         encode(command, to: drawable.texture)
@@ -103,7 +99,7 @@ class ColorbarView: MTKView {
         let transform = transform(width: Double(texture.width), height: Double(texture.height), padding: 0.0)
         
         // initialize compute command buffer
-        guard let command = queue.makeCommandBuffer() else { return }
+        guard let command = metal.queue.makeCommandBuffer() else { return }
         
         // encode render command
         encode(command, to: texture, transform: transform)

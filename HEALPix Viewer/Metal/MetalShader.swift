@@ -64,13 +64,12 @@ struct MetalKernel: MetalShader {
     
     // main initializer
     init(kernel: String, device provided: MTLDevice? = nil) {
-        guard let device = provided ?? MTLCreateSystemDefaultDevice()
-            else { fatalError("Metal Framework could not be initalized") }
+        let device = provided ?? metal.device
         
         guard let library = device.makeDefaultLibrary(),
-            let function = library.makeFunction(name: kernel),
-            let state = try? device.makeComputePipelineState(function: function)
-            else { fatalError("Unable to create pipeline state for kernel function \(kernel)") }
+              let function = library.makeFunction(name: kernel),
+              let state = try? device.makeComputePipelineState(function: function)
+              else { fatalError("Unable to create pipeline state for kernel \(kernel)()") }
         
         // compute pipeline
         self.name = kernel

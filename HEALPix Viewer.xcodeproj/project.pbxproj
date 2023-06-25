@@ -49,6 +49,7 @@
 		50BFB1F22A397C1400EA8160 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50BFB1F12A397C1400EA8160 /* SettingsView.swift */; };
 		50C1FBBF2922B7C7009A3C99 /* FitsIO.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C1FBBE2922B7C7009A3C99 /* FitsIO.swift */; };
 		50C513132907DFDC00BB6B51 /* OrientationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C513122907DFDC00BB6B51 /* OrientationView.swift */; };
+		50C8AE8A2A47A73700EB9B1B /* MetalDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C8AE892A47A73700EB9B1B /* MetalDevice.swift */; };
 		50D29751291C39AA00E18C08 /* Map.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50D29750291C39AA00E18C08 /* Map.swift */; };
 		50ECD2B028FF2A9C0008F915 /* Menus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50ECD2AF28FF2A9C0008F915 /* Menus.swift */; };
 		50ECD2B228FF31260008F915 /* Toolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50ECD2B128FF31260008F915 /* Toolbar.swift */; };
@@ -145,6 +146,7 @@
 		50BFB1F12A397C1400EA8160 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 		50C1FBBE2922B7C7009A3C99 /* FitsIO.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FitsIO.swift; sourceTree = "<group>"; };
 		50C513122907DFDC00BB6B51 /* OrientationView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OrientationView.swift; sourceTree = "<group>"; };
+		50C8AE892A47A73700EB9B1B /* MetalDevice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetalDevice.swift; sourceTree = "<group>"; };
 		50CB1444290B03B0006D59FA /* Shaders.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Shaders.metal; sourceTree = "<group>"; };
 		50D29750291C39AA00E18C08 /* Map.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Map.swift; sourceTree = "<group>"; };
 		50ECD2AF28FF2A9C0008F915 /* Menus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Menus.swift; sourceTree = "<group>"; };
@@ -308,6 +310,7 @@
 				50CB1444290B03B0006D59FA /* Shaders.metal */,
 				50563E5A2901E38F00B316CA /* Kernels.metal */,
 				50563E582901E19A00B316CA /* MetalShader.swift */,
+				50C8AE892A47A73700EB9B1B /* MetalDevice.swift */,
 			);
 			path = Metal;
 			sourceTree = "<group>";
@@ -461,6 +464,7 @@
 				50F1F27829134E2500FBF00D /* Colormap.swift in Sources */,
 				508910B2291B077E00E33CB6 /* ColorbarView.swift in Sources */,
 				50138E552937026500E8C33B /* ranking.c in Sources */,
+				50C8AE8A2A47A73700EB9B1B /* MetalDevice.swift in Sources */,
 				508D56D629131F050099C3A0 /* HEALPix Cold.swift in Sources */,
 				508D56D429131EB80099C3A0 /* HEALPix Hot.swift in Sources */,
 				508BBA8D28FF2764004B1A9C /* ContentView.swift in Sources */,

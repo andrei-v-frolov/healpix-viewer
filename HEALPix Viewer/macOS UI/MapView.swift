@@ -61,7 +61,6 @@ class ProjectedView: MTKView {
     var mapview: MapView? = nil
     
     // MARK: compute pipeline
-    var queue: MTLCommandQueue! = nil
     var buffers = [MTLBuffer]()
     
     // MARK: projection shaders
@@ -149,16 +148,13 @@ class ProjectedView: MTKView {
         super.awakeFromNib()
         
         // initialize compute pipeline
-        guard let device = MTLCreateSystemDefaultDevice(),
-              let transform = device.makeBuffer(length: MemoryLayout<float3x2>.size),
-              let rotation = device.makeBuffer(length: MemoryLayout<float3x3>.size),
-              let bgcolor = device.makeBuffer(length: MemoryLayout<float4>.size),
-              let light = device.makeBuffer(length: MemoryLayout<float4>.size),
-              let queue = device.makeCommandQueue()
-              else { fatalError("Metal Framework could not be initalized") }
+        guard let transform = metal.device.makeBuffer(length: MemoryLayout<float3x2>.size),
+              let rotation = metal.device.makeBuffer(length: MemoryLayout<float3x3>.size),
+              let bgcolor = metal.device.makeBuffer(length: MemoryLayout<float4>.size),
+              let light = metal.device.makeBuffer(length: MemoryLayout<float4>.size)
+              else { fatalError("Could not allocate parameter buffers in map view") }
         
-        self.device = device
-        self.queue = queue
+        self.device = metal.device
         self.buffers = [transform, rotation, bgcolor, light]
         
         layer?.isOpaque = false
@@ -178,7 +174,7 @@ class ProjectedView: MTKView {
         if (animate) { step6(dt, steps: 3); rotation = gen2rot(w) }
         
         // initialize compute command buffer
-        guard let command = queue.makeCommandBuffer() else { return }
+        guard let command = metal.queue.makeCommandBuffer() else { return }
         
         // encode render command to drawable
         encode(command, to: drawable.texture)
@@ -211,7 +207,7 @@ class ProjectedView: MTKView {
         let transform = transform(width: Double(texture.width), height: Double(texture.height), padding: 0.0, anchor: anchor, flipy: false, shiftx: shift.x, shifty: shift.y)
         
         // initialize compute command buffer
-        guard let command = queue.makeCommandBuffer() else { return }
+        guard let command = metal.queue.makeCommandBuffer() else { return }
         
         // encode render command
         encode(command, to: texture, transform: transform)

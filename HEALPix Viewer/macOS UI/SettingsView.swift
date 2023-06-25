@@ -26,7 +26,7 @@ struct SettingsView: View {
     @AppStorage(TextureFormat.key) var texture = TextureFormat.defaultValue
     @AppStorage(Interpolation.key) var interpolation = Interpolation.defaultValue
     @AppStorage(ProxySize.key) var proxy = ProxySize.defaultValue
-    @State private var xxx = "CMB Viewer"
+    @State private var device = "default"
     
     // view styling parameters
     private let width: CGFloat = 520
@@ -115,18 +115,13 @@ struct SettingsView: View {
                 )
             }
             .tabItem { Label("Behavior", systemImage: "flowchart") }
-            //.frame(maxWidth: .infinity, maxHeight: .infinity, alignment: .center)
-            // selectable GPU device (e.g. discrete/external unit)
-            // selectable color texture precision (memory footprint)
-            // proxy map to improve percieved transform performance
+            // performance tab
             VStack {
                 VStack {
-                    Picker("GPU device:", selection: $xxx) {
-                        Text("Chocolate")
-                        Text("Vanilla")
-                        Text("Strawberry")
-                    }.frame(width: 190)
-                    Text("Currently running on XXX").padding(10)
+                    Picker("GPU device:", selection: $device) {
+                        Text("Default").tag("default")
+                    }.frame(width: 220)
+                    Text("Currently running on \(metal.device.name)").padding(10)
                     Text("Restart HEALPix Viewer to make GPU choice effective").font(.footnote)
                 }.padding(corner).frame(width: 380).overlay(
                     RoundedRectangle(cornerRadius: corner)
