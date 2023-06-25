@@ -9,7 +9,8 @@
 - export as GIF, PNG, HEIF, and 16-bit TIFF format
 - more realistic lighting (Lambert reflection, gamma corrected)
 - code refactored to encapsulate view parameters into a struct
-- selectable color texture precision (memory footprint)
+- antialiasing of very large maps (i.e. LOD pyramid in MapView)
+- selectable color texture precision (i.e. memory footprint)
 
 ### Public Release Blocking
 
@@ -28,7 +29,6 @@
 - copy and paste setting sets between loaded maps
 - keep colorbar and transform settings for each loaded map
 - false color map support (e.g. RGB = 100,147,217GHz channels)
-- antialiasing of very large maps (i.e. LOD pyramid in MapView)
 - proxy map to improve percieved transform performance
 - command line interface
 
@@ -42,6 +42,6 @@
 
 - `Open File...` should open a new window if none available
 - modal NSOpenPanel and NSSavePanel are called within transaction
-- display alert if FITS format is not HEALPix (or unsopported scheme)
+- display alert if FITS format is not HEALPix (or unsupported scheme)
 - fix crash on out-of-memory, display alert and refuse to load instead
 - RangeView got broken somehow...

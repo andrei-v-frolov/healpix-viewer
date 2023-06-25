@@ -28,6 +28,7 @@ kernel void PROJECTION(_data)(
     constant float3x3 &rotation         [[ buffer(1) ]],
     constant float4 &background         [[ buffer(2) ]],
     constant float4 &light              [[ buffer(3) ]],
+    constant ushort &lod                [[ buffer(4) ]],
     uint2 gid                           [[ thread_position_in_grid ]]
 ) {
     const float3 u = PROJECTION()(transform * float3(gid.x, gid.y, 1)), v = rotation * u;
@@ -35,7 +36,7 @@ kernel void PROJECTION(_data)(
     if (all(v == OUT_OF_BOUNDS)) {
         output.write(background, gid);
     } else {
-        const uint3 f = uint3(xyz2xyf(map.get_width(), v));
-        output.write(lighted(map.read(f.xy, f.z), light, u), gid);
+        const uint3 f = uint3(xyz2xyf(map.get_width(lod), v));
+        output.write(lighted(map.read(f.xy, f.z, lod), light, u), gid);
     }
 }

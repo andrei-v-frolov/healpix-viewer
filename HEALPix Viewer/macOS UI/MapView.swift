@@ -99,6 +99,18 @@ class ProjectedView: MTKView {
         return simd.float3x2(float2(Float(flipx ? -s : s), 0.0), float2(0.0, Float(flipy ? -s : s)), float2(Float(dx), Float(dy)))
     }
     
+    // MARK: antialiasing LOD
+    func lod(_ nside: Int, transform: float3x2? = nil) -> Int {
+        let t = transform ?? self.transform(), det = t[0,0]*t[1,1] - t[0,1]*t[1,0]
+        let scale = sqrt(abs(det)), lod = Int(log2(scale*sqrt(2.0)*Float(nside))+0.5)
+        
+        switch AntiAliasing.value {
+            case .none: return 0
+            case .less: return max(0,lod-1)
+            case .more: return max(0,lod+1)
+        }
+    }
+    
     // MARK: arguments to shader
     var rotation = matrix_identity_float3x3
     var background = float4(0.0)
@@ -152,11 +164,12 @@ class ProjectedView: MTKView {
         guard let transform = metal.device.makeBuffer(length: MemoryLayout<float3x2>.size, options: options),
               let rotation = metal.device.makeBuffer(length: MemoryLayout<float3x3>.size, options: options),
               let bgcolor = metal.device.makeBuffer(length: MemoryLayout<float4>.size, options: options),
-              let light = metal.device.makeBuffer(length: MemoryLayout<float4>.size, options: options)
+              let light = metal.device.makeBuffer(length: MemoryLayout<float4>.size, options: options),
+              let lod = metal.device.makeBuffer(length: MemoryLayout<ushort>.size, options: options)
               else { fatalError("Could not allocate parameter buffers in map view") }
         
         self.device = metal.device
-        self.buffers = [transform, rotation, bgcolor, light]
+        self.buffers = [transform, rotation, bgcolor, light, lod]
         
         layer?.isOpaque = false
         framebufferOnly = false
@@ -197,6 +210,8 @@ class ProjectedView: MTKView {
         
         // render map if available
         if let map = map {
+            let lod = lod(map.nside, transform: transform ?? self.transform())
+            buffers[4].contents().storeBytes(of: ushort(min(lod,map.texture.mipmapLevelCount-1)), as: ushort.self)
             shader.data.encode(command: command, buffers: buffers, textures: [map.texture, texture])
         } else {
             shader.grid.encode(command: command, buffers: buffers, textures: [texture])

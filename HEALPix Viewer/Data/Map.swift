@@ -32,12 +32,15 @@ extension Map {
 // HEALPix map texture array
 func HPXTexture(nside: Int) -> MTLTexture {
     // texture format
-    let desc = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: TextureFormat.value.pixel, width: nside, height: nside, mipmapped: false)
+    let desc = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: TextureFormat.value.pixel, width: nside, height: nside, mipmapped: AntiAliasing.value != .none)
     
     desc.textureType = MTLTextureType.type2DArray
     desc.storageMode = .private
     desc.usage = [.shaderWrite, .shaderRead]
     desc.arrayLength = 12
+    
+    // mipmap down to nside = 16
+    desc.mipmapLevelCount = max(desc.mipmapLevelCount-4, 1)
     
     // initialize compute pipeline
     guard let texture = metal.device.makeTexture(descriptor: desc)
@@ -204,6 +207,10 @@ struct ColorMapper {
         guard let command = metal.queue.makeCommandBuffer() else { return }
         
         shader.encode(command: command, buffers: [map.buffer, buffer.color, buffer.range], textures: [color.scheme.colormap.texture, map.texture], threadsPerGrid: MTLSize(width: map.nside, height: map.nside, depth: 12))
+        if map.texture.mipmapLevelCount > 1, let encoder = command.makeBlitCommandEncoder() {
+            encoder.generateMipmaps(for: map.texture)
+            encoder.endEncoding()
+        }
         command.commit()
     }
 }

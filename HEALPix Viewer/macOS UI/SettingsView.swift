@@ -24,7 +24,7 @@ struct SettingsView: View {
     
     // performance tab
     @AppStorage(TextureFormat.key) var texture = TextureFormat.defaultValue
-    @AppStorage(Interpolation.key) var interpolation = Interpolation.defaultValue
+    @AppStorage(AntiAliasing.key) var aliasing = AntiAliasing.defaultValue
     @AppStorage(ProxySize.key) var proxy = ProxySize.defaultValue
     @State private var device = "default"
     
@@ -134,11 +134,11 @@ struct SettingsView: View {
                                 Text($0.rawValue).tag($0)
                             }
                         }.frame(width: 180)
-                        Picker("", selection: $interpolation) {
-                            ForEach(Interpolation.allCases, id: \.self) {
+                        Picker("", selection: $aliasing) {
+                            ForEach(AntiAliasing.allCases, id: \.self) {
                                 Text($0.rawValue).tag($0)
                             }
-                        }.frame(width: 150).disabled(true)
+                        }.frame(width: 160)
                     }
                     Text("Balance render quality with memory footprint and performance").font(.footnote)
                 }.padding(corner).frame(width: 380).overlay(

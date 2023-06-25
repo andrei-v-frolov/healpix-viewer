@@ -71,15 +71,15 @@ enum TextureFormat: String, CaseIterable, Codable, Preference {
     }
 }
 
-// interpolation strategy
-enum Interpolation: String, CaseIterable, Codable, Preference {
+// antialiasing strategy
+enum AntiAliasing: String, CaseIterable, Codable, Preference {
     case none = "nearest neighbour"
-    case linear = "linear interpolation"
-    case lod = "full anti-aliasing"
+    case less = "downsample (less)"
+    case more = "downsample (more)"
     
     // default value
-    static let key = "interpolation"
-    static let defaultValue: Self = .none
+    static let key = "antialiasing"
+    static let defaultValue: Self = .more
 }
 
 // proxy map size
