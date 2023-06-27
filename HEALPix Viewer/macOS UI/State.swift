@@ -55,6 +55,16 @@ struct Light: Equatable, Codable {
     var amt: Double =  60.0
 }
 
+// color bar state
+struct ColorBar: Equatable, Codable {
+    var palette = Palette()
+    var range = Bounds()
+    
+    static func == (a: Self, b: Self) -> Bool {
+        return (a.palette == b.palette) && (a.range.min == b.range.min) && (a.range.max == b.range.max)
+    }
+}
+
 // map view state
 struct ViewState: Equatable, Codable {
     var projection = Projection.defaultValue

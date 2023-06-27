@@ -38,6 +38,7 @@ struct ContentView: View {
     // map to be displayed
     @State private var map: Map? = nil
     @State private var cdf: [Double]? = nil
+    @State private var data: MapData? = nil
     @State private var info: String? = nil
     @State private var ranked: Bool = false
     @State private var annotation: String = "TEMPERATURE [μK]"
@@ -207,14 +208,7 @@ struct ContentView: View {
             Toolbar(toolbar: $toolbar, overlay: $overlay, colorbar: $colorbar, lighting: $lighting, magnification: $magnification, cdf: $cdf, info: $info)
         }
         .navigationTitle(title)
-        .onChange(of: selected) { value in
-            if let map = loaded.first(where: { $0.id == value }) {
-                info = map.info; transform(map)
-                title = "\(map.name)[\(map.file)]"
-                annotation = "\(map.name) [\(map.unit)]"
-                mumin = map.map.min; mumax = map.map.max
-            }
-        }
+        .onChange(of: selected) { value in load(value) }
         .onChange(of: state.view.orientation) { value in
             guard (value != .free) else { return }
             (state.view.lat, state.view.lon, state.view.az) = value.coords
@@ -331,49 +325,69 @@ struct ContentView: View {
             
             // dispatch maps for analysis
             for map in file.list {
-                let m = map.map, n = Double(m.npix), workload = Int(n*log(1+n))
+                let m = map.data, n = Double(m.npix), workload = Int(n*log(1+n))
                 scheduled += workload; analysisQueue.async {
-                    m.index(); map.ranked = m.ranked(); transform(); completed += workload
+                    m.index(); map.ranked = m.ranked(); load(); completed += workload
                 }
             }
         }
     }
     
-    // load map data to view
+    // load map to view
     func load(_ map: Map) {
-        let later = colorbar && (state.range.min != map.min || state.range.max != map.max)
+        self.map = map; cdf = map.cdf; datamin = map.min; datamax = map.max
+        if keepState.range, let state = map.state { self.state.range = state.range }
+        else { self.state.range = Bounds(mode: .full, min: datamin, max: datamax) }
         
-        self.map = map
-        self.cdf = map.cdf
-        self.datamin = map.min
-        self.datamax = map.max
-        
-        state.range.mode = .full
-        state.range.min = datamin
-        state.range.max = datamax
-        
-        if !later { colorize(self.map) }
+        colorize(map)
     }
     
-    // colorize map with current settings
-    func colorize(_ map: Map? = nil) {
-        guard let map = map ?? self.map else { return }
+    // load cached map data
+    func load(_ map: MapData) {
+        data = map; info = map.info
+        ranked = (map.ranked != nil)
+        title = "\(map.name)[\(map.file)]"
+        annotation = "\(map.name) [\(map.unit)]"
+        mumin = map.data.min; mumax = map.data.max
         
-        mapper.colorize(map: map, color: state.palette, range: state.range)
+        transform(map); load(map.map)
     }
     
-    // transform map with current settings
-    func transform(_ map: MapData? = nil, id: UUID? = nil) {
-        guard let map = map ?? loaded.first(where: { $0.id == id ?? selected }) else { return }
+    // load map with settings
+    func load(_ id: UUID? = nil) {
+        guard let map = loaded.first(where: { $0.id == id ?? selected }) else { return }
         
-        ranked = map.ranked != nil
+        // stash current settings
+        data?.settings = state
         
-        switch state.transform.f {
-            case .none: load(map.map)
-            case .equalize: if let ranked = map.ranked { load(ranked) }
-            case .normalize: if let ranked = map.ranked, let output = transformer.apply(map: ranked, transform: state.transform, recycle: map.buffer) { map.buffer = output; load(output) }
-            default: if let output = transformer.apply(map: map.map, transform: state.transform, recycle: map.buffer) { map.buffer = output; load(output) }
+        // load stored settings and map data
+        state.update(map.settings, mask: keepState); load(map)
+    }
+    
+    // colorize map with specified settings
+    func colorize(_ map: Map? = nil, color: Palette? = nil, range: Bounds? = nil) {
+        let color = ColorBar(palette: color ?? state.palette, range: range ?? state.range)
+        guard var map = map ?? self.map, map.state != color else { return }
+        
+        // dispatch color mapper
+        mapper.colorize(map: map, color: color.palette, range: color.range)
+        map.state = color
+    }
+    
+    // transform map with specified settings
+    func transform(_ map: MapData? = nil, transform: Transform? = nil) {
+        let transform = transform ?? state.transform
+        guard let map = map ?? data, map.state != transform else { return }
+        
+        // dispatch data transform
+        switch transform.f {
+            case .none, .equalize: break
+            case .normalize: if let ranked = map.ranked, let buffer = transformer.apply(map: ranked, transform: transform, recycle: map.buffer) { map.buffer = buffer } else { return }
+            default: if let buffer = transformer.apply(map: map.data, transform: transform, recycle: map.buffer) { map.buffer = buffer } else { return }
         }
+        
+        // update current state
+        map.state = transform; load(map.map)
     }
     
     // render annotated map texture for export

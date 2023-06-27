@@ -21,6 +21,8 @@ protocol Map {
     var data: [Float] { get }
     var buffer: MTLBuffer { get }
     var texture: MTLTexture { get }
+    
+    var state: ColorBar? { get set }
 }
 
 extension Map {
@@ -83,6 +85,9 @@ final class HpxMap: Map {
     // Metal texture array representing xyf faces
     lazy var texture: MTLTexture = HPXTexture(nside: nside)
     
+    // current colorbar state
+    internal var state: ColorBar? = nil
+    
     // initialize map from array
     init(nside: Int, data: [Float], min: Double? = nil, max: Double? = nil) {
         self.nside = nside
@@ -115,6 +120,9 @@ final class CpuMap: Map {
     
     // Metal texture array representing xyf faces
     lazy var texture: MTLTexture = HPXTexture(nside: nside)
+    
+    // current colorbar state
+    internal var state: ColorBar? = nil
     
     // initialize map from array
     init(nside: Int, buffer: UnsafePointer<Float>, min: Double, max: Double) {
@@ -170,6 +178,9 @@ final class GpuMap: Map {
     
     // Metal texture array representing xyf faces
     lazy var texture: MTLTexture = HPXTexture(nside: nside)
+    
+    // current colorbar state
+    internal var state: ColorBar? = nil
     
     // initialize map from buffer
     init(nside: Int, buffer: MTLBuffer, min: Double, max: Double) {
@@ -250,16 +261,21 @@ struct DataTransformer {
         shader.encode(command: command, buffers: [map.buffer, output.buffer, self.buffer])
         command.commit()
         
+        // transformed CDF and bounds
         if (transform.f == .normalize) {
             let sqrt2 = 1.414213562373095048801688724209698078569671875377
             let delta = 2.0/Double(map.npix-1)
             output.min = sqrt2 * erfinv(delta - 1.0)
             output.max = sqrt2 * erfinv(Double(map.npix-2)*delta - 1.0)
+            output.cdf = nil
         } else {
             output.min = transform.eval(map.min)
             output.max = transform.eval(map.max)
             output.cdf = map.cdf?.map { transform.eval($0) }
         }
+        
+        // reset colorbar after transform
+        output.state = nil
         
         return output
     }

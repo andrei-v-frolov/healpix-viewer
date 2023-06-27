@@ -9,6 +9,7 @@
 - export as GIF, PNG, HEIF, and 16-bit TIFF format
 - more realistic lighting (Lambert reflection, gamma corrected)
 - code refactored to encapsulate view parameters into a struct
+- keep, copy, and paste viewer setting sets between loaded maps
 - antialiasing of very large maps (i.e. LOD pyramid in MapView)
 - selectable color texture precision (i.e. memory footprint)
 
@@ -26,8 +27,6 @@
 - magnifier glass
 - selectable GPU device (e.g. discrete/external unit)
 - option to drag the map with colorbar...
-- copy and paste setting sets between loaded maps
-- keep colorbar and transform settings for each loaded map
 - false color map support (e.g. RGB = 100,147,217GHz channels)
 - proxy map to improve percieved transform performance
 - command line interface

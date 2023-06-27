@@ -8,25 +8,43 @@
 import SwiftUI
 
 final class MapData: Identifiable {
+    // unique map id
     let id = UUID()
     
+    // map metadata
     let file: String
     let info: String
     let name: String
     let unit: String
     let channel: Int
     
-    let map: CpuMap
+    // map data and caches
+    let data: CpuMap
     var ranked: CpuMap? = nil
     var buffer: GpuMap? = nil
     
+    var map: Map {
+        switch state.f {
+            case .none: return data
+            case .equalize: return ranked ?? data
+            default: return buffer ?? data
+        }
+    }
+    
+    // saved view settings
+    var settings = ViewState()
+    
+    // current transform state
+    internal var state = Transform()
+    
+    // default initializer
     init(file: String, info: String, name: String, unit: String, channel: Int, map: CpuMap) {
         self.file = file
         self.info = info
         self.name = name
         self.unit = unit
         self.channel = channel
-        self.map = map
+        self.data = map
     }
 }
 
