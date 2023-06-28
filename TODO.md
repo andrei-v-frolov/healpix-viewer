@@ -12,6 +12,7 @@
 - keep, copy, and paste viewer setting sets between loaded maps
 - antialiasing of very large maps (i.e. LOD pyramid in MapView)
 - selectable color texture precision (i.e. memory footprint)
+- map thumbnails added to navigation panel
 
 ### Public Release Blocking
 

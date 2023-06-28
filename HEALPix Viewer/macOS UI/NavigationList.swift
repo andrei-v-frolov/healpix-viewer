@@ -7,7 +7,7 @@
 
 import SwiftUI
 
-final class MapData: Identifiable {
+final class MapData: Identifiable, ObservableObject {
     // unique map id
     let id = UUID()
     
@@ -31,6 +31,9 @@ final class MapData: Identifiable {
         }
     }
     
+    // map preview
+    let preview = IMGTexture(width: 96, height: 48)
+    
     // saved view settings
     var settings = ViewState()
     
@@ -46,18 +49,21 @@ final class MapData: Identifiable {
         self.channel = channel
         self.data = map
     }
+    
+    // signal that map state changed
+    func refresh() { self.objectWillChange.send() }
 }
 
 struct NavigationRow: View {
-    var map: MapData
+    @ObservedObject var map: MapData
     
     var body: some View {
         HStack{
             VStack {
                 Text(map.name)
                 Text(map.file).font(.footnote)
-            }
-            Spacer()
+            }.frame(maxWidth: .infinity)
+            image(map.preview)
         }
     }
 }

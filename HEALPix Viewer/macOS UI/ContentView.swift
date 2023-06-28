@@ -95,7 +95,7 @@ struct ContentView: View {
         NavigationView {
             VStack(spacing: 0) {
                 NavigationList(loaded: $loaded, selected: $selected)
-                    .frame(width: 160)
+                    .frame(minWidth: 210, maxWidth: .infinity)
                 if (scheduled > 0) {
                     Divider()
                     Text("Analyzing Data...").padding([.top], 5)
@@ -201,7 +201,7 @@ struct ContentView: View {
             }
         }
         .frame(
-            minWidth:  940, idealWidth: 1280, maxWidth:  .infinity,
+            minWidth:  990, idealWidth: 1280, maxWidth:  .infinity,
             minHeight: 600, idealHeight: 800, maxHeight: .infinity
         )
         .toolbar(id: "mainToolbar") {
@@ -216,6 +216,7 @@ struct ContentView: View {
         .onChange(of: state.transform) { value in transform() }
         .onChange(of: state.palette) { value in colorize() }
         .onChange(of: state.range) { value in colorize() }
+        .onChange(of: state) { value in preview() }
         .onChange(of: action) { value in
             guard (value != .none && window?.isKeyWindow == true) else { return }
             
@@ -318,17 +319,19 @@ struct ContentView: View {
             self.file.append(file)
             self.loaded = self.opened
             
-            // select default data source
-            for map in file.list {
-                if (MapCard.type(map.name) == DataSource.value) { self.selected = map.id; break }
-            }
-            
             // dispatch maps for analysis
             for map in file.list {
+                map.settings.update(state, mask: keepState)
+                
                 let m = map.data, n = Double(m.npix), workload = Int(n*log(1+n))
                 scheduled += workload; analysisQueue.async {
                     m.index(); map.ranked = m.ranked(); load(); completed += workload
                 }
+            }
+            
+            // select default data source
+            for map in file.list {
+                if (MapCard.type(map.name) == DataSource.value) { self.selected = map.id; break }
             }
         }
     }
@@ -350,7 +353,7 @@ struct ContentView: View {
         annotation = "\(map.name) [\(map.unit)]"
         mumin = map.data.min; mumax = map.data.max
         
-        transform(map); load(map.map)
+        transform(map); load(map.map); preview()
     }
     
     // load map with settings
@@ -388,6 +391,12 @@ struct ContentView: View {
         
         // update current state
         map.state = transform; load(map.map)
+    }
+    
+    // render map preview
+    func preview() {
+        guard let map = data, let mapview = mapview else { return }
+        DispatchQueue.main.async { mapview.render(to: map.preview, magnification: 0.0); map.refresh() }
     }
     
     // render annotated map texture for export

@@ -67,6 +67,16 @@ func tmpfile(name: String = UUID().uuidString, type: UTType = .png) -> URL? {
     return dir?.appendingPathComponent(name, conformingTo: type)
 }
 
+// SwiftUI image from Metal texture
+func image(_ texture: MTLTexture, oversample s: Double = 2.0) -> Image? {
+    guard let srgb = CGColorSpace(name: CGColorSpace.sRGB),
+          let image = CIImage(mtlTexture: texture, options: [.colorSpace: srgb]) else { return nil }
+    
+    let nsimage = NSImage(size: NSSize(width: image.extent.width/s, height: image.extent.height/s))
+    nsimage.addRepresentation(NSBitmapImageRep(ciImage: image))
+    return Image(nsImage: nsimage)
+}
+
 // image data from Metal texture
 func imagedata(_ texture: MTLTexture, format: ImageFormat = .png) -> Data? {
     guard let srgb = CGColorSpace(name: CGColorSpace.sRGB),
