@@ -97,7 +97,7 @@ struct Toolbar: CustomizableToolbarContent {
         Group {
             ToolbarItem(id: "statistics", placement: .principal, showsByDefault: true) {
                 Button {
-                    withAnimation { toggleStatView() }
+                    toggleStatView()
                 } label: {
                     Label("Stats", systemImage: "waveform.path.ecg")
                 }
@@ -106,7 +106,7 @@ struct Toolbar: CustomizableToolbarContent {
             }
             ToolbarItem(id: "info", placement: .principal, showsByDefault: true) {
                 Button {
-                    withAnimation { toggleInfoView() }
+                    toggleInfoView()
                 } label: {
                     Label("Info", systemImage: "info.circle")
                 }
@@ -125,11 +125,15 @@ struct Toolbar: CustomizableToolbarContent {
     }
     
     func toggleStatView() {
-        if (cdf != nil) { overlay = (overlay == .statview) ? .none : .statview }
+        guard (cdf != nil) else { return }
+        let new: ShowOverlay = (overlay == .statview) ? .none : .statview
+        if overlay == .infoview { overlay = new } else { withAnimation { overlay = new } }
     }
     
     func toggleInfoView() {
-        if (info != nil) { overlay = (overlay == .infoview) ? .none : .infoview }
+        guard (info != nil) else { return }
+        let new: ShowOverlay = (overlay == .infoview) ? .none : .infoview
+        if overlay == .statview { overlay = new } else { withAnimation { overlay = new } }
     }
 }
 
