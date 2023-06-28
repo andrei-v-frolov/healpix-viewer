@@ -219,10 +219,10 @@ class ProjectedView: MTKView {
     }
     
     // MARK: render image to off-screen texture
-    func render(to texture: MTLTexture, anchor: Anchor = .c, shift: (x: Double, y: Double) = (0,0), magnification: Double? = nil) {
+    func render(to texture: MTLTexture, anchor: Anchor = .c, shift: (x: Double, y: Double) = (0,0), magnification: Double? = nil, padding: Double? = nil) {
         let rotation = animate ? gen2rot(target) : rotation
-        let magnification = magnification ?? self.magnification
-        let transform = transform(width: Double(texture.width), height: Double(texture.height), magnification: magnification, padding: 0.0, anchor: anchor, flipy: false, shiftx: shift.x, shifty: shift.y)
+        let magnification = magnification ?? self.magnification, padding = padding ?? 0.0
+        let transform = transform(width: Double(texture.width), height: Double(texture.height), magnification: magnification, padding: padding, anchor: anchor, flipy: false, shiftx: shift.x, shifty: shift.y)
         
         // initialize compute command buffer
         guard let command = metal.queue.makeCommandBuffer() else { return }

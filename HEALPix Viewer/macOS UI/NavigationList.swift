@@ -56,14 +56,16 @@ final class MapData: Identifiable, ObservableObject {
 
 struct NavigationRow: View {
     @ObservedObject var map: MapData
+    @AppStorage(Thumbnails.key) var thumbnails = Thumbnails.defaultValue
     
     var body: some View {
         HStack{
+            if (thumbnails == .left) { image(map.preview) }
             VStack {
                 Text(map.name)
                 Text(map.file).font(.footnote)
             }.frame(maxWidth: .infinity)
-            image(map.preview)
+            if (thumbnails == .right) { image(map.preview) }
         }
     }
 }

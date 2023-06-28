@@ -202,7 +202,7 @@ struct ContentView: View {
         }
         .frame(
             minWidth:  990, idealWidth: 1280, maxWidth:  .infinity,
-            minHeight: 600, idealHeight: 800, maxHeight: .infinity
+            minHeight: 660, idealHeight: 800, maxHeight: .infinity
         )
         .toolbar(id: "mainToolbar") {
             Toolbar(toolbar: $toolbar, overlay: $overlay, colorbar: $colorbar, lighting: $lighting, magnification: $magnification, cdf: $cdf, info: $info)
@@ -396,7 +396,7 @@ struct ContentView: View {
     // render map preview
     func preview() {
         guard let map = data, let mapview = mapview else { return }
-        DispatchQueue.main.async { mapview.render(to: map.preview, magnification: 0.0); map.refresh() }
+        DispatchQueue.main.async { mapview.render(to: map.preview, magnification: 0.0, padding: 0.02); map.refresh() }
     }
     
     // render annotated map texture for export

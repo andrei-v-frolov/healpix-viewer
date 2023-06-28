@@ -10,12 +10,11 @@ import SwiftUI
 struct SettingsView: View {
     // appearance tab
     @AppStorage(Appearance.key) var appearance = Appearance.defaultValue
+    @AppStorage(Thumbnails.key) var thumbnails = Thumbnails.defaultValue
     @AppStorage(viewFromInsideKey) var viewFromInside = true
     @AppStorage(lightingKey) var lighting = false
     @AppStorage(annotationFontKey) var font = FontPreference.defaultValue
     @AppStorage(annotationColorKey) var color = Color.defaultValue
-    @AppStorage(dragWithColorBarKey) var dragColorBar = false
-    @AppStorage(dragWithAnnotationKey) var dragAnnotation = false
     
     // behavior tab
     @AppStorage(keepStateKey) var keepState = StateMask()
@@ -44,6 +43,11 @@ struct SettingsView: View {
                             Text($0.rawValue).tag($0)
                         }
                     }.frame(width: 230)
+                    Picker("Map Thumbnails:", selection: $thumbnails) {
+                        ForEach(Thumbnails.allCases, id: \.self) {
+                            Text($0.rawValue).tag($0)
+                        }
+                    }.frame(width: 230)
                 }.padding(corner).frame(width: 380).overlay(
                     RoundedRectangle(cornerRadius: corner)
                         .stroke(Color.secondary.opacity(0.2), lineWidth: 1)
@@ -64,11 +68,6 @@ struct SettingsView: View {
                         FontPicker(font: $font.nsFont)
                         ColorPicker("", selection: $color)
                     }.frame(width: 210)
-                    HStack {
-                        Text("Drag & drop map with")
-                        Toggle("color bar", isOn: $dragColorBar)
-                        Toggle("annotation", isOn: $dragAnnotation).disabled(!dragColorBar)
-                    }.disabled(true)
                 }.padding(corner).frame(width: 380).overlay(
                     RoundedRectangle(cornerRadius: corner)
                         .stroke(Color.secondary.opacity(0.2), lineWidth: 1)

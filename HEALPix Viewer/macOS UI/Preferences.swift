@@ -14,13 +14,14 @@ let viewFromInsideKey = "viewFromInside"
 let lightingKey = "lighting"
 let annotationFontKey = "annotationFont"
 let annotationColorKey = "annotationColor"
-let dragWithColorBarKey = "dragWithColorBar"
-let dragWithAnnotationKey = "dragWithAnnotation"
 
 // settings - behavior
 let keepStateKey = "keepStateMask"
 let copyStateKey = "copyStateMask"
 
+// settings - export
+let dragWithColorBarKey = "dragWithColorBar"
+let dragWithAnnotationKey = "dragWithAnnotation"
 
 // settings - view menu
 let cursorKey = "cursor"
@@ -45,6 +46,17 @@ enum Appearance: String, CaseIterable, Codable, Preference {
             default: return nil
         }
     }
+}
+
+// map thumbnails
+enum Thumbnails: String, CaseIterable, Codable, Preference {
+    case none = "None"
+    case left = "Left Side"
+    case right = "Right Side"
+    
+    // default value
+    static let key = "thumbnails"
+    static let defaultValue: Self = .right
 }
 
 // rendering precision
