@@ -25,7 +25,7 @@ struct Toolbar: CustomizableToolbarContent {
             Button {
                 toggleSidebar()
             } label: {
-                Image(systemName: "sidebar.left")
+                Label("Maps", systemImage: "sidebar.left")
             }
             .help("Toggle Sidebar")
         }
@@ -34,7 +34,7 @@ struct Toolbar: CustomizableToolbarContent {
                 Button {
                     withAnimation { toggleToolbar(.projection) }
                 } label: {
-                    Image(systemName: "globe")
+                    Label("Projection", systemImage: "globe")
                 }
                 .help("Map Projection")
             }
@@ -53,7 +53,7 @@ struct Toolbar: CustomizableToolbarContent {
                 Button {
                     withAnimation { toggleToolbar(.orientation) }
                 } label: {
-                    Image(systemName: "rotate.3d")
+                    Label("View", systemImage: "rotate.3d")
                 }
                 .help("View Orientation")
             }
@@ -61,7 +61,7 @@ struct Toolbar: CustomizableToolbarContent {
                 Button {
                     withAnimation { toggleToolbar(.color) }
                 } label: {
-                    Image(systemName: "paintpalette")
+                    Label("Colors", systemImage: "paintpalette")
                 }
                 .help("Color Scheme")
             }
@@ -69,7 +69,7 @@ struct Toolbar: CustomizableToolbarContent {
                 Button {
                     withAnimation { toggleToolbar(.transform) }
                 } label: {
-                    Image(systemName: "function")
+                    Label("Transform", systemImage: "function")
                 }
                 .help("Data Transform")
             }
@@ -77,7 +77,7 @@ struct Toolbar: CustomizableToolbarContent {
                 Button {
                     withAnimation { toggleColorbar() }
                 } label: {
-                    Image(systemName: "ruler")
+                    Label("Range", systemImage: "ruler")
                 }
                 .help("Colorbar & Range")
             }
@@ -85,7 +85,7 @@ struct Toolbar: CustomizableToolbarContent {
                 Button {
                     withAnimation { toggleToolbar(.lighting) }
                 } label: {
-                    Image(systemName: "sun.max")
+                    Label("Light", systemImage: "sun.max")
                 }
                 .help("Lighting Effects")
                 .disabled(!lighting)
@@ -99,7 +99,7 @@ struct Toolbar: CustomizableToolbarContent {
                 Button {
                     withAnimation { toggleStatView() }
                 } label: {
-                    Image(systemName: "waveform.path.ecg")
+                    Label("Stats", systemImage: "waveform.path.ecg")
                 }
                 .help("Data Statistics")
                 .disabled(cdf == nil || !havecharts)
@@ -108,7 +108,7 @@ struct Toolbar: CustomizableToolbarContent {
                 Button {
                     withAnimation { toggleInfoView() }
                 } label: {
-                    Image(systemName: "info.circle")
+                    Label("Info", systemImage: "info.circle")
                 }
                 .help("HEALPix Header")
                 .disabled(info == nil)
