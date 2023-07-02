@@ -57,8 +57,8 @@ struct ContentView: View {
     @AppStorage(viewFromInsideKey) var inside: Bool = true
     
     // view state preferences
-    @AppStorage(keepStateKey) var keepState = StateMask()
-    @AppStorage(copyStateKey) var copyState = StateMask()
+    @AppStorage(keepStateKey) var keepState = StateMask.keep
+    @AppStorage(copyStateKey) var copyState = StateMask.copy
     
     // data range
     @State private var datamin: Double = 0.0

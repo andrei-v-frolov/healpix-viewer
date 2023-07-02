@@ -17,8 +17,8 @@ struct SettingsView: View {
     @AppStorage(annotationColorKey) var color = Color.defaultValue
     
     // behavior tab
-    @AppStorage(keepStateKey) var keepState = StateMask()
-    @AppStorage(copyStateKey) var copyState = StateMask()
+    @AppStorage(keepStateKey) var keepState = StateMask.keep
+    @AppStorage(copyStateKey) var copyState = StateMask.copy
     
     
     // performance tab
@@ -88,7 +88,7 @@ struct SettingsView: View {
                             Toggle(" Map Lighting", isOn: $keepState.light).disabled(!lighting)
                         }.padding(.leading, offset)
                     }
-                    Button("Reset") { keepState = StateMask() }.padding(5)
+                    Button("Reset") { keepState = StateMask.keep }.padding(5)
                 }
                 .padding(corner).overlay(
                     RoundedRectangle(cornerRadius: corner)
@@ -106,7 +106,7 @@ struct SettingsView: View {
                             Toggle(" Map Lighting", isOn: $copyState.light).disabled(!lighting)
                         }.padding(.leading, offset)
                     }
-                    Button("Reset") { copyState = StateMask() }.padding(5)
+                    Button("Reset") { copyState = StateMask.copy }.padding(5)
                 }
                 .padding(corner).overlay(
                     RoundedRectangle(cornerRadius: corner)

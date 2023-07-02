@@ -104,6 +104,9 @@ struct StateMask: RawRepresentable, Equatable, Codable {
     var range = true
     var light = false
     
+    static let keep = StateMask(rawValue: 0b011101)
+    static let copy = StateMask(rawValue: 0b011100)
+    
     public init() { }
     
     public init(rawValue: Int) {
