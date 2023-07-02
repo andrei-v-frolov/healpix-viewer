@@ -56,6 +56,7 @@ struct EditMenus: Commands {
 struct ViewMenus: Commands {
     // application appearance
     @AppStorage(Appearance.key) var appearance = Appearance.defaultValue
+    @AppStorage(Thumbnails.key) var thumbnails = Thumbnails.defaultValue
     
     // render colorbar?
     @AppStorage(viewFromInsideKey) var viewFromInside = true
@@ -74,6 +75,11 @@ struct ViewMenus: Commands {
         CommandGroup(before: CommandGroupPlacement.toolbar) {
             Picker("Appearance", selection: $appearance) {
                 ForEach(Appearance.allCases, id: \.self) {
+                    Text($0.rawValue).tag($0)
+                }
+            }
+            Picker("Thumbnails", selection: $thumbnails) {
+                ForEach(Thumbnails.allCases, id: \.self) {
                     Text($0.rawValue).tag($0)
                 }
             }
