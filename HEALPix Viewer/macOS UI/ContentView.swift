@@ -54,6 +54,7 @@ struct ContentView: View {
     @Binding var clipboard: ViewState
     @State private var state = ViewState()
     @State private var magnification: Double = 0.0
+    @AppStorage(viewFromInsideKey) var inside: Bool = true
     
     // view state preferences
     @AppStorage(keepStateKey) var keepState = StateMask()
@@ -107,7 +108,7 @@ struct ContentView: View {
                 ZStack {
                     VStack(spacing: 0) {
                         if (toolbar == .projection) {
-                            ProjectionToolbar(projection: $state.projection, orientation: $state.view.orientation)
+                            ProjectionToolbar(projection: $state.projection, orientation: $state.view.orientation, inside: $inside)
                         }
                         if (toolbar == .orientation) {
                             OrientationToolbar(view: $state.view)
@@ -217,6 +218,7 @@ struct ContentView: View {
         .onChange(of: state.palette) { value in colorize() }
         .onChange(of: state.range) { value in colorize() }
         .onChange(of: state) { value in preview() }
+        .onChange(of: inside) { value in preview() }
         .onChange(of: action) { value in
             guard (value != .none && window?.isKeyWindow == true) else { return }
             
@@ -244,7 +246,7 @@ struct ContentView: View {
             action = .none
         }
         .onChange(of: lighting) { value in
-            if (!value && toolbar == .lighting) { withAnimation { toolbar = .none } }
+            if (!value && toolbar == .lighting) { withAnimation { toolbar = .none } }; preview()
         }
         .onDrop(of: [UTType.fileURL], isTargeted: $targeted) { provider in
             guard let type = UTType.healpix.tags[UTTagClass.filenameExtension] else { return false }

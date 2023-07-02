@@ -57,7 +57,7 @@ enum Thumbnails: String, CaseIterable, Codable, Preference {
     
     // default value
     static let key = "thumbnails"
-    static let defaultValue: Self = .right
+    static let defaultValue: Self = .large
 }
 
 // rendering precision

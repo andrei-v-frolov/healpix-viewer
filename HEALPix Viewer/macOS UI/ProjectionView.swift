@@ -10,7 +10,7 @@ import SwiftUI
 struct ProjectionToolbar: View {
     @Binding var projection: Projection
     @Binding var orientation: Orientation
-    @AppStorage(viewFromInsideKey) var inside: Bool = true
+    @Binding var inside: Bool
     
     var body: some View {
         HStack {
