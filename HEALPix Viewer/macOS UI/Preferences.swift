@@ -53,6 +53,7 @@ enum Thumbnails: String, CaseIterable, Codable, Preference {
     case none = "None"
     case left = "Left Side"
     case right = "Right Side"
+    case large = "Large"
     
     // default value
     static let key = "thumbnails"

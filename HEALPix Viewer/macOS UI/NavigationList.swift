@@ -32,7 +32,7 @@ final class MapData: Identifiable, ObservableObject {
     }
     
     // map preview
-    let preview = IMGTexture(width: 96, height: 48)
+    let preview = IMGTexture(width: 288, height: 144)
     
     // saved view settings
     var settings = ViewState()
@@ -60,12 +60,13 @@ struct NavigationRow: View {
     
     var body: some View {
         HStack{
-            if (thumbnails == .left) { image(map.preview) }
+            if (thumbnails == .left) { image(map.preview, oversample: 6) }
             VStack {
+                if (thumbnails == .large) { image(map.preview) }
                 Text(map.name)
                 Text(map.file).font(.footnote)
             }.frame(maxWidth: .infinity)
-            if (thumbnails == .right) { image(map.preview) }
+            if (thumbnails == .right) { image(map.preview, oversample: 6) }
         }
     }
 }
