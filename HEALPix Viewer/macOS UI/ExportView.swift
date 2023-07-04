@@ -29,8 +29,6 @@ struct ExportView: View {
     @Binding var font: NSFont?
     @Binding var color: Color
     
-    let SizeFormatter = { var n = IntegerNumber; n.minimum = 0; n.maximum = 16384; return n }()
-    
     var body: some View {
         HStack(spacing: 0) {
             VStack {

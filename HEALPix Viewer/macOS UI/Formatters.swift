@@ -39,3 +39,13 @@ let SixDigitsScientific: NumberFormatter = {
     
     return format
 }()
+
+// texture size formatter
+let SizeFormatter: NumberFormatter = {
+    let n = IntegerNumber
+    
+    n.minimum = 0
+    n.maximum = 16384
+    
+    return n
+}()
