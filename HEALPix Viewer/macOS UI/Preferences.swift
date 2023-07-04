@@ -459,6 +459,7 @@ extension Color: RawRepresentable, Codable, Preference {
             case "accent":      self = .accentColor
             case "primary":     self = .primary
             case "secondary":   self = .secondary
+            case "disabled":    self = .disabled
             
             // device RGBA color
             default:
@@ -494,6 +495,7 @@ extension Color: RawRepresentable, Codable, Preference {
             case .accentColor:  return "accent"
             case .primary:      return "primary"
             case .secondary:    return "secondary"
+            case .disabled:     return "disabled"
             
             // device RGBA color
             default:
