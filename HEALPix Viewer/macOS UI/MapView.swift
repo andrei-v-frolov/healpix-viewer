@@ -61,7 +61,9 @@ class ProjectedView: MTKView {
     var mapview: MapView? = nil
     
     // MARK: compute pipeline
-    var buffers = [MTLBuffer]()
+    static let inflight = 3; private var index = 0
+    private var semaphore = DispatchSemaphore(value: inflight)
+    private var buffers = [[MTLBuffer]]()
     
     // MARK: projection shaders
     let shaders: [Projection: (grid: MetalKernel, data: MetalKernel)] = [
@@ -158,21 +160,26 @@ class ProjectedView: MTKView {
     override func awakeFromNib() {
         // initialize MTKView
         super.awakeFromNib()
-        
-        // initialize compute pipeline
-        let options: MTLResourceOptions = [.cpuCacheModeWriteCombined, .storageModeShared]
-        guard let transform = metal.device.makeBuffer(length: MemoryLayout<float3x2>.size, options: options),
-              let rotation = metal.device.makeBuffer(length: MemoryLayout<float3x3>.size, options: options),
-              let bgcolor = metal.device.makeBuffer(length: MemoryLayout<float4>.size, options: options),
-              let light = metal.device.makeBuffer(length: MemoryLayout<float4>.size, options: options),
-              let lod = metal.device.makeBuffer(length: MemoryLayout<ushort>.size, options: options)
-              else { fatalError("Could not allocate parameter buffers in map view") }
-        
         self.device = metal.device
-        self.buffers = [transform, rotation, bgcolor, light, lod]
         
+        // initialize compute pipeline buffers
+        let options: MTLResourceOptions = [.cpuCacheModeWriteCombined, .storageModeShared]
+        
+        for _ in 0..<Self.inflight {
+            guard let transform = metal.device.makeBuffer(length: MemoryLayout<float3x2>.size, options: options),
+                  let rotation = metal.device.makeBuffer(length: MemoryLayout<float3x3>.size, options: options),
+                  let bgcolor = metal.device.makeBuffer(length: MemoryLayout<float4>.size, options: options),
+                  let light = metal.device.makeBuffer(length: MemoryLayout<float4>.size, options: options),
+                  let lod = metal.device.makeBuffer(length: MemoryLayout<ushort>.size, options: options)
+                  else { fatalError("Could not allocate parameter buffers in map view") }
+            
+            self.buffers.append([transform, rotation, bgcolor, light, lod])
+        }
+        
+        // view options
         layer?.isOpaque = false
         framebufferOnly = false
+        presentsWithTransaction = true
         
         // respond to mouse movement events
         let tracking: NSTrackingArea.Options = [.mouseMoved, .cursorUpdate, .activeInKeyWindow, .inVisibleRect]
@@ -181,19 +188,19 @@ class ProjectedView: MTKView {
     
     // MARK: render image in Metal view
     override func draw(_ rect: CGRect) {
-        // check that we have a draw destination
-        guard currentRenderPassDescriptor != nil, let drawable = currentDrawable else { return }
-        
         // if spinning, advance the viewpoint towards target view
         if (animate) { step6(dt, steps: 3); rotation = gen2rot(w) }
         
-        // initialize compute command buffer
-        guard let command = metal.queue.makeCommandBuffer() else { return }
-        
-        // encode render command to drawable
-        encode(command, to: drawable.texture)
-        command.present(drawable)
-        command.commit()
+        autoreleasepool {
+            // check that we have a draw destination
+            guard let command = metal.queue.makeCommandBuffer() else { return }
+            guard currentRenderPassDescriptor != nil, let drawable = currentDrawable else { return }
+            
+            // encode render command to drawable
+            encode(command, to: drawable.texture)
+            command.commit(); command.waitUntilScheduled()
+            drawable.present()
+        }
     }
     
     // MARK: encode render to command buffer
@@ -201,6 +208,11 @@ class ProjectedView: MTKView {
                 transform: float3x2? = nil, rotation: float3x3? = nil,
                 background: float4? = nil, lighting: float4? = nil) {
         guard let shader = shaders[projection] else { return }
+        
+        // wait for available buffer
+        semaphore.wait()
+        index = (index+1) % Self.inflight
+        let buffers = self.buffers[index]
         
         // load arguments to be passed to kernel
         buffers[0].contents().storeBytes(of: transform ?? self.transform(), as: float3x2.self)
@@ -216,6 +228,9 @@ class ProjectedView: MTKView {
         } else {
             shader.grid.encode(command: command, buffers: buffers, textures: [texture])
         }
+        
+        // signal completion
+        command.addCompletedHandler { _ in self.semaphore.signal() }
     }
     
     // MARK: render image to off-screen texture

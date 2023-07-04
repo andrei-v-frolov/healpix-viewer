@@ -32,7 +32,9 @@ struct BarView: NSViewRepresentable {
 // MARK: Metal renderer for color bar
 class ColorbarView: MTKView {
     // MARK: compute pipeline
-    var buffers = [MTLBuffer]()
+    static let inflight = 3; private var index = 0
+    private var semaphore = DispatchSemaphore(value: inflight)
+    private var buffers = [[MTLBuffer]]()
     
     // MARK: colorbar shader
     let shader = MetalKernel(kernel: "colorbar")
@@ -58,41 +60,53 @@ class ColorbarView: MTKView {
     override func awakeFromNib() {
         // initialize MTKView
         super.awakeFromNib()
-        
-        // initialize compute pipeline
-        let options: MTLResourceOptions = [.cpuCacheModeWriteCombined, .storageModeShared]
-        guard let transform = metal.device.makeBuffer(length: MemoryLayout<float3x2>.size, options: options),
-              let bgcolor = metal.device.makeBuffer(length: MemoryLayout<float4>.size, options: options)
-              else { fatalError("Could not allocate parameter buffers in colorbar view") }
-        
         self.device = metal.device
-        self.buffers = [transform, bgcolor]
         
+        // initialize compute pipeline buffers
+        let options: MTLResourceOptions = [.cpuCacheModeWriteCombined, .storageModeShared]
+        
+        for _ in 0..<Self.inflight {
+            guard let transform = metal.device.makeBuffer(length: MemoryLayout<float3x2>.size, options: options),
+                  let bgcolor = metal.device.makeBuffer(length: MemoryLayout<float4>.size, options: options)
+                  else { fatalError("Could not allocate parameter buffers in colorbar view") }
+            
+            self.buffers.append([transform, bgcolor])
+        }
+        
+        // view options
         layer?.isOpaque = false
         framebufferOnly = false
+        presentsWithTransaction = true
     }
     
     // MARK: render image in Metal view
     override func draw(_ rect: CGRect) {
-        // check that we have a draw destination
-        guard currentRenderPassDescriptor != nil, let drawable = currentDrawable else { return }
-        
-        // initialize compute command buffer
-        guard let command = metal.queue.makeCommandBuffer() else { return }
-        
-        // encode render command to drawable
-        encode(command, to: drawable.texture)
-        command.present(drawable)
-        command.commit()
+        autoreleasepool {
+            // check that we have a draw destination
+            guard let command = metal.queue.makeCommandBuffer() else { return }
+            guard currentRenderPassDescriptor != nil, let drawable = currentDrawable else { return }
+            
+            // encode render command to drawable
+            encode(command, to: drawable.texture)
+            command.commit(); command.waitUntilScheduled()
+            drawable.present()
+        }
     }
     
     // MARK: encode render to command buffer
     func encode(_ command: MTLCommandBuffer, to texture: MTLTexture, transform: float3x2? = nil, background: float4? = nil) {
+        // wait for available buffer
+        semaphore.wait()
+        index = (index+1) % Self.inflight
+        let buffers = self.buffers[index]
+        
         // load arguments to be passed to kernel
         buffers[0].contents().storeBytes(of: transform ?? self.transform(), as: float3x2.self)
         buffers[1].contents().storeBytes(of: background ?? self.background, as: float4.self)
         
+        // render colorbar
         shader.encode(command: command, buffers: buffers, textures: [colormap.texture, texture])
+        command.addCompletedHandler { _ in self.semaphore.signal() }
     }
     
     // MARK: render image to off-screen texture
