@@ -48,7 +48,7 @@ struct MapView: NSViewRepresentable {
         view.background = background.components
         view.lightsource = lightsrc
         
-        view.draw(view.bounds)
+        view.draw()
     }
 }
 

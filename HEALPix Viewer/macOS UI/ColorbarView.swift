@@ -25,7 +25,7 @@ struct BarView: NSViewRepresentable {
         view.colormap = palette.scheme.colormap
         view.background = palette.bg.components
         
-        view.draw(view.bounds)
+        view.draw()
     }
 }
 
@@ -77,6 +77,10 @@ class ColorbarView: MTKView {
         layer?.isOpaque = false
         framebufferOnly = false
         presentsWithTransaction = true
+        
+        // redraw on notification
+        isPaused = true
+        enableSetNeedsDisplay = true
     }
     
     // MARK: render image in Metal view
