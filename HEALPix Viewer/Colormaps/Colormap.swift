@@ -56,6 +56,8 @@ final class Colormap {
 }
 
 extension Color {
+    static var disabled: Color { return Color(NSColor.disabledControlTextColor) }
+    
     var components: SIMD4<Float> {
         guard let color = NSColor(self).usingColorSpace(NSColorSpace.deviceRGB) else { return SIMD4<Float>(0.0) }
         let r = color.redComponent, g = color.greenComponent, b = color.blueComponent, a = color.alphaComponent

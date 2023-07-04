@@ -36,7 +36,7 @@ struct TransformToolbar: View {
                 Divider()
                 Group {
                     ForEach(Function.cdf, id: \.self) {
-                        Text($0.formula).foregroundColor(ranked ? .primary : .secondary).tag($0)
+                        Text($0.formula).foregroundColor(ranked ? .primary : .disabled).tag($0)
                     }
                 }
             }
