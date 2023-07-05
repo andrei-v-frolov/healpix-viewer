@@ -26,11 +26,10 @@ struct ContentView: View {
     
     // save images
     @State private var saving = false
-    @AppStorage(ImageFormat.key) var format = ImageFormat.defaultValue
-    @State private var width: Int = 1920
-    @State private var oversampling: Int = 2
-    @State private var withDataRange: Bool = true
-    @State private var withAnnotation: Bool = true
+    @AppStorage(dragSettingsKey) var drag = Export.drag
+    @AppStorage(exportSettingsKey) var export = Export.save
+    @AppStorage(annotationFontKey) var font = FontPreference.defaultValue
+    @AppStorage(annotationColorKey) var color = Color.defaultValue
     
     // drag and drop
     @State private var targeted = false
@@ -42,8 +41,6 @@ struct ContentView: View {
     @State private var info: String? = nil
     @State private var ranked: Bool = false
     @State private var annotation: String = "TEMPERATURE [μK]"
-    @AppStorage(annotationFontKey) var font = FontPreference.defaultValue
-    @AppStorage(annotationColorKey) var color = Color.defaultValue
     
     // progress analyzing data
     @State private var scheduled: Int = 0
@@ -159,12 +156,10 @@ struct ContentView: View {
                     }
                     .sheet(isPresented: $saving) {
                         VStack(spacing: 0) {
-                            Text("Export map as \(format.rawValue) image...").font(.largeTitle).padding(20).frame(minWidth: 380)
+                            Text("Export map as \(export.format.rawValue) image...").font(.largeTitle).padding(20).frame(minWidth: 380)
                             Divider()
-                            ExportView(format: $format, width: $width, oversampling: $oversampling,
-                                       withColorBar: $colorbar, withDataRange: $withDataRange,
-                                       withAnnotation: $withAnnotation, annotation: $annotation,
-                                       font: $font.nsFont, color: $color).padding(20)
+                            ExportView(settings: $export, colorbar: $colorbar,
+                                       annotation: $annotation, font: $font.nsFont, color: $color).padding(20)
                             Divider()
                             HStack {
                                 Button { saving = false } label: {
@@ -404,21 +399,22 @@ struct ContentView: View {
     // render annotated map texture for export
     func render() -> MTLTexture? {
         // set up dimensions for borderless map
-        let width = Double(width*oversampling)
+        let oversampling = export.oversampling
+        let width = Double(export.dimension*oversampling)
         var height = state.projection.height(width: width), shift = 0.0
         let thickness = width/ColorbarView.aspect
         if (colorbar) { height += 2.0*thickness; shift += thickness }
-        if (colorbar && withDataRange) { height += thickness; shift += thickness/2.0 }
+        if (colorbar && export.range) { height += thickness; shift += thickness/2.0 }
         let w = Int(width), h = Int(height), t = Int(thickness)
         
         // render map texture and annotate it if requested
         guard let texture = mapview?.image(width: w, height: h, shift: (0,shift)) else { return nil }
         let output = (oversampling > 1) ? IMGTexture(width: w/oversampling, height: h/oversampling) : texture
         
-        if (colorbar && withDataRange) {
+        if (colorbar && export.range) {
             let scale = " (\(state.transform.f.rawValue.lowercased()) scale)"
             let annotation = (state.transform.f != .none) ? annotation + scale : annotation
-            annotate(texture, height: t, min: state.range.min, max: state.range.max, annotation: withAnnotation ? annotation : nil, font: font.nsFont, color: color.cgColor, background: state.palette.bg.cgColor)
+            annotate(texture, height: t, min: state.range.min, max: state.range.max, annotation: export.annotation ? annotation : nil, font: font.nsFont, color: color.cgColor, background: state.palette.bg.cgColor)
         }
         
         if (colorbar || oversampling > 1) {
@@ -432,7 +428,7 @@ struct ContentView: View {
                 encoder.copy(from: bar, sourceSlice: 0, sourceLevel: 0,
                              sourceOrigin: MTLOriginMake(0,0,0), sourceSize: MTLSizeMake(w,2*t,1),
                              to: texture, destinationSlice: 0, destinationLevel: 0,
-                             destinationOrigin: MTLOriginMake(0, withDataRange ? t : 0, 0))
+                             destinationOrigin: MTLOriginMake(0, export.range ? t : 0, 0))
                 encoder.endEncoding()
             }
             
@@ -454,8 +450,8 @@ struct ContentView: View {
     
     // save annotated map
     func save(_ url: URL? = nil) {
-        guard let url = url ?? showSavePanel(type: format.type) else { return }
-        if let output = render() { saveAsImage(output, url: url, format: format) }
+        guard let url = url ?? showSavePanel(type: export.format.type) else { return }
+        if let output = render() { saveAsImage(output, url: url, format: export.format) }
     }
 }
 
