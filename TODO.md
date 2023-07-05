@@ -28,8 +28,11 @@
 - magnifier glass
 - selectable GPU device (e.g. discrete/external unit)
 - option to drag the map with colorbar...
+- view from inside should be part of projection settings
 - false color map support (e.g. RGB = 100,147,217GHz channels)
 - proxy map to improve percieved transform performance
+- switch to indirect buffers?
+- save and load view state
 - command line interface
 
 ### Long Term Targets
@@ -45,4 +48,7 @@
 - display alert if FITS format is not HEALPix (or unsupported scheme)
 - fix crash on out-of-memory, display alert and refuse to load instead
 - adjust LOD level for different projections
+- new maps should open keeping current settings
+- fallback for JSON parsers
+- fix 16-bit textures in annotate
 - RangeView got broken somehow...
