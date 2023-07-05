@@ -96,7 +96,7 @@ struct ViewState: Equatable, Codable {
 }
 
 // state changes mask
-struct StateMask: RawRepresentable, Equatable, Codable {
+struct StateMask: Equatable, Codable {
     var projection = false
     var view = false
     var transform = true
@@ -106,9 +106,9 @@ struct StateMask: RawRepresentable, Equatable, Codable {
     
     static let keep = StateMask(rawValue: 0b011101)
     static let copy = StateMask(rawValue: 0b011100)
-    
-    public init() { }
-    
+}
+
+extension StateMask: RawRepresentable {
     public init(rawValue: Int) {
         projection = (rawValue & 0b000001) != 0
               view = (rawValue & 0b000010) != 0
