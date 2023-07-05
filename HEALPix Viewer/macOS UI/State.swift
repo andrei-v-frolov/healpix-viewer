@@ -128,6 +128,50 @@ extension StateMask: RawRepresentable {
     }
 }
 
+// export state
+struct Export: Equatable, Codable {
+    var format: ImageFormat = .png
+    var size: PreferredSize = .specificWidth
+    var dimension: Int = 1920
+    var oversampling: Int = 1
+    var colorbar: Bool = false
+    var range: Bool = false
+    var annotation: Bool = false
+    
+    static let drag = Export(format: .png, size: .width2)
+    static let save = Export(format: .png, oversampling: 2, colorbar: true, range: true, annotation: true)
+}
+
+extension Export: JsonRepresentable {
+    enum CodingKeys: String, CodingKey {
+        case format, size, dimension, oversampling, colorbar, range, annotation
+    }
+    
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        
+        format = try container.decode(ImageFormat.self, forKey: .format)
+        size = try container.decode(PreferredSize.self, forKey: .size)
+        dimension = try container.decode(Int.self, forKey: .dimension)
+        oversampling = try container.decode(Int.self, forKey: .oversampling)
+        colorbar = try container.decode(Bool.self, forKey: .colorbar)
+        range = try container.decode(Bool.self, forKey: .range)
+        annotation = try container.decode(Bool.self, forKey: .annotation)
+    }
+    
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        
+        try container.encode(format, forKey: .format)
+        try container.encode(size, forKey: .size)
+        try container.encode(dimension, forKey: .dimension)
+        try container.encode(oversampling, forKey: .oversampling)
+        try container.encode(colorbar, forKey: .colorbar)
+        try container.encode(range, forKey: .range)
+        try container.encode(annotation, forKey: .annotation)
+    }
+}
+
 // cursor state
 struct Cursor {
     var hover: Bool = false

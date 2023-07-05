@@ -12,16 +12,16 @@ import UniformTypeIdentifiers
 // settings - appearance
 let viewFromInsideKey = "viewFromInside"
 let lightingKey = "lighting"
-let annotationFontKey = "annotationFont"
-let annotationColorKey = "annotationColor"
 
 // settings - behavior
 let keepStateKey = "keepStateMask"
 let copyStateKey = "copyStateMask"
 
 // settings - export
-let dragWithColorBarKey = "dragWithColorBar"
-let dragWithAnnotationKey = "dragWithAnnotation"
+let dragSettingsKey = "drag"
+let exportSettingsKey = "export"
+let annotationFontKey = "annotationFont"
+let annotationColorKey = "annotationColor"
 
 // settings - view menu
 let cursorKey = "cursor"
@@ -132,6 +132,27 @@ enum ImageFormat: String, CaseIterable, Codable, Preference {
             default:    return .rgba8Unorm
         }
     }
+}
+
+// exported file size preference
+enum PreferredSize: String, CaseIterable, Codable, Preference {
+    case specificWidth = "Specified width"
+    case specificHeight = "Specified height"
+    case width = "View width"
+    case width2 = "View width x2"
+    case width4 = "View width x4"
+    case height = "View height"
+    case height2 = "View height x2"
+    case height4 = "View height x4"
+
+    // default value
+    static let key = "size"
+    static let defaultValue: Self = .specificWidth
+    
+    // collections
+    static let free: [Self] = [.specificWidth, .specificHeight]
+    static let widths: [Self] = [.width, .width2, .width4]
+    static let heights: [Self] = [.height, .height2, .height4]
 }
 
 // data sources
@@ -414,25 +435,6 @@ struct FontPreference: RawRepresentable, Preference {
     public var rawValue: String { nsFont?.fontName ?? ""}
 }
 
-// encapsulates @AppStorage preference properties
-protocol Preference {
-    static var key: String { get }
-    static var value: Self { get }
-    static var defaultValue: Self { get }
-    
-    init?(rawValue: String)
-}
-
-// default implementation of preference value access
-extension Preference {
-    static var value: Self {
-        guard let raw = UserDefaults.standard.string(forKey: Self.key),
-              let value = Self(rawValue: raw) else { return Self.defaultValue }
-        
-        return value
-    }
-}
-
 // color encoded for @AppStorage
 extension Color: RawRepresentable, Codable, Preference {
     public init(rawValue: String) {
@@ -507,4 +509,40 @@ extension Color: RawRepresentable, Codable, Preference {
     // default value
     static let key = "color"
     static var defaultValue = Color.primary
+}
+
+// encapsulates @AppStorage preference properties
+protocol Preference {
+    static var key: String { get }
+    static var value: Self { get }
+    static var defaultValue: Self { get }
+    
+    init?(rawValue: String)
+}
+
+// default implementation of preference value access
+extension Preference {
+    static var value: Self {
+        guard let raw = UserDefaults.standard.string(forKey: Self.key),
+              let value = Self(rawValue: raw) else { return Self.defaultValue }
+        
+        return value
+    }
+}
+
+// default implementation of JSON-encodable preference sets
+protocol JsonRepresentable: RawRepresentable where RawValue == String {}
+
+extension JsonRepresentable where Self: Codable {
+    init?(rawValue: String) {
+        guard let data = rawValue.data(using: .utf8),
+              let value = try? JSONDecoder().decode(Self.self, from: data) else { return nil }
+        self = value
+    }
+    
+    var rawValue: String {
+        guard let data = try? JSONEncoder().encode(self),
+              let value = String(data: data, encoding: .utf8) else { return "" }
+        return value
+    }
 }

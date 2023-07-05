@@ -13,13 +13,16 @@ struct SettingsView: View {
     @AppStorage(Thumbnails.key) var thumbnails = Thumbnails.defaultValue
     @AppStorage(viewFromInsideKey) var viewFromInside = true
     @AppStorage(lightingKey) var lighting = false
-    @AppStorage(annotationFontKey) var font = FontPreference.defaultValue
-    @AppStorage(annotationColorKey) var color = Color.defaultValue
     
     // behavior tab
     @AppStorage(keepStateKey) var keepState = StateMask.keep
     @AppStorage(copyStateKey) var copyState = StateMask.copy
     
+    // export tab
+    @AppStorage(dragSettingsKey) var drag = Export.drag
+    @AppStorage(exportSettingsKey) var export = Export.save
+    @AppStorage(annotationFontKey) var font = FontPreference.defaultValue
+    @AppStorage(annotationColorKey) var color = Color.defaultValue
     
     // performance tab
     @AppStorage(TextureFormat.key) var texture = TextureFormat.defaultValue
@@ -29,7 +32,7 @@ struct SettingsView: View {
     
     // view styling parameters
     private let width: CGFloat = 520
-    private let height: CGFloat = 250
+    private let height: CGFloat = 270
     private let corner: CGFloat = 7
     private let offset: CGFloat = 13
     
@@ -62,16 +65,6 @@ struct SettingsView: View {
                     RoundedRectangle(cornerRadius: corner)
                         .stroke(Color.secondary.opacity(0.2), lineWidth: 1)
                 )
-                VStack {
-                    HStack {
-                        Text("Annotation:")
-                        FontPicker(font: $font.nsFont)
-                        ColorPicker("", selection: $color)
-                    }.frame(width: 210)
-                }.padding(corner).frame(width: 380).overlay(
-                    RoundedRectangle(cornerRadius: corner)
-                        .stroke(Color.secondary.opacity(0.2), lineWidth: 1)
-                )
             }
             .tabItem { Label("Appearance", systemImage: "eye") }
             // behavior tab
@@ -82,6 +75,26 @@ struct SettingsView: View {
                               state: $copyState, defaults: .constant(StateMask.copy), lighting: $lighting)
             }
             .tabItem { Label("Behavior", systemImage: "flowchart") }
+            // export tab
+            VStack {
+                VStack {
+                    ExportSettingsView(title: .constant("Drag & drop as:"),
+                                   settings: $drag, defaults: .constant(Export.drag))
+                    ExportSettingsView(title: .constant("Export as:"),
+                                   settings: $export, defaults: .constant(Export.save))
+                    VStack {
+                        HStack {
+                            Text("Annotation:")
+                            FontPicker(font: $font.nsFont)
+                            ColorPicker("", selection: $color)
+                        }.frame(width: 210)
+                    }.padding(corner).frame(width: 380).overlay(
+                        RoundedRectangle(cornerRadius: corner)
+                            .stroke(Color.secondary.opacity(0.2), lineWidth: 1)
+                    )
+                }
+            }
+            .tabItem { Label("Export", systemImage: "square.and.arrow.down") }
             // performance tab
             VStack {
                 VStack {
@@ -161,6 +174,74 @@ struct StateMaskView: View {
         .padding(corner).overlay(
             RoundedRectangle(cornerRadius: corner)
             .stroke(Color.secondary.opacity(0.2), lineWidth: 1)
+        )
+    }
+}
+
+struct ExportSettingsView: View {
+    @Binding var title: String
+    @Binding var settings: Export
+    @Binding var defaults: Export
+    
+    // view styling parameters
+    private let corner: CGFloat = 7
+    private let offset: CGFloat = 13
+    
+    var body: some View {
+        VStack(alignment: .leading) {
+            HStack {
+                Text(title)
+                Spacer()
+                Picker("", selection: $settings.format) {
+                    ForEach(ImageFormat.allCases, id: \.self) {
+                        Text($0.rawValue).tag($0)
+                    }
+                }.frame(width: 70)
+                Picker("@", selection: $settings.oversampling) {
+                    Text("1x").tag(1)
+                    Text("2x").tag(2)
+                    Text("3x").tag(3)
+                    Text("4x").tag(4)
+                }.frame(width: 70)
+                Text("oversampling")
+            }.font(.title3)
+            Group {
+                HStack {
+                    Picker("Prefer", selection: $settings.size) {
+                        ForEach(PreferredSize.free, id: \.self) {
+                            Text($0.rawValue).tag($0)
+                        }
+                        Divider()
+                        ForEach(PreferredSize.widths, id: \.self) {
+                            Text($0.rawValue).tag($0)
+                        }
+                        Divider()
+                        ForEach(PreferredSize.heights, id: \.self) {
+                            Text($0.rawValue).tag($0)
+                        }
+                    }
+                    .frame(width: 176)
+                    Text("@").foregroundColor(PreferredSize.free.contains(settings.size) ? .primary : .disabled)
+                    TextField("Dimension", value: $settings.dimension, formatter: SizeFormatter)
+                        .disabled(!PreferredSize.free.contains(settings.size))
+                        .frame(width: 50)
+                    Text("pixels").foregroundColor(PreferredSize.free.contains(settings.size) ? .primary : .disabled)
+                }
+            }.padding(.leading, offset)
+            Group {
+                HStack {
+                    Text("Include")
+                    Toggle("color bar", isOn: $settings.colorbar)
+                    Toggle("range", isOn: $settings.range).disabled(!settings.colorbar)
+                    Toggle("annotation", isOn: $settings.annotation).disabled(!settings.colorbar || !settings.range)
+                    Spacer()
+                    Button("Reset") { settings = defaults }
+                }
+            }.padding(.leading, offset)
+        }
+        .padding(corner).frame(width: 380).overlay(
+            RoundedRectangle(cornerRadius: corner)
+                .stroke(Color.secondary.opacity(0.2), lineWidth: 1)
         )
     }
 }
