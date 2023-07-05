@@ -76,42 +76,10 @@ struct SettingsView: View {
             .tabItem { Label("Appearance", systemImage: "eye") }
             // behavior tab
             HStack {
-                VStack {
-                    VStack(alignment: .leading) {
-                        Text("Map navigation remembers...").font(.title3)
-                        Group {
-                            Toggle(" Projection", isOn: $keepState.projection)
-                            Toggle(" Viewpoint", isOn: $keepState.view)
-                            Toggle(" Color Scheme", isOn: $keepState.palette)
-                            Toggle(" Map Transform", isOn: $keepState.transform)
-                            Toggle(" Color Bar Range", isOn: $keepState.range)
-                            Toggle(" Map Lighting", isOn: $keepState.light).disabled(!lighting)
-                        }.padding(.leading, offset)
-                    }
-                    Button("Reset") { keepState = StateMask.keep }.padding(5)
-                }
-                .padding(corner).overlay(
-                    RoundedRectangle(cornerRadius: corner)
-                    .stroke(Color.secondary.opacity(0.2), lineWidth: 1)
-                )
-                VStack {
-                    VStack(alignment: .leading) {
-                        Text("Style copy & paste transfers...").font(.title3)
-                        Group {
-                            Toggle(" Projection", isOn: $copyState.projection)
-                            Toggle(" Viewpoint", isOn: $copyState.view)
-                            Toggle(" Color Scheme", isOn: $copyState.palette)
-                            Toggle(" Map Transform", isOn: $copyState.transform)
-                            Toggle(" Color Bar Range", isOn: $copyState.range)
-                            Toggle(" Map Lighting", isOn: $copyState.light).disabled(!lighting)
-                        }.padding(.leading, offset)
-                    }
-                    Button("Reset") { copyState = StateMask.copy }.padding(5)
-                }
-                .padding(corner).overlay(
-                    RoundedRectangle(cornerRadius: corner)
-                    .stroke(Color.secondary.opacity(0.2), lineWidth: 1)
-                )
+                StateMaskView(title: .constant("Map navigation remembers..."),
+                              state: $keepState, defaults: .constant(StateMask.keep), lighting: $lighting)
+                StateMaskView(title: .constant("Style copy & paste transfers..."),
+                              state: $copyState, defaults: .constant(StateMask.copy), lighting: $lighting)
             }
             .tabItem { Label("Behavior", systemImage: "flowchart") }
             // performance tab
@@ -161,6 +129,38 @@ struct SettingsView: View {
         .frame(
             minWidth:  width, idealWidth: width, maxWidth:  width,
             minHeight: height, idealHeight: height, maxHeight: height
+        )
+    }
+}
+
+struct StateMaskView: View {
+    @Binding var title: String
+    @Binding var state: StateMask
+    @Binding var defaults: StateMask
+    @Binding var lighting: Bool
+    
+    // view styling parameters
+    private let corner: CGFloat = 7
+    private let offset: CGFloat = 13
+    
+    var body: some View {
+        VStack {
+            VStack(alignment: .leading) {
+                Text(title).font(.title3)
+                Group {
+                    Toggle(" Projection", isOn: $state.projection)
+                    Toggle(" Viewpoint", isOn: $state.view)
+                    Toggle(" Color Scheme", isOn: $state.palette)
+                    Toggle(" Map Transform", isOn: $state.transform)
+                    Toggle(" Color Bar Range", isOn: $state.range)
+                    Toggle(" Map Lighting", isOn: $state.light).disabled(!lighting)
+                }.padding(.leading, offset)
+            }
+            Button("Reset") { state = defaults }.padding(5)
+        }
+        .padding(corner).overlay(
+            RoundedRectangle(cornerRadius: corner)
+            .stroke(Color.secondary.opacity(0.2), lineWidth: 1)
         )
     }
 }
