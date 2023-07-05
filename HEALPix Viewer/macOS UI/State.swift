@@ -95,6 +95,34 @@ struct ViewState: Equatable, Codable {
     }
 }
 
+extension ViewState: JsonRepresentable {
+    enum CodingKeys: String, CodingKey {
+        case projection, view, transform, palette, range, light
+    }
+    
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        
+        projection = try container.decode(Projection.self, forKey: .projection)
+        view = try container.decode(Viewpoint.self, forKey: .view)
+        transform = try container.decode(Transform.self, forKey: .transform)
+        palette = try container.decode(Palette.self, forKey: .palette)
+        range = try container.decode(Bounds.self, forKey: .range)
+        light = try container.decode(Light.self, forKey: .light)
+    }
+    
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        
+        try container.encode(projection, forKey: .projection)
+        try container.encode(view, forKey: .view)
+        try container.encode(transform, forKey: .transform)
+        try container.encode(palette, forKey: .palette)
+        try container.encode(range, forKey: .range)
+        try container.encode(light, forKey: .light)
+    }
+}
+
 // state changes mask
 struct StateMask: Equatable, Codable {
     var projection = false
@@ -128,7 +156,7 @@ extension StateMask: RawRepresentable {
     }
 }
 
-// export state
+// export settings
 struct Export: Equatable, Codable {
     var format: ImageFormat = .png
     var size: PreferredSize = .specificWidth
