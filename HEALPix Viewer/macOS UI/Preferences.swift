@@ -10,8 +10,9 @@ import MetalKit
 import UniformTypeIdentifiers
 
 // settings - appearance
-let viewFromInsideKey = "viewFromInside"
+let animateKey = "animate"
 let lightingKey = "lighting"
+let viewFromInsideKey = "viewFromInside"
 
 // settings - behavior
 let keepStateKey = "keepStateMask"
@@ -25,7 +26,6 @@ let annotationColorKey = "annotationColor"
 
 // settings - view menu
 let cursorKey = "cursor"
-let animateKey = "animate"
 let showColorBarKey = "showColorBar"
 
 // application appearance

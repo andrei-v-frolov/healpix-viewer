@@ -13,6 +13,7 @@ struct SettingsView: View {
     @AppStorage(Thumbnails.key) var thumbnails = Thumbnails.defaultValue
     @AppStorage(viewFromInsideKey) var viewFromInside = true
     @AppStorage(lightingKey) var lighting = false
+    @AppStorage(animateKey) var animate = true
     
     // behavior tab
     @AppStorage(keepStateKey) var keepState = StateMask.keep
@@ -58,6 +59,7 @@ struct SettingsView: View {
                 VStack(alignment: .leading) {
                     Text("When rendering the map...").font(.title3)
                     Group {
+                        Toggle(" Animate sphere rotation", isOn: $animate)
                         Toggle(" View from inside (enable for CMB)", isOn: $viewFromInside)
                         Toggle(" Apply lighting effects (sphere shading)", isOn: $lighting)
                     }.padding(.leading, offset)
