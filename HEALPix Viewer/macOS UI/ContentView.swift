@@ -457,20 +457,19 @@ struct ContentView: View {
 
 // annotate bottom part of a texture with data range labels and (optionally) a string
 func annotate(_ texture: MTLTexture, height h: Int, min: Double, max: Double, format: String = "%+.6g", annotation: String? = nil, font: NSFont? = nil, fontname: String = "SF Compact", color: CGColor? = nil, background: CGColor? = nil) {
+    let bits = texture.bits, bytes = bits/8
     let w = texture.width, region = MTLRegionMake2D(0,0,w,h)
     
     // allocate buffer for the annotation region
-    let buffer = UnsafeMutableRawPointer.allocate(byteCount: 4*w*h, alignment: 1024)
-    texture.getBytes(buffer, bytesPerRow: 4*w, from: region, mipmapLevel: 0)
+    let buffer = UnsafeMutableRawPointer.allocate(byteCount: w*h*bytes, alignment: 8192)
+    texture.getBytes(buffer, bytesPerRow: w*bytes, from: region, mipmapLevel: 0)
     defer { buffer.deallocate() }
     
     // create graphics context
-    let rgba = CGImageAlphaInfo.premultipliedLast.rawValue
-    
     guard let srgb = CGColorSpace(name: CGColorSpace.sRGB),
           let context = CGContext(data: buffer, width: w, height: h,
-                                  bitsPerComponent: 8, bytesPerRow: 4*w,
-                                  space: srgb, bitmapInfo: rgba) else { return }
+                                  bitsPerComponent: bits/texture.components, bytesPerRow: w*bytes,
+                                  space: srgb, bitmapInfo: texture.layout) else { return }
     
     // set up coordinates for off-screen image
     context.translateBy(x: 0.0, y: CGFloat(h))
@@ -512,5 +511,5 @@ func annotate(_ texture: MTLTexture, height h: Int, min: Double, max: Double, fo
     
     context.flush()
     
-    texture.replace(region: region, mipmapLevel: 0, withBytes: buffer, bytesPerRow: w*4)
+    texture.replace(region: region, mipmapLevel: 0, withBytes: buffer, bytesPerRow: w*bytes)
 }

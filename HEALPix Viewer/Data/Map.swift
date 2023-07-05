@@ -52,9 +52,9 @@ func HPXTexture(nside: Int) -> MTLTexture {
 }
 
 // PNG image texture for export
-func IMGTexture(width: Int, height: Int) -> MTLTexture {
+func IMGTexture(width: Int, height: Int, format: MTLPixelFormat = .rgba8Unorm) -> MTLTexture {
     // texture format
-    let desc = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: ImageFormat.value.pixel, width: width, height: height, mipmapped: false)
+    let desc = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: format, width: width, height: height, mipmapped: false)
     desc.usage = [.shaderWrite, .shaderRead]
     
     // initialize compute pipeline

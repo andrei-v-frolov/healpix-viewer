@@ -148,4 +148,37 @@ extension MTLTexture {
     // texture size and CIImage-style extent
     var size: MTLSize { return MTLSize(width: width, height: height, depth: depth) }
     var extent: CGRect { return CGRect(x: 0, y: 0, width: width, height: height) }
+    
+    // texture format properties (not all combinations supported by CGContext!)
+    var bits: Int {
+        switch self.pixelFormat {
+            case .a8Unorm, .r8Unorm, .r8Uint: return 8
+            case .r16Unorm, .r16Uint, .r16Float, .rg8Unorm, .rg8Uint, .abgr4Unorm: return 16
+            case .r32Uint, .r32Float, .rg16Unorm, .rg16Uint, .rg16Float, .rgba8Unorm, .rgba8Uint, .bgra8Unorm: return 32
+            case .rg32Uint, .rg32Float, .rgba16Unorm, .rgba16Uint, .rgba16Float: return 64
+            case .rgba32Uint, .rgba32Float: return 128
+            default: fatalError("texture layout is not supported")
+        }
+    }
+    
+    var components: Int {
+        switch self.pixelFormat {
+            case .a8Unorm, .r8Unorm, .r8Uint, .r16Unorm, .r16Uint, .r16Float, .r32Uint, .r32Float: return 1
+            case .rg8Unorm, .rg8Uint, .rg16Unorm, .rg16Uint, .rg16Float, .rg32Uint, .rg32Float: return 2
+            case .abgr4Unorm, .rgba8Unorm, .rgba8Uint, .bgra8Unorm, .rgba16Unorm, .rgba16Uint, .rgba16Float, .rgba32Uint, .rgba32Float: return 4
+            default: fatalError("texture layout is not supported")
+        }
+    }
+    
+    var layout: UInt32 {
+        switch self.pixelFormat {
+            case .a8Unorm: return CGImageAlphaInfo.alphaOnly.rawValue
+            case .r8Unorm, .r8Uint, .r16Unorm, .r16Uint, .rg8Unorm, .rg8Uint, .r32Uint, .rg16Unorm, .rg16Uint, .rg32Uint: return CGImageAlphaInfo.none.rawValue
+            case .r16Float, .r32Float, .rg16Float, .rg32Float: return CGImageAlphaInfo.none.rawValue | CGBitmapInfo.floatComponents.rawValue
+            case .abgr4Unorm: return CGImageAlphaInfo.premultipliedFirst.rawValue
+            case .rgba8Unorm, .rgba8Uint, .bgra8Unorm, .rgba16Unorm, .rgba16Uint, .rgba32Uint: return CGImageAlphaInfo.premultipliedLast.rawValue
+            case .rgba16Float, .rgba32Float: return CGImageAlphaInfo.premultipliedLast.rawValue | CGBitmapInfo.floatComponents.rawValue
+            default: fatalError("texture layout is not supported")
+        }
+    }
 }
