@@ -124,11 +124,11 @@ struct ContentView: View {
                             MapView(map: $map, projection: $state.projection, viewpoint: $state.view, magnification: $magnification,
                                     background: $state.palette.bg, light: $state.light, cursor: $cursor, mapview: $mapview)
                             .onDrag {
-                                let w = geometry.size.width, h = state.projection.height(width: w), none = NSItemProvider()
-                                guard let url = tmpfile(), let image = mapview?.image(width: Int(w), height: Int(h)) else { return none }
-                                
-                                saveAsImage(image, url: url); tmpfiles.append(url)
-                                return NSItemProvider(contentsOf: url) ?? none
+                                withAnimation { colorbar ||= drag.colorbar }
+                                guard let image = render(for: drag, size: geometry.size),
+                                      let url = tmpfile(type: drag.format.type) else { return NSItemProvider() }
+                                saveAsImage(image, url: url, format: drag.format); tmpfiles.append(url)
+                                return NSItemProvider(contentsOf: url) ?? NSItemProvider()
                             }
                             if (cursor.hover) {
                                 CursorView(cursor: $cursor)
@@ -138,11 +138,12 @@ struct ContentView: View {
                             BarView(palette: $state.palette, barview: $barview)
                             .frame(height: 1.5*geometry.size.width/ColorbarView.aspect)
                             .onDrag {
-                                let w = geometry.size.width, h = w/ColorbarView.aspect, none = NSItemProvider()
-                                guard let url = tmpfile(), let image = barview?.image(width: Int(w), height: Int(h)) else { return none }
-                                
-                                saveAsImage(image, url: url); tmpfiles.append(url)
-                                return NSItemProvider(contentsOf: url) ?? none
+                                guard let barview = barview, let url = tmpfile(type: drag.format.type) else { return NSItemProvider() }
+                                let w = Int(geometry.size.width), h = Int(geometry.size.width/ColorbarView.aspect)
+                                let format: MTLPixelFormat = (drag.format == .tiff) ? .rgba16Unorm : .rgba8Unorm
+                                let image = IMGTexture(width: w, height: h, format: format); barview.render(to: image)
+                                saveAsImage(image, url: url, format: drag.format); tmpfiles.append(url)
+                                return NSItemProvider(contentsOf: url) ?? NSItemProvider()
                             }
                             RangeToolbar(range: $state.range, datamin: $datamin, datamax: $datamax)
                         }
@@ -166,7 +167,7 @@ struct ContentView: View {
                                     Text("Cancel").padding(20)
                                 }
                                 Spacer().frame(width: 30)
-                                Button { saving = false; DispatchQueue.main.async { self.save() } } label: {
+                                Button { saving = false; DispatchQueue.main.async { self.save(size: geometry.size) } } label: {
                                     Text("Export").foregroundColor(Color.accentColor).padding(20)
                                 }
                             }
@@ -479,9 +480,10 @@ struct ContentView: View {
     }
     
     // save annotated map
-    func save(_ url: URL? = nil) {
-        guard let url = url ?? showSavePanel(type: export.format.type) else { return }
-        if let output = render() { saveAsImage(output, url: url, format: export.format) }
+    func save(_ url: URL? = nil, with settings: Export? = nil, size view: CGSize? = nil) {
+        let settings = settings ?? export
+        guard let url = url ?? showSavePanel(type: settings.format.type) else { return }
+        if let output = render(for: settings, size: view) { saveAsImage(output, url: url, format: settings.format) }
     }
 }
 

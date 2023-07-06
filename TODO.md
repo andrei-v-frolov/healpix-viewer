@@ -6,7 +6,7 @@
 - selectable annotation font and color
 - Python difference (RWB) colormap added
 - power law and exponential transforms added
-- export as GIF, PNG, HEIF, and 16-bit TIFF format
+- export and drag as GIF, PNG, HEIF, and 16-bit TIFF format
 - more realistic lighting (Lambert reflection, gamma corrected)
 - code refactored to encapsulate view parameters into a struct
 - keep, copy, and paste viewer setting sets between loaded maps
@@ -27,13 +27,12 @@
 
 - magnifier glass
 - selectable GPU device (e.g. discrete/external unit)
-- option to drag the map with colorbar...
-- view from inside should be part of projection settings
-- false color map support (e.g. RGB = 100,147,217GHz channels)
+- view from inside should be part of projection settings?
+- false color map support (e.g. RGB = 100,147,217GHz channels) + gamma
 - proxy map to improve percieved transform performance
 - switch to indirect buffers?
 - save and load view state
-- command line interface
+- command line interface (via ArgumentParser)
 
 ### Long Term Targets
 
@@ -50,5 +49,5 @@
 - adjust LOD level for different projections
 - new maps should open keeping current settings
 - fallback for JSON parsers
-- fix 16-bit textures in annotate
 - RangeView got broken somehow...
+- keyWindow code fails if Settings is open...

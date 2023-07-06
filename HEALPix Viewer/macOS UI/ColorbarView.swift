@@ -124,10 +124,4 @@ class ColorbarView: MTKView {
         encode(command, to: texture, transform: transform)
         command.commit(); command.waitUntilCompleted()
     }
-    
-    // MARK: create map image of specified size
-    func image(width w: Int, height h: Int) -> MTLTexture {
-        let texture = IMGTexture(width: w, height: h)
-        render(to: texture); return texture
-    }
 }

@@ -247,12 +247,6 @@ class ProjectedView: MTKView {
         command.commit(); command.waitUntilCompleted()
     }
     
-    // MARK: create map image of specified size
-    func image(width w: Int, height h: Int, anchor: Anchor = .c, shift: (x: Double, y: Double) = (0,0)) -> MTLTexture {
-        let texture = IMGTexture(width: w, height: h)
-        render(to: texture, anchor: anchor, shift: shift); return texture
-    }
-    
     // MARK: spherical coordinates from event location
     func coordinates(_ event: NSEvent) -> (Double,Double)? {
         let location = convertToBacking(convert(event.locationInWindow, from: nil))
