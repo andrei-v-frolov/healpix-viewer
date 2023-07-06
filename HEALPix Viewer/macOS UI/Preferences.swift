@@ -70,7 +70,7 @@ enum TextureFormat: String, CaseIterable, Codable, Preference {
     
     // default value
     static let key = "pixel"
-    static let defaultValue: Self = .uint8
+    static let defaultValue: Self = .uint10
     
     // backing texture format
     var pixel: MTLPixelFormat {
