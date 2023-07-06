@@ -319,8 +319,6 @@ struct ContentView: View {
             
             // dispatch maps for analysis
             for map in file.list {
-                map.settings.update(state, mask: keepState)
-                
                 let m = map.data, n = Double(m.npix), workload = Int(n*log(1+n))
                 scheduled += workload; analysisQueue.async {
                     m.index(); map.ranked = m.ranked(); load(); completed += workload
@@ -361,8 +359,12 @@ struct ContentView: View {
         // stash current settings
         data?.settings = state
         
-        // load stored settings and map data
-        state.update(map.settings, mask: keepState); load(map)
+        // load stored or default settings
+        if let settings = map.settings { state.update(settings, mask: keepState) }
+        else { state = ViewState().copy(state, mask: keepState) }
+        
+        // load map
+        load(map)
     }
     
     // colorize map with specified settings

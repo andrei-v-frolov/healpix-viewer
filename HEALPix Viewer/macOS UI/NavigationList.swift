@@ -35,7 +35,7 @@ final class MapData: Identifiable, ObservableObject {
     let preview = IMGTexture(width: 288, height: 144)
     
     // saved view settings
-    var settings = ViewState()
+    var settings: ViewState? = nil
     
     // current transform state
     internal var state = Transform()

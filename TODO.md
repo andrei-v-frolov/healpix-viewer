@@ -47,7 +47,6 @@
 - display alert if FITS format is not HEALPix (or unsupported scheme)
 - fix crash on out-of-memory, display alert and refuse to load instead
 - adjust LOD level for different projections
-- new maps should open keeping current settings
 - fallback for JSON parsers
 - RangeView got broken somehow...
 - keyWindow code fails if Settings is open...
