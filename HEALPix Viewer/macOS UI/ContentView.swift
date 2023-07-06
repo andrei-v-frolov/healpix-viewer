@@ -168,7 +168,7 @@ struct ContentView: View {
                                 }
                                 Spacer().frame(width: 30)
                                 Button { saving = false; DispatchQueue.main.async { self.save(size: geometry.size) } } label: {
-                                    Text("Export").foregroundColor(Color.accentColor).padding(20)
+                                    Text("Export").foregroundColor(.accentColor).padding(20)
                                 }
                             }
                             .padding(10)
