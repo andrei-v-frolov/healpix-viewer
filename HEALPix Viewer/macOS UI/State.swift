@@ -159,27 +159,27 @@ extension StateMask: RawRepresentable {
 // export settings
 struct Export: Equatable, Codable {
     var format: ImageFormat = .png
-    var size: PreferredSize = .specificWidth
+    var prefer: PreferredSize = .specificWidth
     var dimension: Int = 1920
     var oversampling: Int = 1
     var colorbar: Bool = false
     var range: Bool = false
     var annotation: Bool = false
     
-    static let drag = Export(format: .png, size: .width2)
+    static let drag = Export(format: .png, prefer: .width2)
     static let save = Export(format: .png, oversampling: 2, colorbar: true, range: true, annotation: true)
 }
 
 extension Export: JsonRepresentable {
     enum CodingKeys: String, CodingKey {
-        case format, size, dimension, oversampling, colorbar, range, annotation
+        case format, prefer, dimension, oversampling, colorbar, range, annotation
     }
     
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         
         format = try container.decode(ImageFormat.self, forKey: .format)
-        size = try container.decode(PreferredSize.self, forKey: .size)
+        prefer = try container.decode(PreferredSize.self, forKey: .prefer)
         dimension = try container.decode(Int.self, forKey: .dimension)
         oversampling = try container.decode(Int.self, forKey: .oversampling)
         colorbar = try container.decode(Bool.self, forKey: .colorbar)
@@ -191,7 +191,7 @@ extension Export: JsonRepresentable {
         var container = encoder.container(keyedBy: CodingKeys.self)
         
         try container.encode(format, forKey: .format)
-        try container.encode(size, forKey: .size)
+        try container.encode(prefer, forKey: .prefer)
         try container.encode(dimension, forKey: .dimension)
         try container.encode(oversampling, forKey: .oversampling)
         try container.encode(colorbar, forKey: .colorbar)

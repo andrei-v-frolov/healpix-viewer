@@ -136,15 +136,15 @@ enum ImageFormat: String, CaseIterable, Codable, Preference {
 
 // exported file size preference
 enum PreferredSize: String, CaseIterable, Codable, Preference {
-    case specificWidth = "Specified width"
-    case specificHeight = "Specified height"
+    case specificWidth = "Image width"
+    case specificHeight = "Image height"
     case width = "View width"
     case width2 = "View width x2"
     case width4 = "View width x4"
     case height = "View height"
     case height2 = "View height x2"
     case height4 = "View height x4"
-
+    
     // default value
     static let key = "size"
     static let defaultValue: Self = .specificWidth

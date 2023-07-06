@@ -209,7 +209,7 @@ struct ExportSettingsView: View {
             }.font(.title3)
             Group {
                 HStack {
-                    Picker("Prefer", selection: $settings.size) {
+                    Picker("Prefer", selection: $settings.prefer) {
                         ForEach(PreferredSize.free, id: \.self) {
                             Text($0.rawValue).tag($0)
                         }
@@ -223,11 +223,11 @@ struct ExportSettingsView: View {
                         }
                     }
                     .frame(width: 176)
-                    Text("@").foregroundColor(PreferredSize.free.contains(settings.size) ? .primary : .disabled)
+                    Text("@").foregroundColor(PreferredSize.free.contains(settings.prefer) ? .primary : .disabled)
                     TextField("Dimension", value: $settings.dimension, formatter: SizeFormatter)
-                        .disabled(!PreferredSize.free.contains(settings.size))
+                        .disabled(!PreferredSize.free.contains(settings.prefer))
                         .frame(width: 50)
-                    Text("pixels").foregroundColor(PreferredSize.free.contains(settings.size) ? .primary : .disabled)
+                    Text("pixels").foregroundColor(PreferredSize.free.contains(settings.prefer) ? .primary : .disabled)
                 }
             }.padding(.leading, offset)
             Group {
