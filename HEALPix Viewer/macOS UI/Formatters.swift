@@ -49,3 +49,10 @@ let SizeFormatter: NumberFormatter = {
     
     return n
 }()
+
+// generic implementation of limiters
+extension Comparable {
+    mutating func above(_ value: Self) { self = max(self,value) }
+    mutating func below(_ value: Self) { self = min(self,value) }
+    mutating func clamp(_ a: Self, _ b: Self) { self = max(min(self,b),a) }
+}

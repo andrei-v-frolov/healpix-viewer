@@ -9,6 +9,7 @@ import Foundation
 import MetalKit
 
 let metal = MetalDevice()
+let maxTextureSize = 1 << 14
 
 final class MetalDevice {
     let device: MTLDevice

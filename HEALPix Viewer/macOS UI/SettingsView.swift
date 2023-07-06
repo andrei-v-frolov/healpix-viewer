@@ -89,7 +89,7 @@ struct SettingsView: View {
                             Text("Annotation:")
                             FontPicker(font: $font.nsFont)
                             ColorPicker("", selection: $color)
-                        }.frame(width: 210)
+                        }.frame(width: 340)
                     }.padding(corner).frame(width: 380).overlay(
                         RoundedRectangle(cornerRadius: corner)
                             .stroke(Color.secondary.opacity(0.2), lineWidth: 1)
@@ -115,12 +115,12 @@ struct SettingsView: View {
                             ForEach(TextureFormat.allCases, id: \.self) {
                                 Text($0.rawValue).tag($0)
                             }
-                        }.frame(width: 180)
-                        Picker("", selection: $aliasing) {
+                        }.frame(width: 185)
+                        Picker("Antialiasing", selection: $aliasing) {
                             ForEach(AntiAliasing.allCases, id: \.self) {
                                 Text($0.rawValue).tag($0)
                             }
-                        }.frame(width: 160)
+                        }.labelsHidden().frame(width: 155)
                     }
                     Text("Balance render quality with memory footprint and performance").font(.footnote)
                 }.padding(corner).frame(width: 380).overlay(
@@ -185,6 +185,9 @@ struct ExportSettingsView: View {
     @Binding var settings: Export
     @Binding var defaults: Export
     
+    // show dimensions field?
+    @State private var dimensions = false
+    
     // view styling parameters
     private let corner: CGFloat = 7
     private let offset: CGFloat = 13
@@ -194,23 +197,23 @@ struct ExportSettingsView: View {
             HStack {
                 Text(title)
                 Spacer()
-                Picker("", selection: $settings.format) {
+                Picker("Image Format", selection: $settings.format) {
                     ForEach(ImageFormat.allCases, id: \.self) {
                         Text($0.rawValue).tag($0)
                     }
-                }.frame(width: 70)
+                }.labelsHidden().frame(width: 60)
                 Picker("@", selection: $settings.oversampling) {
                     Text("1x").tag(1)
-                    Text("2x").tag(2)
-                    Text("3x").tag(3)
-                    Text("4x").tag(4)
+                    if (settings.dimension*2 <= maxTextureSize) { Text("2x").tag(2) }
+                    if (settings.dimension*3 <= maxTextureSize) { Text("3x").tag(3) }
+                    if (settings.dimension*4 <= maxTextureSize) { Text("4x").tag(4) }
                 }.frame(width: 70)
                 Text("oversampling")
             }.font(.title3)
             Group {
                 HStack {
                     Picker("Prefer", selection: $settings.prefer) {
-                        ForEach(PreferredSize.free, id: \.self) {
+                        ForEach(PreferredSize.specified, id: \.self) {
                             Text($0.rawValue).tag($0)
                         }
                         Divider()
@@ -221,14 +224,13 @@ struct ExportSettingsView: View {
                         ForEach(PreferredSize.heights, id: \.self) {
                             Text($0.rawValue).tag($0)
                         }
+                    }.frame(width: 176)
+                    .onChange(of: settings.prefer) { value in withAnimation { dimensions = value.specific } }
+                    if (dimensions) {
+                        TextField("Dimension", value: $settings.dimension, formatter: SizeFormatter).frame(width: 50)
+                        Text("pixels")
                     }
-                    .frame(width: 176)
-                    Text("@").foregroundColor(PreferredSize.free.contains(settings.prefer) ? .primary : .disabled)
-                    TextField("Dimension", value: $settings.dimension, formatter: SizeFormatter)
-                        .disabled(!PreferredSize.free.contains(settings.prefer))
-                        .frame(width: 50)
-                    Text("pixels").foregroundColor(PreferredSize.free.contains(settings.prefer) ? .primary : .disabled)
-                }
+                }.frame(height: 24)
             }.padding(.leading, offset)
             Group {
                 HStack {
@@ -245,5 +247,6 @@ struct ExportSettingsView: View {
             RoundedRectangle(cornerRadius: corner)
                 .stroke(Color.secondary.opacity(0.2), lineWidth: 1)
         )
+        .task { dimensions = settings.prefer.specific }
     }
 }

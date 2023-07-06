@@ -150,9 +150,12 @@ enum PreferredSize: String, CaseIterable, Codable, Preference {
     static let defaultValue: Self = .specificWidth
     
     // collections
-    static let free: [Self] = [.specificWidth, .specificHeight]
     static let widths: [Self] = [.width, .width2, .width4]
     static let heights: [Self] = [.height, .height2, .height4]
+    static let specified: [Self] = [.specificWidth, .specificHeight]
+    
+    // need specific dimension?
+    var specific: Bool { Self.specified.contains(self) }
 }
 
 // data sources

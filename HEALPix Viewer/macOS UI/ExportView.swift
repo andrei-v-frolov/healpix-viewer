@@ -25,32 +25,47 @@ struct ExportView: View {
     @Binding var font: NSFont?
     @Binding var color: Color
     
+    // show dimensions field?
+    @State private var dimensions = false
+    
     var body: some View {
         HStack(spacing: 0) {
             VStack {
                 Image(systemName: "globe").font(.system(size: 64))
                 Image(systemName: "arrow.down").font(.system(size: 48))
-                Picker("", selection: $settings.format) {
+                Picker("Image Format", selection: $settings.format) {
                     ForEach(ImageFormat.allCases, id: \.self) {
                         Text($0.rawValue).tag($0)
                     }
-                }.frame(width: 70)
+                }.labelsHidden().frame(width: 60)
             }
             Spacer(minLength: 20)
             VStack(alignment: .leading) {
                 HStack {
-                    Text("Image width:")
-                    Spacer(minLength: 10)
-                    TextField("Width", value: $settings.dimension, formatter: SizeFormatter)
-                        .frame(width: 50)
+                    Picker("Prefer", selection: $settings.prefer) {
+                        ForEach(PreferredSize.specified, id: \.self) {
+                            Text($0.rawValue).tag($0)
+                        }
+                        Divider()
+                        ForEach(PreferredSize.widths, id: \.self) {
+                            Text($0.rawValue).tag($0)
+                        }
+                        Divider()
+                        ForEach(PreferredSize.heights, id: \.self) {
+                            Text($0.rawValue).tag($0)
+                        }
+                    }.labelsHidden().frame(width: 120)
+                    .onChange(of: settings.prefer) { value in withAnimation { dimensions = value.specific } }
+                    if (dimensions) {
+                        TextField("Dimension", value: $settings.dimension, formatter: SizeFormatter).frame(width: 50)
+                    }
                     Picker("@", selection: $settings.oversampling) {
                         Text("1x").tag(1)
-                        if (settings.dimension*2 <= 16384) { Text("2x").tag(2) }
-                        if (settings.dimension*3 <= 16384) { Text("3x").tag(3) }
-                        if (settings.dimension*4 <= 16384) { Text("4x").tag(4) }
-                    }
-                    .frame(width: 70)
-                }
+                        if (settings.dimension*2 <= maxTextureSize) { Text("2x").tag(2) }
+                        if (settings.dimension*3 <= maxTextureSize) { Text("3x").tag(3) }
+                        if (settings.dimension*4 <= maxTextureSize) { Text("4x").tag(4) }
+                    }.labelsHidden().frame(width: 50)
+                }.frame(height: 24)
                 HStack(alignment: .bottom) {
                     VStack(alignment: .leading) {
                         Toggle("Include colorbar", isOn: $colorbar.animation())
@@ -71,5 +86,6 @@ struct ExportView: View {
             }
             Spacer()
         }
+        .task { dimensions = settings.prefer.specific }
     }
 }
