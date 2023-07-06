@@ -86,6 +86,6 @@ struct ExportView: View {
             }
             Spacer()
         }
-        .task { dimensions = settings.prefer.specific }
+        .onAppear { dimensions = settings.prefer.specific; withAnimation { colorbar = settings.colorbar } }
     }
 }

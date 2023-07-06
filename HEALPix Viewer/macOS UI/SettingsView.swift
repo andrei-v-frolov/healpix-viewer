@@ -247,6 +247,6 @@ struct ExportSettingsView: View {
             RoundedRectangle(cornerRadius: corner)
                 .stroke(Color.secondary.opacity(0.2), lineWidth: 1)
         )
-        .task { dimensions = settings.prefer.specific }
+        .onAppear { dimensions = settings.prefer.specific }
     }
 }
