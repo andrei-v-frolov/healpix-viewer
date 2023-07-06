@@ -396,39 +396,70 @@ struct ContentView: View {
         DispatchQueue.main.async { mapview.render(to: map.preview, magnification: 0.0, padding: 0.02, background: .clear); map.refresh() }
     }
     
-    // render annotated map texture for export
-    func render() -> MTLTexture? {
-        // set up dimensions for borderless map
-        let oversampling = export.oversampling
-        let width = Double(export.dimension*oversampling)
+    // compute dimensions appropriate for rendered image components
+    func dimensions(for settings: Export? = nil, size view: CGSize? = nil) -> (width: Int, height: Int, thickness: Int, shift: Double) {
+        let settings = settings ?? export
+        let view = view ?? CGSize(width: settings.dimension, height: settings.dimension)
+        let width = 1.0; var scale = Double(settings.oversampling)
         var height = state.projection.height(width: width), shift = 0.0
+        
+        // add colorbar and annotation
         let thickness = width/ColorbarView.aspect
-        if (colorbar) { height += 2.0*thickness; shift += thickness }
-        if (colorbar && export.range) { height += thickness; shift += thickness/2.0 }
-        let w = Int(width), h = Int(height), t = Int(thickness)
+        if (settings.colorbar) { height += 2.0*thickness; shift += thickness }
+        if (settings.colorbar && settings.range) { height += thickness; shift += thickness/2.0 }
         
-        // render map texture and annotate it if requested
-        guard let texture = mapview?.image(width: w, height: h, shift: (0,shift)) else { return nil }
-        let output = (oversampling > 1) ? IMGTexture(width: w/oversampling, height: h/oversampling) : texture
-        
-        if (colorbar && export.range) {
-            let scale = " (\(state.transform.f.rawValue.lowercased()) scale)"
-            let annotation = (state.transform.f != .none) ? annotation + scale : annotation
-            annotate(texture, height: t, min: state.range.min, max: state.range.max, annotation: export.annotation ? annotation : nil, font: font.nsFont, color: color.cgColor, background: state.palette.bg.cgColor)
+        // scale to preferred dimensions
+        switch settings.prefer {
+            case .specificWidth:    scale *= Double(settings.dimension)/width
+            case .specificHeight:   scale *= Double(settings.dimension)/height
+            case .width:            scale *= view.width/width
+            case .width2:           scale *= view.width/width*2
+            case .width4:           scale *= view.width/width*4
+            case .height:           scale *= view.height/height
+            case .height2:          scale *= view.height/height*2
+            case .height4:          scale *= view.height/height*4
         }
         
-        if (colorbar || oversampling > 1) {
+        // clamp down to maximal supported texture size (Lancosz kernel needs a few extra pixels)
+        let extra = [0,12,16,24][settings.oversampling-1]
+        let ratio = max(width,height)*scale/Double(maxTextureSize-extra); if (ratio > 1.0) { scale /= ratio }
+        
+        // return dimensions of image components for rendering
+        return (Int(width*scale), Int(height*scale), Int(thickness*scale), shift*scale)
+    }
+    
+    // render annotated map texture for export
+    func render(for settings: Export? = nil, size view: CGSize? = nil) -> MTLTexture? {
+        guard let mapview = mapview else { return nil }
+        
+        // set up dimensions for borderless map
+        let settings = settings ?? export
+        let oversampling = settings.oversampling
+        let (w, h, t, shift) = dimensions(for: settings, size: view)
+        let format: MTLPixelFormat = (settings.format == .tiff) ? .rgba16Unorm : .rgba8Unorm
+        
+        // render map texture and annotate it if requested
+        let texture = IMGTexture(width: w, height: h, format: format); mapview.render(to: texture, shift: (0,shift))
+        let output = (oversampling > 1) ? IMGTexture(width: w/oversampling, height: h/oversampling, format: format) : texture
+        
+        if (settings.colorbar && settings.range) {
+            let annotation = (state.transform.f == .none) ? annotation :
+                annotation + " (\(state.transform.f.rawValue.lowercased()) scale)"
+            annotate(texture, height: t, min: state.range.min, max: state.range.max, annotation: settings.annotation ? annotation : nil, font: font.nsFont, color: color.cgColor, background: state.palette.bg.cgColor)
+        }
+        
+        if (settings.colorbar || oversampling > 1) {
             guard let command = metal.queue.makeCommandBuffer() else { return nil }
             
             // render colorbar and copy it in
-            if (colorbar) {
-                guard let bar = barview?.image(width: w, height: 2*t),
-                      let encoder = command.makeBlitCommandEncoder() else { return nil }
+            if (settings.colorbar) {
+                guard let barview = barview, let encoder = command.makeBlitCommandEncoder() else { return nil }
+                let bar = IMGTexture(width: w, height: 2*t, format: format); barview.render(to: bar)
                 
                 encoder.copy(from: bar, sourceSlice: 0, sourceLevel: 0,
                              sourceOrigin: MTLOriginMake(0,0,0), sourceSize: MTLSizeMake(w,2*t,1),
                              to: texture, destinationSlice: 0, destinationLevel: 0,
-                             destinationOrigin: MTLOriginMake(0, export.range ? t : 0, 0))
+                             destinationOrigin: MTLOriginMake(0, settings.range ? t : 0, 0))
                 encoder.endEncoding()
             }
             
@@ -441,8 +472,7 @@ struct ContentView: View {
                 scaler.encode(commandBuffer: command, sourceImage: input, destinationImage: output)
             }
             
-            command.commit()
-            command.waitUntilCompleted()
+            command.commit(); command.waitUntilCompleted()
         }
         
         return output
@@ -475,11 +505,9 @@ func annotate(_ texture: MTLTexture, height h: Int, min: Double, max: Double, fo
     context.translateBy(x: 0.0, y: CGFloat(h))
     context.scaleBy(x: 1.0, y: -1.0)
     
-    // clear the background texture content
-    let rect = CGRect(x: 0, y: 0, width: w, height: h); context.clear(rect)
-    
-    // fill the background if requested
-    if let background = background { context.setFillColor(background); context.fill(rect) }
+    // clear or fill the background texture content
+    let rect = CGRect(x: 0, y: 0, width: w, height: h)
+    if let background = background { context.setFillColor(background); context.fill(rect) } else { context.clear(rect) }
     
     // set up font for annotations
     let size = CGFloat(h)/1.1, scaled = font?.withSize(size)

@@ -45,7 +45,7 @@ let SizeFormatter: NumberFormatter = {
     let n = IntegerNumber
     
     n.minimum = 0
-    n.maximum = 16384
+    n.maximum = NSNumber(value: maxTextureSize)
     
     return n
 }()
@@ -56,3 +56,7 @@ extension Comparable {
     mutating func below(_ value: Self) { self = min(self,value) }
     mutating func clamp(_ a: Self, _ b: Self) { self = max(min(self,b),a) }
 }
+
+// compound assignment operators for booleans
+infix operator ||=: AssignmentPrecedence; func ||=(a: inout Bool, b: Bool) { a = a || b }
+infix operator &&=: AssignmentPrecedence; func &&=(a: inout Bool, b: Bool) { a = a && b }

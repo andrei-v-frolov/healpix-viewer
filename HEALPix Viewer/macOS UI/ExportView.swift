@@ -68,24 +68,25 @@ struct ExportView: View {
                 }.frame(height: 24)
                 HStack(alignment: .bottom) {
                     VStack(alignment: .leading) {
-                        Toggle("Include colorbar", isOn: $colorbar.animation())
+                        Toggle("Include colorbar", isOn: $settings.colorbar)
+                            .onChange(of: settings.colorbar) { value in withAnimation { colorbar ||= value } }
                         Toggle("Include data limits", isOn: $settings.range)
-                            .disabled(!colorbar)
+                            .disabled(!settings.colorbar)
                         Toggle("Include annotation", isOn: $settings.annotation)
-                            .disabled(!colorbar || !settings.range)
+                            .disabled(!settings.colorbar || !settings.range)
                     }
                     Spacer()
                     ColorPicker("", selection: $color)
-                        .disabled(!colorbar || !settings.range)
-                        .opacity(!colorbar || !settings.range ? 0.1 : 1.0)
+                        .disabled(!settings.colorbar || !settings.range)
+                        .opacity(!settings.colorbar || !settings.range ? 0.1 : 1.0)
                 }
                 TextField("Annotation", text: $annotation)
-                    .disabled(!colorbar || !settings.range || !settings.annotation)
+                    .disabled(!settings.colorbar || !settings.range || !settings.annotation)
                 FontPicker(font: $font)
-                    .disabled(!colorbar || !settings.range)
+                    .disabled(!settings.colorbar || !settings.range)
             }
             Spacer()
         }
-        .onAppear { dimensions = settings.prefer.specific; withAnimation { colorbar = settings.colorbar } }
+        .onAppear { dimensions = settings.prefer.specific; withAnimation { colorbar ||= settings.colorbar } }
     }
 }
