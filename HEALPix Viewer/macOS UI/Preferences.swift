@@ -193,6 +193,9 @@ enum ImageFormat: String, CaseIterable, Codable, Preference {
 enum PreferredSize: String, CaseIterable, Codable, Preference {
     case specificWidth = "Image width"
     case specificHeight = "Image height"
+    case fit = "Fit view"
+    case fit2 = "Fit view x2"
+    case fit4 = "Fit view x4"
     case width = "View width"
     case width2 = "View width x2"
     case width4 = "View width x4"
@@ -205,6 +208,7 @@ enum PreferredSize: String, CaseIterable, Codable, Preference {
     static let defaultValue: Self = .specificWidth
     
     // collections
+    static let fits: [Self] = [.fit, .fit2, .fit4]
     static let widths: [Self] = [.width, .width2, .width4]
     static let heights: [Self] = [.height, .height2, .height4]
     static let specified: [Self] = [.specificWidth, .specificHeight]

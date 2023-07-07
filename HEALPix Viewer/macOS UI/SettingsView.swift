@@ -227,6 +227,10 @@ struct ExportSettingsView: View {
                             Text($0.rawValue).tag($0)
                         }
                         Divider()
+                        ForEach(PreferredSize.fits, id: \.self) {
+                            Text($0.rawValue).tag($0)
+                        }
+                        Divider()
                         ForEach(PreferredSize.widths, id: \.self) {
                             Text($0.rawValue).tag($0)
                         }

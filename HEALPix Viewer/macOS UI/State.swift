@@ -185,7 +185,7 @@ struct Export: Equatable, Codable {
     var range: Bool = false
     var annotation: Bool = false
     
-    static let drag = Export(format: .png, prefer: .width2)
+    static let drag = Export(format: .png, prefer: .fit, oversampling: 2)
     static let save = Export(format: .png, oversampling: 2, colorbar: true, range: true, annotation: true)
 }
 

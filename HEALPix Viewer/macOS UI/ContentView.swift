@@ -139,7 +139,7 @@ struct ContentView: View {
                             .frame(height: 1.5*geometry.size.width/ColorbarView.aspect)
                             .onDrag {
                                 guard let barview = barview, let url = tmpfile(type: drag.format.type) else { return NSItemProvider() }
-                                let w = Int(geometry.size.width), h = Int(geometry.size.width/ColorbarView.aspect)
+                                let w = dimensions(for: drag, size: geometry.size).width/drag.oversampling, h = Int(Double(w)/ColorbarView.aspect)
                                 let format: MTLPixelFormat = (drag.format == .tiff) ? .rgba16Unorm : .rgba8Unorm
                                 let image = IMGTexture(width: w, height: h, format: format); barview.render(to: image)
                                 saveAsImage(image, url: url, format: drag.format); tmpfiles.append(url)
@@ -415,6 +415,9 @@ struct ContentView: View {
         switch settings.prefer {
             case .specificWidth:    scale *= Double(settings.dimension)/width
             case .specificHeight:   scale *= Double(settings.dimension)/height
+            case .fit:              scale *= min(view.width/width,view.height/height)
+            case .fit2:             scale *= min(view.width/width,view.height/height)*2
+            case .fit4:             scale *= min(view.width/width,view.height/height)*4
             case .width:            scale *= view.width/width
             case .width2:           scale *= view.width/width*2
             case .width4:           scale *= view.width/width*4
