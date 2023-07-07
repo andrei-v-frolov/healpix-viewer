@@ -339,7 +339,7 @@ enum ColorScheme: String, CaseIterable, Codable, Preference {
     case planck = "Planck"
     case cmb = "HEALPix"
     case diff = "Difference"
-    case freq = "Frequency Map"
+    case freq = "Frequency"
     case grey = "Greyscale"
     case hot = "Hot"
     case cold = "Cold"
