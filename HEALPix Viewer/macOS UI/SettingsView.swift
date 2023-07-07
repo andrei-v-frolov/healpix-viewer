@@ -26,10 +26,10 @@ struct SettingsView: View {
     @AppStorage(annotationColorKey) var color = Color.defaultValue
     
     // performance tab
+    @AppStorage(PreferredGPU.key) var device = PreferredGPU.defaultValue
     @AppStorage(TextureFormat.key) var texture = TextureFormat.defaultValue
     @AppStorage(AntiAliasing.key) var aliasing = AntiAliasing.defaultValue
     @AppStorage(ProxySize.key) var proxy = ProxySize.defaultValue
-    @State private var device = "default"
     
     // view styling parameters
     private let width: CGFloat = 520
@@ -100,10 +100,20 @@ struct SettingsView: View {
             // performance tab
             VStack {
                 VStack {
-                    Picker("GPU device:", selection: $device) {
-                        Text("Default").tag("default")
+                    Picker("Preferred GPU:", selection: $device) {
+                        ForEach([PreferredGPU.system], id: \.self) {
+                            Text($0.rawValue).tag($0)
+                        }
+                        Divider()
+                        ForEach(PreferredGPU.profiled, id: \.self) {
+                            Text($0.rawValue).tag($0)
+                        }
+                        Divider()
+                        ForEach(PreferredGPU.attached, id: \.self) {
+                            Text($0.rawValue).tag($0)
+                        }
                     }.frame(width: 220)
-                    Text("Currently running on \(metal.device.name)").padding(10)
+                    Text("Currently running on \(metal.device.name)").padding(.bottom, 5)
                     Text("Restart HEALPix Viewer to make GPU choice effective").font(.footnote)
                 }.padding(corner).frame(width: 380).overlay(
                     RoundedRectangle(cornerRadius: corner)

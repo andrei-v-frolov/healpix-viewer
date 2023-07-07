@@ -12,6 +12,7 @@
 - keep, copy, and paste viewer setting sets between loaded maps
 - antialiasing of very large maps (i.e. LOD pyramid in MapView)
 - selectable color texture precision (i.e. memory footprint)
+- selectable GPU device (e.g. discrete/external unit)
 - (optional) map thumbnails added to navigation panel
 
 ### Public Release Blocking
@@ -26,7 +27,6 @@
 ### Feature Requests
 
 - magnifier glass
-- selectable GPU device (e.g. discrete/external unit)
 - view from inside should be part of projection settings?
 - false color map support (e.g. RGB = 100,147,217GHz channels) + gamma
 - proxy map to improve percieved transform performance

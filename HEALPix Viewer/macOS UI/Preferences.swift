@@ -60,6 +60,62 @@ enum Thumbnails: String, CaseIterable, Codable, Preference {
     static let defaultValue: Self = .large
 }
 
+// GPU selection
+struct PreferredGPU: Hashable, CaseIterable, Codable {
+    var prefer: GpuType = .system
+    var named: String? = nil
+    
+    enum GpuType: String, Codable {
+        case system = "Default"
+        case integrated = "Integrated"
+        case discrete = "Discrete"
+        case external = "External"
+        case specific = "Specific"
+        
+        static let kinds: [Self] = [.integrated, .discrete, .external]
+    }
+    
+    // collections
+    static let system = Self()
+    static let profiled: [Self] = GpuType.kinds.map { Self(prefer: $0) }
+    static var attached: [Self] { MTLCopyAllDevices().map { Self(prefer: .specific, named: $0.name) } }
+    static var allCases: [Self] { [system] + profiled + attached }
+    
+    // default value
+    static let key = "gpu"
+    static let defaultValue = Self()
+    
+    // find preferred GPU
+    var device: MTLDevice? {
+        let system = MTLCreateSystemDefaultDevice()
+        let devices = MTLCopyAllDevices()
+        
+        switch prefer {
+            case .system: return system
+            case .integrated: return devices.first(where: { $0.isLowPower && !$0.isRemovable }) ?? system
+            case .discrete: return devices.first(where: { !$0.isLowPower && !$0.isRemovable }) ?? system
+            case .external: return devices.first(where: { !$0.isLowPower && $0.isRemovable }) ?? system
+            case .specific:
+                guard let name = named else { return system }
+                return devices.first(where: { $0.name.contains(name) }) ?? system
+        }
+    }
+}
+
+extension PreferredGPU: RawRepresentable, Preference {
+    init(rawValue name: String) {
+        switch name {
+            case GpuType.system.rawValue: self = PreferredGPU.system
+            case GpuType.integrated.rawValue: self = PreferredGPU(prefer: .integrated)
+            case GpuType.discrete.rawValue: self = PreferredGPU(prefer: .discrete)
+            case GpuType.external.rawValue: self = PreferredGPU(prefer: .external)
+            default: self = PreferredGPU(prefer: .specific, named: name)
+        }
+    }
+    
+    var rawValue: String { prefer == .specific ? (named ?? GpuType.system.rawValue) : prefer.rawValue }
+}
+
 // rendering precision
 enum TextureFormat: String, CaseIterable, Codable, Preference {
     case uint8 = "8-bit integer"

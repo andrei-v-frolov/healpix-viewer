@@ -33,5 +33,9 @@
 			</dict>
 		</dict>
 	</array>
+	<key>GPUSelectionPolicy</key>
+	<string>avoidRemovable</string>
+	<key>GPUEjectPolicy</key>
+	<string>kill</string>
 </dict>
 </plist>

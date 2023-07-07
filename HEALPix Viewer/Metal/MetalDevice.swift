@@ -16,7 +16,7 @@ final class MetalDevice {
     let queue: MTLCommandQueue
     
     init() {
-        guard let device = MTLCreateSystemDefaultDevice(),
+        guard let device = PreferredGPU.value.device,
               let queue = device.makeCommandQueue()
               else { abort("Metal framework could not be initalized") }
         
