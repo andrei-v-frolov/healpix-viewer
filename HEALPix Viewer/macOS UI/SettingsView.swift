@@ -33,7 +33,7 @@ struct SettingsView: View {
     
     // view styling parameters
     private let width: CGFloat = 520
-    private let height: CGFloat = 270
+    private let height: CGFloat = 250
     private let corner: CGFloat = 7
     private let offset: CGFloat = 13
     
@@ -67,6 +67,16 @@ struct SettingsView: View {
                     RoundedRectangle(cornerRadius: corner)
                         .stroke(Color.secondary.opacity(0.2), lineWidth: 1)
                 )
+                VStack {
+                    HStack {
+                        Text("Annotation:")
+                        FontPicker(font: $font.nsFont)
+                        ColorPicker("", selection: $color)
+                    }.frame(width: 340)
+                }.padding(corner).frame(width: 380).overlay(
+                    RoundedRectangle(cornerRadius: corner)
+                        .stroke(Color.secondary.opacity(0.2), lineWidth: 1)
+                )
             }
             .tabItem { Label("Appearance", systemImage: "eye") }
             // behavior tab
@@ -84,16 +94,6 @@ struct SettingsView: View {
                                    settings: $drag, defaults: .constant(Export.drag))
                     ExportSettingsView(title: .constant("Export as:"),
                                    settings: $export, defaults: .constant(Export.save))
-                    VStack {
-                        HStack {
-                            Text("Annotation:")
-                            FontPicker(font: $font.nsFont)
-                            ColorPicker("", selection: $color)
-                        }.frame(width: 340)
-                    }.padding(corner).frame(width: 380).overlay(
-                        RoundedRectangle(cornerRadius: corner)
-                            .stroke(Color.secondary.opacity(0.2), lineWidth: 1)
-                    )
                 }
             }
             .tabItem { Label("Export", systemImage: "square.and.arrow.down") }
