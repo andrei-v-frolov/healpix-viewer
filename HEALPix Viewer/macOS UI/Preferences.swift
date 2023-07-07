@@ -91,13 +91,12 @@ struct PreferredGPU: Hashable, CaseIterable, Codable {
         let devices = MTLCopyAllDevices()
         
         switch prefer {
-            case .system: return system
-            case .integrated: return devices.first(where: { $0.isLowPower && !$0.isRemovable }) ?? system
-            case .discrete: return devices.first(where: { !$0.isLowPower && !$0.isRemovable }) ?? system
-            case .external: return devices.first(where: { !$0.isLowPower && $0.isRemovable }) ?? system
-            case .specific:
-                guard let name = named else { return system }
-                return devices.first(where: { $0.name.contains(name) }) ?? system
+            case .system:       return system
+            case .integrated:   return devices.first(where: { !$0.isRemovable &&  $0.isLowPower }) ?? system
+            case .discrete:     return devices.first(where: { !$0.isRemovable && !$0.isLowPower }) ?? system
+            case .external:     return devices.first(where: { $0.isRemovable }) ?? system
+            case .specific:     guard let name = named else { return system }
+                                return devices.first(where: { $0.name.contains(name) }) ?? system
         }
     }
 }
