@@ -13,6 +13,11 @@ struct Viewpoint: Equatable, Codable {
     var lat: Double = 0.0
     var lon: Double = 0.0
     var az: Double = 0.0
+    
+    static var value: Self {
+        let orientation = Orientation.value, (lat,lon,az) = orientation.coords
+        return Self(orientation: orientation, lat: lat, lon: lon, az: az)
+    }
 }
 
 // color palette state
@@ -24,6 +29,11 @@ struct Palette: Equatable, Codable {
     var max: Color = ColorScheme.defaultValue.colormap.max
     var nan: Color = .gray
     var bg: Color = .clear
+    
+    static var value: Self {
+        let scheme = ColorScheme.value, colormap = scheme.colormap
+        return Self(scheme: scheme, min: colormap.min, max: colormap.max)
+    }
 }
 
 // data transform state
@@ -31,6 +41,8 @@ struct Transform: Equatable, Codable {
     var f: Function = .defaultValue
     var mu: Double = 0.0
     var sigma: Double = 0.0
+    
+    static var value: Self { Self(f: Function.value) }
     
     func eval(_ x: Double) -> Double { return f.eval(x, mu: mu, sigma: sigma) }
     
@@ -73,6 +85,13 @@ struct ViewState: Equatable, Codable {
     var palette = Palette()
     var range = Bounds()
     var light = Light()
+    
+    static var value: Self { Self(
+        projection: Projection.value,
+        view: Viewpoint.value,
+        transform: Transform.value,
+        palette: Palette.value
+    ) }
     
     mutating func update(_ state: ViewState, mask: StateMask) {
         if mask.projection { self.projection = state.projection }

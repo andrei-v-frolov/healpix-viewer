@@ -260,7 +260,7 @@ struct ContentView: View {
             
             return dispatched
         }
-        .task {
+        .onAppear {
             colorbar = UserDefaults.standard.bool(forKey: showColorBarKey)
             state.projection = Projection.value
             state.view.orientation = Orientation.value
@@ -361,7 +361,7 @@ struct ContentView: View {
         
         // load stored or default settings
         if let settings = map.settings { state.update(settings, mask: keepState) }
-        else { state = ViewState().copy(state, mask: keepState) }
+        else { state = ViewState.value.copy(state, mask: keepState) }
         
         // load map
         load(map)
