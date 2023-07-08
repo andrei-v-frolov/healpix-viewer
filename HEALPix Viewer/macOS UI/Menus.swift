@@ -101,9 +101,7 @@ struct ViewMenus: Commands {
             }
             .keyboardShortcut("R", modifiers: [.option, .command])
             Divider()
-            Toggle(isOn: $colorbar) {
-                Text("Show Color Bar")
-            }
+            Button(colorbar ? "Hide Color Bar" : "Show Color Bar") { colorbar = !colorbar }
             .keyboardShortcut("B", modifiers: [.option, .command])
         }
     }

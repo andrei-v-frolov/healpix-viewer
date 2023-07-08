@@ -17,7 +17,7 @@ struct ContentView: View {
     @State private var toolbar = ShowToolbar.none
     @State private var overlay = ShowOverlay.none
     @State private var colorbar = false
-    @State private var iskey = true
+    @State private var iskey = false
     
     // open files
     @State private var loading = false
@@ -240,6 +240,9 @@ struct ContentView: View {
             }
             
             action = .none
+        }
+        .onChange(of: iskey) { value in
+            if (value) { UserDefaults.standard.set(colorbar, forKey: showColorBarKey) }
         }
         .onChange(of: lighting) { value in
             if (!value && toolbar == .lighting) { withAnimation { toolbar = .none } }; preview()

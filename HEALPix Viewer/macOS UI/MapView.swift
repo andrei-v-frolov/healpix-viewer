@@ -28,7 +28,10 @@ struct MapView: NSViewRepresentable {
     var view = ProjectedView()
     
     func makeNSView(context: Self.Context) -> Self.NSViewType {
-        DispatchQueue.main.async { view.mapview = self; view.window?.delegate = view; mapview = view }
+        DispatchQueue.main.async {
+            view.mapview = self; view.window?.delegate = view
+            mapview = view; iskey = view.window?.isKeyWindow == true
+        }
         view.awakeFromNib(); return view
     }
     
