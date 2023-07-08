@@ -22,12 +22,13 @@ struct MapView: NSViewRepresentable {
     
     @AppStorage(animateKey) var animate: Bool = true
     @Binding var mapview: ProjectedView?
+    @Binding var iskey: Bool
     
     typealias NSViewType = ProjectedView
     var view = ProjectedView()
     
     func makeNSView(context: Self.Context) -> Self.NSViewType {
-        DispatchQueue.main.async { mapview = view; view.mapview = self }
+        DispatchQueue.main.async { view.mapview = self; view.window?.delegate = view; mapview = view }
         view.awakeFromNib(); return view
     }
     
@@ -53,7 +54,7 @@ struct MapView: NSViewRepresentable {
 }
 
 // MARK: Metal renderer for projected maps
-class ProjectedView: MTKView {
+class ProjectedView: MTKView, NSWindowDelegate {
     // MARK: map
     var map: Map? = nil
     
@@ -246,6 +247,10 @@ class ProjectedView: MTKView {
         encode(command, to: texture, transform: transform, rotation: rotation, background: background?.components)
         command.commit(); command.waitUntilCompleted()
     }
+    
+    // MARK: keep track of key status
+    func windowDidBecomeKey(_ notification: Notification) { mapview?.iskey = true }
+    func windowDidResignKey(_ notification: Notification) { mapview?.iskey = false }
     
     // MARK: spherical coordinates from event location
     func coordinates(_ event: NSEvent) -> (Double,Double)? {

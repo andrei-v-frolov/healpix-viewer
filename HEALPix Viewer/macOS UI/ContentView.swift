@@ -17,6 +17,7 @@ struct ContentView: View {
     @State private var toolbar = ShowToolbar.none
     @State private var overlay = ShowOverlay.none
     @State private var colorbar = false
+    @State private var iskey = true
     
     // open files
     @State private var loading = false
@@ -74,7 +75,6 @@ struct ContentView: View {
     // associated views
     @State private var mapview: ProjectedView? = nil
     @State private var barview: ColorbarView? = nil
-    private var window: NSWindow? { mapview?.window }
     
     // data transformer
     private let transformer = DataTransformer()
@@ -122,7 +122,7 @@ struct ContentView: View {
                         }
                         ZStack(alignment: .top) {
                             MapView(map: $map, projection: $state.projection, viewpoint: $state.view, magnification: $magnification,
-                                    background: $state.palette.bg, light: $state.light, cursor: $cursor, mapview: $mapview)
+                                    background: $state.palette.bg, light: $state.light, cursor: $cursor, mapview: $mapview, iskey: $iskey)
                             .onDrag {
                                 withAnimation { colorbar ||= drag.colorbar }
                                 guard let image = render(for: drag, size: geometry.size),
@@ -216,7 +216,7 @@ struct ContentView: View {
         .onChange(of: state) { value in preview() }
         .onChange(of: inside) { value in preview() }
         .onChange(of: action) { value in
-            guard (value != .none && window?.isKeyWindow == true) else { return }
+            guard iskey, value != .none else { return }
             
             switch value {
                 case .open: DispatchQueue.main.async { self.open() }
@@ -271,33 +271,27 @@ struct ContentView: View {
             let observers = Observers(); self.observers = observers
             
             observers.add(key: showColorBarKey) { old, new in
-                guard (window?.isKeyWindow == true) else { return }
-                guard let value = new as? Bool else { return }
+                guard iskey, let value = new as? Bool else { return }
                 withAnimation { colorbar = value }
             }
             observers.add(key: Projection.key) { old, new in
-                guard (window?.isKeyWindow == true) else { return }
-                guard let raw = new as? String, let mode = Projection(rawValue: raw) else { return }
+                guard iskey, let raw = new as? String, let mode = Projection(rawValue: raw) else { return }
                 withAnimation { toolbar = .projection }; state.projection = mode
             }
             observers.add(key: Orientation.key) { old, new in
-                guard (window?.isKeyWindow == true) else { return }
-                guard let raw = new as? String, let mode = Orientation(rawValue: raw) else { return }
+                guard iskey, let raw = new as? String, let mode = Orientation(rawValue: raw) else { return }
                 withAnimation { toolbar = (mode == .free) ? .orientation : .projection }; state.view.orientation = mode
             }
             observers.add(key: ColorScheme.key) { old, new in
-                guard (window?.isKeyWindow == true) else { return }
-                guard let raw = new as? String, let mode = ColorScheme(rawValue: raw) else { return }
+                guard iskey, let raw = new as? String, let mode = ColorScheme(rawValue: raw) else { return }
                 withAnimation { toolbar = .color }; state.palette.scheme = mode
             }
             observers.add(key: DataSource.key) {  old, new in
-                guard (window?.isKeyWindow == true) else { return }
-                guard let raw = new as? String, let data = DataSource(rawValue: raw) else { return }
+                guard iskey, let raw = new as? String, let data = DataSource(rawValue: raw) else { return }
                 for map in loaded { if (MapCard.type(map.name) == data) { selected = map.id; break } }
             }
             observers.add(key: Function.key) {  old, new in
-                guard (window?.isKeyWindow == true) else { return }
-                guard let raw = new as? String, let mode = Function(rawValue: raw) else { return }
+                guard iskey, let raw = new as? String, let mode = Function(rawValue: raw) else { return }
                 withAnimation { toolbar = .transform }; state.transform.f = mode
             }
         }
