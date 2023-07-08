@@ -17,7 +17,7 @@ let analysisQueue = DispatchQueue(label: "analysis", qos: .userInitiated, attrib
     
     // variable signalling action
     @State private var action: MenuAction = .none
-    @State private var clipboard = ViewState()
+    @State private var clipboard = ViewState.value
     
     var body: some Scene {
         WindowGroup {
