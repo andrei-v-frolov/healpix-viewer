@@ -11,7 +11,7 @@ HEALPix [[Gorski et. al.](https://healpix.jpl.nasa.gov)] is a de-facto standard 
 - integrates into your workflow - drag & drop maps into Keynote/PowerPoint, etc.
 - shortcuts for common analysis actions - statistics, PDF, data transforms
 - extensible architecture - easily add your own colormaps, transforms, etc.
-- entire source code available (Swift, C, Metal), about 5.2k lines
+- entire source code available (Swift, C, Metal), about 6.8k lines
 
 ### Caveats:
 - requires macOS 12, some features (notably charts) need macOS 13+ to run

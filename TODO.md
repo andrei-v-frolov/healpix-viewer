@@ -46,11 +46,9 @@
 
 ### Bug Fixes
 
-- `Open File...` should open a new window if none available
 - modal NSOpenPanel and NSSavePanel are called within transaction
 - display alert if FITS format is not HEALPix (or unsupported scheme)
 - fix crash on out-of-memory, display alert and refuse to load instead
 - adjust LOD level for different projections
 - fallback for JSON parsers
 - RangeView got broken somehow...
-- keyWindow code fails if Settings is open...

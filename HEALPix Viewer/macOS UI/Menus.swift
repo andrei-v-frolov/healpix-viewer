@@ -14,15 +14,30 @@ enum MenuAction {
     case copyStyle, pasteStyle, pasteView, pasteColor, pasteLight, pasteAll
 }
 
-struct FileMenus: Commands {
+// open window is only available on masOS 13+
+@available(macOS 13.0, *)
+struct OpenFile: View {
+    @Environment(\.openWindow) var openWindow
+    @Binding var new: Bool
     @Binding var action: MenuAction
+    
+    var body: some View {
+        Button("Open File...") {
+            if new { openWindow(id: mapWindowID) }; DispatchQueue.main.async { action = .open }
+        }.keyboardShortcut("O", modifiers: [.command])
+    }
+}
+
+struct FileMenus: Commands {
+    @Binding var stack: [ProjectedView.ID]
+    @Binding var action: MenuAction
+    private var empty: Bool { stack.count < 1 }
     
     var body: some Commands {
         CommandGroup(before: CommandGroupPlacement.newItem) {
-            Button("Open File...") { if (NSApp.keyWindow != nil) { action = .open } }
-                .keyboardShortcut("O", modifiers: [.command])
-            Button("Export As...") { if (NSApp.keyWindow != nil) { action = .save } }
-                .keyboardShortcut("S", modifiers: [.command])
+            if #available(macOS 13.0, *) { OpenFile(new: .constant(empty), action: $action) }
+            else { Button("Open File...") { action = .open }.keyboardShortcut("O", modifiers: [.command]).disabled(empty) }
+            Button("Export As...") { action = .save }.keyboardShortcut("S", modifiers: [.command]).disabled(empty)
             Divider()
         }
     }
@@ -34,20 +49,14 @@ struct EditMenus: Commands {
     
     var body: some Commands {
         CommandGroup(replacing: CommandGroupPlacement.pasteboard) {
-            Button("Copy Style") { if (NSApp.keyWindow != nil) { action = .copyStyle } }
-                .keyboardShortcut("C", modifiers: [.command])
-            Button("Paste Style") { if (NSApp.keyWindow != nil) { action = .pasteStyle } }
-                .keyboardShortcut("V", modifiers: [.command])
-            Button("Paste View") { if (NSApp.keyWindow != nil) { action = .pasteView } }
-                .keyboardShortcut("V", modifiers: [.shift,.command])
-            Button("Paste Color") { if (NSApp.keyWindow != nil) { action = .pasteColor } }
-                .keyboardShortcut("C", modifiers: [.shift,.command])
-            Button("Paste Light") { if (NSApp.keyWindow != nil) { action = .pasteLight } }
-                .keyboardShortcut("L", modifiers: [.shift,.command])
+            Button("Copy Style") { action = .copyStyle }.keyboardShortcut("C", modifiers: [.command])
+            Button("Paste Style") {action = .pasteStyle }.keyboardShortcut("V", modifiers: [.command])
+            Button("Paste View") { action = .pasteView }.keyboardShortcut("V", modifiers: [.shift,.command])
+            Button("Paste Color") { action = .pasteColor }.keyboardShortcut("C", modifiers: [.shift,.command])
+            Button("Paste Light") { action = .pasteLight }.keyboardShortcut("L", modifiers: [.shift,.command])
                 .disabled(!lighting)
             Divider()
-            Button("Paste All") { if (NSApp.keyWindow != nil) { action = .pasteAll } }
-                .keyboardShortcut("V", modifiers: [.shift,.option,.command])
+            Button("Paste All") { action = .pasteAll }.keyboardShortcut("V", modifiers: [.shift,.option,.command])
             Divider()
         }
     }

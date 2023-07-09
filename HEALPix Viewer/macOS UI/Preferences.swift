@@ -9,6 +9,9 @@ import SwiftUI
 import MetalKit
 import UniformTypeIdentifiers
 
+// map view window ID
+let mapWindowID = "map view"
+
 // settings - appearance
 let animateKey = "animate"
 let lightingKey = "lighting"

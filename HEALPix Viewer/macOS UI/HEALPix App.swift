@@ -21,10 +21,10 @@ let analysisQueue = DispatchQueue(label: "analysis", qos: .userInitiated, attrib
     @State private var clipboard = ViewState.value
     
     var body: some Scene {
-        WindowGroup {
+        WindowGroup(id: mapWindowID) {
             ContentView(stack: $stack, clipboard: $clipboard, action: $action)
         } .commands {
-            FileMenus(action: $action)
+            FileMenus(stack: $stack, action: $action)
             EditMenus(action: $action)
             ViewMenus()
             DataMenus()
