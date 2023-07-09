@@ -34,7 +34,7 @@
 		</dict>
 	</array>
 	<key>GPUSelectionPolicy</key>
-	<string>avoidRemovable</string>
+	<string>preferRemovable</string>
 	<key>GPUEjectPolicy</key>
 	<string>kill</string>
 </dict>
