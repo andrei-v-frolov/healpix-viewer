@@ -22,7 +22,7 @@ struct MapView: NSViewRepresentable {
     
     @AppStorage(animateKey) var animate: Bool = true
     @Binding var mapview: ProjectedView?
-    @Binding var iskey: Bool
+    @Binding var stack: [ProjectedView.ID]
     
     typealias NSViewType = ProjectedView
     var view = ProjectedView()
@@ -30,7 +30,7 @@ struct MapView: NSViewRepresentable {
     func makeNSView(context: Self.Context) -> Self.NSViewType {
         DispatchQueue.main.async {
             view.mapview = self; view.window?.delegate = view
-            mapview = view; iskey = view.window?.isKeyWindow == true
+            mapview = view; raise(view.id)
         }
         view.awakeFromNib(); return view
     }
@@ -54,10 +54,16 @@ struct MapView: NSViewRepresentable {
         
         view.draw()
     }
+    
+    // manipulate view position in responder stack
+    func raise(_ id: ProjectedView.ID) { stack = stack.filter{ $0 != id } + [id] }
+    func remove(_ id: ProjectedView.ID) { stack = stack.filter{ $0 != id } }
 }
 
 // MARK: Metal renderer for projected maps
-class ProjectedView: MTKView, NSWindowDelegate {
+class ProjectedView: MTKView, NSWindowDelegate, Identifiable {
+    let id = UUID()
+    
     // MARK: map
     var map: Map? = nil
     
@@ -252,8 +258,8 @@ class ProjectedView: MTKView, NSWindowDelegate {
     }
     
     // MARK: keep track of key status
-    func windowDidBecomeKey(_ notification: Notification) { mapview?.iskey = true }
-    func windowDidResignKey(_ notification: Notification) { mapview?.iskey = false }
+    func windowDidBecomeKey(_ notification: Notification) { mapview?.raise(id) }
+    func windowWillClose(_ notification: Notification) { mapview?.remove(id) }
     
     // MARK: spherical coordinates from event location
     func coordinates(_ event: NSEvent) -> (Double,Double)? {

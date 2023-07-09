@@ -15,13 +15,14 @@ let analysisQueue = DispatchQueue(label: "analysis", qos: .userInitiated, attrib
 @main struct HEALPixViewerApp: App {
     @NSApplicationDelegateAdaptor(AppDelegate.self) var delegate
     
-    // variable signalling action
+    // window stack, action requsts, and clipboard
+    @State private var stack = [ProjectedView.ID]()
     @State private var action: MenuAction = .none
     @State private var clipboard = ViewState.value
     
     var body: some Scene {
         WindowGroup {
-            ContentView(clipboard: $clipboard, action: $action)
+            ContentView(stack: $stack, clipboard: $clipboard, action: $action)
         } .commands {
             FileMenus(action: $action)
             EditMenus(action: $action)
