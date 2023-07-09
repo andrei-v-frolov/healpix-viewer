@@ -244,9 +244,8 @@ struct ContentView: View {
             
             action = .none
         }
-        .onChange(of: active) { value in
-            if (value) { UserDefaults.standard.set(colorbar, forKey: showColorBarKey) }
-        }
+        .onChange(of: active) { value in if (value) { UserDefaults.standard.set(colorbar, forKey: showColorBarKey) } }
+        .onChange(of: colorbar) { value in if (active) { UserDefaults.standard.set(colorbar, forKey: showColorBarKey) } }
         .onChange(of: lighting) { value in
             if (!value && toolbar == .lighting) { withAnimation { toolbar = .none } }; preview()
         }
