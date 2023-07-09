@@ -29,6 +29,7 @@ let analysisQueue = DispatchQueue(label: "analysis", qos: .userInitiated, attrib
             ViewMenus()
             DataMenus()
         }
+        .onChange(of: action) { value in if (value != .none && stack.count < 1) { action = .none } }
         Settings { SettingsView() }
     }
     
