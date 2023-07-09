@@ -1,5 +1,5 @@
 //
-//  NavigationList.swift
+//  Navigation.swift
 //  HEALPix Viewer
 //
 //  Created by Andrei Frolov on 2022-11-17.

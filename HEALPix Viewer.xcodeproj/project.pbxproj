@@ -9,7 +9,7 @@
 /* Begin PBXBuildFile section */
 		500338E92A3D8FBD001EC910 /* Python Difference.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500338E82A3D8FBD001EC910 /* Python Difference.swift */; };
 		5009BB142912ECEB006DE835 /* ColorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5009BB132912ECEB006DE835 /* ColorView.swift */; };
-		500EFDBD29270B66002B6057 /* NavigationList.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500EFDBC29270B66002B6057 /* NavigationList.swift */; };
+		500EFDBD29270B66002B6057 /* Navigation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500EFDBC29270B66002B6057 /* Navigation.swift */; };
 		500F99B3292553730097695C /* rawmap.c in Sources */ = {isa = PBXBuildFile; fileRef = 500F99B2292553730097695C /* rawmap.c */; };
 		50138E552937026500E8C33B /* ranking.c in Sources */ = {isa = PBXBuildFile; fileRef = 50138E542937026500E8C33B /* ranking.c */; };
 		501A6CD6292EBC9400E931A3 /* ExportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 501A6CD5292EBC9400E931A3 /* ExportView.swift */; };
@@ -97,7 +97,7 @@
 /* Begin PBXFileReference section */
 		500338E82A3D8FBD001EC910 /* Python Difference.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Python Difference.swift"; sourceTree = "<group>"; };
 		5009BB132912ECEB006DE835 /* ColorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorView.swift; sourceTree = "<group>"; };
-		500EFDBC29270B66002B6057 /* NavigationList.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NavigationList.swift; sourceTree = "<group>"; };
+		500EFDBC29270B66002B6057 /* Navigation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Navigation.swift; sourceTree = "<group>"; };
 		500F99AE292553720097695C /* Bridging Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Bridging Header.h"; sourceTree = "<group>"; };
 		500F99B1292553730097695C /* rawmap.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = rawmap.h; sourceTree = "<group>"; };
 		500F99B2292553730097695C /* rawmap.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = rawmap.c; sourceTree = "<group>"; };
@@ -190,8 +190,8 @@
 			children = (
 				508BBA8A28FF2764004B1A9C /* HEALPix App.swift */,
 				508F923A2923E96600E6DD73 /* FileIO.swift */,
+				500EFDBC29270B66002B6057 /* Navigation.swift */,
 				508BBA8C28FF2764004B1A9C /* ContentView.swift */,
-				500EFDBC29270B66002B6057 /* NavigationList.swift */,
 				50655411290A64F400176790 /* ProjectionView.swift */,
 				50C513122907DFDC00BB6B51 /* OrientationView.swift */,
 				5009BB132912ECEB006DE835 /* ColorView.swift */,
@@ -490,7 +490,7 @@
 				508F923B2923E96600E6DD73 /* FileIO.swift in Sources */,
 				50ECD2B228FF31260008F915 /* Toolbar.swift in Sources */,
 				50D29751291C39AA00E18C08 /* Map.swift in Sources */,
-				500EFDBD29270B66002B6057 /* NavigationList.swift in Sources */,
+				500EFDBD29270B66002B6057 /* Navigation.swift in Sources */,
 				50C513132907DFDC00BB6B51 /* OrientationView.swift in Sources */,
 				508D56D829131F7E0099C3A0 /* HEALPix GRV.swift in Sources */,
 				50804B172A3E53560092EED1 /* State.swift in Sources */,
