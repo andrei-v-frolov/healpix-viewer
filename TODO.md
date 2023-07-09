@@ -52,3 +52,4 @@
 - adjust LOD level for different projections
 - fallback for JSON parsers
 - RangeView got broken somehow...
+- file load always crashes on external/discrete GPU
