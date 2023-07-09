@@ -21,7 +21,7 @@
 
 ### Planned Features
 
-- false color map support (e.g. RGB = 100,147,217GHz) + gamma
+- false color map support (e.g. RGB = 100,147,217GHz + gamma)
 - line convolution for polarization and vector maps
 - arithmetic operations on loaded map data (ala fcalc)
 
@@ -34,8 +34,8 @@
 ### Feature Requests
 
 - magnifier glass
-- view from inside should be part of projection settings?
 - save and load view state
+- view from inside should be part of projection settings?
 - command line interface (via ArgumentParser)
 
 ### Future Targets
