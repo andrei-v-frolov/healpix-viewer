@@ -1,19 +1,8 @@
 # HEALPix Viewer TODO
 
-### Current Status (Build 008)
+### Current Status (Build 009)
 
-- proper Settings window added
-- selectable annotation font and color
-- Python difference (RWB) colormap added
-- power law and exponential transforms added
-- export and drag as GIF, PNG, HEIF, and 16-bit TIFF format
-- more realistic lighting (Lambert reflection, gamma corrected)
-- code refactored to encapsulate view parameters into a struct
-- keep, copy, and paste viewer setting sets between loaded maps
-- antialiasing of very large maps (i.e. LOD pyramid in MapView)
-- selectable color texture precision (i.e. memory footprint)
-- selectable GPU device (e.g. discrete/external unit)
-- (optional) map thumbnails added to navigation panel
+- build number bumped
 
 ### Compliance Issues
 
@@ -53,3 +42,4 @@
 - fallback for JSON parsers
 - RangeView got broken somehow...
 - file load always crashes on external/discrete GPU
+- animation is disabled on cold start
