@@ -310,6 +310,9 @@ struct HpxFile {
     subscript(source: DataSource) -> CpuMap? {
         if let c = channel[source] { return data[c] } else { return nil }
     }
+    
+    // reload on restore
+    var bookmark: Data? { try? url.bookmarkData(options: [.withSecurityScope, .securityScopeAllowOnlyReadAccess]) }
 }
 
 // read entire contents of HEALPix file
