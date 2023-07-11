@@ -300,15 +300,15 @@ struct HpxFile {
     let header: String
     let card: Cards?
     
-    let map: [CpuMap]
+    let data: [CpuMap]
     let list: [MapData]
     let metadata: Metadata
     let channel: [DataSource: Int]
     
     // map indexing
-    subscript(index: Int) -> CpuMap { return map[index] }
-    subscript(data: DataSource) -> CpuMap? {
-        if let c = channel[data] { return map[c] } else { return nil }
+    subscript(index: Int) -> CpuMap { return data[index] }
+    subscript(source: DataSource) -> CpuMap? {
+        if let c = channel[source] { return data[c] } else { return nil }
     }
 }
 
@@ -360,7 +360,7 @@ func read_hpxfile(url: URL) -> HpxFile? {
     for i in 1...nmaps { metadata.append(MapCard.parse(fptr, map: i)) }
     
     // maps contained in the file (we will own their UnsafeBuffers!)
-    var map = [CpuMap](); map.reserveCapacity(nmaps)
+    var maps = [CpuMap](); maps.reserveCapacity(nmaps)
     var list = [MapData](); list.reserveCapacity(nmaps)
     
     // full sky map (without pixel index)
@@ -378,7 +378,7 @@ func read_hpxfile(url: URL) -> HpxFile? {
         for m in 0..<nmaps {
             let flip =  iau && (MapCard.type(metadata[m]?[.type]) == .u)
             
-            if let c = raw2map_full(data[m], nside: nside, type: type[m], order: order, flip: flip) { map.append(c) } else { return nil }
+            if let c = raw2map_full(data[m], nside: nside, type: type[m], order: order, flip: flip) { maps.append(c) } else { return nil }
         }
     }
     else
@@ -401,8 +401,8 @@ func read_hpxfile(url: URL) -> HpxFile? {
         var desc = "CHANNEL \(m)"; if let t = metadata[m]?[.type], case let .string(s) = t { desc = s }
         var unit = "UNKNOWN";      if let u = metadata[m]?[.unit], case let .string(s) = u { unit = s }
         
-        list.append(MapData(file: name, info: info, name: desc, unit: unit, channel: m, map: map[m]))
+        list.append(MapData(file: name, info: info, name: desc, unit: unit, channel: m, data: maps[m]))
     }
     
-    return HpxFile(url: url, name: name, nmaps: nmaps, header: info, card: card, map: map, list: list, metadata: metadata, channel: index)
+    return HpxFile(url: url, name: name, nmaps: nmaps, header: info, card: card, data: maps, list: list, metadata: metadata, channel: index)
 }

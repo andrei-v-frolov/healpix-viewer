@@ -41,13 +41,13 @@ final class MapData: Identifiable, ObservableObject {
     internal var state = Transform()
     
     // default initializer
-    init(file: String, info: String, name: String, unit: String, channel: Int, map: CpuMap) {
+    init(file: String, info: String, name: String, unit: String, channel: Int, data: CpuMap) {
         self.file = file
         self.info = info
         self.name = name
         self.unit = unit
         self.channel = channel
-        self.data = map
+        self.data = data
     }
     
     // signal that map state changed
