@@ -314,7 +314,7 @@ struct ContentView: View {
             guard let file = read_hpxfile(url: url) else { return }
             
             self.file.append(file)
-            self.loaded = self.opened
+            self.loaded += file.list
             
             // dispatch maps for analysis
             for map in file.list {

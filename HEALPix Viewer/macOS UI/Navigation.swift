@@ -76,6 +76,11 @@ struct NavigationList: View {
     @Binding var selected: UUID?
     
     var body: some View {
-        List(loaded, selection: $selected) { map in NavigationRow(map: map) }
+        if #available(macOS 13.0, *), let selected = selected {
+            let binding = Binding { selected } set: { self.selected = $0 }
+            List($loaded, editActions: .move, selection: binding) { $map in NavigationRow(map: map) }
+        } else {
+            List(loaded, selection: $selected) { map in NavigationRow(map: map) }
+        }
     }
 }

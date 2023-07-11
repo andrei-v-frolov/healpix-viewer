@@ -2,7 +2,7 @@
 
 ### Current Status (Build 009)
 
-- build number bumped
+- navigation map list can be rearranged on macOS 13+
 
 ### Compliance Issues
 
