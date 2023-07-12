@@ -18,8 +18,8 @@ enum MenuAction {
 @available(macOS 13.0, *)
 struct OpenFile: View {
     @Environment(\.openWindow) var openWindow
-    @Binding var new: Bool
     @Binding var action: MenuAction
+    @Binding var new: Bool
     
     var body: some View {
         Button("Open File...") {
@@ -28,41 +28,46 @@ struct OpenFile: View {
     }
 }
 
+// file menu hierarchy
 struct FileMenus: Commands {
-    @Binding var stack: [ProjectedView.ID]
     @Binding var action: MenuAction
-    private var empty: Bool { stack.count < 1 }
-    
+    @Binding var targeted: Bool
+
     var body: some Commands {
         CommandGroup(before: CommandGroupPlacement.newItem) {
-            if #available(macOS 13.0, *) { OpenFile(new: .constant(empty), action: $action) }
-            else { Button("Open File...") { action = .open }.keyboardShortcut("O", modifiers: [.command]).disabled(empty) }
-            Button("Export As...") { action = .save }.keyboardShortcut("S", modifiers: [.command]).disabled(empty)
+            if #available(macOS 13.0, *) { OpenFile(action: $action, new: .constant(!targeted)) }
+            else { Button("Open File...") { action = .open }.keyboardShortcut("O", modifiers: [.command]).disabled(!targeted) }
+            Button("Export As...") { action = .save }.keyboardShortcut("S", modifiers: [.command]).disabled(!targeted)
             Divider()
         }
     }
 }
 
+// edit menu hierarchy
 struct EditMenus: Commands {
     @Binding var action: MenuAction
+    @Binding var targeted: Bool
     @AppStorage(lightingKey) var lighting = false
     
     var body: some Commands {
         CommandGroup(replacing: CommandGroupPlacement.pasteboard) {
-            Button("Copy Style") { action = .copyStyle }.keyboardShortcut("C", modifiers: [.command])
-            Button("Paste Style") {action = .pasteStyle }.keyboardShortcut("V", modifiers: [.command])
-            Button("Paste View") { action = .pasteView }.keyboardShortcut("V", modifiers: [.shift,.command])
-            Button("Paste Color") { action = .pasteColor }.keyboardShortcut("C", modifiers: [.shift,.command])
+            Button("Copy Style") { action = .copyStyle }.keyboardShortcut("C", modifiers: [.command]).disabled(!targeted)
+            Button("Paste Style") {action = .pasteStyle }.keyboardShortcut("V", modifiers: [.command]).disabled(!targeted)
+            Button("Paste View") { action = .pasteView }.keyboardShortcut("V", modifiers: [.shift,.command]).disabled(!targeted)
+            Button("Paste Color") { action = .pasteColor }.keyboardShortcut("C", modifiers: [.shift,.command]).disabled(!targeted)
             Button("Paste Light") { action = .pasteLight }.keyboardShortcut("L", modifiers: [.shift,.command])
-                .disabled(!lighting)
+                .disabled(!lighting || !targeted)
             Divider()
-            Button("Paste All") { action = .pasteAll }.keyboardShortcut("V", modifiers: [.shift,.option,.command])
+            Button("Paste All") { action = .pasteAll }.keyboardShortcut("V", modifiers: [.shift,.option,.command]).disabled(!targeted)
             Divider()
         }
     }
 }
 
+// view menu hierarchy
 struct ViewMenus: Commands {
+    @Binding var targeted: Bool
+    
     // application appearance
     @AppStorage(Appearance.key) var appearance = Appearance.defaultValue
     @AppStorage(Thumbnails.key) var thumbnails = Thumbnails.defaultValue
@@ -111,11 +116,12 @@ struct ViewMenus: Commands {
             .keyboardShortcut("R", modifiers: [.option, .command])
             Divider()
             Button(colorbar ? "Hide Color Bar" : "Show Color Bar") { colorbar = !colorbar }
-            .keyboardShortcut("B", modifiers: [.option, .command])
+            .keyboardShortcut("B", modifiers: [.option, .command]).disabled(!targeted)
         }
     }
 }
 
+// data menu hierarchy
 struct DataMenus: Commands {
     // data source and projection
     @AppStorage(DataSource.key) var dataSource = DataSource.defaultValue

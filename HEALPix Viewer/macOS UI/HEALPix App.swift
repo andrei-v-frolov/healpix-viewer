@@ -20,16 +20,19 @@ let analysisQueue = DispatchQueue(label: "analysis", qos: .userInitiated, attrib
     @State private var action: MenuAction = .none
     @State private var clipboard = ViewState.value
     
+    // most actions require available target
+    private var targeted: Bool { stack.count > 0 }
+    
     var body: some Scene {
         WindowGroup(id: mapWindowID) {
             ContentView(stack: $stack, clipboard: $clipboard, action: $action)
         } .commands {
-            FileMenus(stack: $stack, action: $action)
-            EditMenus(action: $action)
-            ViewMenus()
+            FileMenus(action: $action, targeted: .constant(targeted))
+            EditMenus(action: $action, targeted: .constant(targeted))
+            ViewMenus(targeted: .constant(targeted))
             DataMenus()
         }
-        .onChange(of: action) { value in if (value != .none && stack.count < 1) { action = .none } }
+        .onChange(of: action) { value in if (value != .none && !targeted) { action = .none } }
         Settings { SettingsView() }
     }
     
