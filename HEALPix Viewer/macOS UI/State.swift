@@ -67,13 +67,20 @@ struct Light: Equatable, Codable {
     var amt: Double =  60.0
 }
 
-// color bar state
-struct ColorBar: Equatable, Codable {
-    var palette = Palette()
-    var range = Bounds()
+// map data state
+struct MapState: Equatable, Codable {
+    // transformed data state
+    var transform = Transform()
     
-    static func == (a: Self, b: Self) -> Bool {
-        return (a.palette == b.palette) && (a.range.min == b.range.min) && (a.range.max == b.range.max)
+    // rendered texture state
+    var rendered =  Transform()
+    var palette =  Palette()
+    var bounds = [Function: Bounds]()
+    
+    // convenience wrapper
+    var range: Bounds? {
+        get { bounds[transform.f] }
+        set { bounds[transform.f] = newValue }
     }
 }
 
@@ -173,6 +180,8 @@ extension StateMask: RawRepresentable {
                         (range ? 0b010000 : 0) |
                         (light ? 0b100000 : 0)
     }
+    
+    static prefix func !(_ x: Self) -> Self { Self(rawValue: ~x.rawValue) }
 }
 
 // export settings

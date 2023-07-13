@@ -39,7 +39,8 @@ struct ContentView: View {
     @State private var targeted = false
     
     // map to be displayed
-    @State private var map: Map? = nil
+    @State private var map: MTLTexture? = nil
+    @State private var lut: Map? = nil
     @State private var cdf: [Double]? = nil
     @State private var data: MapData? = nil
     @State private var info: String? = nil
@@ -124,8 +125,10 @@ struct ContentView: View {
                             LightingToolbar(light: $state.light)
                         }
                         ZStack(alignment: .top) {
-                            MapView(map: $map, projection: $state.projection, viewpoint: $state.view, magnification: $magnification,
-                                    background: $state.palette.bg, light: $state.light, cursor: $cursor, mapview: $mapview, stack: $stack)
+                            MapView(map: $map, data: $lut, projection: $state.projection,
+                                    viewpoint: $state.view, magnification: $magnification,
+                                    background: $state.palette.bg, light: $state.light,
+                                    cursor: $cursor, mapview: $mapview, stack: $stack)
                             .onDrag {
                                 withAnimation { colorbar ||= drag.colorbar }
                                 guard let image = render(for: drag, size: geometry.size),
@@ -331,24 +334,24 @@ struct ContentView: View {
         }
     }
     
-    // load map to view
-    func load(_ map: Map) {
-        self.map = map; cdf = map.cdf; datamin = map.min; datamax = map.max
-        if keepState.range, let state = map.state { self.state.range = state.range }
+    // load map data
+    func load(_ map: Map, range: Bounds? = nil) {
+        lut = map; cdf = map.cdf; datamin = map.min; datamax = map.max
+        if keepState.range, let range = range { self.state.range = range }
         else { self.state.range = Bounds(mode: .full, min: datamin, max: datamax) }
-        
-        colorize(map)
     }
     
-    // load cached map data
+    // load map to view
     func load(_ map: MapData) {
+        self.map = map.texture
         data = map; info = map.info
         ranked = (map.ranked != nil)
         title = "\(map.name)[\(map.file)]"
         annotation = "\(map.name) [\(map.unit)]"
         mumin = map.data.min; mumax = map.data.max
         
-        transform(map); load(map.map); preview()
+        // load map data and process if needed
+        transform(map); load(map.available, range: map.range); colorize(map); preview()
     }
     
     // load map with settings
@@ -360,26 +363,29 @@ struct ContentView: View {
         
         // load stored or default settings
         if let settings = map.settings { state.update(settings, mask: keepState) }
-        else { state = ViewState.value.copy(state, mask: keepState) }
+        else { state.update(ViewState.value, mask: !keepState) }
         
         // load map
         load(map)
     }
     
     // colorize map with specified settings
-    func colorize(_ map: Map? = nil, color: Palette? = nil, range: Bounds? = nil) {
-        let color = ColorBar(palette: color ?? state.palette, range: range ?? state.range)
-        guard var map = map ?? self.map, map.state != color else { return }
+    func colorize(_ map: MapData? = nil, color: Palette? = nil, range: Bounds? = nil) {
+        guard let map = map ?? data else { return }
+        let transform = map.transform, color = color ?? state.palette, range = range ?? state.range
+        guard (map.state.rendered != transform || map.state.palette != color || map.state.range != range) else { return }
         
         // dispatch color mapper
-        mapper.colorize(map: map, color: color.palette, range: color.range)
-        map.state = color
+        mapper.colorize(map: map.available, color: color, range: range, output: map.texture)
+        
+        // update current state
+        map.state.rendered = transform; map.state.palette = color; map.state.range = range
     }
     
     // transform map with specified settings
     func transform(_ map: MapData? = nil, transform: Transform? = nil) {
         let transform = transform ?? state.transform
-        guard let map = map ?? data, map.state != transform else { return }
+        guard let map = map ?? data, map.state.transform != transform else { return }
         
         // dispatch data transform
         switch transform.f {
@@ -389,7 +395,13 @@ struct ContentView: View {
         }
         
         // update current state
-        map.state = transform; load(map.map)
+        map.state.transform = transform
+        
+        // reset bounds for parametric transforms
+        if (transform.f.mu || transform.f.sigma) { map.state.range = nil }
+        
+        // load transformed map (should always be available at this point)
+        if let data = map.transformed { load(data, range: map.state.range); colorize(map) }
     }
     
     // render map preview

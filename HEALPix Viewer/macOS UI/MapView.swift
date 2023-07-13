@@ -11,7 +11,8 @@ import CFitsIO
 
 // MARK: SwiftUI wrapper for ProjectedView
 struct MapView: NSViewRepresentable {
-    @Binding var map: Map?
+    @Binding var map: MTLTexture?
+    @Binding var data: Map?
     
     @Binding var projection: Projection
     @Binding var viewpoint: Viewpoint
@@ -29,7 +30,8 @@ struct MapView: NSViewRepresentable {
     
     func makeNSView(context: Self.Context) -> Self.NSViewType {
         DispatchQueue.main.async {
-            view.mapview = self; view.window?.delegate = view
+            view.mapview = self
+            view.window?.delegate = view
             mapview = view; raise(view.id)
         }
         view.awakeFromNib(); return view
@@ -41,6 +43,7 @@ struct MapView: NSViewRepresentable {
         let lightsrc = float4(ang2vec((90.0-light.lat)*radian, light.lon*radian), Float(light.amt/100.0))
         
         view.map = map
+        view.data = data
         view.projection = projection
         view.magnification = magnification
         
@@ -64,8 +67,9 @@ struct MapView: NSViewRepresentable {
 class ProjectedView: MTKView, NSWindowDelegate, Identifiable {
     let id = UUID()
     
-    // MARK: map
-    var map: Map? = nil
+    // MARK: map face textures and data
+    var map: MTLTexture? = nil
+    var data: Map? = nil
     
     // MARK: SwiftUI MapView
     var mapview: MapView? = nil
@@ -232,9 +236,9 @@ class ProjectedView: MTKView, NSWindowDelegate, Identifiable {
         
         // render map if available
         if let map = map {
-            let lod = lod(map.nside, transform: transform ?? self.transform())
-            buffers[4].contents().storeBytes(of: ushort(min(lod,map.texture.mipmapLevelCount-1)), as: ushort.self)
-            shader.data.encode(command: command, buffers: buffers, textures: [map.texture, texture])
+            let lod = lod(map.width, transform: transform ?? self.transform())
+            buffers[4].contents().storeBytes(of: ushort(min(lod,map.mipmapLevelCount-1)), as: ushort.self)
+            shader.data.encode(command: command, buffers: buffers, textures: [map, texture])
         } else {
             shader.grid.encode(command: command, buffers: buffers, textures: [texture])
         }
@@ -257,7 +261,7 @@ class ProjectedView: MTKView, NSWindowDelegate, Identifiable {
         command.commit(); command.waitUntilCompleted()
     }
     
-    // MARK: keep track of key status
+    // MARK: keep track of key window status
     func windowDidBecomeKey(_ notification: Notification) { mapview?.raise(id) }
     func windowWillClose(_ notification: Notification) { mapview?.remove(id) }
     
@@ -304,7 +308,7 @@ class ProjectedView: MTKView, NSWindowDelegate, Identifiable {
         view.cursor.lon = phi * radian
         
         // map pixel referenced
-        var p = -1, v = 0.0; if let map = map {
+        var p = -1, v = 0.0; if let map = data {
             ang2pix_nest(map.nside, theta, phi, &p)
             v = Double(map.data[p])
         }

@@ -20,9 +20,6 @@ protocol Map {
     
     var data: [Float] { get }
     var buffer: MTLBuffer { get }
-    var texture: MTLTexture { get }
-    
-    var state: ColorBar? { get set }
 }
 
 extension Map {
@@ -32,9 +29,9 @@ extension Map {
 }
 
 // HEALPix map texture array
-func HPXTexture(nside: Int) -> MTLTexture {
+func HPXTexture(nside: Int, mipmapped: Bool = true) -> MTLTexture {
     // texture format
-    let desc = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: TextureFormat.value.pixel, width: nside, height: nside, mipmapped: AntiAliasing.value != .none)
+    let desc = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: TextureFormat.value.pixel, width: nside, height: nside, mipmapped: mipmapped)
     
     desc.textureType = MTLTextureType.type2DArray
     desc.storageMode = .private
@@ -82,12 +79,6 @@ final class HpxMap: Map {
         return buffer
     }()
     
-    // Metal texture array representing xyf faces
-    lazy var texture: MTLTexture = HPXTexture(nside: nside)
-    
-    // current colorbar state
-    internal var state: ColorBar? = nil
-    
     // initialize map from array
     init(nside: Int, data: [Float], min: Double? = nil, max: Double? = nil) {
         self.nside = nside
@@ -117,12 +108,6 @@ final class CpuMap: Map {
         
         return buffer
     }()
-    
-    // Metal texture array representing xyf faces
-    lazy var texture: MTLTexture = HPXTexture(nside: nside)
-    
-    // current colorbar state
-    internal var state: ColorBar? = nil
     
     // initialize map from array
     init(nside: Int, buffer: UnsafePointer<Float>, min: Double, max: Double) {
@@ -176,12 +161,6 @@ final class GpuMap: Map {
         return Array(UnsafeBufferPointer(start: ptr, count: npix))
     }()
     
-    // Metal texture array representing xyf faces
-    lazy var texture: MTLTexture = HPXTexture(nside: nside)
-    
-    // current colorbar state
-    internal var state: ColorBar? = nil
-    
     // initialize map from buffer
     init(nside: Int, buffer: MTLBuffer, min: Double, max: Double) {
         self.nside = nside
@@ -207,7 +186,7 @@ struct ColorMapper {
         self.buffer = (color, range)
     }
     
-    func colorize(map: Map, color: Palette, range: Bounds) {
+    func colorize(map: Map, color: Palette, range: Bounds, output texture: MTLTexture) {
         let colors = float3x4(color.min.components, color.max.components, color.nan.components)
         let range = float2(Float(range.min), Float(range.max))
         
@@ -217,9 +196,9 @@ struct ColorMapper {
         // initialize compute command buffer
         guard let command = metal.queue.makeCommandBuffer() else { return }
         
-        shader.encode(command: command, buffers: [map.buffer, buffer.color, buffer.range], textures: [color.scheme.colormap.texture, map.texture], threadsPerGrid: MTLSize(width: map.nside, height: map.nside, depth: 12))
-        if map.texture.mipmapLevelCount > 1, let encoder = command.makeBlitCommandEncoder() {
-            encoder.generateMipmaps(for: map.texture)
+        shader.encode(command: command, buffers: [map.buffer, buffer.color, buffer.range], textures: [color.scheme.colormap.texture, texture], threadsPerGrid: MTLSize(width: map.nside, height: map.nside, depth: 12))
+        if texture.mipmapLevelCount > 1, let encoder = command.makeBlitCommandEncoder() {
+            encoder.generateMipmaps(for: texture)
             encoder.endEncoding()
         }
         command.commit()
@@ -273,9 +252,6 @@ struct DataTransformer {
             output.max = transform.eval(map.max)
             output.cdf = map.cdf?.map { transform.eval($0) }
         }
-        
-        // reset colorbar after transform
-        output.state = nil
         
         return output
     }

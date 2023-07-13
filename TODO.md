@@ -3,6 +3,7 @@
 ### Current Status (Build 009)
 
 - navigation map list can be rearranged on macOS 13+
+- single face texture per MapData, preallocate instead of lazy
 
 ### Compliance Issues
 
@@ -18,7 +19,7 @@
 
 - proxy map to improve percieved transform performance
 - switch to indirect buffers?
-- preallocate instead of lazy...
+- always allocate mipmaps?
 
 ### Feature Requests
 
@@ -43,3 +44,5 @@
 - RangeView got broken somehow...
 - file load always crashes on external/discrete GPU
 - animation is disabled on cold start
+- load new map on default data source change
+- if out of VRAM, downsample on CPU?

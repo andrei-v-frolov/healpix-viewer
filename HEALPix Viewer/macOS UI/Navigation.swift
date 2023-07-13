@@ -23,22 +23,43 @@ final class MapData: Identifiable, ObservableObject {
     var ranked: CpuMap? = nil
     var buffer: GpuMap? = nil
     
-    var map: Map {
-        switch state.f {
+    // access backing store
+    subscript(f: Function) -> Map? {
+        switch f {
             case .none: return data
-            case .equalize: return ranked ?? data
-            default: return buffer ?? data
+            case .equalize: return ranked
+            default: return buffer
         }
     }
     
-    // map preview
+    // convenience wrappers
+    var rendered: Map? { self[state.rendered.f] }
+    var transformed: Map? { self[state.transform.f] }
+    var available: Map { transformed ?? rendered ?? data }
+    
+    // transform corresponding to available map
+    var transform: Transform {
+        if (transformed != nil) { return state.transform }
+        if (rendered != nil) { return state.rendered }
+        return Transform()
+    }
+    
+    // range corresponding to available map
+    var range: Bounds? {
+        if (transformed != nil) { return state.bounds[state.transform.f] }
+        if (rendered != nil) { return state.bounds[state.rendered.f] }
+        return state.bounds[.none]
+    }
+    
+    // map face textures and preview
+    let texture: MTLTexture
     let preview = IMGTexture(width: 288, height: 144)
     
     // saved view settings
     var settings: ViewState? = nil
     
     // current transform state
-    internal var state = Transform()
+    internal var state = MapState()
     
     // default initializer
     init(file: String, info: String, name: String, unit: String, channel: Int, data: CpuMap) {
@@ -48,6 +69,9 @@ final class MapData: Identifiable, ObservableObject {
         self.unit = unit
         self.channel = channel
         self.data = data
+        
+        // maybe we should always allocate mipmaps?
+        self.texture = HPXTexture(nside: data.nside, mipmapped: AntiAliasing.value != .none)
     }
     
     // signal that map state changed
