@@ -18,6 +18,7 @@ struct ContentView: View {
     
     // exposed views
     @State private var title = "CMB Viewer"
+    @State private var sidebar = Navigator.list
     @State private var toolbar = ShowToolbar.none
     @State private var overlay = ShowOverlay.none
     @State private var colorbar = false
@@ -96,8 +97,29 @@ struct ContentView: View {
     var body: some View {
         NavigationView {
             VStack(spacing: 0) {
-                NavigationList(loaded: $loaded, selected: $selected)
-                    .frame(minWidth: 210, maxWidth: .infinity)
+                if (sidebar == .list) {
+                    NavigationList(loaded: $loaded, selected: $selected)
+                        .frame(minWidth: 210, maxWidth: .infinity)
+                    HStack {
+                        Button {
+                            withAnimation { sidebar = .mixer }
+                        } label: {
+                            Label("Mix", systemImage: "camera.filters")
+                        }
+                        .help("Create false color image")
+                        Button {
+                            withAnimation { sidebar = .convolution }
+                        } label: {
+                            Label("Convolve", systemImage: "wind")
+                        }
+                        .help("Visualize directions using line integral convolution")
+                        .disabled(true)
+                    }.padding(10)
+                }
+                if (sidebar == .mixer) {
+                    MixerView(sidebar: $sidebar)
+                        .frame(minWidth: 210, maxWidth: .infinity)
+                }
                 if (scheduled > 0) {
                     Divider()
                     Text("Analyzing Data...").padding([.top], 5)

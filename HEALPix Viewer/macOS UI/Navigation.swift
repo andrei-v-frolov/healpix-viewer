@@ -108,3 +108,7 @@ struct NavigationList: View {
         }
     }
 }
+
+enum Navigator {
+    case list, mixer, convolution
+}
