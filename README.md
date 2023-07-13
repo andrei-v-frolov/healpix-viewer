@@ -16,7 +16,7 @@ HEALPix [[Gorski et. al.](https://healpix.jpl.nasa.gov)] is a de-facto standard 
 ### Caveats:
 - requires macOS 12, some features (notably charts) need macOS 13+ to run
 - multiple GPUs are not supported, can select one from device list
-- memory hungry: nside=2048 map needs 0.4-1.8Gb of available VRAM
+- memory hungry: nside=2048 map needs 0.87Gb of available VRAM in 32 bits
 - maximal texture size and output image dimensions are limited to 16384
 - this is a one man show, so no heavy testing on different platforms so far
 - feature requests are welcome, but some are harder to implement than others
