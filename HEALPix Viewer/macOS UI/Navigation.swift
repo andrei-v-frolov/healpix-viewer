@@ -7,6 +7,7 @@
 
 import SwiftUI
 
+// encapsulates map data, buffers, textures, and metadata
 final class MapData: Identifiable, ObservableObject {
     // unique map id
     let id = UUID()
@@ -78,11 +79,17 @@ final class MapData: Identifiable, ObservableObject {
     func refresh() { self.objectWillChange.send() }
 }
 
+extension MapData: Hashable, Equatable {
+    func hash(into hasher: inout Hasher) { hasher.combine(id) }
+    static func == (a: MapData, b: MapData) -> Bool { a.id == b.id }
+}
+
+// map summary view
 struct NavigationRow: View {
     @ObservedObject var map: MapData
     @AppStorage(Thumbnails.key) var thumbnails = Thumbnails.defaultValue
     
-    var body: some View {
+    var content: some View {
         HStack{
             if (thumbnails == .left) { image(map.preview, oversample: 6) }
             VStack {
@@ -93,8 +100,32 @@ struct NavigationRow: View {
             if (thumbnails == .right) { image(map.preview, oversample: 6) }
         }
     }
+    
+    var body: some View {
+        content.contextMenu {
+            VStack {
+                Button(role: .destructive) {
+                } label: {
+                    Label("Export", systemImage: "square.and.arrow.down")
+                }
+                .help("Export rendered map")
+                Button {
+                } label: {
+                    Label("Reset", systemImage: "sparkles")
+                }
+                .help("Reset view settings")
+                Divider()
+                Button(role: .destructive) {
+                } label: {
+                    Label("Close", systemImage: "xmark")
+                }
+                .help("Remove loaded map")
+            }
+        }.labelStyle(.titleAndIcon)
+    }
 }
 
+// loaded maps view
 struct NavigationList: View {
     @Binding var loaded: [MapData]
     @Binding var selected: UUID?
@@ -109,6 +140,45 @@ struct NavigationList: View {
     }
 }
 
+// map picker view
+struct MapPicker: View {
+    var label: String
+    @Binding var loaded: [MapData]
+    @Binding var selected: UUID?
+    
+    // nside filter
+    var nside = 0
+    
+    // respond to thumbnail style chages
+    @AppStorage(Thumbnails.key) var thumbnails = Thumbnails.defaultValue
+    
+    // workaround for Menu stripping enclosed view styling
+    @MainActor @available(macOS 13.0, *)
+    func rendered(_ map: MapData) -> NSImage? {
+        let renderer = ImageRenderer(content: NavigationRow(map: map).content.frame(width: 210).padding(.leading,5))
+        renderer.scale = NSApplication.shared.keyWindow?.backingScaleFactor ?? 2.0
+        return renderer.nsImage
+    }
+    
+    var body: some View {
+        Menu {
+            ForEach(loaded, id: \.self) { map in
+                if (map.data.nside == nside || nside == 0) {
+                    Button { selected = map.id } label: {
+                        if #available(macOS 13.0, *), let entry = rendered(map) { Image(nsImage: entry) } else {
+                            Label { Text(map.name) + Text("  [\(map.file)]").font(.footnote) } icon: { image(map.preview, oversample: 8)?.scaledToFit() }
+                        }
+                    }.labelStyle(.titleAndIcon)
+                }
+            }
+        } label: {
+            if let map = loaded.first(where: { $0.id == selected }) { NavigationRow(map: map).content }
+            else { Label(label, systemImage: "globe") }
+        }.buttonStyle(.plain).padding(5)
+    }
+}
+
+// navigator panels
 enum Navigator {
     case list, mixer, convolution
 }

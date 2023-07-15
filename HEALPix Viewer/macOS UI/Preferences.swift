@@ -576,6 +576,48 @@ extension Color: RawRepresentable, Codable, Preference {
     static var defaultValue = Color.primary
 }
 
+// color mixer primaries
+struct Primaries: Codable {
+    var r = Color.red
+    var g = Color.green
+    var b = Color.blue
+    var black = Color.black
+    var white = Color.white
+    var gamma = 2.2
+}
+
+extension Primaries: JsonRepresentable, Preference {
+    enum CodingKeys: String, CodingKey {
+        case red, green, blue, black, white, gamma
+    }
+    
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        
+        r = try container.decode(Color.self, forKey: .red)
+        g = try container.decode(Color.self, forKey: .green)
+        b = try container.decode(Color.self, forKey: .blue)
+        black = try container.decode(Color.self, forKey: .black)
+        white = try container.decode(Color.self, forKey: .white)
+        gamma = try container.decode(Double.self, forKey: .gamma)
+    }
+    
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        
+        try container.encode(r, forKey: .red)
+        try container.encode(g, forKey: .green)
+        try container.encode(b, forKey: .blue)
+        try container.encode(black, forKey: .black)
+        try container.encode(white, forKey: .white)
+        try container.encode(gamma, forKey: .gamma)
+    }
+    
+    // default value
+    static let key = "primaries"
+    static var defaultValue = Self()
+}
+
 // encapsulates @AppStorage preference properties
 protocol Preference {
     static var key: String { get }

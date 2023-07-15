@@ -107,6 +107,7 @@ struct ContentView: View {
                             Label("Mix", systemImage: "camera.filters")
                         }
                         .help("Create false color image")
+                        .disabled(selected == nil)
                         Button {
                             withAnimation { sidebar = .convolution }
                         } label: {
@@ -117,8 +118,16 @@ struct ContentView: View {
                     }.padding(10)
                 }
                 if (sidebar == .mixer) {
-                    MixerView(sidebar: $sidebar)
+                    ScrollView { MixerView(loaded: $loaded, host: $selected) }
                         .frame(minWidth: 210, maxWidth: .infinity)
+                        .padding(.bottom, 10)
+                    Button {
+                        withAnimation { sidebar = .list }
+                    } label: {
+                        Label("Done", systemImage: "checkmark")
+                    }
+                    .help("Close color mixer view")
+                    .padding(10)
                 }
                 if (scheduled > 0) {
                     Divider()
@@ -162,7 +171,7 @@ struct ContentView: View {
                                 CursorView(cursor: $cursor)
                             }
                         }
-                        if (colorbar) {
+                        if (colorbar && sidebar != .mixer) {
                             BarView(palette: $state.palette, barview: $barview)
                             .frame(height: 1.5*geometry.size.width/ColorbarView.aspect)
                             .onDrag {
