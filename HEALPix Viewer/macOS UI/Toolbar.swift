@@ -8,6 +8,7 @@
 import SwiftUI
 
 struct Toolbar: CustomizableToolbarContent {
+    @Binding var sidebar: Navigator
     @Binding var toolbar: ShowToolbar
     @Binding var overlay: ShowOverlay
     @Binding var colorbar: Bool
@@ -64,6 +65,7 @@ struct Toolbar: CustomizableToolbarContent {
                     Label("Colors", systemImage: "paintpalette")
                 }
                 .help("Color Scheme")
+                .disabled(sidebar == .mixer)
             }
             ToolbarItem(id: "transform", placement: .principal, showsByDefault: true) {
                 Button {
@@ -72,6 +74,7 @@ struct Toolbar: CustomizableToolbarContent {
                     Label("Transform", systemImage: "function")
                 }
                 .help("Data Transform")
+                .disabled(sidebar == .mixer)
             }
             ToolbarItem(id: "range", placement: .principal, showsByDefault: true) {
                 Button {
@@ -80,6 +83,7 @@ struct Toolbar: CustomizableToolbarContent {
                     Label("Range", systemImage: "ruler")
                 }
                 .help("Colorbar & Range")
+                .disabled(sidebar == .mixer)
             }
             ToolbarItem(id: "lighting", placement: .principal, showsByDefault: true) {
                 Button {
@@ -102,7 +106,7 @@ struct Toolbar: CustomizableToolbarContent {
                     Label("Stats", systemImage: "waveform.path.ecg")
                 }
                 .help("Data Statistics")
-                .disabled(cdf == nil || !havecharts)
+                .disabled(cdf == nil || sidebar == .mixer || !havecharts)
             }
             ToolbarItem(id: "info", placement: .principal, showsByDefault: true) {
                 Button {

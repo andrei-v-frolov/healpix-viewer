@@ -146,10 +146,10 @@ struct ContentView: View {
                             OrientationToolbar(view: $state.view)
                                 .onChange(of: state.view)  { value in state.view.orientation = .free }
                         }
-                        if (toolbar == .color) {
+                        if (toolbar == .color && sidebar != .mixer) {
                             ColorToolbar(palette: $state.palette)
                         }
-                        if (toolbar == .transform) {
+                        if (toolbar == .transform && sidebar != .mixer) {
                             TransformToolbar(transform: $state.transform, ranked: $ranked, mumin: $mumin, mumax: $mumax)
                         }
                         if (toolbar == .lighting) {
@@ -214,7 +214,7 @@ struct ContentView: View {
                 }
                 Group {
                     if #available(macOS 13.0, *) {
-                    if (overlay == .statview) {
+                    if (overlay == .statview && sidebar != .mixer) {
                         StatView(cdf: $cdf, range: $state.range)
                         .background(.thinMaterial)
                         .onChange(of: cdf) { value in if (value == nil) { overlay = .none } }
@@ -239,7 +239,7 @@ struct ContentView: View {
             minHeight: 660, idealHeight: 800, maxHeight: .infinity
         )
         .toolbar(id: "mainToolbar") {
-            Toolbar(toolbar: $toolbar, overlay: $overlay, colorbar: $colorbar, lighting: $lighting, magnification: $magnification, cdf: $cdf, info: $info)
+            Toolbar(sidebar: $sidebar, toolbar: $toolbar, overlay: $overlay, colorbar: $colorbar, lighting: $lighting, magnification: $magnification, cdf: $cdf, info: $info)
         }
         .navigationTitle(title)
         .onChange(of: selected) { value in load(value) }

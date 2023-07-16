@@ -46,3 +46,4 @@
 - animation is disabled on cold start
 - load new map on default data source change
 - if out of VRAM, downsample on CPU?
+- thumbnails do not update in mixer
