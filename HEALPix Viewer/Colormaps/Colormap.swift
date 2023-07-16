@@ -65,3 +65,7 @@ extension Color {
         return SIMD4<Float>(Float(r), Float(g), Float(b), Float(a))
     }
 }
+
+extension SIMD4 {
+    var xyz: SIMD3<Scalar> { SIMD3<Scalar>(self.x, self.y, self.z) }
+}
