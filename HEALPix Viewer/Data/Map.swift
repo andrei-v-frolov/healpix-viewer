@@ -240,6 +240,7 @@ struct ColorMapper {
     }
     
     func colorize(map: Map, color: Palette, range: Bounds, output texture: MTLTexture) {
+        let nside = texture.width; guard (map.nside == nside) else { return }
         let colors = float3x4(color.min.components, color.max.components, color.nan.components)
         let range = float2(Float(range.min), Float(range.max))
         
@@ -249,7 +250,7 @@ struct ColorMapper {
         // initialize compute command buffer
         guard let command = metal.queue.makeCommandBuffer() else { return }
         
-        shader.encode(command: command, buffers: [map.buffer, buffer.color, buffer.range], textures: [color.scheme.colormap.texture, texture], threadsPerGrid: MTLSize(width: map.nside, height: map.nside, depth: 12))
+        shader.encode(command: command, buffers: [map.buffer, buffer.color, buffer.range], textures: [color.scheme.colormap.texture, texture], threadsPerGrid: MTLSize(width: nside, height: nside, depth: 12))
         if texture.mipmapLevelCount > 1, let encoder = command.makeBlitCommandEncoder() {
             encoder.generateMipmaps(for: texture)
             encoder.endEncoding()
@@ -288,6 +289,7 @@ struct DataTransformer {
         
         let output = recycle ?? GpuMap(nside: map.nside, buffer: buffer, min: 0.0, max: 0.0)
         let params = float2(Float(transform.mu), Float(exp(transform.sigma)))
+        guard (output.nside == map.nside) else { return nil }
         
         self.buffer.contents().storeBytes(of: params, as: float2.self)
         shader.encode(command: command, buffers: [map.buffer, output.buffer, self.buffer])
