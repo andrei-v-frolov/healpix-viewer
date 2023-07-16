@@ -99,4 +99,21 @@ kernel void colorize(
     output.write(palette.sample(s, v), gid.xy, gid.z);
 }
 
+// MARK: colormix 3-channel data to texture array
+kernel void colormix(
+    texture2d_array<float,access::write> output [[ texture(0) ]],
+    constant float *x                   [[ buffer(0) ]],
+    constant float *y                   [[ buffer(1) ]],
+    constant float *z                   [[ buffer(2) ]],
+    constant float4x4 &mixer            [[ buffer(3) ]],
+    constant float4 &gamma              [[ buffer(4) ]],
+    constant float4 &nan                [[ buffer(5) ]],
+    uint3 gid                           [[ thread_position_in_grid ]]
+) {
+    const int p = xyf2nest(output.get_width(), int3(gid));
+    const float4 v = float4(x[p],y[p],z[p],1.0);
+    
+    output.write(select(powr(saturate(mixer*v), gamma), nan, any(isnan(v))), gid.xy, gid.z);
+}
+
 #endif /* __HEALPIX__ */

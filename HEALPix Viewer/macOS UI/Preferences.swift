@@ -577,7 +577,7 @@ extension Color: RawRepresentable, Codable, Preference {
 }
 
 // color mixer primaries
-struct Primaries: Codable {
+struct Primaries: Equatable, Codable {
     var r = Color.red
     var g = Color.green
     var b = Color.blue

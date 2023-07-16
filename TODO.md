@@ -3,7 +3,8 @@
 ### Current Status (Build 009)
 
 - navigation map list can be rearranged on macOS 13+
-- single face texture per MapData, preallocate instead of lazy
+- false color map support (e.g. RGB = 100,147,217GHz + gamma)
+- single face texture array per MapData, preallocate instead of lazy
 
 ### Compliance Issues
 
@@ -11,7 +12,6 @@
 
 ### Planned Features
 
-- false color map support (e.g. RGB = 100,147,217GHz + gamma)
 - line convolution for polarization and vector maps
 - arithmetic operations on loaded map data (ala fcalc)
 

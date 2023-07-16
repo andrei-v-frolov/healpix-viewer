@@ -171,6 +171,59 @@ final class GpuMap: Map {
     }
 }
 
+// color mixer transforms data to false color texture array
+struct ColorMixer {
+    // compute pipeline
+    let shader = MetalKernel(kernel: "colormix")
+    let buffer: (mixer: MTLBuffer, gamma: MTLBuffer, nan: MTLBuffer)
+    
+    init() {
+        let options: MTLResourceOptions = [.cpuCacheModeWriteCombined, .storageModeShared]
+        guard let mixer = metal.device.makeBuffer(length: MemoryLayout<float4x4>.size, options: options),
+              let gamma = metal.device.makeBuffer(length: MemoryLayout<float4>.size, options: options),
+              let nan = metal.device.makeBuffer(length: MemoryLayout<float4>.size, options: options)
+              else { fatalError("Could not allocate parameter buffers in color mixer") }
+        
+        self.buffer = (mixer, gamma, nan)
+    }
+    
+    func mix(_ x: MapData, _ y: MapData, _ z: MapData, primaries: Primaries, nan: Color, output texture: MTLTexture) {
+        let nside = texture.width; guard (x.data.nside == nside && y.data.nside == nside && z.data.nside == nside) else { return }
+        
+        // input data scaling
+        let range = (x: x.range, y: y.range, z: z.range)
+        let x = x.available, y = y.available, z = z.available
+        let v = float3(Float(range.x?.min ?? x.min), Float(range.y?.min ?? y.min), Float(range.z?.min ?? z.min))
+        let w = float3(Float(range.x?.max ?? x.max), Float(range.y?.max ?? y.max), Float(range.z?.max ?? z.max))
+        
+        // linear color primaries
+        let gamma = float4(Float(primaries.gamma))
+        let black = pow(primaries.black.components, gamma)
+        let white = pow(primaries.white.components, gamma) - black
+        let r = pow(primaries.r.components, gamma) - black
+        let g = pow(primaries.g.components, gamma) - black
+        let b = pow(primaries.b.components, gamma) - black
+        
+        // color mixing matrix
+        let q = (float3x3(r.xyz, g.xyz, b.xyz).inverse * white.xyz)/(w-v)
+        let M = float3x4(q.x*r, q.y*g, q.z*b), mixer = float4x4(M[0], M[1], M[2], black-M*v)
+        
+        buffer.mixer.contents().storeBytes(of: mixer, as: float4x4.self)
+        buffer.gamma.contents().storeBytes(of: 1.0/gamma, as: float4.self)
+        buffer.nan.contents().storeBytes(of: nan.components, as: float4.self)
+        
+        // initialize compute command buffer
+        guard let command = metal.queue.makeCommandBuffer() else { return }
+        
+        shader.encode(command: command, buffers: [x.buffer, y.buffer, z.buffer, buffer.mixer, buffer.gamma, buffer.nan], textures: [texture], threadsPerGrid: MTLSize(width: nside, height: nside, depth: 12))
+        if texture.mipmapLevelCount > 1, let encoder = command.makeBlitCommandEncoder() {
+            encoder.generateMipmaps(for: texture)
+            encoder.endEncoding()
+        }
+        command.commit()
+    }
+}
+
 // color mapper transforms data to rendered texture array
 struct ColorMapper {
     // compute pipeline
