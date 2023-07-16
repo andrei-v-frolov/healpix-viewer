@@ -54,7 +54,7 @@ struct MixerView: View {
                     ColorPicker("White Point:", selection: $primaries.white)
                 }
             }.labelsHidden()
-            Button { primaries = .defaultValue } label: { Label("Reset", systemImage: "sparkles") }
+            Button { focus = false; primaries = .defaultValue } label: { Label("Reset", systemImage: "sparkles") }
             Divider()
             Group {
                 Text("Output Gamma").font(.title3)
