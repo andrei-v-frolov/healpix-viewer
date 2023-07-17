@@ -171,6 +171,51 @@ final class GpuMap: Map {
     }
 }
 
+// correlator computes average and covariance matrices
+struct Correlator {
+    // compute pipeline
+    let shader = MetalKernel(kernel: "covariance")
+    let buffer: (avg: MTLBuffer, cov: MTLBuffer, npix: MTLBuffer)
+    let threads: Int
+    
+    init() {
+        let threads = metal.device.maxThreadsPerThreadgroup.width
+        let options: MTLResourceOptions = [.cpuCacheModeWriteCombined, .storageModeShared]
+        guard let avg = metal.device.makeBuffer(length: MemoryLayout<float3>.size*threads),
+              let cov = metal.device.makeBuffer(length: MemoryLayout<float3x3>.size*threads),
+              let npix = metal.device.makeBuffer(length: MemoryLayout<uint>.size, options: options)
+              else { fatalError("Could not allocate parameter buffers in correlator") }
+        
+        self.threads = threads
+        self.buffer = (avg, cov, npix)
+    }
+    
+    func correlate(_ x: Map, _ y: Map, _ z: Map) -> (avg: float3, cov: float3x3)? {
+        let nside = x.nside, npix = x.npix; guard (y.nside == nside && z.nside == nside) else { return nil }
+        
+        buffer.npix.contents().storeBytes(of: uint(npix), as: uint.self)
+        
+        // initialize compute command buffer
+        guard let command = metal.queue.makeCommandBuffer() else { return nil }
+        
+        shader.encode(command: command, buffers: [x.buffer, y.buffer, z.buffer, buffer.avg, buffer.cov, buffer.npix], textures: [], threadsPerGrid: MTLSize(width: threads, height: 1, depth: 1))
+        command.commit(); command.waitUntilCompleted()
+        
+        // read off accumulated values
+        let A = buffer.avg.contents().bindMemory(to: float3.self, capacity: threads)[0]
+        let C = buffer.cov.contents().bindMemory(to: float3x3.self, capacity: threads)[0]
+        
+        // covariance via König's formula
+        let mu = A/Float(npix), cov = float3x3(
+            float3(C[0]/Float(npix) - float3(mu.x*mu.x, mu.y*mu.x, mu.z*mu.x)),
+            float3(C[1]/Float(npix) - float3(mu.x*mu.y, mu.y*mu.y, mu.z*mu.y)),
+            float3(C[2]/Float(npix) - float3(mu.x*mu.z, mu.y*mu.z, mu.z*mu.z))
+        )
+        
+        return (mu, cov)
+    }
+}
+
 // color mixer transforms data to false color texture array
 struct ColorMixer {
     // compute pipeline

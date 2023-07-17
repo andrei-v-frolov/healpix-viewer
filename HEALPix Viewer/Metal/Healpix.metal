@@ -116,4 +116,39 @@ kernel void colormix(
     output.write(select(powr(saturate(mixer*v), gamma), nan, any(isnan(v))), gid.xy, gid.z);
 }
 
+// MARK: accumulate covariance of 3-channel data
+kernel void covariance(
+    constant float *x                   [[ buffer(0) ]],
+    constant float *y                   [[ buffer(1) ]],
+    constant float *z                   [[ buffer(2) ]],
+    device float3 *avg                  [[ buffer(3) ]],
+    device float3x3 *cov                [[ buffer(4) ]],
+    constant uint &npix                 [[ buffer(5) ]],
+    uint tid                            [[ thread_position_in_grid ]],
+    uint width                          [[ threads_per_grid ]]
+) {
+    // thread-local accumulators
+    float3 A = 0.0; float3x3 C = float3x3(0.0, 0.0, 0.0);
+    
+    // accumulate all the pixels in this thread
+    for (uint i = tid; i < npix; i += width) {
+        const float3 v = float3(x[i],y[i],z[i]);
+        
+        A += v; C += float3x3(
+            float3(v.x*v.x,v.y*v.x,v.z*v.x),
+            float3(v.x*v.y,v.y*v.y,v.z*v.y),
+            float3(v.x*v.z,v.y*v.z,v.z*v.z)
+        );
+    }
+    
+    // store to shared buffer
+    avg[tid] = A; cov[tid] = C;
+    
+    // hierarchical reduce
+    for (uint s = width/2; s > 0; s >>= 1) {
+        threadgroup_barrier(mem_flags::mem_device);
+        if (tid < s && tid+s < npix) { avg[tid] += avg[tid+s]; cov[tid] += cov[tid+s]; }
+    }
+}
+
 #endif /* __HEALPIX__ */

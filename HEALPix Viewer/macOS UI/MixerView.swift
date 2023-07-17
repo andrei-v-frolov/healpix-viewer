@@ -6,6 +6,8 @@
 //
 
 import SwiftUI
+import MetalKit
+import Accelerate
 
 struct MixerView: View {
     @Binding var loaded: [MapData]
@@ -26,8 +28,9 @@ struct MixerView: View {
     // color primaries
     @AppStorage(Primaries.key) var primaries: Primaries = .defaultValue
     
-    // color mixer
+    // color mixer and correlator
     private let mixer = ColorMixer()
+    private let correlator = Correlator()
     
     // focus state
     @FocusState private var focus: Bool
@@ -95,5 +98,34 @@ struct MixerView: View {
         
         let primaries = primaries ?? self.primaries
         mixer.mix(x, y, z, primaries: primaries, nan: .gray, output: texture)
+    }
+}
+
+// singular value decomposition for float3x3 matrices
+extension float3x3 {
+    var svd: (s: float3, u: float3x3, v: float3x3)? {
+        var a = self, s = float3(0), u = float3x3(0.0), v = float3x3(0.0)
+        
+        // memory layout
+        let p = MemoryLayout<float3>.size/MemoryLayout<Float>.size
+        let q = MemoryLayout<float3x3>.size/MemoryLayout<Float>.size
+        
+        // pointers to SIMD arrays
+        let ap = UnsafeMutableRawPointer(&a).bindMemory(to: Float.self, capacity: q)
+        let sp = UnsafeMutableRawPointer(&s).bindMemory(to: Float.self, capacity: p)
+        let up = UnsafeMutableRawPointer(&u).bindMemory(to: Float.self, capacity: q)
+        let vp = UnsafeMutableRawPointer(&v).bindMemory(to: Float.self, capacity: q)
+        
+        // LAPACK sgesvd parameters
+        var jobu = Character("A").asciiValue!, jobv = jobu
+        var m = __CLPK_integer(3), n = m, lda = __CLPK_integer(p), ldu = lda, ldv = lda
+        var lwork = __CLPK_integer(32), info = __CLPK_integer(0)
+        var work = [Float](repeating: 0, count: Int(lwork))
+        
+        // call LAPACK and check status
+        sgesvd_(&jobu, &jobv, &m, &n, ap, &lda, sp, up, &ldu, vp, &ldv, &work, &lwork, &info)
+        guard (info == 0) else { return nil }
+        
+        return (s, u, v)
     }
 }
