@@ -197,7 +197,7 @@ struct ColorMixer {
         let w = float3(Float(range.x?.max ?? x.max), Float(range.y?.max ?? y.max), Float(range.z?.max ?? z.max))
         
         // linear color primaries
-        let gamma = float4(Float(primaries.gamma))
+        let gamma = float4(float3(Float(primaries.gamma)), 1.0)
         let black = pow(primaries.black.components, gamma)
         let white = pow(primaries.white.components, gamma) - black
         let r = pow(primaries.r.components, gamma) - black

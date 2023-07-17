@@ -19,9 +19,9 @@ struct MixerView: View {
     @State private var y: UUID? = nil
     @State private var z: UUID? = nil
     
-    // optional transparency mask
-    @State private var mask = false
-    @State private var alpha: UUID? = nil
+    // decorrelation strategy
+    @State private var decorrelate: Decorrelation = .defaultValue
+    @State private var beta = 1.0
     
     // color primaries
     @AppStorage(Primaries.key) var primaries: Primaries = .defaultValue
@@ -43,6 +43,20 @@ struct MixerView: View {
             }
             Divider()
             Group {
+                Text("Decorrelation").font(.title3)
+                Picker("Strategy:", selection: $decorrelate) {
+                    ForEach(Decorrelation.allCases, id: \.self) {
+                        Text($0.rawValue).tag($0)
+                    }
+                }.pickerStyle(.segmented).labelsHidden()
+                HStack {
+                    Slider(value: $beta, in: 0...1) { Text("β:").foregroundColor(decorrelate == .none ? .disabled : .primary) } onEditingChanged: { editing in focus = false }
+                    TextField("β:", value: $beta, formatter: TwoDigitNumber)
+                        .frame(width: 35).multilineTextAlignment(.trailing).focused($focus)
+                }.padding(.bottom, 5).disabled(decorrelate == .none)
+            }.padding([.leading, .trailing], 10)
+            Divider()
+            Group {
                 Text("Color Primaries").font(.title3)
                 HStack {
                     ColorPicker("R:", selection: $primaries.r)
@@ -62,13 +76,8 @@ struct MixerView: View {
                     Slider(value: $primaries.gamma, in: 0.25...4.0) { Text("ɣ:") } onEditingChanged: { editing in focus = false }
                     TextField("ɣ:", value: $primaries.gamma, formatter: TwoDigitNumber)
                         .frame(width: 35).multilineTextAlignment(.trailing).focused($focus)
-                }.padding([.leading, .trailing, .bottom], 10)
-            }
-            Divider()
-            Group {
-                Toggle(" Transparency Mask", isOn: $mask.animation()).font(.title3)
-                if (mask) { MapPicker(label: "Select alpha mask", loaded: $loaded, selected: $alpha, nside: nside) }
-            }
+                }.padding(.bottom, 5)
+            }.padding([.leading, .trailing], 10)
             Divider()
         }
         .onAppear { x = host; y = host; z = host; colorize() }

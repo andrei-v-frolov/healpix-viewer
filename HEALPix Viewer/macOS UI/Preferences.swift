@@ -618,6 +618,17 @@ extension Primaries: JsonRepresentable, Preference {
     static var defaultValue = Self()
 }
 
+// component decorrelation preference
+enum Decorrelation: String, CaseIterable, Codable, Preference {
+    case none = "None"
+    case pca = "PCA"
+    case zca = "ZCA"
+    
+    // default value
+    static let key = "decorrelation"
+    static var defaultValue: Self = .none
+}
+
 // encapsulates @AppStorage preference properties
 protocol Preference {
     static var key: String { get }
