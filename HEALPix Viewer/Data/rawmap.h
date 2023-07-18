@@ -8,7 +8,7 @@
 #ifndef rawmap_h
 #define rawmap_h
 
-#define BAD_DATA -1.6375000E+30
+#define BAD_DATA -1.6375000E+30F
 
 // full-sky conversion primitives
 void raw2map_ffrp(const float *in, float *out, long nside, double *min, double *max);
