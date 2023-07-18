@@ -282,7 +282,7 @@ struct ColorMixer {
         let identity = float3x3(1.0)
         
         switch kind {
-            case .none: return identity
+            case .none: return Float(2.0*beta)*identity
             case .cov: guard let (s,u,v) = covariance.svd else { return identity }
                 return u*float3x3(diagonal: Float(beta)*compress(s))*v
             case .cor:

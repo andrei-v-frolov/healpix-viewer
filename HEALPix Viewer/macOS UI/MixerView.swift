@@ -62,14 +62,19 @@ struct MixerView: View {
                     ForEach(Decorrelation.allCases, id: \.self) {
                         Text($0.rawValue).tag($0).help($0.description)
                     }
-                }.pickerStyle(.segmented).labelsHidden()
+                }.pickerStyle(.segmented).labelsHidden().padding(.bottom, 5)
                 HStack {
-                    Slider(value: $decorrelate.beta, in: 0...1) {
-                        Text("β:").foregroundColor(decorrelate.mode == .none ? .disabled : .primary)
-                    } onEditingChanged: { editing in focus = false }
+                    Slider(value: $decorrelate.beta, in: 0...1) { Text("β:") } onEditingChanged: { editing in focus = false }
+                        .help("Overall expansion around mean value")
                     TextField("β:", value: $decorrelate.beta, formatter: TwoDigitNumber)
                         .frame(width: 35).multilineTextAlignment(.trailing).focused($focus)
-                }.padding(.bottom, 5).disabled(decorrelate.mode == .none)
+                }.padding(.bottom, 5)
+                HStack {
+                    Slider(value: $primaries.gamma, in: 0.25...4.0) { Text("ɣ:") } onEditingChanged: { editing in focus = false }
+                        .help("Power law exponent applied to mixed colors")
+                    TextField("ɣ:", value: $primaries.gamma, formatter: TwoDigitNumber)
+                        .frame(width: 35).multilineTextAlignment(.trailing).focused($focus)
+                }.padding(.bottom, 5)
             }.padding([.leading, .trailing], 10)
             Divider()
             Group {
@@ -84,16 +89,7 @@ struct MixerView: View {
                     ColorPicker("White Point:", selection: $primaries.white)
                 }
             }.labelsHidden()
-            Button { focus = false; primaries = .defaultValue } label: { Label("Reset", systemImage: "sparkles") }
-            Divider()
-            Group {
-                Text("Output Gamma").font(.title3)
-                HStack {
-                    Slider(value: $primaries.gamma, in: 0.25...4.0) { Text("ɣ:") } onEditingChanged: { editing in focus = false }
-                    TextField("ɣ:", value: $primaries.gamma, formatter: TwoDigitNumber)
-                        .frame(width: 35).multilineTextAlignment(.trailing).focused($focus)
-                }.padding(.bottom, 5)
-            }.padding([.leading, .trailing], 10)
+            Button { focus = false; primaries = .defaultValue; decorrelate = Decorrelator() } label: { Label("Reset", systemImage: "sparkles") }.padding(.top, 5).padding(.bottom, 10)
             Divider()
         }
         .onAppear { id = Inputs(x: host, y: host, z: host) }

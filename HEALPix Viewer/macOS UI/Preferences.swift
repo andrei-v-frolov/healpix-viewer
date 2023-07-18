@@ -626,7 +626,7 @@ enum Decorrelation: String, CaseIterable, Codable, Preference {
     
     var description: String {
         switch self {
-            case .none: return "Use data as is"
+            case .none: return "Use simply scaled data"
             case .cov:  return "Decorrelate using covariance matrix"
             case .cor:  return "Decorrelate using correlation matrix"
         }
