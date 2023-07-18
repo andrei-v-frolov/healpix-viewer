@@ -1,0 +1,76 @@
+//
+//  rawmap.tmpl
+//  HEALPix Viewer
+//
+//  Created by Andrei Frolov on 2023-07-18.
+//
+
+// full-sky buffer in RING ordering, no sign flip
+RAW_FRP {
+    float minval = FLT_MAX, maxval = -FLT_MAX;
+    
+    for (long i = 0; i < 12*nside*nside; i++) {
+        long p; nest2ring(nside, i, &p); float v = in[p];
+        if (v == BAD_DATA) { out[i] = NAN; continue; }
+        
+        out[i] = v;
+        
+        if (v < minval) { minval = v; }
+        if (v > maxval) { maxval = v; }
+    }
+    
+    *min = minval;
+    *max = maxval;
+}
+
+// full-sky buffer in RING ordering, sign flip
+RAW_FRN {
+    float minval = FLT_MAX, maxval = -FLT_MAX;
+    
+    for (long i = 0; i < 12*nside*nside; i++) {
+        long p; nest2ring(nside, i, &p); float v = in[p];
+        if (v == BAD_DATA) { out[i] = NAN; continue; }
+        
+        v = -v; out[i] = v;
+        
+        if (v < minval) { minval = v; }
+        if (v > maxval) { maxval = v; }
+    }
+    
+    *min = minval;
+    *max = maxval;
+}
+
+// full-sky buffer in NESTED ordering, no sign flip
+RAW_FNP {
+    float minval = FLT_MAX, maxval = -FLT_MAX;
+    
+    for (long i = 0; i < 12*nside*nside; i++) {
+        float v = in[i]; if (v == BAD_DATA) { out[i] = NAN; continue; }
+        
+        out[i] = v;
+        
+        if (v < minval) { minval = v; }
+        if (v > maxval) { maxval = v; }
+    }
+    
+    *min = minval;
+    *max = maxval;
+}
+
+// full-sky buffer in NESTED ordering, sign flip
+RAW_FNN {
+    float minval = FLT_MAX, maxval = -FLT_MAX;
+    
+    for (long i = 0; i < 12*nside*nside; i++) {
+        float v = in[i]; if (v == BAD_DATA) { out[i] = NAN; continue; }
+        
+        v = -v; out[i] = v;
+        
+        if (v < minval) { minval = v; }
+        if (v > maxval) { maxval = v; }
+    }
+    
+    *min = minval;
+    *max = maxval;
+}

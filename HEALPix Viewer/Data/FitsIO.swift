@@ -279,10 +279,46 @@ func raw2map_full(_ ptr: UnsafeMutableRawPointer, nside: Int, type: Int32, order
         let buffer = ptr.bindMemory(to: Double.self, capacity: npix)
         
         switch (value, flip) {
-            case ("RING",   false): raw2map_fdrp(buffer, output, nside, &minval, &maxval)
-            case ("RING",   true ): raw2map_fdrn(buffer, output, nside, &minval, &maxval)
-            case ("NESTED", false): raw2map_fdnp(buffer, output, nside, &minval, &maxval)
-            case ("NESTED", true ): raw2map_fdnn(buffer, output, nside, &minval, &maxval)
+            case ("RING",   false): raw2map_dfrp(buffer, output, nside, &minval, &maxval)
+            case ("RING",   true ): raw2map_dfrn(buffer, output, nside, &minval, &maxval)
+            case ("NESTED", false): raw2map_dfnp(buffer, output, nside, &minval, &maxval)
+            case ("NESTED", true ): raw2map_dfnn(buffer, output, nside, &minval, &maxval)
+            default: return nil
+        }
+    }
+    else
+    if type == TSHORT, case let .string(value) = order {
+        let buffer = ptr.bindMemory(to: Int16.self, capacity: npix)
+        
+        switch (value, flip) {
+            case ("RING",   false): raw2map_sfrp(buffer, output, nside, &minval, &maxval)
+            case ("RING",   true ): raw2map_sfrn(buffer, output, nside, &minval, &maxval)
+            case ("NESTED", false): raw2map_sfnp(buffer, output, nside, &minval, &maxval)
+            case ("NESTED", true ): raw2map_sfnn(buffer, output, nside, &minval, &maxval)
+            default: return nil
+        }
+    }
+    else
+    if type == TINT32BIT, case let .string(value) = order {
+        let buffer = ptr.bindMemory(to: Int32.self, capacity: npix)
+        
+        switch (value, flip) {
+            case ("RING",   false): raw2map_ifrp(buffer, output, nside, &minval, &maxval)
+            case ("RING",   true ): raw2map_ifrn(buffer, output, nside, &minval, &maxval)
+            case ("NESTED", false): raw2map_ifnp(buffer, output, nside, &minval, &maxval)
+            case ("NESTED", true ): raw2map_ifnn(buffer, output, nside, &minval, &maxval)
+            default: return nil
+        }
+    }
+    else
+    if type == TLONGLONG, case let .string(value) = order {
+        let buffer = ptr.bindMemory(to: Int64.self, capacity: npix)
+        
+        switch (value, flip) {
+            case ("RING",   false): raw2map_lfrp(buffer, output, nside, &minval, &maxval)
+            case ("RING",   true ): raw2map_lfrn(buffer, output, nside, &minval, &maxval)
+            case ("NESTED", false): raw2map_lfnp(buffer, output, nside, &minval, &maxval)
+            case ("NESTED", true ): raw2map_lfnn(buffer, output, nside, &minval, &maxval)
             default: return nil
         }
     }

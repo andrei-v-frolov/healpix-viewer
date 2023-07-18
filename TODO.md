@@ -5,6 +5,7 @@
 - navigation map list can be rearranged on macOS 13+
 - false color map support (e.g. RGB = 100,147,217GHz + gamma)
 - single face texture array per MapData, preallocate instead of lazy
+- support for integer type maps added (like HITS counts)
 - BAD_DATA guard (replacing with NAN) fixed
 
 ### Compliance Issues
@@ -52,4 +53,3 @@
 - animation is disabled on cold start
 - load new map on default data source change
 - thumbnails do not update in mixer
-- 353GHz R3.01 does not load... (J field not handled in raw2map_full)

@@ -115,6 +115,7 @@
 		5036E7FD2933193B006AE59E /* Transforms.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Transforms.metal; sourceTree = "<group>"; };
 		503C675D28FF89C1002D4314 /* MapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapView.swift; sourceTree = "<group>"; };
 		5041397129AFF1A2006D372C /* CursorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CursorView.swift; sourceTree = "<group>"; };
+		5045CED02A66EF5500F0AB44 /* rawmap.tmpl */ = {isa = PBXFileReference; explicitFileType = sourcecode.c; path = rawmap.tmpl; sourceTree = "<group>"; };
 		50563E582901E19A00B316CA /* MetalShader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetalShader.swift; sourceTree = "<group>"; };
 		50563E5A2901E38F00B316CA /* Kernels.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Kernels.metal; sourceTree = "<group>"; };
 		50655411290A64F400176790 /* ProjectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectionView.swift; sourceTree = "<group>"; };
@@ -328,6 +329,7 @@
 				5000CDB32A665824005ABCBA /* Extensions.swift */,
 				500F99B1292553730097695C /* rawmap.h */,
 				500F99B2292553730097695C /* rawmap.c */,
+				5045CED02A66EF5500F0AB44 /* rawmap.tmpl */,
 				50138E532937026500E8C33B /* ranking.h */,
 				50138E542937026500E8C33B /* ranking.c */,
 				50FC4A0F29380BF800AC5D40 /* quadsort.h */,
