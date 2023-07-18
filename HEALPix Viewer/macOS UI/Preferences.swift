@@ -621,8 +621,8 @@ extension Primaries: JsonRepresentable, Preference {
 // component decorrelation preference
 enum Decorrelation: String, CaseIterable, Codable, Preference {
     case none = "None"
-    case pca = "PCA"
-    case zca = "ZCA"
+    case cov = "COV"
+    case cor = "COR"
     
     // default value
     static let key = "decorrelation"

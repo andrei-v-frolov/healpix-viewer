@@ -283,10 +283,12 @@ struct ColorMixer {
         print(covariance.svd)
         switch kind {
             case .none: return identity
-            case .pca: guard let (s,u,v) = covariance.svd else { return identity }
-                return float3x3(diagonal: Float(beta)*compress(s))*v
-            case .zca: guard let (s,u,v) = covariance.svd else { return identity }
+            case .cov: guard let (s,u,v) = covariance.svd else { return identity }
                 return u*float3x3(diagonal: Float(beta)*compress(s))*v
+            case .cor:
+                let scale = float3x3(diagonal: rsqrt(float3(covariance[0,0], covariance[1,1], covariance[2,2])))
+                guard let (s,u,v) = covariance.svd, let (S,U,V) = (scale*covariance*scale).svd else { return identity }
+                return (U*float3x3(diagonal: compress(S))*V)*(u*float3x3(diagonal: Float(beta)*compress(s))*v)
         }
     }
     
