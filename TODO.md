@@ -25,7 +25,6 @@
 - if out of VRAM, downsample on CPU?
 - use Picker sections? do I really need Picker id?
 - faster 3x3 SVD? e.g. port https://github.com/ericjang/svd3?
-- limit workload in correlator (we don't need precise covariance)
 
 ### Feature Requests
 

@@ -185,7 +185,7 @@ struct Correlator {
         guard let pts = metal.device.makeBuffer(length: MemoryLayout<uint>.size*threads),
               let avg = metal.device.makeBuffer(length: MemoryLayout<float3>.size*threads),
               let cov = metal.device.makeBuffer(length: MemoryLayout<float3x3>.size*threads),
-              let npix = metal.device.makeBuffer(length: MemoryLayout<uint>.size, options: options)
+              let npix = metal.device.makeBuffer(length: MemoryLayout<uint2>.size, options: options)
               else { fatalError("Could not allocate parameter buffers in correlator") }
         
         self.threads = threads
@@ -195,7 +195,9 @@ struct Correlator {
     func correlate(_ x: Map, _ y: Map, _ z: Map) -> (avg: float3, cov: float3x3)? {
         let nside = x.nside, npix = x.npix; guard (y.nside == nside && z.nside == nside) else { return nil }
         
-        buffer.npix.contents().storeBytes(of: uint(npix), as: uint.self)
+        // limit covariance sampling to nside=1024 subset
+        let skip = max(2.0*log2(Double(nside)/1024.0), 0)
+        buffer.npix.contents().storeBytes(of: uint2(uint(npix),uint(skip)), as: uint2.self)
         
         // initialize compute command buffer
         guard let command = metal.queue.makeCommandBuffer() else { return nil }

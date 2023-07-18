@@ -124,7 +124,7 @@ kernel void covariance(
     device uint *pts                    [[ buffer(3) ]],
     device float3 *avg                  [[ buffer(4) ]],
     device float3x3 *cov                [[ buffer(5) ]],
-    constant uint &npix                 [[ buffer(6) ]],
+    constant uint2 &npix                [[ buffer(6) ]],
     uint tid                            [[ thread_position_in_grid ]],
     uint width                          [[ threads_per_grid ]]
 ) {
@@ -132,7 +132,7 @@ kernel void covariance(
     uint n = 0; float3 A = 0.0; float3x3 C = float3x3(0.0, 0.0, 0.0);
     
     // accumulate all the pixels in this thread
-    for (uint i = tid; i < npix; i += width) {
+    for (uint i = tid << npix.y; i < npix.x; i += width << npix.y) {
         const float3 v = float3(x[i],y[i],z[i]);
         if (any(isnan(v)) or any(isinf(v))) { continue; }
         
