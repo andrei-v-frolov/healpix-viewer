@@ -92,7 +92,7 @@ kernel void colorize(
     const int p = xyf2nest(output.get_width(), int3(gid));
     const float v = (data[p] - range.x)/(range.y - range.x);
     
-    if (isnan(v)) { output.write(colors[2], gid.xy, gid.z); return; }
+    if (not(isnormal(v))) { output.write(colors[2], gid.xy, gid.z); return; }
     if (v < 0.0) { output.write(colors[0], gid.xy, gid.z); return; }
     if (v > 1.0) { output.write(colors[1], gid.xy, gid.z); return; }
     
@@ -113,7 +113,7 @@ kernel void colormix(
     const int p = xyf2nest(output.get_width(), int3(gid));
     const float4 v = float4(x[p],y[p],z[p],1.0);
     
-    output.write(select(powr(saturate(mixer*v), gamma), nan, any(isnan(v))), gid.xy, gid.z);
+    output.write(select(powr(saturate(mixer*v), gamma), nan, not(all(isnormal(v)))), gid.xy, gid.z);
 }
 
 // MARK: accumulate covariance of 3-channel data
@@ -133,6 +133,7 @@ kernel void covariance(
     // accumulate all the pixels in this thread
     for (uint i = tid; i < npix; i += width) {
         const float3 v = float3(x[i],y[i],z[i]);
+        if (not(all(isnormal(v)))) { continue; }
         
         A += v; C += float3x3(
             float3(v.x*v.x,v.y*v.x,v.z*v.x),
