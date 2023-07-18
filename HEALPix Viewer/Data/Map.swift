@@ -171,7 +171,7 @@ final class GpuMap: Map {
     }
 }
 
-// correlator computes average and covariance matrices
+// correlator computes average and covariance matrix
 struct Correlator {
     // compute pipeline
     let shader = MetalKernel(kernel: "covariance")
@@ -179,6 +179,7 @@ struct Correlator {
     let threads: Int
     
     init() {
+        // wider than this will break covariance kernel barriers
         let threads = metal.device.maxThreadsPerThreadgroup.width
         let options: MTLResourceOptions = [.cpuCacheModeWriteCombined, .storageModeShared]
         guard let avg = metal.device.makeBuffer(length: MemoryLayout<float3>.size*threads),
@@ -205,7 +206,7 @@ struct Correlator {
         let A = buffer.avg.contents().bindMemory(to: float3.self, capacity: threads)[0]
         let C = buffer.cov.contents().bindMemory(to: float3x3.self, capacity: threads)[0]
         
-        // covariance via König's formula
+        // covariance via König's formula (not the best way, but good enough)
         let mu = A/Float(npix), cov = float3x3(
             float3(C[0]/Float(npix) - float3(mu.x*mu.x, mu.y*mu.x, mu.z*mu.x)),
             float3(C[1]/Float(npix) - float3(mu.x*mu.y, mu.y*mu.y, mu.z*mu.y)),
@@ -248,7 +249,7 @@ struct ColorMixer {
         let S = pca(kind: decorrelate.mode, covariance: scale*decorrelate.cov*scale, beta: decorrelate.beta) * scale
         let shift = (decorrelate.avg-v)/(w-v) - S * decorrelate.avg
         
-        // linear color primaries
+        // linear color space primaries
         let gamma = float4(float3(Float(primaries.gamma)), 1.0)
         let black = pow(primaries.black.components, gamma)
         let white = pow(primaries.white.components, gamma) - black
@@ -256,7 +257,7 @@ struct ColorMixer {
         let g = pow(primaries.g.components, gamma) - black
         let b = pow(primaries.b.components, gamma) - black
         
-        // color mixing matrix
+        // color mixing matrix (enforcing r+g+b = white)
         let q = float3x3(r.xyz, g.xyz, b.xyz).inverse * white.xyz
         let M = float3x4(q.x*r, q.y*g, q.z*b), Q = M*S
         let mixer = float4x4(Q[0], Q[1], Q[2], black+M*shift)
@@ -276,11 +277,10 @@ struct ColorMixer {
         command.commit()
     }
     
+    // decorrelation matrix
     func pca(kind: Decorrelation, covariance: float3x3, beta: Double = 0.5) -> float3x3 {
         let identity = float3x3(1.0)
         
-        print(covariance)
-        print(covariance.svd)
         switch kind {
             case .none: return identity
             case .cov: guard let (s,u,v) = covariance.svd else { return identity }
@@ -292,6 +292,7 @@ struct ColorMixer {
         }
     }
     
+    // regularized inverse square root
     func compress(_ s: float3) -> float3 {
         // limit ill-conditioned eigenvalues
         let epsilon = s.x*s.x/1.0e8

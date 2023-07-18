@@ -20,11 +20,16 @@
 - proxy map to improve percieved transform performance
 - switch to indirect buffers?
 - always allocate mipmaps?
+- if out of VRAM, downsample on CPU?
+- use Picker sections? do I really need Picker id?
+- faster 3x3 SVD? e.g. port https://github.com/ericjang/svd3?
+- limit workload in correlator (we don't need precise covariance)
 
 ### Feature Requests
 
 - magnifier glass
-- save and load view state
+- transparency mask?
+- save and load view state (also maybe mixer state?)
 - view from inside should be part of projection settings?
 - command line interface (via ArgumentParser)
 
@@ -45,5 +50,7 @@
 - file load always crashes on external/discrete GPU
 - animation is disabled on cold start
 - load new map on default data source change
-- if out of VRAM, downsample on CPU?
 - thumbnails do not update in mixer
+- equalized maps do not display in mixer
+- maps with nan break correlator
+- 353GHz R3.01 does not load...
