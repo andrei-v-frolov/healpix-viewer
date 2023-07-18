@@ -175,7 +175,7 @@ final class GpuMap: Map {
 struct Correlator {
     // compute pipeline
     let shader = MetalKernel(kernel: "covariance")
-    let buffer: (pts: MTLBuffer, avg: MTLBuffer, cov: MTLBuffer, npix: MTLBuffer)
+    let buffer: (pts: MTLBuffer, avg: MTLBuffer, cov: MTLBuffer, range: MTLBuffer, npix: MTLBuffer)
     let threads: Int
     
     init() {
@@ -185,24 +185,30 @@ struct Correlator {
         guard let pts = metal.device.makeBuffer(length: MemoryLayout<uint>.size*threads),
               let avg = metal.device.makeBuffer(length: MemoryLayout<float3>.size*threads),
               let cov = metal.device.makeBuffer(length: MemoryLayout<float3x3>.size*threads),
+              let range = metal.device.makeBuffer(length: MemoryLayout<float2x3>.size, options: options),
               let npix = metal.device.makeBuffer(length: MemoryLayout<uint2>.size, options: options)
               else { fatalError("Could not allocate parameter buffers in correlator") }
         
         self.threads = threads
-        self.buffer = (pts, avg, cov, npix)
+        self.buffer = (pts, avg, cov, range, npix)
     }
     
     func correlate(_ x: Map, _ y: Map, _ z: Map) -> (avg: float3, cov: float3x3)? {
         let nside = x.nside, npix = x.npix; guard (y.nside == nside && z.nside == nside) else { return nil }
         
-        // limit covariance sampling to nside=1024 subset
+        // limit covariance sampling to nside=1024 subset and data within range
         let skip = max(2.0*log2(Double(nside)/1024.0), 0)
         buffer.npix.contents().storeBytes(of: uint2(uint(npix),uint(skip)), as: uint2.self)
+        buffer.range.contents().storeBytes(of: float2x3(
+            float3(Float(x.min),Float(y.min),Float(z.min)),
+            float3(Float(x.max),Float(y.max),Float(z.max))), as: float2x3.self)
         
         // initialize compute command buffer
         guard let command = metal.queue.makeCommandBuffer() else { return nil }
         
-        shader.encode(command: command, buffers: [x.buffer, y.buffer, z.buffer, buffer.pts, buffer.avg, buffer.cov, buffer.npix], textures: [], threadsPerGrid: MTLSize(width: threads, height: 1, depth: 1))
+        shader.encode(command: command, buffers: [x.buffer, y.buffer, z.buffer,
+            buffer.pts, buffer.avg, buffer.cov, buffer.range, buffer.npix],
+            textures: [], threadsPerGrid: MTLSize(width: threads, height: 1, depth: 1))
         command.commit(); command.waitUntilCompleted()
         
         // read off accumulated values

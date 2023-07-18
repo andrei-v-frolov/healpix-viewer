@@ -89,7 +89,7 @@ struct MixerView: View {
                     ColorPicker("White Point:", selection: $primaries.white)
                 }
             }.labelsHidden()
-            Button { focus = false; primaries = .defaultValue; decorrelate = Decorrelator() } label: { Label("Reset", systemImage: "sparkles") }.padding(.top, 5).padding(.bottom, 10)
+            Button { focus = false; primaries = .defaultValue; decorrelate.beta = 0.5 } label: { Label("Reset", systemImage: "sparkles") }.padding(.top, 5).padding(.bottom, 10)
             Divider()
         }
         .onAppear { id = Inputs(x: host, y: host, z: host) }
