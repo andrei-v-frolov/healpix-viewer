@@ -227,12 +227,3 @@ extension Export: JsonRepresentable {
         try container.encode(annotation, forKey: .annotation)
     }
 }
-
-// cursor state
-struct Cursor {
-    var hover: Bool = false
-    var lat: Double = 0.0
-    var lon: Double = 0.0
-    var pix: Int = 0
-    var val: Double = 0.0
-}
