@@ -49,7 +49,7 @@ extension float3x3 {
         let p = MemoryLayout<float3>.size/MemoryLayout<Float>.size
         let q = MemoryLayout<float3x3>.size/MemoryLayout<Float>.size
         
-        // pointers to SIMD arrays
+        // pointers to SIMD array data
         let ap = UnsafeMutableRawPointer(&a).bindMemory(to: Float.self, capacity: q)
         let sp = UnsafeMutableRawPointer(&s).bindMemory(to: Float.self, capacity: p)
         let up = UnsafeMutableRawPointer(&u).bindMemory(to: Float.self, capacity: q)
@@ -57,7 +57,8 @@ extension float3x3 {
         
         // LAPACK sgesvd parameters
         var jobu = Character("A").asciiValue!, jobv = jobu
-        var m = __CLPK_integer(3), n = m, lda = __CLPK_integer(p), ldu = lda, ldv = lda
+        var m = __CLPK_integer(3), n = m
+        var lda = __CLPK_integer(p), ldu = lda, ldv = lda
         var lwork = __CLPK_integer(32), info = __CLPK_integer(0)
         var work = [Float](repeating: 0, count: Int(lwork))
         
