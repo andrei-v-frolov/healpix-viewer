@@ -14,5 +14,5 @@ void index_map(const float *data, int *index, int npix) {
 }
 
 void rank_map(const int *index, float *ranked, int npix) {
-    for (int i = 0; i < npix; i++) { ranked[index[i]] = i/(npix-1.0); }
+    for (int i = 0; i < npix; i++) { ranked[index[i]] = (i+0.5)/npix; }
 }

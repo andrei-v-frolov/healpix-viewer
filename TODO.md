@@ -51,6 +51,5 @@
 - animation is disabled on cold start
 - load new map on default data source change
 - thumbnails do not update in mixer
-- equalized maps do not display in mixer
 - maps with nan break correlator
 - 353GHz R3.01 does not load...
