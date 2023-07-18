@@ -624,6 +624,14 @@ enum Decorrelation: String, CaseIterable, Codable, Preference {
     case cov = "COV"
     case cor = "COR"
     
+    var description: String {
+        switch self {
+            case .none: return "Use data as is"
+            case .cov:  return "Decorrelate using covariance matrix"
+            case .cor:  return "Decorrelate using correlation matrix"
+        }
+    }
+    
     // default value
     static let key = "decorrelation"
     static var defaultValue: Self = .none

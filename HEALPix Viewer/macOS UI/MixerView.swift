@@ -60,7 +60,7 @@ struct MixerView: View {
                 Text("Decorrelation").font(.title3)
                 Picker("Strategy:", selection: $decorrelate.mode) {
                     ForEach(Decorrelation.allCases, id: \.self) {
-                        Text($0.rawValue).tag($0)
+                        Text($0.rawValue).tag($0).help($0.description)
                     }
                 }.pickerStyle(.segmented).labelsHidden()
                 HStack {
