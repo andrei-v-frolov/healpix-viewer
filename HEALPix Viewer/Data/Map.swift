@@ -232,14 +232,21 @@ struct ColorMixer {
         self.buffer = (mixer, gamma, nan)
     }
     
-    func mix(_ x: MapData, _ y: MapData, _ z: MapData, primaries: Primaries, nan: Color, output texture: MTLTexture) {
+    func mix(_ x: MapData, _ y: MapData, _ z: MapData, decorrelate: Decorrelator, primaries: Primaries, nan: Color, output texture: MTLTexture) {
         let nside = texture.width; guard (x.data.nside == nside && y.data.nside == nside && z.data.nside == nside) else { return }
         
-        // input data scaling
+        // input data range
         let range = (x: x.range, y: y.range, z: z.range)
         let x = x.available, y = y.available, z = z.available
         let v = float3(Float(range.x?.min ?? x.min), Float(range.y?.min ?? y.min), Float(range.z?.min ?? z.min))
         let w = float3(Float(range.x?.max ?? x.max), Float(range.y?.max ?? y.max), Float(range.z?.max ?? z.max))
+        
+        // input data scaling
+        let scale = float3x3(diagonal: 1.0/(w-v))
+        
+        // decorrelation matrix
+        let S = pca(kind: decorrelate.mode, covariance: scale*decorrelate.cov*scale, beta: decorrelate.beta) * scale
+        let shift = (decorrelate.avg-v)/(w-v) - S * decorrelate.avg
         
         // linear color primaries
         let gamma = float4(float3(Float(primaries.gamma)), 1.0)
@@ -250,8 +257,9 @@ struct ColorMixer {
         let b = pow(primaries.b.components, gamma) - black
         
         // color mixing matrix
-        let q = (float3x3(r.xyz, g.xyz, b.xyz).inverse * white.xyz)/(w-v)
-        let M = float3x4(q.x*r, q.y*g, q.z*b), mixer = float4x4(M[0], M[1], M[2], black-M*v)
+        let q = float3x3(r.xyz, g.xyz, b.xyz).inverse * white.xyz
+        let M = float3x4(q.x*r, q.y*g, q.z*b), Q = M*S
+        let mixer = float4x4(Q[0], Q[1], Q[2], black+M*shift)
         
         buffer.mixer.contents().storeBytes(of: mixer, as: float4x4.self)
         buffer.gamma.contents().storeBytes(of: 1.0/gamma, as: float4.self)
@@ -266,6 +274,32 @@ struct ColorMixer {
             encoder.endEncoding()
         }
         command.commit()
+    }
+    
+    func pca(kind: Decorrelation, covariance: float3x3, beta: Double = 0.5) -> float3x3 {
+        let identity = float3x3(1.0)
+        
+        print(covariance)
+        print(covariance.svd)
+        switch kind {
+            case .none: return identity
+            case .pca: guard let (s,u,v) = covariance.svd else { return identity }
+                return float3x3(diagonal: Float(beta)*compress(s))*v
+            case .zca: guard let (s,u,v) = covariance.svd else { return identity }
+                return u*float3x3(diagonal: Float(beta)*compress(s))*v
+        }
+    }
+    
+    func compress(_ s: float3) -> float3 {
+        // limit ill-conditioned eigenvalues
+        let epsilon = s.x*s.x/1.0e8
+        
+        // asymptote from linear to rsqrt
+        return float3(
+            s.x/pow(epsilon + s.x*s.x, 0.75),
+            s.y/pow(epsilon + s.y*s.y, 0.75),
+            s.z/pow(epsilon + s.z*s.z, 0.75)
+        )
     }
 }
 

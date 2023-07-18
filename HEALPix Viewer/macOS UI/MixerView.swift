@@ -8,6 +8,15 @@
 import SwiftUI
 import MetalKit
 
+// decorrelator state
+struct Decorrelator: Equatable {
+    var mode: Decorrelation = .defaultValue
+    var beta: Double = 0.5
+    var avg = float3(0.0)
+    var cov = float3x3(0.0)
+}
+
+// color mixer panel view
 struct MixerView: View {
     @Binding var loaded: [MapData]
     @Binding var host: UUID?
@@ -16,13 +25,16 @@ struct MixerView: View {
     var nside: Int { loaded.first(where: { $0.id == host })?.data.nside ?? 0 }
     
     // color mixer inputs
-    @State private var x: UUID? = nil
-    @State private var y: UUID? = nil
-    @State private var z: UUID? = nil
+    private struct Inputs: Equatable {
+        var x: UUID? = nil
+        var y: UUID? = nil
+        var z: UUID? = nil
+    }
+    
+    @State private var id = Inputs()
     
     // decorrelation strategy
-    @State private var decorrelate: Decorrelation = .defaultValue
-    @State private var beta = 1.0
+    @State private var decorrelate = Decorrelator()
     
     // color primaries
     @AppStorage(Primaries.key) var primaries: Primaries = .defaultValue
@@ -39,23 +51,25 @@ struct MixerView: View {
             Group {
                 Text("Mix Data Channels").font(.title3)
                 Divider()
-                MapPicker(label: "Select channel 1", loaded: $loaded, selected: $x, nside: nside).labelsHidden()
-                MapPicker(label: "Select channel 2", loaded: $loaded, selected: $y, nside: nside).labelsHidden()
-                MapPicker(label: "Select channel 3", loaded: $loaded, selected: $z, nside: nside).labelsHidden()
+                MapPicker(label: "Select channel 1", loaded: $loaded, selected: $id.x, nside: nside).labelsHidden()
+                MapPicker(label: "Select channel 2", loaded: $loaded, selected: $id.y, nside: nside).labelsHidden()
+                MapPicker(label: "Select channel 3", loaded: $loaded, selected: $id.z, nside: nside).labelsHidden()
             }
             Divider()
             Group {
                 Text("Decorrelation").font(.title3)
-                Picker("Strategy:", selection: $decorrelate) {
+                Picker("Strategy:", selection: $decorrelate.mode) {
                     ForEach(Decorrelation.allCases, id: \.self) {
                         Text($0.rawValue).tag($0)
                     }
                 }.pickerStyle(.segmented).labelsHidden()
                 HStack {
-                    Slider(value: $beta, in: 0...1) { Text("β:").foregroundColor(decorrelate == .none ? .disabled : .primary) } onEditingChanged: { editing in focus = false }
-                    TextField("β:", value: $beta, formatter: TwoDigitNumber)
+                    Slider(value: $decorrelate.beta, in: 0...1) {
+                        Text("β:").foregroundColor(decorrelate.mode == .none ? .disabled : .primary)
+                    } onEditingChanged: { editing in focus = false }
+                    TextField("β:", value: $decorrelate.beta, formatter: TwoDigitNumber)
                         .frame(width: 35).multilineTextAlignment(.trailing).focused($focus)
-                }.padding(.bottom, 5).disabled(decorrelate == .none)
+                }.padding(.bottom, 5).disabled(decorrelate.mode == .none)
             }.padding([.leading, .trailing], 10)
             Divider()
             Group {
@@ -82,20 +96,30 @@ struct MixerView: View {
             }.padding([.leading, .trailing], 10)
             Divider()
         }
-        .onAppear { x = host; y = host; z = host; colorize() }
-        .onChange(of: x) { value in colorize() }
-        .onChange(of: y) { value in colorize() }
-        .onChange(of: z) { value in colorize() }
+        .onAppear { id = Inputs(x: host, y: host, z: host) }
+        .onChange(of: id) { value in correlate(); colorize() }
+        .onChange(of: decorrelate) { value in colorize() }
         .onChange(of: primaries) { value in colorize() }
     }
     
+    func correlate(_ x: MapData? = nil, _ y: MapData? = nil, _ z: MapData? = nil) {
+        guard let x = x ?? loaded.first(where: { $0.id == self.id.x }),
+              let y = y ?? loaded.first(where: { $0.id == self.id.y }),
+              let z = z ?? loaded.first(where: { $0.id == self.id.z }) else { return }
+        
+        guard let (avg,cov) = correlator.correlate(x.available, y.available, z.available) else { return }
+        
+        decorrelate.avg = avg
+        decorrelate.cov = cov
+    }
+    
     func colorize(_ x: MapData? = nil, _ y: MapData? = nil, _ z: MapData? = nil, primaries: Primaries? = nil) {
-        guard let x = x ?? loaded.first(where: { $0.id == self.x }),
-              let y = y ?? loaded.first(where: { $0.id == self.y }),
-              let z = z ?? loaded.first(where: { $0.id == self.z }),
+        guard let x = x ?? loaded.first(where: { $0.id == self.id.x }),
+              let y = y ?? loaded.first(where: { $0.id == self.id.y }),
+              let z = z ?? loaded.first(where: { $0.id == self.id.z }),
               let texture = loaded.first(where: { $0.id == host })?.texture else { return }
         
         let primaries = primaries ?? self.primaries
-        mixer.mix(x, y, z, primaries: primaries, nan: .gray, output: texture)
+        mixer.mix(x, y, z, decorrelate: decorrelate, primaries: primaries, nan: .gray, output: texture)
     }
 }
