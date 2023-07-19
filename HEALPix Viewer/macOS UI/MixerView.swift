@@ -79,7 +79,7 @@ struct MixerView: View {
                         .frame(width: 35).multilineTextAlignment(.trailing).focused($focus)
                 }.padding(.bottom, 5)
                 Toggle(isOn: $compress) { Text("compress gamut") }
-                    .help("map over-saturated colors")
+                    .help("Avoid clipped and over-saturated colors")
             }.padding([.leading, .trailing], 10)
             Divider()
             Group {

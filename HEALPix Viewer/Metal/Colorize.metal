@@ -8,22 +8,34 @@
 #ifndef __COLORIZE__
 #define __COLORIZE__
 
+// MARK: Hybrid log-gamma (Rec. 2100)
+// [https://en.wikipedia.org/wiki/Hybrid_log–gamma]
+
+// stretched and scaled to match sqrt(x) at midtones (where average is mapped to)
+constant const float HLG_A = 0.19264464123396488699073686524675879;
+constant const float HLG_B = 0.28466890937220093748991475372557885;
+constant const float HLG_C = 0.60315455422596953825614647615458749;
+constant const float HLG_D = 1.07723343082931487010271121247405941;
+
+inline float4 hlg(const float4 v) {
+    return float4(select(HLG_A*log(4.0*v.xyz-HLG_B) + HLG_C, HLG_D*sqrt(v.xyz), v.xyz <= 0.25), v.w);
+}
+
 // MARK: ACES gamut compression
+// [https://docs.acescentral.com/guides/rgc-implementation/]
 // [https://github.com/ampas/aces-dev/blob/master/transforms/ctl/lmt/LMT.Academy.GamutCompress.ctl]
 
 constant const float3 GAMUT_LIM = float3(1.147,1.264,1.312);
 constant const float3 GAMUT_THR = float3(0.815,0.803,0.880);
-constant const float GAMUT_PWR = 1.2;
+constant const float  GAMUT_PWR = 1.2;
 
 // compression grading curve
 inline float3 grade(const float3 dist) {
     const float3 intersect = pow((GAMUT_LIM - GAMUT_THR)/(1.0 - GAMUT_THR), GAMUT_PWR);
     const float3 scale = (GAMUT_LIM - GAMUT_THR)/pow(intersect - 1.0, 1.0/GAMUT_PWR);
-    
     const float3 x = (dist - GAMUT_THR)/scale;
-    const float3 comp = GAMUT_THR + scale*x/pow(1.0 + pow(x, GAMUT_PWR), 1.0/GAMUT_PWR);
     
-    return select(comp, dist, dist < GAMUT_THR);
+    return select(GAMUT_THR + scale*x/pow(1.0 + pow(x, GAMUT_PWR), 1.0/GAMUT_PWR), dist, dist < GAMUT_THR);
 }
 
 inline float4 compress(const float4 v) {
@@ -68,7 +80,7 @@ kernel void colormix_clip(
     const int p = xyf2nest(output.get_width(), int3(gid));
     const float4 v = float4(x[p],y[p],z[p],1.0);
     
-    output.write(select(powr(saturate(mixer*v), gamma), nan, any(isnan(v)) or any(isinf(v))), gid.xy, gid.z);
+    output.write(select(powr(saturate(mixer*v), gamma), nan, any(isnan(v) or isinf(v))), gid.xy, gid.z);
 }
 
 kernel void colormix_comp(
@@ -84,7 +96,7 @@ kernel void colormix_comp(
     const int p = xyf2nest(output.get_width(), int3(gid));
     const float4 v = float4(x[p],y[p],z[p],1.0);
     
-    output.write(select(powr(compress(mixer*v), gamma), nan, any(isnan(v)) or any(isinf(v))), gid.xy, gid.z);
+    output.write(select(powr(hlg(compress(mixer*v)), 2.0*gamma), nan, any(isnan(v) or isinf(v))), gid.xy, gid.z);
 }
 
 // MARK: accumulate covariance of 3-channel data
@@ -106,7 +118,7 @@ kernel void covariance(
     // accumulate all the pixels in this thread
     for (uint i = tid << npix.y; i < npix.x; i += width << npix.y) {
         const float3 v = float3(x[i],y[i],z[i]);
-        if (any(isnan(v)) or any(isinf(v)) or any(v < range[0]) or any(v > range[1])) { continue; }
+        if (any(isnan(v) or isinf(v) or (v < range[0]) or (v > range[1]))) { continue; }
         
         n++; A += v; C += float3x3(
             float3(v.x*v.x,v.y*v.x,v.z*v.x),
