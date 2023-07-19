@@ -8,7 +8,7 @@
 import XCTest
 
 final class ColorSpaces_Tests: XCTestCase {
-    let pts = 1024
+    let pts = 1024, epsilon = 1.0e-12
     
     override func setUpWithError() throws {
         // Put setup code here. This method is called before the invocation of each test method in the class.
@@ -21,14 +21,25 @@ final class ColorSpaces_Tests: XCTestCase {
     func test_srgb() throws {
         for i in 0..<pts {
             let x = Double(i)/Double(pts-1), y = srgb2lin(x), z = lin2srgb(y)
-            XCTAssertEqual(x, z, accuracy: 1.0e-12)
+            XCTAssertEqual(x, z, accuracy: epsilon)
         }
     }
     
     func test_hlg() throws {
         for i in 0..<pts {
             let x = Double(i)/Double(pts-1), y = hlg2lin(x), z = lin2hlg(y)
-            XCTAssertEqual(x, z, accuracy: 1.0e-12)
+            XCTAssertEqual(x, z, accuracy: epsilon)
         }
+    }
+    
+    func test_okLab() throws {
+        for _ in 0..<64*pts {
+            let x = SIMD3<Double>(Double.random(in: 0...1),Double.random(in: 0...1),Double.random(in: 0...1))
+            let y = srgb2ok(x), z = ok2srgb(y)
+            XCTAssertEqual(x[0], z[0], accuracy: epsilon)
+            XCTAssertEqual(x[1], z[1], accuracy: epsilon)
+            XCTAssertEqual(x[2], z[2], accuracy: epsilon)
+        }
+
     }
 }
