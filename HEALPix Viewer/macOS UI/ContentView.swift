@@ -98,7 +98,7 @@ struct ContentView: View {
         NavigationView {
             VStack(spacing: 0) {
                 if (sidebar == .list) {
-                    NavigationList(loaded: $loaded, selected: $selected)
+                    NavigationList(loaded: $loaded, selected: $selected, action: $action)
                         .frame(minWidth: 210, maxWidth: .infinity)
                     HStack {
                         Button {
@@ -204,7 +204,7 @@ struct ContentView: View {
                                     Text("Cancel").padding(20)
                                 }
                                 Spacer().frame(width: 30)
-                                Button { saving = false; DispatchQueue.main.async { self.save(size: geometry.size) } } label: {
+                                Button { saving = false; save(size: geometry.size) } label: {
                                     Text("Export").foregroundColor(.accentColor).padding(20)
                                 }
                             }
@@ -256,7 +256,7 @@ struct ContentView: View {
             guard active, value != .none else { return }
             
             switch value {
-                case .open: DispatchQueue.main.async { self.open() }
+                case .open: open()
                 case .save: saving = true
                 case .copyStyle:
                     clipboard = state
@@ -273,6 +273,9 @@ struct ContentView: View {
                     state.light = clipboard.light
                 case .pasteAll:
                     state = clipboard
+                case .resetAll:
+                    state = ViewState.value
+                    state.range = Bounds(mode: .full, min: datamin, max: datamax)
                 default: break
             }
             
@@ -340,7 +343,7 @@ struct ContentView: View {
     var opened: [MapData] { file.reduce([MapData]()) { $0 + $1.list } }
     
     // open file
-    func open(_ url: URL? = nil) {
+    @MainActor func open(_ url: URL? = nil) {
         guard let url = url ?? showOpenPanel() else { return }
         
         userTaskQueue.async {
@@ -354,7 +357,8 @@ struct ContentView: View {
             for map in file.list {
                 let m = map.data, n = Double(m.npix), workload = Int(n*log(1+n))
                 scheduled += workload; analysisQueue.async {
-                    m.index(); map.ranked = m.ranked(); load(); completed += workload
+                    m.index(); map.ranked = m.ranked(); completed += workload
+                    DispatchQueue.main.async { load() }
                 }
             }
             
@@ -373,7 +377,7 @@ struct ContentView: View {
     }
     
     // load map to view
-    func load(_ map: MapData) {
+    @MainActor func load(_ map: MapData) {
         self.map = map.texture
         data = map; info = map.info
         ranked = (map.ranked != nil)
@@ -386,7 +390,7 @@ struct ContentView: View {
     }
     
     // load map with settings
-    func load(_ id: UUID? = nil) {
+    @MainActor func load(_ id: UUID? = nil) {
         guard let map = loaded.first(where: { $0.id == id ?? selected }) else { return }
         
         // stash current settings
@@ -436,9 +440,9 @@ struct ContentView: View {
     }
     
     // render map preview
-    func preview() {
+    @MainActor func preview() {
         guard let map = data, let mapview = mapview else { return }
-        DispatchQueue.main.async { mapview.render(to: map.preview, magnification: 0.0, padding: 0.02, background: .clear); map.refresh() }
+        mapview.render(to: map.preview, magnification: 0.0, padding: 0.02, background: .clear); map.refresh()
     }
     
     // compute dimensions appropriate for rendered image components
@@ -527,7 +531,7 @@ struct ContentView: View {
     }
     
     // save annotated map
-    func save(_ url: URL? = nil, with settings: Export? = nil, size view: CGSize? = nil) {
+    @MainActor func save(_ url: URL? = nil, with settings: Export? = nil, size view: CGSize? = nil) {
         let settings = settings ?? export
         guard let url = url ?? showSavePanel(type: settings.format.type) else { return }
         if let output = render(for: settings, size: view) { saveAsImage(output, url: url, format: settings.format) }

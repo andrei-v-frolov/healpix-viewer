@@ -2,6 +2,7 @@
 
 ### Current Status (Build 009)
 
+- context menus in navigation view implemented
 - navigation map list can be rearranged on macOS 13+
 - false color map support (e.g. RGB = 100,147,217GHz + decorrelate)
 - single face texture array per MapData, preallocate instead of lazy

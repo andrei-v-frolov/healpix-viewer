@@ -11,7 +11,7 @@ import SwiftUI
 enum MenuAction {
     case none
     case open, save
-    case copyStyle, pasteStyle, pasteView, pasteColor, pasteLight, pasteAll
+    case copyStyle, pasteStyle, pasteView, pasteColor, pasteLight, pasteAll, resetAll
 }
 
 // open window is only available on masOS 13+
@@ -59,6 +59,7 @@ struct EditMenus: Commands {
                 .disabled(!lighting || !targeted)
             Divider()
             Button("Paste All") { action = .pasteAll }.keyboardShortcut("V", modifiers: [.shift,.option,.command]).disabled(!targeted)
+            Button("Reset All") { action = .resetAll }.keyboardShortcut("R", modifiers: [.command]).disabled(!targeted)
             Divider()
         }
     }

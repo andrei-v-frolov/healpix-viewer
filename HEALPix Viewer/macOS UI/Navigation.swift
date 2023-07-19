@@ -89,7 +89,7 @@ struct NavigationRow: View {
     @ObservedObject var map: MapData
     @AppStorage(Thumbnails.key) var thumbnails = Thumbnails.defaultValue
     
-    var content: some View {
+    var body: some View {
         HStack{
             if (thumbnails == .left) { image(map.preview, oversample: 6) }
             VStack {
@@ -100,22 +100,32 @@ struct NavigationRow: View {
             if (thumbnails == .right) { image(map.preview, oversample: 6) }
         }
     }
+}
+
+// loaded maps view
+struct NavigationList: View {
+    @Binding var loaded: [MapData]
+    @Binding var selected: UUID?
+    @Binding var action: MenuAction
     
-    var body: some View {
-        content.contextMenu {
+    func entry(_ map: MapData) -> some View {
+        NavigationRow(map: map).contextMenu {
             VStack {
                 Button(role: .destructive) {
+                    selected = map.id; action = .save
                 } label: {
                     Label("Export", systemImage: "square.and.arrow.down")
                 }
                 .help("Export rendered map")
                 Button {
+                    selected = map.id; action = .resetAll
                 } label: {
                     Label("Reset", systemImage: "sparkles")
                 }
                 .help("Reset view settings")
                 Divider()
                 Button(role: .destructive) {
+                    loaded.removeAll(where: { $0.id == map.id })
                 } label: {
                     Label("Close", systemImage: "xmark")
                 }
@@ -123,19 +133,13 @@ struct NavigationRow: View {
             }
         }.labelStyle(.titleAndIcon)
     }
-}
-
-// loaded maps view
-struct NavigationList: View {
-    @Binding var loaded: [MapData]
-    @Binding var selected: UUID?
     
     var body: some View {
         if #available(macOS 13.0, *), let selected = selected {
             let binding = Binding { selected } set: { self.selected = $0 }
-            List($loaded, editActions: .move, selection: binding) { $map in NavigationRow(map: map) }
+            List($loaded, editActions: .move, selection: binding) { $map in entry(map) }
         } else {
-            List(loaded, selection: $selected) { map in NavigationRow(map: map) }
+            List(loaded, selection: $selected) { map in entry(map) }
         }
     }
 }
@@ -155,7 +159,7 @@ struct MapPicker: View {
     // workaround for Menu stripping enclosed view styling
     @MainActor @available(macOS 13.0, *)
     func rendered(_ map: MapData) -> NSImage? {
-        let renderer = ImageRenderer(content: NavigationRow(map: map).content.frame(width: 210).padding(.leading,5))
+        let renderer = ImageRenderer(content: NavigationRow(map: map).frame(width: 210).padding(.leading,5))
         renderer.scale = NSApplication.shared.keyWindow?.backingScaleFactor ?? 2.0
         return renderer.nsImage
     }
@@ -172,7 +176,7 @@ struct MapPicker: View {
                 }
             }
         } label: {
-            if let map = loaded.first(where: { $0.id == selected }) { NavigationRow(map: map).content }
+            if let map = loaded.first(where: { $0.id == selected }) { NavigationRow(map: map) }
             else { Label(label, systemImage: "globe") }
         }.buttonStyle(.plain).padding(5)
     }
