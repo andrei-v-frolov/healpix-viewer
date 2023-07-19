@@ -51,5 +51,4 @@
 - RangeView got broken somehow...
 - file load always crashes on external/discrete GPU
 - animation is disabled on cold start
-- load new map on default data source change
 - thumbnails do not update in mixer
