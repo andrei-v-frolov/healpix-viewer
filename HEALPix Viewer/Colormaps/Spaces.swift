@@ -63,6 +63,22 @@ extension Color {
         
         return SIMD4<Float>(Float(r), Float(g), Float(b), Float(a))
     }
+    
+    var okLab: SIMD4<Float> {
+        guard let color = NSColor(self).usingColorSpace(NSColorSpace.sRGB) else { return SIMD4<Float>(0.0) }
+        let lab = srgb2ok(SIMD3<Double>(color.redComponent, color.greenComponent, color.blueComponent)), a = color.alphaComponent
+        
+        return SIMD4<Float>(Float(lab.x), Float(lab.y), Float(lab.z), Float(a))
+    }
+    
+    init(l: Double, a: Double, b: Double, alpha: Double = 1.0) {
+        let rgb = ok2srgb(SIMD3<Double>(l,a,b))
+        self = Self(.sRGB, red: rgb.x, green: rgb.y, blue: rgb.z, opacity: alpha)
+    }
+    
+    init(okLab lab: SIMD4<Float>) {
+        self = Self(l: Double(lab.x), a: Double(lab.y), b: Double(lab.z), alpha: Double(lab.w))
+    }
 }
 
 extension SIMD4 {
