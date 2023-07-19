@@ -260,7 +260,7 @@ struct ColorMixer {
         let shift = (decorrelate.avg-v)/(w-v) - S * decorrelate.avg
         
         // linear color space primaries
-        let gamma = float4(float3(Float(primaries.gamma)), 1.0)
+        let gamma = float4(float3(Float(exp2(primaries.gamma))), 1.0)
         let black = pow(primaries.black.components, gamma)
         let white = pow(primaries.white.components, gamma) - black
         let r = pow(primaries.r.components, gamma) - black

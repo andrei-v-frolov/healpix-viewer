@@ -583,7 +583,7 @@ struct Primaries: Equatable, Codable {
     var b = Color.blue
     var black = Color.black
     var white = Color.white
-    var gamma = 2.2
+    var gamma = 0.0 // log2 scale
 }
 
 extension Primaries: JsonRepresentable, Preference {
