@@ -111,6 +111,7 @@
 		500F99B1292553730097695C /* rawmap.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = rawmap.h; sourceTree = "<group>"; };
 		500F99B2292553730097695C /* rawmap.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = rawmap.c; sourceTree = "<group>"; };
 		50100CDF2A67B6AC009D7D43 /* Gradient.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Gradient.swift; sourceTree = "<group>"; };
+		50100CE42A682817009D7D43 /* Colorize.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Colorize.metal; sourceTree = "<group>"; };
 		50138E532937026500E8C33B /* ranking.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ranking.h; sourceTree = "<group>"; };
 		50138E542937026500E8C33B /* ranking.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = ranking.c; sourceTree = "<group>"; };
 		501A6CD5292EBC9400E931A3 /* ExportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportView.swift; sourceTree = "<group>"; };
@@ -321,6 +322,7 @@
 			children = (
 				50FAAE482904659B00EF636E /* Common.metal */,
 				50A0D2522902F1A300A29988 /* Healpix.metal */,
+				50100CE42A682817009D7D43 /* Colorize.metal */,
 				5036E7FD2933193B006AE59E /* Transforms.metal */,
 				50A0D2562902F1B200A29988 /* Projections.metal */,
 				50CB1444290B03B0006D59FA /* Shaders.metal */,

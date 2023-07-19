@@ -12,6 +12,7 @@ using namespace metal;
 // include Metal functions
 #include "Common.metal"
 #include "Healpix.metal"
+#include "Colorize.metal"
 #include "Transforms.metal"
 #include "Projections.metal"
 
