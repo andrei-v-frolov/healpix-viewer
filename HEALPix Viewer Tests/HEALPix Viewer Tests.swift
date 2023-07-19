@@ -8,7 +8,7 @@
 import XCTest
 @testable import HEALPix_Viewer
 
-final class HEALPix_ViewerTests: XCTestCase {
+final class HEALPix_Viewer_Tests: XCTestCase {
 
     override func setUpWithError() throws {
         // Put setup code here. This method is called before the invocation of each test method in the class.

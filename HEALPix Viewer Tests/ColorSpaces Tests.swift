@@ -18,6 +18,17 @@ final class ColorSpaces_Tests: XCTestCase {
         // Put teardown code here. This method is called after the invocation of each test method in the class.
     }
     
-    func test_idx() throws {
+    func test_srgb() throws {
+        for i in 0..<pts {
+            let x = Double(i)/Double(pts-1), y = srgb2lin(x), z = lin2srgb(y)
+            XCTAssertEqual(x, z, accuracy: 1.0e-12)
+        }
+    }
+    
+    func test_hlg() throws {
+        for i in 0..<pts {
+            let x = Double(i)/Double(pts-1), y = hlg2lin(x), z = lin2hlg(y)
+            XCTAssertEqual(x, z, accuracy: 1.0e-12)
+        }
     }
 }

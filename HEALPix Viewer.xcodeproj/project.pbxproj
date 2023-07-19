@@ -10,6 +10,7 @@
 		5000CDB42A665824005ABCBA /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5000CDB32A665824005ABCBA /* Extensions.swift */; };
 		50027AAE2A6797970049A0B4 /* Spaces.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50027AAD2A6797970049A0B4 /* Spaces.swift */; };
 		50027AB22A679EE50049A0B4 /* ColorSpaces Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50027AB12A679EE50049A0B4 /* ColorSpaces Tests.swift */; };
+		50027AB62A67A6800049A0B4 /* Spaces.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50027AAD2A6797970049A0B4 /* Spaces.swift */; };
 		500338E92A3D8FBD001EC910 /* Python Difference.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500338E82A3D8FBD001EC910 /* Python Difference.swift */; };
 		5009BB142912ECEB006DE835 /* ColorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5009BB132912ECEB006DE835 /* ColorView.swift */; };
 		500EFDBD29270B66002B6057 /* Navigation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500EFDBC29270B66002B6057 /* Navigation.swift */; };
@@ -101,7 +102,7 @@
 /* Begin PBXFileReference section */
 		5000CDB32A665824005ABCBA /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
 		50027AAD2A6797970049A0B4 /* Spaces.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Spaces.swift; sourceTree = "<group>"; };
-		50027AB12A679EE50049A0B4 /* ColorSpaces Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "ColorSpaces Tests.swift"; path = "ColorSpaces Tests.swift"; sourceTree = "<group>"; };
+		50027AB12A679EE50049A0B4 /* ColorSpaces Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ColorSpaces Tests.swift"; sourceTree = "<group>"; };
 		500338E82A3D8FBD001EC910 /* Python Difference.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Python Difference.swift"; sourceTree = "<group>"; };
 		5009BB132912ECEB006DE835 /* ColorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorView.swift; sourceTree = "<group>"; };
 		500EFDBC29270B66002B6057 /* Navigation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Navigation.swift; sourceTree = "<group>"; };
@@ -134,7 +135,7 @@
 		508BBA9128FF2765004B1A9C /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
 		508BBA9328FF2765004B1A9C /* HEALPix_Viewer.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = HEALPix_Viewer.entitlements; sourceTree = "<group>"; };
 		508BBA9828FF2765004B1A9C /* HEALPix Viewer Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "HEALPix Viewer Tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
-		508BBA9C28FF2765004B1A9C /* HEALPix Viewer Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "HEALPix Viewer Tests.swift"; path = "HEALPix Viewer Tests.swift"; sourceTree = "<group>"; };
+		508BBA9C28FF2765004B1A9C /* HEALPix Viewer Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HEALPix Viewer Tests.swift"; sourceTree = "<group>"; };
 		508D56BE291309DA0099C3A0 /* LightingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LightingView.swift; sourceTree = "<group>"; };
 		508D56C629131C270099C3A0 /* Planck Parchment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Planck Parchment.swift"; sourceTree = "<group>"; };
 		508D56CD29131D530099C3A0 /* Planck FreqMap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Planck FreqMap.swift"; sourceTree = "<group>"; };
@@ -148,7 +149,7 @@
 		50A0D2522902F1A300A29988 /* Healpix.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Healpix.metal; sourceTree = "<group>"; };
 		50A0D2562902F1B200A29988 /* Projections.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Projections.metal; sourceTree = "<group>"; };
 		50A94797291B3AEB00F6F1BA /* RangeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RangeView.swift; sourceTree = "<group>"; };
-		50AFD40C29216FED00994618 /* HEALPix Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = "HEALPix Tests.swift"; path = "HEALPix Tests.swift"; sourceTree = "<group>"; };
+		50AFD40C29216FED00994618 /* HEALPix Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HEALPix Tests.swift"; sourceTree = "<group>"; };
 		50BAE19A291F43380024FD5C /* Credits.rtf */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; path = Credits.rtf; sourceTree = "<group>"; };
 		50BAE1A0291F4CA40024FD5C /* HEALPix-Viewer-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "HEALPix-Viewer-Info.plist"; sourceTree = SOURCE_ROOT; };
 		50BFB1F12A397C1400EA8160 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
@@ -523,6 +524,7 @@
 			files = (
 				508BBA9D28FF2765004B1A9C /* HEALPix Viewer Tests.swift in Sources */,
 				50027AB22A679EE50049A0B4 /* ColorSpaces Tests.swift in Sources */,
+				50027AB62A67A6800049A0B4 /* Spaces.swift in Sources */,
 				50AFD40D29216FED00994618 /* HEALPix Tests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
