@@ -578,11 +578,11 @@ extension Color: RawRepresentable, Codable, Preference {
 
 // color mixer primaries
 struct Primaries: Equatable, Codable {
-    var r = Color.red
-    var g = Color.green
-    var b = Color.blue
-    var black = Color.black
-    var white = Color.white
+    var r = Color(red:1.0, green: 0.0, blue: 0.0, opacity: 1.0)
+    var g = Color(red:0.0, green: 1.0, blue: 0.0, opacity: 1.0)
+    var b = Color(red:0.0, green: 0.0, blue: 1.0, opacity: 1.0)
+    var black = Color(red:0.0, green: 0.0, blue: 0.0, opacity: 1.0)
+    var white = Color(red:1.0, green: 1.0, blue: 1.0, opacity: 1.0)
     var gamma = 0.0 // log2 scale
 }
 
