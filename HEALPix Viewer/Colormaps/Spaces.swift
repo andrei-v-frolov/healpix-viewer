@@ -14,12 +14,14 @@ func lin2srgb(_ x: Double) -> Double { return x <= 0.04045/12.92 ? 12.92*x : 1.0
 
 // HLG transfer curves
 func lin2hlg(_ x: Double) -> Double {
-    let a = 0.17883277, b = 1.0 - 4.0*a, c = 0.5 - a*log(4.0*a)
+    let a = 0.178832772656949765627521311568605
+    let b = 1.0 - 4.0*a, c = 0.5 - a*log(4.0*a)
     return x <= 1.0/12.0 ? sqrt(3.0*x) : a*log(12.0*x-b) + c
 }
 
 func hlg2lin(_ x: Double) -> Double {
-    let a = 0.17883277, b = 1.0 - 4.0*a, c = 0.5 - a*log(4.0*a)
+    let a = 0.178832772656949765627521311568605
+    let b = 1.0 - 4.0*a, c = 0.5 - a*log(4.0*a)
     return x <= 0.5 ? x*x/3.0 : (exp((x-c)/a)+b)/12.0
 }
 
@@ -30,7 +32,7 @@ let sRGB2XYZ_D65 = double3x3(
     SIMD3<Double>(0.1805,0.0722,0.9505)
 )
 
-// okLab space: https://bottosson.github.io/posts/oklab/
+// okLab space [https://bottosson.github.io/posts/oklab/]
 let okLab_M1 = double3x3(
     SIMD3<Double>(+0.8189330101,+0.0329845436,+0.0482003018),
     SIMD3<Double>(+0.3618667424,+0.9293118715,+0.2643662691),

@@ -19,6 +19,9 @@ final class ColorSpaces_Tests: XCTestCase {
     }
     
     func test_srgb() throws {
+        XCTAssertEqual(lin2srgb(0.0), 0.0, accuracy: epsilon)
+        XCTAssertEqual(lin2srgb(1.0), 1.0, accuracy: epsilon)
+        
         for i in 0..<pts {
             let x = Double(i)/Double(pts-1), y = srgb2lin(x), z = lin2srgb(y)
             XCTAssertEqual(x, z, accuracy: epsilon)
@@ -26,6 +29,9 @@ final class ColorSpaces_Tests: XCTestCase {
     }
     
     func test_hlg() throws {
+        XCTAssertEqual(lin2hlg(0.0), 0.0, accuracy: epsilon)
+        XCTAssertEqual(lin2hlg(1.0), 1.0, accuracy: epsilon)
+        
         for i in 0..<pts {
             let x = Double(i)/Double(pts-1), y = hlg2lin(x), z = lin2hlg(y)
             XCTAssertEqual(x, z, accuracy: epsilon)
