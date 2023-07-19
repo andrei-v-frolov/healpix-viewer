@@ -8,6 +8,31 @@
 #ifndef __COLORIZE__
 #define __COLORIZE__
 
+// MARK: ACES gamut compression
+// [https://github.com/ampas/aces-dev/blob/master/transforms/ctl/lmt/LMT.Academy.GamutCompress.ctl]
+
+constant const float3 GAMUT_LIM = float3(1.147,1.264,1.312);
+constant const float3 GAMUT_THR = float3(0.815,0.803,0.880);
+constant const float GAMUT_PWR = 1.2;
+
+// compression grading curve
+inline float3 grade(const float3 dist) {
+    const float3 intersect = pow((GAMUT_LIM - GAMUT_THR)/(1.0 - GAMUT_THR), GAMUT_PWR);
+    const float3 scale = (GAMUT_LIM - GAMUT_THR)/pow(intersect - 1.0, 1.0/GAMUT_PWR);
+    
+    const float3 x = (dist - GAMUT_THR)/scale;
+    const float3 comp = GAMUT_THR + scale*x/pow(1.0 + pow(x, GAMUT_PWR), 1.0/GAMUT_PWR);
+    
+    return select(comp, dist, dist < GAMUT_THR);
+}
+
+inline float4 compress(const float4 v) {
+    const float a = max3(v.x,v.y,v.z);
+    const float3 dist = select((a-v.xyz)/fabs(a), float3(0.0), a == 0.0);
+    
+    return float4(a - grade(dist)*fabs(a), v.w);
+}
+
 // MARK: colormap data to texture array
 kernel void colorize(
     texture1d<float,access::sample>     palette [[ texture(0) ]],
@@ -30,7 +55,7 @@ kernel void colorize(
 }
 
 // MARK: colormix 3-channel data to texture array
-kernel void colormix(
+kernel void colormix_clip(
     texture2d_array<float,access::write> output [[ texture(0) ]],
     constant float *x                   [[ buffer(0) ]],
     constant float *y                   [[ buffer(1) ]],
@@ -44,6 +69,22 @@ kernel void colormix(
     const float4 v = float4(x[p],y[p],z[p],1.0);
     
     output.write(select(powr(saturate(mixer*v), gamma), nan, any(isnan(v)) or any(isinf(v))), gid.xy, gid.z);
+}
+
+kernel void colormix_comp(
+    texture2d_array<float,access::write> output [[ texture(0) ]],
+    constant float *x                   [[ buffer(0) ]],
+    constant float *y                   [[ buffer(1) ]],
+    constant float *z                   [[ buffer(2) ]],
+    constant float4x4 &mixer            [[ buffer(3) ]],
+    constant float4 &gamma              [[ buffer(4) ]],
+    constant float4 &nan                [[ buffer(5) ]],
+    uint3 gid                           [[ thread_position_in_grid ]]
+) {
+    const int p = xyf2nest(output.get_width(), int3(gid));
+    const float4 v = float4(x[p],y[p],z[p],1.0);
+    
+    output.write(select(powr(compress(mixer*v), gamma), nan, any(isnan(v)) or any(isinf(v))), gid.xy, gid.z);
 }
 
 // MARK: accumulate covariance of 3-channel data

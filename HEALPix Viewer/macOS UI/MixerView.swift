@@ -39,6 +39,9 @@ struct MixerView: View {
     // color primaries
     @AppStorage(Primaries.key) var primaries: Primaries = .defaultValue
     
+    // compress color gamut?
+    @State private var compress = false
+    
     // color mixer and correlator
     private let mixer = ColorMixer()
     private let correlator = Correlator()
@@ -75,6 +78,8 @@ struct MixerView: View {
                     TextField("ɣ:", value: $primaries.gamma, formatter: TwoDigitNumber)
                         .frame(width: 35).multilineTextAlignment(.trailing).focused($focus)
                 }.padding(.bottom, 5)
+                Toggle(isOn: $compress) { Text("compress gamut") }
+                    .help("map over-saturated colors")
             }.padding([.leading, .trailing], 10)
             Divider()
             Group {
@@ -96,6 +101,7 @@ struct MixerView: View {
         .onChange(of: id) { value in correlate(); colorize() }
         .onChange(of: decorrelate) { value in colorize() }
         .onChange(of: primaries) { value in colorize() }
+        .onChange(of: compress) { value in colorize() }
     }
     
     func correlate(_ x: MapData? = nil, _ y: MapData? = nil, _ z: MapData? = nil) {
@@ -116,6 +122,6 @@ struct MixerView: View {
               let texture = loaded.first(where: { $0.id == host })?.texture else { return }
         
         let primaries = primaries ?? self.primaries
-        mixer.mix(x, y, z, decorrelate: decorrelate, primaries: primaries, nan: .gray, output: texture)
+        mixer.mix(x, y, z, decorrelate: decorrelate, primaries: primaries, nan: .gray, compress: compress, output: texture)
     }
 }

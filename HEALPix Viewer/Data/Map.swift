@@ -230,7 +230,7 @@ struct Correlator {
 // color mixer transforms data to false color texture array
 struct ColorMixer {
     // compute pipeline
-    let shader = MetalKernel(kernel: "colormix")
+    let shader = (clip: MetalKernel(kernel: "colormix_clip"), comp: MetalKernel(kernel: "colormix_comp"))
     let buffer: (mixer: MTLBuffer, gamma: MTLBuffer, nan: MTLBuffer)
     
     init() {
@@ -243,7 +243,7 @@ struct ColorMixer {
         self.buffer = (mixer, gamma, nan)
     }
     
-    func mix(_ x: MapData, _ y: MapData, _ z: MapData, decorrelate: Decorrelator, primaries: Primaries, nan: Color, output texture: MTLTexture) {
+    func mix(_ x: MapData, _ y: MapData, _ z: MapData, decorrelate: Decorrelator, primaries: Primaries, nan: Color, compress: Bool = false, output texture: MTLTexture) {
         let nside = texture.width; guard (x.data.nside == nside && y.data.nside == nside && z.data.nside == nside) else { return }
         
         // input data range
@@ -279,7 +279,9 @@ struct ColorMixer {
         // initialize compute command buffer
         guard let command = metal.queue.makeCommandBuffer() else { return }
         
-        shader.encode(command: command, buffers: [x.buffer, y.buffer, z.buffer, buffer.mixer, buffer.gamma, buffer.nan], textures: [texture], threadsPerGrid: MTLSize(width: nside, height: nside, depth: 12))
+        (compress ? shader.comp : shader.clip).encode(command: command,
+                buffers: [x.buffer, y.buffer, z.buffer, buffer.mixer, buffer.gamma, buffer.nan],
+                textures: [texture], threadsPerGrid: MTLSize(width: nside, height: nside, depth: 12))
         if texture.mipmapLevelCount > 1, let encoder = command.makeBlitCommandEncoder() {
             encoder.generateMipmaps(for: texture)
             encoder.endEncoding()
