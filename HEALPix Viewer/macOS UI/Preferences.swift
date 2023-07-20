@@ -503,8 +503,8 @@ struct FontPreference: RawRepresentable, Preference {
 
 // color encoded for @AppStorage
 extension Color: RawRepresentable, Codable, Preference {
-    public init(rawValue: String) {
-        switch rawValue.lowercased() {
+    public init?(name: String) {
+        switch name.lowercased() {
             // named colors
             case "black":   self = .black
             case "blue":    self = .blue
@@ -530,13 +530,26 @@ extension Color: RawRepresentable, Codable, Preference {
             case "disabled":    self = .disabled
             
             // device RGBA color
-            default:
-                guard let i = Int(rawValue, radix: 16) else { self = .defaultValue; return }
-                self = Color(red: Double((i >> 24) & 0xFF)/255.0,
-                           green: Double((i >> 16) & 0xFF)/255.0,
-                            blue: Double((i >> 8)  & 0xFF)/255.0,
-                         opacity: Double(i & 0xFF)/255.0)
+            default: return nil
         }
+    }
+    
+    public init?(hexValue: String) {
+        guard let i = Int(hexValue.dropFirst(hexValue.first == "#" ? 1 : 0), radix: 16) else { return nil }
+        
+        self = Color(red: Double((i >> 24) & 0xFF)/255.0,
+                   green: Double((i >> 16) & 0xFF)/255.0,
+                    blue: Double((i >> 8)  & 0xFF)/255.0,
+                 opacity: Double(i & 0xFF)/255.0)
+    }
+    
+    public var hexValue: String {
+        let rgba = SIMD4<Int>(clamp(self.components, min: 0.0, max: 1.0) * 255.0)
+        return String(format:"#%08X", (rgba[0] << 24) | (rgba[1] << 16) | (rgba[2] << 8) | rgba[3])
+    }
+    
+    public init(rawValue: String) {
+        self = Self(name: rawValue) ?? Self(hexValue: rawValue) ?? .defaultValue
     }
     
     public var rawValue: String {
@@ -566,9 +579,7 @@ extension Color: RawRepresentable, Codable, Preference {
             case .disabled:     return "disabled"
             
             // device RGBA color
-            default:
-            let rgba = SIMD4<Int>(clamp(self.components, min: 0.0, max: 1.0) * 255.0)
-                return String(format:"%08X", (rgba[0] << 24) | (rgba[1] << 16) | (rgba[2] << 8) | rgba[3])
+            default: return hexValue
         }
     }
     
