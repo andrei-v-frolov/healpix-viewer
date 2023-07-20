@@ -41,6 +41,12 @@ final class ColorSpaces_Tests: XCTestCase {
     func test_okLab() throws {
         for _ in 0..<64*pts {
             let x = SIMD3<Double>(Double.random(in: 0...1),Double.random(in: 0...1),Double.random(in: 0...1))
+            
+            let v = lrgb2ok(x), w = ok2lrgb(v)
+            XCTAssertEqual(x[0], w[0], accuracy: epsilon)
+            XCTAssertEqual(x[1], w[1], accuracy: epsilon)
+            XCTAssertEqual(x[2], w[2], accuracy: epsilon)
+            
             let y = srgb2ok(x), z = ok2srgb(y)
             XCTAssertEqual(x[0], z[0], accuracy: epsilon)
             XCTAssertEqual(x[1], z[1], accuracy: epsilon)

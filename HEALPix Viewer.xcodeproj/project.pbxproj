@@ -8,9 +8,9 @@
 
 /* Begin PBXBuildFile section */
 		5000CDB42A665824005ABCBA /* Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5000CDB32A665824005ABCBA /* Extensions.swift */; };
-		50027AAE2A6797970049A0B4 /* Spaces.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50027AAD2A6797970049A0B4 /* Spaces.swift */; };
-		50027AB22A679EE50049A0B4 /* ColorSpaces Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50027AB12A679EE50049A0B4 /* ColorSpaces Tests.swift */; };
-		50027AB62A67A6800049A0B4 /* Spaces.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50027AAD2A6797970049A0B4 /* Spaces.swift */; };
+		50027AAE2A6797970049A0B4 /* Color Spaces.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50027AAD2A6797970049A0B4 /* Color Spaces.swift */; };
+		50027AB22A679EE50049A0B4 /* Color Spaces Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50027AB12A679EE50049A0B4 /* Color Spaces Tests.swift */; };
+		50027AB62A67A6800049A0B4 /* Color Spaces.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50027AAD2A6797970049A0B4 /* Color Spaces.swift */; };
 		500338E92A3D8FBD001EC910 /* Python Difference.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500338E82A3D8FBD001EC910 /* Python Difference.swift */; };
 		5009BB142912ECEB006DE835 /* ColorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5009BB132912ECEB006DE835 /* ColorView.swift */; };
 		500EFDBD29270B66002B6057 /* Navigation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500EFDBC29270B66002B6057 /* Navigation.swift */; };
@@ -102,8 +102,8 @@
 
 /* Begin PBXFileReference section */
 		5000CDB32A665824005ABCBA /* Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Extensions.swift; sourceTree = "<group>"; };
-		50027AAD2A6797970049A0B4 /* Spaces.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Spaces.swift; sourceTree = "<group>"; };
-		50027AB12A679EE50049A0B4 /* ColorSpaces Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ColorSpaces Tests.swift"; sourceTree = "<group>"; };
+		50027AAD2A6797970049A0B4 /* Color Spaces.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color Spaces.swift"; sourceTree = "<group>"; };
+		50027AB12A679EE50049A0B4 /* Color Spaces Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color Spaces Tests.swift"; sourceTree = "<group>"; };
 		500338E82A3D8FBD001EC910 /* Python Difference.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Python Difference.swift"; sourceTree = "<group>"; };
 		5009BB132912ECEB006DE835 /* ColorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorView.swift; sourceTree = "<group>"; };
 		500EFDBC29270B66002B6057 /* Navigation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Navigation.swift; sourceTree = "<group>"; };
@@ -292,7 +292,7 @@
 			isa = PBXGroup;
 			children = (
 				50AFD40C29216FED00994618 /* HEALPix Tests.swift */,
-				50027AB12A679EE50049A0B4 /* ColorSpaces Tests.swift */,
+				50027AB12A679EE50049A0B4 /* Color Spaces Tests.swift */,
 				508BBA9C28FF2765004B1A9C /* HEALPix Viewer Tests.swift */,
 			);
 			path = "HEALPix Viewer Tests";
@@ -303,7 +303,7 @@
 			children = (
 				50F1F27729134E2500FBF00D /* Colormap.swift */,
 				50100CDF2A67B6AC009D7D43 /* Gradient.swift */,
-				50027AAD2A6797970049A0B4 /* Spaces.swift */,
+				50027AAD2A6797970049A0B4 /* Color Spaces.swift */,
 				508D56C629131C270099C3A0 /* Planck Parchment.swift */,
 				508D56CD29131D530099C3A0 /* Planck FreqMap.swift */,
 				500338E82A3D8FBD001EC910 /* Python Difference.swift */,
@@ -505,7 +505,7 @@
 				508D56CE29131D530099C3A0 /* Planck FreqMap.swift in Sources */,
 				5065EE80292044D000AD46CD /* Preferences.swift in Sources */,
 				5009BB142912ECEB006DE835 /* ColorView.swift in Sources */,
-				50027AAE2A6797970049A0B4 /* Spaces.swift in Sources */,
+				50027AAE2A6797970049A0B4 /* Color Spaces.swift in Sources */,
 				501A6CDA292EC74400E931A3 /* Formatters.swift in Sources */,
 				50EA05862A5FC861009F73C6 /* MixerView.swift in Sources */,
 				50ECD2B028FF2A9C0008F915 /* Menus.swift in Sources */,
@@ -529,8 +529,8 @@
 			buildActionMask = 2147483647;
 			files = (
 				508BBA9D28FF2765004B1A9C /* HEALPix Viewer Tests.swift in Sources */,
-				50027AB22A679EE50049A0B4 /* ColorSpaces Tests.swift in Sources */,
-				50027AB62A67A6800049A0B4 /* Spaces.swift in Sources */,
+				50027AB22A679EE50049A0B4 /* Color Spaces Tests.swift in Sources */,
+				50027AB62A67A6800049A0B4 /* Color Spaces.swift in Sources */,
 				50AFD40D29216FED00994618 /* HEALPix Tests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;

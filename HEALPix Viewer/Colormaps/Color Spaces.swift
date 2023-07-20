@@ -45,14 +45,20 @@ let okLab_M2 = double3x3(
     SIMD3<Double>(-0.0040720468,+0.4505937099,-0.8086757660)
 )
 
-func srgb2ok(_ rgb: SIMD3<Double>) -> SIMD3<Double> {
-    let rgb = SIMD3<Double>(srgb2lin(rgb.x),srgb2lin(rgb.y),srgb2lin(rgb.z))
+func lrgb2ok(_ rgb: SIMD3<Double>) -> SIMD3<Double> {
     return okLab_M2*pow((okLab_M1*sRGB2XYZ_D65)*rgb, SIMD3<Double>(1.0/3.0))
 }
 
+func ok2lrgb(_ lab: SIMD3<Double>) -> SIMD3<Double> {
+    return (okLab_M1*sRGB2XYZ_D65).inverse*pow(okLab_M2.inverse*lab, SIMD3<Double>(3.0))
+}
+
+func srgb2ok(_ rgb: SIMD3<Double>) -> SIMD3<Double> {
+    return lrgb2ok(SIMD3<Double>(srgb2lin(rgb.x),srgb2lin(rgb.y),srgb2lin(rgb.z)))
+}
+
 func ok2srgb(_ lab: SIMD3<Double>) -> SIMD3<Double> {
-    let rgb = (okLab_M1*sRGB2XYZ_D65).inverse*pow(okLab_M2.inverse*lab, SIMD3<Double>(3.0))
-    return SIMD3<Double>(lin2srgb(rgb.x),lin2srgb(rgb.y),lin2srgb(rgb.z))
+    let rgb = ok2lrgb(lab); return SIMD3<Double>(lin2srgb(rgb.x),lin2srgb(rgb.y),lin2srgb(rgb.z))
 }
 
 // color components extensions
