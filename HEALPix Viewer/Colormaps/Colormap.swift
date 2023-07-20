@@ -8,20 +8,20 @@
 import SwiftUI
 import MetalKit
 
-final class Colormap {
+final class ColorMap {
     let lut: [SIMD4<Float>]
     var size: Int { lut.count * MemoryLayout<SIMD4<Float>>.size }
     
     // singleton colormaps
-    static let planck = Colormap(lut: Planck_Parchment_LUT)
-    static let freq = Colormap(lut: Planck_FreqMap_LUT)
-    static let diff = Colormap(lut: Python_Difference_LUT)
-    static let cmb = Colormap(lut: HEALPix_CMB_LUT)
-    static let grey = Colormap(lut: HEALPix_Grey_LUT)
-    static let hot = Colormap(lut: HEALPix_Hot_LUT)
-    static let cold = Colormap(lut: HEALPix_Cold_LUT)
-    static let GRV = Colormap(lut: HEALPix_GRV_LUT)
-    static let BGRY = Colormap(lut: HEALPix_BGRY_LUT)
+    static let planck = ColorMap(lut: Planck_Parchment_LUT)
+    static let freq = ColorMap(lut: Planck_FreqMap_LUT)
+    static let diff = ColorMap(lut: Python_Difference_LUT)
+    static let cmb = ColorMap(lut: HEALPix_CMB_LUT)
+    static let grey = ColorMap(lut: HEALPix_Grey_LUT)
+    static let hot = ColorMap(lut: HEALPix_Hot_LUT)
+    static let cold = ColorMap(lut: HEALPix_Cold_LUT)
+    static let GRV = ColorMap(lut: HEALPix_GRV_LUT)
+    static let BGRY = ColorMap(lut: HEALPix_BGRY_LUT)
     
     // Metal texture representing colormap
     lazy var texture: MTLTexture = {

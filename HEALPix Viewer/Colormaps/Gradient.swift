@@ -35,5 +35,5 @@ struct ColorGradient {
     }
     
     // convenience wrapper
-    func colormap(_ n: Int) -> Colormap { Colormap(lut: lut(n)) }
+    func colormap(_ n: Int) -> ColorMap { ColorMap(lut: lut(n)) }
 }

@@ -358,17 +358,17 @@ enum ColorScheme: String, CaseIterable, Codable, Preference {
     static let defaultValue: Self = .planck
     
     // colormap singletons
-    var colormap: Colormap {
+    var colormap: ColorMap {
         switch self {
-            case .planck:   return Colormap.planck
-            case .cmb:      return Colormap.cmb
-            case .diff:     return Colormap.diff
-            case .freq:     return Colormap.freq
-            case .grey:     return Colormap.grey
-            case .hot:      return Colormap.hot
-            case .cold:     return Colormap.cold
-            case .grv:      return Colormap.GRV
-            case .bgry:     return Colormap.BGRY
+            case .planck:   return ColorMap.planck
+            case .cmb:      return ColorMap.cmb
+            case .diff:     return ColorMap.diff
+            case .freq:     return ColorMap.freq
+            case .grey:     return ColorMap.grey
+            case .hot:      return ColorMap.hot
+            case .cold:     return ColorMap.cold
+            case .grv:      return ColorMap.GRV
+            case .bgry:     return ColorMap.BGRY
         }
     }
 }
