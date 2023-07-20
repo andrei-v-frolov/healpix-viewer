@@ -9,13 +9,13 @@ import SwiftUI
 import MetalKit
 
 struct ColorGradient: Equatable, Codable {
-    // gradient color list
+    var name: String
     var colors: [Color]
     
     // need at least two colors to make a gradient
-    init?(_ colors: [Color]) {
+    init?(name: String, _ colors: [Color]) {
         guard (colors.count > 1) else { return nil }
-        self.colors = colors
+        self.name = name; self.colors = colors
     }
     
     // generate LUT by linear interpolation in okLab space
@@ -39,15 +39,17 @@ struct ColorGradient: Equatable, Codable {
 }
 
 extension ColorGradient: JsonRepresentable {
-    enum CodingKeys: String, CodingKey { case gradient }
+    enum CodingKeys: String, CodingKey { case name, gradient }
     
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
+        name = try container.decode(String.self, forKey: .name)
         colors = try container.decode([Color].self, forKey: .gradient)
     }
     
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(name, forKey: .name)
         try container.encode(colors, forKey: .gradient)
     }
 }
