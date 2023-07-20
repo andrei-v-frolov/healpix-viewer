@@ -26,6 +26,8 @@
 		503C675E28FF89C1002D4314 /* MapView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 503C675D28FF89C1002D4314 /* MapView.swift */; };
 		5041397229AFF1A2006D372C /* CursorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5041397129AFF1A2006D372C /* CursorView.swift */; };
 		5047FA932A69014600FDCF98 /* GradientView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5047FA922A69014600FDCF98 /* GradientView.swift */; };
+		5047FA952A69E83600FDCF98 /* Color Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5047FA942A69E83600FDCF98 /* Color Extensions.swift */; };
+		5047FA972A69EDBF00FDCF98 /* CSS Colors.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5047FA962A69EDBF00FDCF98 /* CSS Colors.swift */; };
 		50563E592901E19A00B316CA /* MetalShader.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50563E582901E19A00B316CA /* MetalShader.swift */; };
 		50563E5B2901E38F00B316CA /* Kernels.metal in Sources */ = {isa = PBXBuildFile; fileRef = 50563E5A2901E38F00B316CA /* Kernels.metal */; };
 		50655412290A64F400176790 /* ProjectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50655411290A64F400176790 /* ProjectionView.swift */; };
@@ -126,6 +128,8 @@
 		5041397129AFF1A2006D372C /* CursorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CursorView.swift; sourceTree = "<group>"; };
 		5045CED02A66EF5500F0AB44 /* rawmap.tmpl */ = {isa = PBXFileReference; explicitFileType = sourcecode.c; path = rawmap.tmpl; sourceTree = "<group>"; };
 		5047FA922A69014600FDCF98 /* GradientView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GradientView.swift; sourceTree = "<group>"; };
+		5047FA942A69E83600FDCF98 /* Color Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color Extensions.swift"; sourceTree = "<group>"; };
+		5047FA962A69EDBF00FDCF98 /* CSS Colors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "CSS Colors.swift"; sourceTree = "<group>"; };
 		50563E582901E19A00B316CA /* MetalShader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetalShader.swift; sourceTree = "<group>"; };
 		50563E5A2901E38F00B316CA /* Kernels.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Kernels.metal; sourceTree = "<group>"; };
 		50655411290A64F400176790 /* ProjectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectionView.swift; sourceTree = "<group>"; };
@@ -307,6 +311,7 @@
 				50100CDF2A67B6AC009D7D43 /* Gradient.swift */,
 				50F1F27729134E2500FBF00D /* Color Map.swift */,
 				50027AAD2A6797970049A0B4 /* Color Spaces.swift */,
+				5047FA942A69E83600FDCF98 /* Color Extensions.swift */,
 				508D56C629131C270099C3A0 /* Planck Parchment.swift */,
 				508D56CD29131D530099C3A0 /* Planck FreqMap.swift */,
 				500338E82A3D8FBD001EC910 /* Python Difference.swift */,
@@ -316,6 +321,7 @@
 				508D56D529131F050099C3A0 /* HEALPix Cold.swift */,
 				508D56D729131F7E0099C3A0 /* HEALPix GRV.swift */,
 				508D56D929131FBA0099C3A0 /* HEALPix BGRY.swift */,
+				5047FA962A69EDBF00FDCF98 /* CSS Colors.swift */,
 			);
 			path = Colormaps;
 			sourceTree = "<group>";
@@ -489,6 +495,7 @@
 				50138E552937026500E8C33B /* ranking.c in Sources */,
 				50C8AE8A2A47A73700EB9B1B /* MetalDevice.swift in Sources */,
 				508D56D629131F050099C3A0 /* HEALPix Cold.swift in Sources */,
+				5047FA972A69EDBF00FDCF98 /* CSS Colors.swift in Sources */,
 				508D56D429131EB80099C3A0 /* HEALPix Hot.swift in Sources */,
 				508BBA8D28FF2764004B1A9C /* ContentView.swift in Sources */,
 				50655412290A64F400176790 /* ProjectionView.swift in Sources */,
@@ -512,6 +519,7 @@
 				50027AAE2A6797970049A0B4 /* Color Spaces.swift in Sources */,
 				501A6CDA292EC74400E931A3 /* Formatters.swift in Sources */,
 				50EA05862A5FC861009F73C6 /* MixerView.swift in Sources */,
+				5047FA952A69E83600FDCF98 /* Color Extensions.swift in Sources */,
 				50ECD2B028FF2A9C0008F915 /* Menus.swift in Sources */,
 				50563E592901E19A00B316CA /* MetalShader.swift in Sources */,
 				50563E5B2901E38F00B316CA /* Kernels.metal in Sources */,
