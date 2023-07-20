@@ -59,7 +59,7 @@
 		50EA05862A5FC861009F73C6 /* MixerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50EA05852A5FC861009F73C6 /* MixerView.swift */; };
 		50ECD2B028FF2A9C0008F915 /* Menus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50ECD2AF28FF2A9C0008F915 /* Menus.swift */; };
 		50ECD2B228FF31260008F915 /* Toolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50ECD2B128FF31260008F915 /* Toolbar.swift */; };
-		50F1F27829134E2500FBF00D /* Colormap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50F1F27729134E2500FBF00D /* Colormap.swift */; };
+		50F1F27829134E2500FBF00D /* Color Map.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50F1F27729134E2500FBF00D /* Color Map.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -164,7 +164,7 @@
 		50EA05852A5FC861009F73C6 /* MixerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MixerView.swift; sourceTree = "<group>"; };
 		50ECD2AF28FF2A9C0008F915 /* Menus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Menus.swift; sourceTree = "<group>"; };
 		50ECD2B128FF31260008F915 /* Toolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Toolbar.swift; sourceTree = "<group>"; };
-		50F1F27729134E2500FBF00D /* Colormap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Colormap.swift; sourceTree = "<group>"; };
+		50F1F27729134E2500FBF00D /* Color Map.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color Map.swift"; sourceTree = "<group>"; };
 		50FAAE482904659B00EF636E /* Common.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Common.metal; sourceTree = "<group>"; };
 		50FC4A0F29380BF800AC5D40 /* quadsort.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = quadsort.h; sourceTree = "<group>"; };
 		50FC4A1229380BF800AC5D40 /* quadsort.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = quadsort.c; sourceTree = "<group>"; };
@@ -301,8 +301,8 @@
 		508D56CA29131C2D0099C3A0 /* Colormaps */ = {
 			isa = PBXGroup;
 			children = (
-				50F1F27729134E2500FBF00D /* Colormap.swift */,
 				50100CDF2A67B6AC009D7D43 /* Gradient.swift */,
+				50F1F27729134E2500FBF00D /* Color Map.swift */,
 				50027AAD2A6797970049A0B4 /* Color Spaces.swift */,
 				508D56C629131C270099C3A0 /* Planck Parchment.swift */,
 				508D56CD29131D530099C3A0 /* Planck FreqMap.swift */,
@@ -481,7 +481,7 @@
 				502A8B67293AA00A008CAE63 /* StatView.swift in Sources */,
 				508D56C729131C270099C3A0 /* Planck Parchment.swift in Sources */,
 				508D56D029131DB10099C3A0 /* HEALPix CMB.swift in Sources */,
-				50F1F27829134E2500FBF00D /* Colormap.swift in Sources */,
+				50F1F27829134E2500FBF00D /* Color Map.swift in Sources */,
 				508910B2291B077E00E33CB6 /* ColorbarView.swift in Sources */,
 				50138E552937026500E8C33B /* ranking.c in Sources */,
 				50C8AE8A2A47A73700EB9B1B /* MetalDevice.swift in Sources */,
