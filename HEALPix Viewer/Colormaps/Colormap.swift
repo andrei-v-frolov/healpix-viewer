@@ -46,6 +46,17 @@ final class ColorMap {
         self.lut = lut
     }
     
+    // initialize colormap from gradient
+    init(gradient: ColorGradient) {
+        self.lut = gradient.lut(1024)
+    }
+    
+    // initialize colormap from color list
+    init?(colors: [Color]) {
+        guard let gradient = ColorGradient(colors) else { return nil }
+        self.lut = gradient.lut(1024)
+    }
+    
     subscript(index: Int) -> Color {
         let c = lut[index]
         return Color(red: Double(c.x), green: Double(c.y), blue: Double(c.z), opacity: Double(c.w))
