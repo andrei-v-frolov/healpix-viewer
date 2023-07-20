@@ -34,6 +34,7 @@ struct GradientEditor: View {
     
     var body: some View {
         Button("Edit Schemes...") { openWindow(id: gradientWindowID) }
+            .keyboardShortcut("G", modifiers: [.command])
     }
 }
 
@@ -189,13 +190,7 @@ struct DataMenus: Commands {
                         Text($0.rawValue).tag($0)
                     }
                 }
-                Picker("Color Scheme", selection: $colorScheme) {
-                    ForEach(ColorScheme.allCases, id: \.self) {
-                        Text($0.rawValue).tag($0)
-                    }
-                }
             }
-            if #available(macOS 13.0, *) { Divider(); GradientEditor() }
             Divider()
             Picker("Transform", selection: $dataTransform) {
                 ForEach([Function.none], id: \.self) {
@@ -213,6 +208,15 @@ struct DataMenus: Commands {
                 ForEach(Function.cdf, id: \.self) {
                     Text($0.rawValue).tag($0)
                 }
+            }
+            Divider()
+            Group {
+                Picker("Color Scheme", selection: $colorScheme) {
+                    ForEach(ColorScheme.allCases, id: \.self) {
+                        Text($0.rawValue).tag($0)
+                    }
+                }
+                if #available(macOS 13.0, *) { GradientEditor() }
             }
         }
     }
