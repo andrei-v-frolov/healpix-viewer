@@ -8,7 +8,7 @@
 import SwiftUI
 import MetalKit
 
-struct ColorGradient {
+struct ColorGradient: Equatable, Codable {
     // gradient color list
     var colors: [Color]
     
@@ -36,4 +36,18 @@ struct ColorGradient {
     
     // convenience wrapper
     func colormap(_ n: Int) -> ColorMap { ColorMap(lut: lut(n)) }
+}
+
+extension ColorGradient: JsonRepresentable {
+    enum CodingKeys: String, CodingKey { case gradient }
+    
+    init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        colors = try container.decode([Color].self, forKey: .gradient)
+    }
+    
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(colors, forKey: .gradient)
+    }
 }
