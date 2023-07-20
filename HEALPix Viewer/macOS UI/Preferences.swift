@@ -11,6 +11,7 @@ import UniformTypeIdentifiers
 
 // map view window ID
 let mapWindowID = "map view"
+let gradientWindowID = "gradient editor"
 
 // settings - appearance
 let animateKey = "animate"

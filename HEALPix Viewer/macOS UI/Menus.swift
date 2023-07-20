@@ -28,6 +28,15 @@ struct OpenFile: View {
     }
 }
 
+@available(macOS 13.0, *)
+struct GradientEditor: View {
+    @Environment(\.openWindow) var openWindow
+    
+    var body: some View {
+        Button("Edit Schemes...") { openWindow(id: gradientWindowID) }
+    }
+}
+
 // file menu hierarchy
 struct FileMenus: Commands {
     @Binding var action: MenuAction
@@ -186,6 +195,7 @@ struct DataMenus: Commands {
                     }
                 }
             }
+            if #available(macOS 13.0, *) { Divider(); GradientEditor() }
             Divider()
             Picker("Transform", selection: $dataTransform) {
                 ForEach([Function.none], id: \.self) {
