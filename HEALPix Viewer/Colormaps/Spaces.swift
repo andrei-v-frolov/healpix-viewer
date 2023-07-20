@@ -66,11 +66,11 @@ extension Color {
         return SIMD4<Float>(Float(r), Float(g), Float(b), Float(a))
     }
     
-    var okLab: SIMD4<Float> {
-        guard let color = NSColor(self).usingColorSpace(NSColorSpace.sRGB) else { return SIMD4<Float>(0.0) }
+    var okLab: SIMD4<Double> {
+        guard let color = NSColor(self).usingColorSpace(NSColorSpace.sRGB) else { return SIMD4<Double>(0.0) }
         let lab = srgb2ok(SIMD3<Double>(color.redComponent, color.greenComponent, color.blueComponent)), a = color.alphaComponent
         
-        return SIMD4<Float>(Float(lab.x), Float(lab.y), Float(lab.z), Float(a))
+        return SIMD4<Double>(lab.x, lab.y, lab.z, a)
     }
     
     init(l: Double, a: Double, b: Double, alpha: Double = 1.0) {
@@ -78,11 +78,19 @@ extension Color {
         self = Self(.sRGB, red: rgb.x, green: rgb.y, blue: rgb.z, opacity: alpha)
     }
     
-    init(okLab lab: SIMD4<Float>) {
-        self = Self(l: Double(lab.x), a: Double(lab.y), b: Double(lab.z), alpha: Double(lab.w))
+    init(okLab lab: SIMD4<Double>) {
+        self = Self(l: lab.x, a: lab.y, b: lab.z, alpha: lab.w)
     }
 }
 
+// color component manipulation
 extension SIMD4 {
     var xyz: SIMD3<Scalar> { SIMD3<Scalar>(self.x, self.y, self.z) }
+}
+
+extension SIMD4 where Scalar: FloatingPoint {
+    var premultiply: SIMD4<Scalar> { SIMD4<Scalar>(self.x*self.w, self.y*self.w, self.z*self.w, self.w) }
+    var  demultiply: SIMD4<Scalar> {
+        (self.w != Scalar(0)) ? SIMD4<Scalar>(self.x/self.w, self.y/self.w, self.z/self.w, self.w) : SIMD4<Scalar>(0)
+    }
 }

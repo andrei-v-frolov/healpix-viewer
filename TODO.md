@@ -6,6 +6,7 @@
 - navigation map list can be rearranged on macOS 13+
 - false color map support (e.g. RGB = 100,147,217GHz) + decorrelation
 - gamut mapping with ACES gamut compressor and Rec.2100 HLG curves
+- color gradient generation in okLab implemented
 - single face texture array per MapData, preallocate instead of lazy
 - support for integer type maps added (like HITS count in Planck maps)
 - BAD_DATA guard (replacing with NAN) fixed
