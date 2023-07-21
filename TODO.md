@@ -26,11 +26,14 @@
 - switch to indirect buffers?
 - always allocate mipmaps?
 - if out of VRAM, downsample on CPU?
+- const arguments to all inline Metal functions?
 - use Picker sections? do I really need Picker id?
 - faster 3x3 SVD? e.g. port https://github.com/ericjang/svd3?
+- render using any texture in MapView, generate previews in packground
 
 ### Feature Requests
 
+- color mixer modes: coadd, mix (current), blend (chroma-luma mixing)
 - magnifier glass
 - transparency mask?
 - save and load view state (also maybe mixer state?)
@@ -54,4 +57,7 @@
 - file load always crashes on external/discrete GPU
 - animation is disabled on cold start
 - thumbnails do not update in mixer
+- theta and phi swapped in healpix paper
+- disable colorbar in false color map export
+- @MainActor broke thumbnail generation
 - fix focus state handling in ColorList...
