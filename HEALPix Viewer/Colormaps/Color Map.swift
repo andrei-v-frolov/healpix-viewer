@@ -10,7 +10,7 @@ import MetalKit
 
 final class ColorMap {
     let lut: [SIMD4<Float>]
-    var size: Int { lut.count * MemoryLayout<SIMD4<Float>>.size }
+    let texture: MTLTexture
     
     // singleton colormaps
     static let planck = ColorMap(lut: Planck_Parchment_LUT)
@@ -24,9 +24,10 @@ final class ColorMap {
     static let BGRY = ColorMap(lut: HEALPix_BGRY_LUT)
     
     // Metal texture representing colormap
-    lazy var texture: MTLTexture = {
+    static func render(lut: [SIMD4<Float>]) -> MTLTexture {
         // texture format
-        let desc = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: MTLPixelFormat.rgba32Float, width: lut.count, height: 1, mipmapped: false)
+        let width = lut.count, size = MemoryLayout<SIMD4<Float>>.size * width
+        let desc = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: MTLPixelFormat.rgba32Float, width: width, height: 1, mipmapped: false)
         
         desc.textureType = MTLTextureType.type1D
         desc.usage = MTLTextureUsage.shaderRead
@@ -36,25 +37,25 @@ final class ColorMap {
               else { fatalError("Could not allocate color map texture") }
         
         // load texture contents
-        lut.withUnsafeBytes { data in texture.replace(region: MTLRegionMake1D(0, lut.count), mipmapLevel: 0, withBytes: data.baseAddress!, bytesPerRow: size) }
+        lut.withUnsafeBytes { data in texture.replace(region: MTLRegionMake1D(0, width), mipmapLevel: 0, withBytes: data.baseAddress!, bytesPerRow: size) }
         
         return texture
-    }()
+    }
     
     // initialize colormap from LUT
     init(lut: [SIMD4<Float>]) {
-        self.lut = lut
+        self.lut = lut; self.texture = ColorMap.render(lut: lut)
     }
     
     // initialize colormap from gradient
     init(gradient: ColorGradient) {
-        self.lut = gradient.lut(1024)
+        self.lut = gradient.lut(1024); self.texture = ColorMap.render(lut: lut)
     }
     
     // initialize colormap from color list
     init?(colors: [Color]) {
         guard let gradient = ColorGradient(name: "gradient", colors) else { return nil }
-        self.lut = gradient.lut(1024)
+        self.lut = gradient.lut(1024); self.texture = ColorMap.render(lut: lut)
     }
     
     subscript(index: Int) -> Color {
