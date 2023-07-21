@@ -13,6 +13,7 @@ struct BarView: NSViewRepresentable {
     @Binding var colorbar: MTLTexture
     @Binding var background: Color
     @Binding var barview: ColorbarView?
+    var thickness: Double = 1.0
     
     typealias NSViewType = ColorbarView
     var view = ColorbarView()
@@ -25,6 +26,7 @@ struct BarView: NSViewRepresentable {
     func updateNSView(_ view: Self.NSViewType, context: Self.Context) {
         view.colorbar = colorbar
         view.background = background.components
+        view.thickness = thickness
         
         view.draw()
     }
@@ -42,13 +44,16 @@ class ColorbarView: MTKView {
     
     // MARK: state variables
     var colorbar = ColorScheme.defaultValue.colormap.texture
+    var thickness = 1.0
     var padding = 0.1
+    
+    // default geometry
     static let aspect = 30.0
     
     // MARK: affine tranform mapping screen to projection plane
     func transform(width: Double? = nil, height: Double? = nil, padding: Double? = nil) -> float3x2 {
         let w = width ?? drawableSize.width, h = height ?? drawableSize.height
-        let aspect = ColorbarView.aspect, x = 1.0, y = x/aspect, p = padding ?? self.padding
+        let aspect = ColorbarView.aspect/thickness, x = 1.0, y = x/aspect, p = padding ?? self.padding
         let s = max((1.0+p) * x/w, y/h), dx = -s*w/2 + 0.5, dy = aspect*s*h/2 + 0.5
         
         return simd.float3x2(float2(Float(s), 0.0), float2(0.0, -Float(aspect*s)), float2(Float(dx), Float(dy)))

@@ -19,12 +19,14 @@ struct GradientManager: View {
     var body: some View {
         GeometryReader { geometry in
             VStack {
-                BarView(colorbar: .constant(palette.scheme.colormap.texture), background: .constant(palette.bg), barview: $barview)
-                .frame(height: geometry.size.width/ColorbarView.aspect)
-                .padding(5)
                 TextField(value: $name, formatter: AnyText(), prompt: Text("Gradient Name")) { Text("Color") }
                     .autocorrectionDisabled(true).multilineTextAlignment(.leading).frame(minWidth: 90)
-                    .padding([.leading,.trailing], 0.05*geometry.size.width+3)
+                    .padding([.leading,.trailing], 0.05*geometry.size.width+3).padding(.top, 5)
+                BarView(colorbar: .constant(palette.scheme.colormap.texture),
+                        background: .constant(palette.bg),
+                        barview: $barview, thickness: 2.0)
+                .frame(height: 2.0*geometry.size.width/ColorbarView.aspect)
+                    .padding([.leading,.trailing,.bottom], 5)
                 HStack {
                     GradientList()
                     Divider()
@@ -34,7 +36,7 @@ struct GradientManager: View {
         }
         .frame(
             minWidth:  400, idealWidth:  400, maxWidth:  .infinity,
-            minHeight: 245, idealHeight: 600, maxHeight: .infinity
+            minHeight: 250, idealHeight: 600, maxHeight: .infinity
         )
     }
 }
@@ -94,6 +96,7 @@ struct GradientList: View {
                     .help("Remove gradient definition")
             }.padding([.leading,.trailing,.bottom], 10)
         }
+        .onAppear{ selected = gradients.first?.id }
     }
 }
 
@@ -156,5 +159,6 @@ struct ColorList: View {
                     .help("Remove color anchor")
             }.padding([.leading,.trailing,.bottom], 10)
         }
+        .onAppear{ selected = anchors.first?.id }
     }
 }
