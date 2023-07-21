@@ -33,6 +33,7 @@ extension Color: RawRepresentable, Codable {
             case "clear":   self = .clear
             case "cyan":    self = .cyan
             case "gray":    self = .gray
+            case "grey":    self = .gray
             case "green":   self = .green
             case "indigo":  self = .indigo
             case "mint":    self = .mint
