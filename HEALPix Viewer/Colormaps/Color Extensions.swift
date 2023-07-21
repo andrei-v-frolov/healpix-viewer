@@ -10,6 +10,8 @@ import MetalKit
 
 // color encoded as string value
 extension Color: RawRepresentable, Codable {
+    static var disabled: Color { return Color(NSColor.disabledControlTextColor) }
+    
     public init(rawValue: String) { self = Self(name: rawValue) ?? .defaultValue }
     
     public init(hex i: Int) {

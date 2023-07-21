@@ -63,8 +63,6 @@ func ok2srgb(_ lab: SIMD3<Double>) -> SIMD3<Double> {
 
 // color components extensions
 extension Color {
-    static var disabled: Color { return Color(NSColor.disabledControlTextColor) }
-    
     var components: SIMD4<Float> {
         guard let color = NSColor(self).usingColorSpace(NSColorSpace.deviceRGB) else { return SIMD4<Float>(0.0) }
         let r = color.redComponent, g = color.greenComponent, b = color.blueComponent, a = color.alphaComponent
@@ -96,7 +94,5 @@ extension SIMD4 {
 
 extension SIMD4 where Scalar: FloatingPoint {
     var premultiply: SIMD4<Scalar> { SIMD4<Scalar>(self.x*self.w, self.y*self.w, self.z*self.w, self.w) }
-    var  demultiply: SIMD4<Scalar> {
-        (self.w != Scalar(0)) ? SIMD4<Scalar>(self.x/self.w, self.y/self.w, self.z/self.w, self.w) : SIMD4<Scalar>(0)
-    }
+    var  demultiply: SIMD4<Scalar> { (self.w != Scalar(0)) ? SIMD4<Scalar>(self.x/self.w, self.y/self.w, self.z/self.w, self.w) : SIMD4<Scalar>(0) }
 }
