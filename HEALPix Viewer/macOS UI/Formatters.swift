@@ -50,6 +50,18 @@ let SizeFormatter: NumberFormatter = {
     return n
 }()
 
+// trivial string formatter
+class AnyText: Formatter {
+    override func string(for object: Any?) -> String? {
+        guard let string = object as? String else { return nil }
+        return string
+    }
+    
+    override func getObjectValue(_ object: AutoreleasingUnsafeMutablePointer<AnyObject?>?, for string: String, errorDescription error: AutoreleasingUnsafeMutablePointer<NSString?>?) -> Bool {
+        object?.pointee = string as AnyObject; return true
+    }
+}
+
 // generic implementation of limiters
 extension Comparable {
     mutating func above(_ value: Self) { self = max(self,value) }
