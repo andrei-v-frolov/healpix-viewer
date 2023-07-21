@@ -9,7 +9,7 @@ import Foundation
 
 // conflicts resolved in favour of Apple system colors, then crayons, then CSS
 let css_colors = [
-    // Apple crayon colors (in device RGB on 14" M1 MacBook Pro)
+    // Apple crayon colors (in sRGB)
     "Licorice":             0x000000FF,
     "Lead":                 0x212121FF,
     "Tungsten":             0x424242FF,

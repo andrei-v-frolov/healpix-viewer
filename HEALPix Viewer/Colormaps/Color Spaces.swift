@@ -63,6 +63,7 @@ func ok2srgb(_ lab: SIMD3<Double>) -> SIMD3<Double> {
 
 // color components extensions
 extension Color {
+    // SIMD4 components in device space
     var components: SIMD4<Float> {
         guard let color = NSColor(self).usingColorSpace(NSColorSpace.deviceRGB) else { return SIMD4<Float>(0.0) }
         let r = color.redComponent, g = color.greenComponent, b = color.blueComponent, a = color.alphaComponent
@@ -70,6 +71,19 @@ extension Color {
         return SIMD4<Float>(Float(r), Float(g), Float(b), Float(a))
     }
     
+    // SIMD4 components in sRGB space
+    var sRGB: SIMD4<Float> {
+        guard let color = NSColor(self).usingColorSpace(NSColorSpace.sRGB) else { return SIMD4<Float>(0.0) }
+        let r = color.redComponent, g = color.greenComponent, b = color.blueComponent, a = color.alphaComponent
+        
+        return SIMD4<Float>(Float(r), Float(g), Float(b), Float(a))
+    }
+    
+    init(sRGB rgba: SIMD4<Double>) {
+        self = Self(.sRGB, red: rgba.x, green: rgba.y, blue: rgba.z, opacity: rgba.w)
+    }
+    
+    // SIMD4 components in okLab space
     var okLab: SIMD4<Double> {
         guard let color = NSColor(self).usingColorSpace(NSColorSpace.sRGB) else { return SIMD4<Double>(0.0) }
         let lab = srgb2ok(SIMD3<Double>(color.redComponent, color.greenComponent, color.blueComponent)), a = color.alphaComponent
