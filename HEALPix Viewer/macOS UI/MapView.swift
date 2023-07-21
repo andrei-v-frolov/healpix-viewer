@@ -218,7 +218,7 @@ class ProjectedView: MTKView, NSWindowDelegate, Identifiable {
     }
     
     // MARK: encode render to command buffer
-    func encode(_ command: MTLCommandBuffer, to texture: MTLTexture,
+    func encode(_ command: MTLCommandBuffer, from map: MTLTexture? = nil, to texture: MTLTexture,
                 transform: float3x2? = nil, rotation: float3x3? = nil,
                 background: float4? = nil, lighting: float4? = nil) {
         guard let shader = shaders[projection] else { return }
@@ -235,7 +235,7 @@ class ProjectedView: MTKView, NSWindowDelegate, Identifiable {
         buffers[3].contents().storeBytes(of: lighting ?? self.light, as: float4.self)
         
         // render map if available
-        if let map = map {
+        if let map = map ?? self.map {
             let lod = lod(map.width, transform: transform ?? self.transform())
             buffers[4].contents().storeBytes(of: ushort(min(lod,map.mipmapLevelCount-1)), as: ushort.self)
             shader.data.encode(command: command, buffers: buffers, textures: [map, texture])
@@ -248,7 +248,7 @@ class ProjectedView: MTKView, NSWindowDelegate, Identifiable {
     }
     
     // MARK: render image to off-screen texture
-    func render(to texture: MTLTexture, anchor: Anchor = .c, shift: (x: Double, y: Double) = (0,0), magnification: Double? = nil, padding: Double? = nil, background: Color? = nil) {
+    func render(from map: MTLTexture? = nil, to texture: MTLTexture, anchor: Anchor = .c, shift: (x: Double, y: Double) = (0,0), magnification: Double? = nil, padding: Double? = nil, background: Color? = nil) {
         let rotation = animate ? gen2rot(target) : rotation
         let magnification = magnification ?? self.magnification, padding = padding ?? 0.0
         let transform = transform(width: Double(texture.width), height: Double(texture.height), magnification: magnification, padding: padding, anchor: anchor, flipy: false, shiftx: shift.x, shifty: shift.y)
@@ -257,7 +257,7 @@ class ProjectedView: MTKView, NSWindowDelegate, Identifiable {
         guard let command = metal.queue.makeCommandBuffer() else { return }
         
         // encode render command
-        encode(command, to: texture, transform: transform, rotation: rotation, background: background?.components)
+        encode(command, from: map, to: texture, transform: transform, rotation: rotation, background: background?.components)
         command.commit(); command.waitUntilCompleted()
     }
     

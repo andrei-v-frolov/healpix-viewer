@@ -104,7 +104,7 @@ class ColorbarView: MTKView {
     }
     
     // MARK: encode render to command buffer
-    func encode(_ command: MTLCommandBuffer, to texture: MTLTexture, transform: float3x2? = nil, background: float4? = nil) {
+    func encode(_ command: MTLCommandBuffer, from colorbar: MTLTexture? = nil, to texture: MTLTexture, transform: float3x2? = nil, background: float4? = nil) {
         // wait for available buffer
         semaphore.wait()
         index = (index+1) % Self.inflight
@@ -115,19 +115,20 @@ class ColorbarView: MTKView {
         buffers[1].contents().storeBytes(of: background ?? self.background, as: float4.self)
         
         // render colorbar
+        let colorbar = colorbar ?? self.colorbar
         shader.encode(command: command, buffers: buffers, textures: [colorbar, texture])
         command.addCompletedHandler { _ in self.semaphore.signal() }
     }
     
     // MARK: render image to off-screen texture
-    func render(to texture: MTLTexture) {
+    func render(from colorbar: MTLTexture? = nil, to texture: MTLTexture) {
         let transform = transform(width: Double(texture.width), height: Double(texture.height), padding: 0.0)
         
         // initialize compute command buffer
         guard let command = metal.queue.makeCommandBuffer() else { return }
         
         // encode render command
-        encode(command, to: texture, transform: transform)
+        encode(command, from: colorbar, to: texture, transform: transform)
         command.commit(); command.waitUntilCompleted()
     }
 }
