@@ -39,7 +39,7 @@ struct ColorGradient: Equatable, Codable {
     
     // default value
     static let key = "gradient"
-    static var defaultValue = Self(name: "New Gradient", [Color.blue, Color.red])!
+    static let defaultValue = Self(name: "New Gradient", [Color.blue, Color.white, Color.red])!
 }
 
 extension ColorGradient: JsonRepresentable {

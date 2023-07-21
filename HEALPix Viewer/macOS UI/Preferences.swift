@@ -505,7 +505,7 @@ struct FontPreference: RawRepresentable, Preference {
 extension Color: Preference {
     // default value
     static let key = "color"
-    static var defaultValue = Color.primary
+    static let defaultValue = Color.primary
 }
 
 // color mixer primaries
@@ -550,7 +550,7 @@ extension Primaries: JsonRepresentable, Preference {
     
     // default value
     static let key = "primaries"
-    static var defaultValue = Self()
+    static let defaultValue = Self()
 }
 
 // component decorrelation preference
@@ -569,7 +569,7 @@ enum Decorrelation: String, CaseIterable, Codable, Preference {
     
     // default value
     static let key = "decorrelation"
-    static var defaultValue: Self = .none
+    static let defaultValue: Self = .none
 }
 
 // component decorrelation preference
@@ -588,7 +588,7 @@ enum Mixing: String, CaseIterable, Codable, Preference {
     
     // default value
     static let key = "mixing"
-    static var defaultValue: Self = .mix
+    static let defaultValue: Self = .mix
 }
 
 // encapsulates @AppStorage preference properties
