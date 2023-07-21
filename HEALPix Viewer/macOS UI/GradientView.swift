@@ -7,18 +7,75 @@
 
 import SwiftUI
 
+// gradient manager window view
 struct GradientManager: View {
     @State private var grad = ColorGradient(name: "Test Gradient", [.black,.red])
     
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
-        ColorList()
+        GradientList()
+        //ColorList()
+    }
+}
+
+// gradient container for gradient editor
+final class GradientContainer: Identifiable, Hashable, Equatable, ObservableObject {
+    let id = UUID()
+    var gradient: ColorGradient
+    
+    init(_ gradient: ColorGradient) { self.gradient = gradient }
+    func refresh() { self.objectWillChange.send() }
+    func hash(into hasher: inout Hasher) { hasher.combine(id) }
+    static func == (a: GradientContainer, b: GradientContainer) -> Bool { a.id == b.id && a.gradient == b.gradient }
+}
+
+// gradient selector view
+struct GradientRow: View {
+    @ObservedObject var container: GradientContainer
+    
+    var body: some View {
+        Text(container.gradient.name)
+    }
+}
+
+// gradient list view
+struct GradientList: View {
+    @State private var gradients = [GradientContainer(ColorGradient(name: "Test Gradient", [.black,.red])!)]
+    @State private var selected: UUID? = nil
+    
+    // share focus state between lists
+    @FocusState private var focus: Bool
+    
+    var body: some View {
+        if #available(macOS 13.0, *), let selected = selected {
+            let binding = Binding { selected } set: { self.selected = $0 }
+            List($gradients, editActions: .move, selection: binding) { $grad in GradientRow(container: grad) }.focused($focus)
+        } else {
+            List(gradients, selection: $selected) { grad in GradientRow(container: grad) }.focused($focus)
+        }
+        Divider()
+        HStack {
+            Button {
+                if let i = gradients.firstIndex(where: { $0.id == selected }) {
+                    withAnimation { gradients.insert(GradientContainer(gradients[i].gradient), at: min(i+1,gradients.endIndex)) }
+                } else {
+                    withAnimation { gradients.append(GradientContainer(ColorGradient.defaultValue)) }
+                }
+            } label: {
+                Label("New", systemImage: "plus")
+            }
+            .help("Add new gradient definition")
+            Button(role: .destructive) {
+                withAnimation { gradients.removeAll(where: { $0.id == selected }) }
+            } label: {
+                Label("Remove", systemImage: "xmark")
+            }.disabled(selected == nil)
+            .help("Remove gradient definition")
+        }.padding([.leading,.trailing,.bottom], 10)
     }
 }
 
 // color anchor for gradient editor
 final class ColorAnchor: Identifiable, Hashable, Equatable, ObservableObject {
-    // unique map id
     let id = UUID()
     var color: Color
     
@@ -42,8 +99,8 @@ struct ColorRow: View {
     }
 }
 
+// color list view
 struct ColorList: View {
-    //@State private var grad = ColorGradient(name: "Test Gradient", [.black,.red])
     @State private var anchors = [ColorAnchor(.red), ColorAnchor(.blue)]
     @State private var selected: UUID? = nil
     

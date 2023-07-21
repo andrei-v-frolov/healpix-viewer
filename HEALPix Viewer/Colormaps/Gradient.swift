@@ -36,6 +36,10 @@ struct ColorGradient: Equatable, Codable {
     
     // convenience wrapper
     func colormap(_ n: Int) -> ColorMap { ColorMap(lut: lut(n)) }
+    
+    // default value
+    static let key = "gradient"
+    static var defaultValue = Self(name: "New Gradient", [Color.blue, Color.red])!
 }
 
 extension ColorGradient: JsonRepresentable {
