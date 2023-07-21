@@ -85,13 +85,13 @@ struct MixerView: View {
             Group {
                 Text("Color Primaries").font(.title3)
                 HStack {
-                    ColorPicker("R:", selection: $primaries.r)
-                    ColorPicker("G:", selection: $primaries.g)
-                    ColorPicker("B:", selection: $primaries.b)
+                    ColorPicker("R:", selection: $primaries.r, supportsOpacity: false)
+                    ColorPicker("G:", selection: $primaries.g, supportsOpacity: false)
+                    ColorPicker("B:", selection: $primaries.b, supportsOpacity: false)
                 }
                 HStack {
-                    ColorPicker("Black Point:", selection: $primaries.black)
-                    ColorPicker("White Point:", selection: $primaries.white)
+                    ColorPicker("Black Point:", selection: $primaries.black, supportsOpacity: false)
+                    ColorPicker("White Point:", selection: $primaries.white, supportsOpacity: false)
                 }
             }.labelsHidden()
             Button { focus = false; primaries = .defaultValue; decorrelate.beta = 0.5 } label: { Label("Reset", systemImage: "sparkles") }.padding(.top, 5).padding(.bottom, 10)
