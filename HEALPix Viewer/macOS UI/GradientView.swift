@@ -28,7 +28,7 @@ struct GradientManager: View {
                 .frame(height: 2.0*geometry.size.width/ColorbarView.aspect)
                     .padding([.leading,.trailing,.bottom], 5)
                 HStack {
-                    GradientList()
+                    GradientList(barview: $barview)
                     Divider()
                     ColorList()
                 }
@@ -36,7 +36,7 @@ struct GradientManager: View {
         }
         .frame(
             minWidth:  400, idealWidth:  400, maxWidth:  .infinity,
-            minHeight: 250, idealHeight: 600, maxHeight: .infinity
+            minHeight: 265, idealHeight: 600, maxHeight: .infinity
         )
     }
 }
@@ -45,6 +45,7 @@ struct GradientManager: View {
 final class GradientContainer: Identifiable, Hashable, Equatable, ObservableObject {
     let id = UUID()
     var gradient: ColorGradient
+    let preview = IMGTexture(width: 256, height: Int(512/ColorbarView.aspect))
     
     init(_ gradient: ColorGradient) { self.gradient = gradient }
     func refresh() { self.objectWillChange.send() }
@@ -57,7 +58,10 @@ struct GradientRow: View {
     @ObservedObject var container: GradientContainer
     
     var body: some View {
-        Text(container.gradient.name)
+        VStack(alignment: .center, spacing: 3) {
+            image(container.preview)?.resizable()
+            Text(container.gradient.name).font(.footnote)
+        }
     }
 }
 
@@ -65,6 +69,7 @@ struct GradientRow: View {
 struct GradientList: View {
     @State private var gradients = [GradientContainer(ColorGradient(name: "Test Gradient", [.black,.red])!)]
     @State private var selected: UUID? = nil
+    @Binding var barview: ColorbarView?
     
     // share focus state between lists
     @FocusState private var focus: Bool
@@ -96,7 +101,14 @@ struct GradientList: View {
                     .help("Remove gradient definition")
             }.padding([.leading,.trailing,.bottom], 10)
         }
-        .onAppear{ selected = gradients.first?.id }
+        .onAppear { selected = gradients.first?.id }
+        .task { for g in gradients { DispatchQueue.main.async { preview(g) } } }
+    }
+    
+    func preview(_ gradient: GradientContainer) {
+        guard let barview = barview else { return }
+        barview.render(from: gradient.gradient.colormap(64).texture, to: gradient.preview)
+        gradient.refresh()
     }
 }
 
