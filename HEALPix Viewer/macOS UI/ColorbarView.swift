@@ -10,7 +10,8 @@ import MetalKit
 
 // MARK: SwiftUI wrapper for ColorbarView
 struct BarView: NSViewRepresentable {
-    @Binding var palette: Palette
+    @Binding var colorbar: MTLTexture
+    @Binding var background: Color
     @Binding var barview: ColorbarView?
     
     typealias NSViewType = ColorbarView
@@ -22,8 +23,8 @@ struct BarView: NSViewRepresentable {
     }
     
     func updateNSView(_ view: Self.NSViewType, context: Self.Context) {
-        view.colormap = palette.scheme.colormap
-        view.background = palette.bg.components
+        view.colorbar = colorbar
+        view.background = background.components
         
         view.draw()
     }
@@ -40,7 +41,7 @@ class ColorbarView: MTKView {
     let shader = MetalKernel(kernel: "colorbar")
     
     // MARK: state variables
-    var colormap = ColorScheme.defaultValue.colormap
+    var colorbar = ColorScheme.defaultValue.colormap.texture
     var padding = 0.1
     static let aspect = 30.0
     
@@ -109,7 +110,7 @@ class ColorbarView: MTKView {
         buffers[1].contents().storeBytes(of: background ?? self.background, as: float4.self)
         
         // render colorbar
-        shader.encode(command: command, buffers: buffers, textures: [colormap.texture, texture])
+        shader.encode(command: command, buffers: buffers, textures: [colorbar, texture])
         command.addCompletedHandler { _ in self.semaphore.signal() }
     }
     

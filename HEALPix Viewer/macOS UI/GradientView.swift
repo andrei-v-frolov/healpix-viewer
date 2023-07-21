@@ -19,7 +19,7 @@ struct GradientManager: View {
     var body: some View {
         GeometryReader { geometry in
             VStack {
-                BarView(palette: $palette, barview: $barview)
+                BarView(colorbar: .constant(palette.scheme.colormap.texture), background: .constant(palette.bg), barview: $barview)
                 .frame(height: geometry.size.width/ColorbarView.aspect)
                 .padding(5)
                 TextField(value: $name, formatter: AnyText(), prompt: Text("Gradient Name")) { Text("Color") }

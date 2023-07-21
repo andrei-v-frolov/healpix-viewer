@@ -172,7 +172,8 @@ struct ContentView: View {
                             }
                         }
                         if (colorbar && sidebar != .mixer) {
-                            BarView(palette: $state.palette, barview: $barview)
+                            BarView(colorbar: .constant(state.palette.scheme.colormap.texture),
+                                    background: .constant(state.palette.bg), barview: $barview)
                             .frame(height: 1.5*geometry.size.width/ColorbarView.aspect)
                             .onDrag {
                                 guard let barview = barview, let url = tmpfile(type: drag.format.type) else { return NSItemProvider() }
