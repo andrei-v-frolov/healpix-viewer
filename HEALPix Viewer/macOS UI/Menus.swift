@@ -29,11 +29,11 @@ struct OpenFile: View {
 }
 
 @available(macOS 13.0, *)
-struct GradientEditor: View {
+struct AddGradient: View {
     @Environment(\.openWindow) var openWindow
     
     var body: some View {
-        Button("Edit Schemes...") { openWindow(id: gradientWindowID) }
+        Button("Add Scheme...") { openWindow(id: gradientWindowID) }
             .keyboardShortcut("G", modifiers: [.command])
     }
 }
@@ -216,7 +216,7 @@ struct DataMenus: Commands {
                         Text($0.rawValue).tag($0)
                     }
                 }
-                if #available(macOS 13.0, *) { GradientEditor() }
+                if #available(macOS 13.0, *) { AddGradient() }
             }
         }
     }

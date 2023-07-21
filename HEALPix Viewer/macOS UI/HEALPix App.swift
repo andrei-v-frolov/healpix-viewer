@@ -34,7 +34,7 @@ let analysisQueue = DispatchQueue(label: "analysis", qos: .userInitiated, attrib
         }
         .onChange(of: action) { value in if (value != .none && !targeted) { action = .none } }
         if #available(macOS 13.0, *) {
-            Window("Gradient Editor", id: gradientWindowID) { GradientView() }
+            Window("Gradient Editor", id: gradientWindowID) { GradientManager() }
         }
         Settings { SettingsView() }
     }

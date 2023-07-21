@@ -54,3 +54,4 @@
 - file load always crashes on external/discrete GPU
 - animation is disabled on cold start
 - thumbnails do not update in mixer
+- fix focus state handling in ColorList...
