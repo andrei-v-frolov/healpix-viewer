@@ -84,6 +84,11 @@ struct MixerView: View {
             Divider()
             Group {
                 Text("Color Primaries").font(.title3)
+                Picker("Strategy:", selection: $primaries.mode) {
+                    ForEach(Mixing.allCases, id: \.self) {
+                        Text($0.rawValue).tag($0).help($0.description)
+                    }
+                }.pickerStyle(.segmented).labelsHidden().padding(.bottom, 5)
                 HStack {
                     ColorPicker("R:", selection: $primaries.r, supportsOpacity: false)
                     ColorPicker("G:", selection: $primaries.g, supportsOpacity: false)
@@ -91,9 +96,9 @@ struct MixerView: View {
                 }
                 HStack {
                     ColorPicker("Black Point:", selection: $primaries.black, supportsOpacity: false)
-                    ColorPicker("White Point:", selection: $primaries.white, supportsOpacity: false)
+                    ColorPicker("White Point:", selection: $primaries.white, supportsOpacity: false).disabled(primaries.mode == .add)
                 }
-            }.labelsHidden()
+            }.padding([.leading, .trailing], 10).labelsHidden()
             Button { focus = false; primaries = .defaultValue; decorrelate.beta = 0.5 } label: { Label("Reset", systemImage: "sparkles") }.padding(.top, 5).padding(.bottom, 10)
             Divider()
         }

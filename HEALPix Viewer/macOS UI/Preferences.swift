@@ -516,11 +516,12 @@ struct Primaries: Equatable, Codable {
     var black = Color(red:0.0, green: 0.0, blue: 0.0, opacity: 1.0)
     var white = Color(red:1.0, green: 1.0, blue: 1.0, opacity: 1.0)
     var gamma = 0.0 // log2 scale
+    var mode = Mixing.defaultValue
 }
 
 extension Primaries: JsonRepresentable, Preference {
     enum CodingKeys: String, CodingKey {
-        case red, green, blue, black, white, gamma
+        case red, green, blue, black, white, gamma, mode
     }
     
     init(from decoder: Decoder) throws {
@@ -532,6 +533,7 @@ extension Primaries: JsonRepresentable, Preference {
         black = try container.decode(Color.self, forKey: .black)
         white = try container.decode(Color.self, forKey: .white)
         gamma = try container.decode(Double.self, forKey: .gamma)
+        mode = try container.decode(Mixing.self, forKey: .mode)
     }
     
     func encode(to encoder: Encoder) throws {
@@ -543,6 +545,7 @@ extension Primaries: JsonRepresentable, Preference {
         try container.encode(black, forKey: .black)
         try container.encode(white, forKey: .white)
         try container.encode(gamma, forKey: .gamma)
+        try container.encode(mode, forKey: .mode)
     }
     
     // default value
@@ -567,6 +570,25 @@ enum Decorrelation: String, CaseIterable, Codable, Preference {
     // default value
     static let key = "decorrelation"
     static var defaultValue: Self = .none
+}
+
+// component decorrelation preference
+enum Mixing: String, CaseIterable, Codable, Preference {
+    case add = "Add"
+    case mix = "Mix"
+    case blend = "Blend"
+    
+    var description: String {
+        switch self {
+            case .add: return "Co-add RGB primaries as is"
+            case .mix:  return "Scale RGB primaries to specified white point"
+            case .blend:  return "Chroma blending in perceptual color space"
+        }
+    }
+    
+    // default value
+    static let key = "mixing"
+    static var defaultValue: Self = .mix
 }
 
 // encapsulates @AppStorage preference properties
