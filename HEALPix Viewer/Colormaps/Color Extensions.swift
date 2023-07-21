@@ -43,17 +43,22 @@ extension Color: RawRepresentable, Codable {
     
     public init?(hexValue: String) {
         guard let i = Int(hexValue.dropFirst(hexValue.first == "#" ? 1 : 0), radix: 16) else { return nil }
-        
+        self = Self(hex: i)
+    }
+    
+    public init(hex i: Int) {
         self = Color(red: Double((i >> 24) & 0xFF)/255.0,
                    green: Double((i >> 16) & 0xFF)/255.0,
                     blue: Double((i >> 8)  & 0xFF)/255.0,
                  opacity: Double(i & 0xFF)/255.0)
     }
     
-    public var hexValue: String {
+    public var hex: Int {
         let rgba = SIMD4<Int>(clamp(self.components, min: 0.0, max: 1.0) * 255.0)
-        return String(format:"#%08X", (rgba[0] << 24) | (rgba[1] << 16) | (rgba[2] << 8) | rgba[3])
+        return (rgba[0] << 24) | (rgba[1] << 16) | (rgba[2] << 8) | rgba[3]
     }
+    
+    public var hexValue: String { return String(format:"#%08X", hex) }
     
     public init(rawValue: String) { self = Self(name: rawValue) ?? .defaultValue }
     
