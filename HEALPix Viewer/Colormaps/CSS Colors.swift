@@ -8,6 +8,7 @@
 import Foundation
 
 let css_colors = [
+    // CSS named colors [https://css-tricks.com/snippets/css/named-colors-and-hex-equivalents/]
     "AliceBlue":            "#F0F8FFFF",
     "AntiqueWhite":         "#FAEBD7FF",
     "Aqua":                 "#00FFFFFF",
@@ -154,7 +155,57 @@ let css_colors = [
     "White":                "#FFFFFFFF",
     "WhiteSmoke":           "#F5F5F5FF",
     "Yellow":               "#FFFF00FF",
-    "YellowGreen":          "#9ACD32FF"
+    "YellowGreen":          "#9ACD32FF",
+    
+    // Apple crayon colors [http://www.randomactsofsentience.com/2013/06/os-x-crayon-color-hex-table.html]
+    "Cayenne":              "#800000FF",
+    "Clover":               "#008000FF",
+    "Midnight":             "#000080FF",
+    "Tin":                  "#7F7F7FFF",
+    "Asparagus":            "#808000FF",
+    "Teal":                 "#008080FF",
+    "Plum":                 "#800080FF",
+    "Nickel":               "#808080FF",
+    "Mocha":                "#804000FF",
+    "Moss":                 "#008040FF",
+    "Eggplant":             "#400080FF",
+    "Steel":                "#666666FF",
+    "Fern":                 "#408000FF",
+    "Ocean":                "#004080FF",
+    "Maroon":               "#800040FF",
+    "Aluminum":             "#999999FF",
+    "Marascino":            "#FF0000FF",
+    "Spring":               "#00FF00FF",
+    "Blueberry":            "#0000FFFF",
+    "Iron":                 "#4C4C4CFF",
+    "Lemon":                "#FFFF00FF",
+    "Turquoise":            "#00FFFFFF",
+    "Magenta":              "#FF00FFFF",
+    "Magnesium":            "#B3B3B3FF",
+    "Tangerine":            "#FF8000FF",
+    "SeaFoam":              "#00FF80FF",
+    "Grape":                "#8000FFFF",
+    "Tungsten":             "#333333FF",
+    "Lime":                 "#80FF00FF",
+    "Aqua":                 "#0080FFFF",
+    "Strawberry":           "#FF0080FF",
+    "Silver":               "#CCCCCCFF",
+    "Salmon":               "#FF6666FF",
+    "Flora":                "#66FF66FF",
+    "Orchid":               "#6666FFFF",
+    "Lead":                 "#191919FF",
+    "Banana":               "#FFFF66FF",
+    "Ice":                  "#66FFFFFF",
+    "Bubblegum":            "#FF66FFFF",
+    "Mercury":              "#E6E6E6FF",
+    "Cantaloupe":           "#FFCC66FF",
+    "Spindrift":            "#66FFCCFF",
+    "Lavender":             "#CC66FFFF",
+    "Licorice":             "#000000FF",
+    "Honeydew":             "#CCFF66FF",
+    "Sky":                  "#66CCFFFF",
+    "Carnation":            "#FF6FCFFF",
+    "Snow":                 "#FFFFFFFF"
 ]
 
 // CSS named colors LUTs
