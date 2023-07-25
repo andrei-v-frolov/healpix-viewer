@@ -18,6 +18,7 @@ struct Decorrelator: Equatable {
 
 // color mixer panel view
 struct MixerView: View {
+    @Binding var sidebar: Navigator
     @Binding var loaded: [MapData]
     @Binding var host: UUID?
     
@@ -99,8 +100,13 @@ struct MixerView: View {
                     ColorPicker("White Point:", selection: $primaries.white, supportsOpacity: false).disabled(primaries.mode == .add)
                 }
             }.padding([.leading, .trailing], 10).labelsHidden()
-            Button { focus = false; primaries = .defaultValue; decorrelate.beta = 0.5 } label: { Label("Reset", systemImage: "sparkles") }.padding(.top, 5).padding(.bottom, 10)
             Divider()
+            HStack {
+                Button { focus = false; primaries = .defaultValue; decorrelate.beta = 0.5 } label: { Label("Reset", systemImage: "sparkles") }
+                    .help("Reset to default settings")
+                Button { withAnimation { sidebar = .list } } label: { Label("Done", systemImage: "checkmark") }
+                    .help("Close color mixer view")
+            }.padding([.leading,.trailing], 10).padding([.top,.bottom], 5)
         }
         .onAppear { id = Inputs(x: host, y: host, z: host) }
         .onChange(of: id) { value in correlate(); colorize() }

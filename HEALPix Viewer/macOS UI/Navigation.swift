@@ -184,5 +184,5 @@ struct MapPicker: View {
 
 // navigator panels
 enum Navigator {
-    case list, mixer, convolution
+    case list, mixer, ilc, convolution
 }

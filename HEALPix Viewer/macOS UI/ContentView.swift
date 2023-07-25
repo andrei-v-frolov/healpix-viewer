@@ -109,25 +109,27 @@ struct ContentView: View {
                         .help("Create false color image")
                         .disabled(selected == nil)
                         Button {
+                            withAnimation { sidebar = .ilc }
+                        } label: {
+                            Label("Separate", systemImage: "square.3.stack.3d")
+                        }
+                        .help("Component separation via ILC")
+                        .disabled(true)
+                    }.padding(10)
+                    if (false) {
+                        Button {
                             withAnimation { sidebar = .convolution }
                         } label: {
                             Label("Convolve", systemImage: "wind")
-                        }
-                        .help("Visualize directions using line integral convolution")
-                        .disabled(true)
-                    }.padding(10)
+                        }.padding([.leading,.trailing,.bottom], 10)
+                            .help("Visualize directions using line integral convolution")
+                            .disabled(true)
+                    }
                 }
                 if (sidebar == .mixer) {
-                    ScrollView { MixerView(loaded: $loaded, host: $selected) }
+                    ScrollView { MixerView(sidebar: $sidebar, loaded: $loaded, host: $selected) }
                         .frame(minWidth: 210, maxWidth: .infinity)
                         .padding(.bottom, 10)
-                    Button {
-                        withAnimation { sidebar = .list }
-                    } label: {
-                        Label("Done", systemImage: "checkmark")
-                    }
-                    .help("Close color mixer view")
-                    .padding(10)
                 }
                 if (scheduled > 0) {
                     Divider()
