@@ -124,6 +124,7 @@
 		502F9D5F2A3A31050008FC42 /* FontPicker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = FontPicker.swift; path = FontPopUp/Sources/FontPopUp/FontPicker.swift; sourceTree = SOURCE_ROOT; };
 		5036E7F92932FC22006AE59E /* TransformView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TransformView.swift; sourceTree = "<group>"; };
 		5036E7FD2933193B006AE59E /* Transforms.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Transforms.metal; sourceTree = "<group>"; };
+		503AB6962A71D8D9007C5DB6 /* Components.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Components.metal; sourceTree = "<group>"; };
 		503C675D28FF89C1002D4314 /* MapView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MapView.swift; sourceTree = "<group>"; };
 		5041397129AFF1A2006D372C /* CursorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CursorView.swift; sourceTree = "<group>"; };
 		5045CED02A66EF5500F0AB44 /* rawmap.tmpl */ = {isa = PBXFileReference; explicitFileType = sourcecode.c; path = rawmap.tmpl; sourceTree = "<group>"; };
@@ -332,6 +333,7 @@
 				50FAAE482904659B00EF636E /* Common.metal */,
 				50A0D2522902F1A300A29988 /* Healpix.metal */,
 				50100CE42A682817009D7D43 /* Colorize.metal */,
+				503AB6962A71D8D9007C5DB6 /* Components.metal */,
 				5036E7FD2933193B006AE59E /* Transforms.metal */,
 				50A0D2562902F1B200A29988 /* Projections.metal */,
 				50CB1444290B03B0006D59FA /* Shaders.metal */,
