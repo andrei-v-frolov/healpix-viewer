@@ -105,35 +105,29 @@ kernel void covariance(
     constant float *y                   [[ buffer(1) ]],
     constant float *z                   [[ buffer(2) ]],
     device uint *pts                    [[ buffer(3) ]],
-    device float3 *avg                  [[ buffer(4) ]],
-    device float3x3 *cov                [[ buffer(5) ]],
-    constant float2x3 &range            [[ buffer(6) ]],
-    constant uint2 &npix                [[ buffer(7) ]],
+    device float3x3 *cov                [[ buffer(4) ]],
+    constant float2x3 &range            [[ buffer(5) ]],
+    constant uint2 &npix                [[ buffer(6) ]],
     uint tid                            [[ thread_position_in_grid ]],
     uint width                          [[ threads_per_grid ]]
 ) {
     // thread-local accumulators
-    uint n = 0; float3 A = 0.0; float3x3 C = float3x3(0.0, 0.0, 0.0);
+    float3x3 A = float3x3(0.0); uint n = 0;
     
     // accumulate all the pixels in this thread
     for (uint i = tid << npix.y; i < npix.x; i += width << npix.y) {
         const float3 v = float3(x[i],y[i],z[i]);
         if (any(isnan(v) or isinf(v) or (v < range[0]) or (v > range[1]))) { continue; }
-        
-        n++; A += v; C += float3x3(
-            float3(v.x*v.x,v.y*v.x,v.z*v.x),
-            float3(v.x*v.y,v.y*v.y,v.z*v.y),
-            float3(v.x*v.z,v.y*v.z,v.z*v.z)
-        );
+        A += float3x3(v, float3(v.x*v.x,v.y*v.y,v.z*v.z), float3(v.x*v.y,v.x*v.z,v.y*v.z)); n++;
     }
     
     // store to shared buffer
-    pts[tid] = n; avg[tid] = A; cov[tid] = C;
+    cov[tid] = A; pts[tid] = n;
     
     // hierarchical reduce
     for (uint s = width/2; s > 0; s >>= 1) {
         threadgroup_barrier(mem_flags::mem_device);
-        if (tid < s) { pts[tid] += pts[tid+s]; avg[tid] += avg[tid+s]; cov[tid] += cov[tid+s]; }
+        if (tid < s) { cov[tid] += cov[tid+s]; pts[tid] += pts[tid+s]; }
     }
 }
 

@@ -175,7 +175,7 @@ final class GpuMap: Map {
 struct Correlator {
     // compute pipeline
     let shader = MetalKernel(kernel: "covariance")
-    let buffer: (pts: MTLBuffer, avg: MTLBuffer, cov: MTLBuffer, range: MTLBuffer, npix: MTLBuffer)
+    let buffer: (pts: MTLBuffer, cov: MTLBuffer, range: MTLBuffer, npix: MTLBuffer)
     let threads: Int
     
     init() {
@@ -183,14 +183,13 @@ struct Correlator {
         let threads = metal.device.maxThreadsPerThreadgroup.width
         let options: MTLResourceOptions = [.cpuCacheModeWriteCombined, .storageModeShared]
         guard let pts = metal.device.makeBuffer(length: MemoryLayout<uint>.size*threads),
-              let avg = metal.device.makeBuffer(length: MemoryLayout<float3>.size*threads),
               let cov = metal.device.makeBuffer(length: MemoryLayout<float3x3>.size*threads),
               let range = metal.device.makeBuffer(length: MemoryLayout<float2x3>.size, options: options),
               let npix = metal.device.makeBuffer(length: MemoryLayout<uint2>.size, options: options)
               else { fatalError("Could not allocate parameter buffers in correlator") }
         
         self.threads = threads
-        self.buffer = (pts, avg, cov, range, npix)
+        self.buffer = (pts, cov, range, npix)
     }
     
     func correlate(_ x: Map, _ y: Map, _ z: Map) -> (avg: float3, cov: float3x3)? {
@@ -206,24 +205,22 @@ struct Correlator {
         // initialize compute command buffer
         guard let command = metal.queue.makeCommandBuffer() else { return nil }
         
-        shader.encode(command: command, buffers: [x.buffer, y.buffer, z.buffer,
-            buffer.pts, buffer.avg, buffer.cov, buffer.range, buffer.npix],
+        shader.encode(command: command, buffers: [x.buffer, y.buffer, z.buffer, buffer.pts, buffer.cov, buffer.range, buffer.npix],
             textures: [], threadsPerGrid: MTLSize(width: threads, height: 1, depth: 1))
         command.commit(); command.waitUntilCompleted()
         
         // read off accumulated values
         let n = buffer.pts.contents().bindMemory(to: uint.self, capacity: threads)[0]
-        let A = buffer.avg.contents().bindMemory(to: float3.self, capacity: threads)[0]
-        let C = buffer.cov.contents().bindMemory(to: float3x3.self, capacity: threads)[0]
+        let A = matrix_scale(1.0/Float(n), buffer.cov.contents().bindMemory(to: float3x3.self, capacity: threads)[0])
         
         // covariance via König's formula (not the best way, but good enough)
-        let mu = A/Float(n), cov = float3x3(
-            float3(C[0]/Float(n) - float3(mu.x*mu.x, mu.y*mu.x, mu.z*mu.x)),
-            float3(C[1]/Float(n) - float3(mu.x*mu.y, mu.y*mu.y, mu.z*mu.y)),
-            float3(C[2]/Float(n) - float3(mu.x*mu.z, mu.y*mu.z, mu.z*mu.z))
+        let cov = float3x3(
+            float3(A[1][0] - A[0].x*A[0].x, A[2][0] - A[0].x*A[0].y, A[2][1] - A[0].x*A[0].z),
+            float3(A[2][0] - A[0].y*A[0].x, A[1][1] - A[0].y*A[0].y, A[2][2] - A[0].y*A[0].z),
+            float3(A[2][1] - A[0].z*A[0].x, A[2][2] - A[0].z*A[0].y, A[1][2] - A[0].z*A[0].z)
         )
         
-        return (mu, cov)
+        return (A[0], cov)
     }
 }
 
