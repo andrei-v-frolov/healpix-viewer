@@ -106,15 +106,15 @@ struct ContentView: View {
                         } label: {
                             Label("Mix", systemImage: "camera.filters")
                         }
-                        .help("Create false color image")
+                        .help("Create false color image mixing data")
                         .disabled(selected == nil)
                         Button {
                             withAnimation { sidebar = .ilc }
                         } label: {
                             Label("Separate", systemImage: "square.3.stack.3d")
                         }
-                        .help("Component separation via ILC")
-                        .disabled(true)
+                        .help("Separate specific component via ILC")
+                        .disabled(selected == nil)
                     }.padding(10)
                     if (false) {
                         Button {
@@ -128,6 +128,11 @@ struct ContentView: View {
                 }
                 if (sidebar == .mixer) {
                     ScrollView { MixerView(sidebar: $sidebar, loaded: $loaded, host: $selected) }
+                        .frame(minWidth: 210, maxWidth: .infinity)
+                        .padding(.bottom, 10)
+                }
+                if (sidebar == .ilc) {
+                    ScrollView { ComponentView(sidebar: $sidebar) }
                         .frame(minWidth: 210, maxWidth: .infinity)
                         .padding(.bottom, 10)
                 }
