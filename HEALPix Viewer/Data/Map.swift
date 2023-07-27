@@ -227,7 +227,10 @@ struct Correlator {
 // color mixer transforms data to false color texture array
 struct ColorMixer {
     // compute pipeline
-    let shader = (clip: MetalKernel(kernel: "colormix_clip"), comp: MetalKernel(kernel: "colormix_comp"))
+    let shader = (clip: MetalKernel(kernel: "colormix_clip"),
+                  comp: MetalKernel(kernel: "colormix_comp"),
+                  clab: MetalKernel(kernel: "colormix_clab"),
+                  glab: MetalKernel(kernel: "colormix_glab"))
     let buffer: (mixer: MTLBuffer, gamma: MTLBuffer, nan: MTLBuffer)
     
     init() {
@@ -256,18 +259,18 @@ struct ColorMixer {
         let S = pca(kind: decorrelate.mode, covariance: scale*decorrelate.cov*scale, beta: decorrelate.beta) * scale
         let shift = (decorrelate.avg-v)/(w-v) - S * decorrelate.avg
         
-        // linear color space primaries
-        let gamma = float4(float3(Float(exp2(primaries.gamma))), 1.0)
-        let black = pow(primaries.black.components, gamma)
-        let white = pow(primaries.white.components, gamma) - black
-        let r = pow(primaries.r.components, gamma) - black
-        let g = pow(primaries.g.components, gamma) - black
-        let b = pow(primaries.b.components, gamma) - black
+        // color space primaries (okLab or linear device RGB)
+        let lab = (primaries.mode == .blend), gamma = float4(float3(Float(exp2(primaries.gamma))), 1.0)
+        let black = (lab ? float4(primaries.black.okLab) : pow(primaries.black.components, gamma))
+        let white = (lab ? float4(primaries.white.okLab) : pow(primaries.white.components, gamma)) - black
+        let r = (lab ? float4(primaries.r.okLab) : pow(primaries.r.components, gamma)) - black
+        let g = (lab ? float4(primaries.g.okLab) : pow(primaries.g.components, gamma)) - black
+        let b = (lab ? float4(primaries.b.okLab) : pow(primaries.b.components, gamma)) - black
         
-        // color mixing matrix (enforcing r+g+b = white)
+        // color mixing matrix (optionally enforcing r+g+b = white)
         let q = float3x3(r.xyz, g.xyz, b.xyz).inverse * white.xyz
-        let M = float3x4(q.x*r, q.y*g, q.z*b), Q = M*S
-        let mixer = float4x4(Q[0], Q[1], Q[2], black+M*shift)
+        let M = (primaries.mode != .add) ? float3x4(q.x*r, q.y*g, q.z*b) : float3x4(r,g,b)
+        let Q = M*S, mixer = float4x4(Q[0], Q[1], Q[2], black+M*shift)
         
         buffer.mixer.contents().storeBytes(of: mixer, as: float4x4.self)
         buffer.gamma.contents().storeBytes(of: 1.0/gamma, as: float4.self)
@@ -276,7 +279,7 @@ struct ColorMixer {
         // initialize compute command buffer
         guard let command = metal.queue.makeCommandBuffer() else { return }
         
-        (compress ? shader.comp : shader.clip).encode(command: command,
+        (lab ? (compress ? shader.glab : shader.clab) : (compress ? shader.comp : shader.clip)).encode(command: command,
                 buffers: [x.buffer, y.buffer, z.buffer, buffer.mixer, buffer.gamma, buffer.nan],
                 textures: [texture], threadsPerGrid: MTLSize(width: nside, height: nside, depth: 12))
         if texture.mipmapLevelCount > 1, let encoder = command.makeBlitCommandEncoder() {

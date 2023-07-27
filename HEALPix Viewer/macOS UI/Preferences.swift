@@ -580,15 +580,15 @@ enum Mixing: String, CaseIterable, Codable, Preference {
     
     var description: String {
         switch self {
-            case .add: return "Co-add RGB primaries as is"
-            case .mix:  return "Scale RGB primaries to specified white point"
-            case .blend:  return "Chroma blending in perceptual color space"
+            case .add:      return "Co-add RGB primaries as they are"
+            case .mix:      return "Scale RGB primaries to achieve specified white point"
+            case .blend:    return "Blend in perceptually uniform color space"
         }
     }
     
     // default value
     static let key = "mixing"
-    static let defaultValue: Self = .mix
+    static let defaultValue: Self = .blend
 }
 
 // encapsulates @AppStorage preference properties

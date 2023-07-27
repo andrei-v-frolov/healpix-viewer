@@ -8,6 +8,23 @@
 #ifndef __COLORIZE__
 #define __COLORIZE__
 
+// MARK: okLab color space
+constant const float3x3 M1 = {
+    float3( 4.07675841355650,  -1.26818108516240, -0.00409840771803133),
+    float3(-3.30722798739447,   2.60929321028564, -0.703503660102417),
+    float3( 0.230721459944886, -0.341112116547754, 1.70686045297880)
+};
+
+constant const float3x3 M2 = {
+    float3(1.0),
+    float3(0.396337792173768, -0.105561342323656,  -0.0894841820949657),
+    float3(0.215803758060759, -0.0638541747717059, -1.29148553786409)
+};
+
+inline float4 ok2lrgb(const float4 v) {
+    return float4(M1*pow(M2*v.xyz, 3.0), v.w);
+}
+
 // MARK: Hybrid log-gamma (Rec. 2100)
 // [https://en.wikipedia.org/wiki/Hybrid_log–gamma]
 
@@ -97,6 +114,38 @@ kernel void colormix_comp(
     const float4 v = float4(x[p],y[p],z[p],1.0);
     
     output.write(select(powr(hlg(compress(mixer*v)), 2.0*gamma), nan, any(isnan(v) or isinf(v))), gid.xy, gid.z);
+}
+
+kernel void colormix_clab(
+    texture2d_array<float,access::write> output [[ texture(0) ]],
+    constant float *x                   [[ buffer(0) ]],
+    constant float *y                   [[ buffer(1) ]],
+    constant float *z                   [[ buffer(2) ]],
+    constant float4x4 &mixer            [[ buffer(3) ]],
+    constant float4 &gamma              [[ buffer(4) ]],
+    constant float4 &nan                [[ buffer(5) ]],
+    uint3 gid                           [[ thread_position_in_grid ]]
+) {
+    const int p = xyf2nest(output.get_width(), int3(gid));
+    const float4 v = ok2lrgb(mixer*float4(x[p],y[p],z[p],1.0));
+    
+    output.write(select(powr(saturate(v), gamma), nan, any(isnan(v) or isinf(v))), gid.xy, gid.z);
+}
+
+kernel void colormix_glab(
+    texture2d_array<float,access::write> output [[ texture(0) ]],
+    constant float *x                   [[ buffer(0) ]],
+    constant float *y                   [[ buffer(1) ]],
+    constant float *z                   [[ buffer(2) ]],
+    constant float4x4 &mixer            [[ buffer(3) ]],
+    constant float4 &gamma              [[ buffer(4) ]],
+    constant float4 &nan                [[ buffer(5) ]],
+    uint3 gid                           [[ thread_position_in_grid ]]
+) {
+    const int p = xyf2nest(output.get_width(), int3(gid));
+    const float4 v = ok2lrgb(mixer*float4(x[p],y[p],z[p],1.0));
+    
+    output.write(select(powr(hlg(compress(v)), 2.0*gamma), nan, any(isnan(v) or isinf(v))), gid.xy, gid.z);
 }
 
 // MARK: accumulate covariance of 3-channel data
