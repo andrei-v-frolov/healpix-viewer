@@ -138,7 +138,7 @@ final class CpuMap: Map {
         
         for i in stride(from: 0, through: npix, by: Swift.max(npix/n,1)) {
             let j = Swift.min(i,npix-1), x = (ptr + Int(idx[j])).pointee
-            if (!x.isNaN) { cdf.append(Double(x)) }
+            if (x.isFinite) { cdf.append(Double(x)) }
         }
         
         self.cdf = cdf
