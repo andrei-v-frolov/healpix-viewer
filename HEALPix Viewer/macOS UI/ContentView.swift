@@ -132,7 +132,7 @@ struct ContentView: View {
                         .padding(.bottom, 10)
                 }
                 if (sidebar == .ilc) {
-                    ScrollView { ComponentView(sidebar: $sidebar) }
+                    ScrollView { ComponentView(sidebar: $sidebar, loaded: $loaded, host: $selected) }
                         .frame(minWidth: 210, maxWidth: .infinity)
                         .padding(.bottom, 10)
                 }

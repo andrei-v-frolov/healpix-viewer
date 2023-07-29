@@ -63,9 +63,9 @@ extension Map {
 }
 
 // HEALPix map texture array
-func HPXTexture(nside: Int, mipmapped: Bool = true) -> MTLTexture {
+func HPXTexture(nside: Int, format: MTLPixelFormat? = nil, mipmapped: Bool = true) -> MTLTexture {
     // texture format
-    let desc = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: TextureFormat.value.pixel, width: nside, height: nside, mipmapped: mipmapped)
+    let desc = MTLTextureDescriptor.texture2DDescriptor(pixelFormat: format ?? TextureFormat.value.pixel, width: nside, height: nside, mipmapped: mipmapped)
     
     desc.textureType = MTLTextureType.type2DArray
     desc.storageMode = .private

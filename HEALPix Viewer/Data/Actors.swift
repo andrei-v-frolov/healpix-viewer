@@ -156,6 +156,52 @@ struct ColorMixer {
     }
 }
 
+// component separator extracts common component given spectral weights
+struct ComponentSeparator {
+    // compute pipeline
+    let shader = (cov: MetalKernel(kernel: "block_cov"), ilc: MetalKernel(kernel: "block_ilc"), mix: MetalKernel(kernel: "separate"))
+    let buffer: (cov: MTLBuffer, block: MTLBuffer, weight: MTLBuffer)
+    let coeffs: MTLTexture
+    let nside: Int
+    
+    // computed properties
+    var npix: Int { 12*nside*nside }
+    
+    init(nside: Int) {
+        let options: MTLResourceOptions = [.cpuCacheModeWriteCombined, .storageModeShared]
+        guard let cov = metal.device.makeBuffer(length: MemoryLayout<Float>.size*(72*nside*nside)),
+              let block = metal.device.makeBuffer(length: MemoryLayout<uint2>.size, options: options),
+              let weight = metal.device.makeBuffer(length: MemoryLayout<float4>.size, options: options)
+              else { fatalError("Could not allocate parameter buffers in component separator") }
+        
+        self.nside = nside
+        self.buffer = (cov, block, weight)
+        self.coeffs = HPXTexture(nside: nside, format: .rgba32Float, mipmapped: false)
+    }
+    
+    // component separation via simple ILC
+    func ilc(_ x: Map, _ y: Map, _ z: Map, weight: float4 = float4(1.0), analyze: Bool = true) {
+        let nside = x.nside; guard (y.nside == nside && z.nside == nside && nside >= self.nside<<3) else { return }
+        
+        // covariance sampling in nside blocks
+        let block = 2.0*log2(Double(nside)/Double(self.nside))
+        buffer.block.contents().storeBytes(of: uint2(uint(nside),uint(block)), as: uint2.self)
+        buffer.weight.contents().storeBytes(of: weight, as: float4.self)
+        
+        // initialize compute command buffer
+        guard let command = metal.queue.makeCommandBuffer() else { return }
+        
+        // block correlator computes local covariance matrix
+        if analyze { shader.cov.encode(command: command, buffers: [x.buffer, y.buffer, z.buffer, buffer.block, buffer.cov],
+                                       textures: [], threadsPerGrid: MTLSize(width: npix, height: 1, depth: 1)) }
+        // compute block ILC coefficients and corresponding linear combination
+        shader.ilc.encode(command: command, buffers: [buffer.cov, buffer.weight], textures: [coeffs])
+        shader.mix.encode(command: command, buffers: [x.buffer, y.buffer, z.buffer, buffer.block],
+            textures: [coeffs], threadsPerGrid: MTLSize(width: 12*nside*nside, height: 1, depth: 1))
+        command.commit(); command.waitUntilCompleted()
+    }
+}
+
 // color mapper transforms data to rendered texture array
 struct ColorMapper {
     // compute pipeline
