@@ -122,7 +122,7 @@ final class CpuMap: Map {
     deinit { ptr.deallocate(); idx.deallocate() }
     
     // index map (i.e. compute CDF)
-    func index() { index_map(ptr, idx, Int32(npix)); makecdf(intervals: 1<<12) }
+    func index() { index_map(ptr, idx, Int32(npix)); cdf = makecdf(intervals: 1<<12) }
     
     // ranked map (i.e. equalize PDF)
     func ranked() -> CpuMap {
@@ -133,7 +133,7 @@ final class CpuMap: Map {
     }
     
     // decimate index to produce light-weight CDF representation
-    func makecdf(intervals n: Int) {
+    func makecdf(intervals n: Int) -> [Double] {
         var cdf = [Double](); cdf.reserveCapacity(n+1)
         
         for i in stride(from: 0, through: npix, by: Swift.max(npix/n,1)) {
@@ -141,7 +141,7 @@ final class CpuMap: Map {
             if (x.isFinite) { cdf.append(Double(x)) }
         }
         
-        self.cdf = cdf
+        return cdf
     }
 }
 
