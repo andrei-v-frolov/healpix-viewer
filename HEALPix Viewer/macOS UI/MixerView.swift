@@ -20,7 +20,7 @@ struct Decorrelator: Equatable {
 struct MixerView: View {
     @Binding var sidebar: Navigator
     @Binding var loaded: [MapData]
-    @Binding var host: UUID?
+    @Binding var host: UUID
     
     // nside is restricted to that of host map
     var nside: Int { loaded.first(where: { $0.id == host })?.data.nside ?? 0 }

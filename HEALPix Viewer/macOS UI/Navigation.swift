@@ -76,6 +76,9 @@ struct MapPicker: View {
     // nside filter
     var nside = 0
     
+    // exclusion filter
+    var exclude = [UUID]()
+    
     // respond to thumbnail style chages
     @AppStorage(Thumbnails.key) var thumbnails = Thumbnails.defaultValue
     
@@ -90,7 +93,7 @@ struct MapPicker: View {
     var body: some View {
         Menu {
             ForEach(loaded, id: \.self) { map in
-                if (map.data.nside == nside || nside == 0) {
+                if ((map.data.nside == nside || nside == 0) && !exclude.contains(map.id)) {
                     Button { selected = map.id } label: {
                         if #available(macOS 13.0, *), let entry = rendered(map) { Image(nsImage: entry) } else {
                             Label { Text(map.name) + Text("  [\(map.file)]").font(.footnote) } icon: { image(map.preview, oversample: 8)?.scaledToFit() }

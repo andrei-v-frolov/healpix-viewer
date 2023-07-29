@@ -126,13 +126,14 @@ struct ContentView: View {
                             .disabled(true)
                     }
                 }
-                if (sidebar == .mixer) {
-                    ScrollView { MixerView(sidebar: $sidebar, loaded: $loaded, host: $selected) }
+                if (sidebar == .mixer), let host = selected {
+                    ScrollView { MixerView(sidebar: $sidebar, loaded: $loaded, host: .constant(host)) }
                         .frame(minWidth: 210, maxWidth: .infinity)
                         .padding(.bottom, 10)
                 }
-                if (sidebar == .ilc) {
-                    ScrollView { ComponentView(sidebar: $sidebar, loaded: $loaded, host: $selected) }
+                if (sidebar == .ilc), let host = selected {
+                    let binding = Binding { host } set: { self.selected = $0 }
+                    ScrollView { ComponentView(sidebar: $sidebar, loaded: $loaded, host: binding) }
                         .frame(minWidth: 210, maxWidth: .infinity)
                         .padding(.bottom, 10)
                 }

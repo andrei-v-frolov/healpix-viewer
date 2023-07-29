@@ -264,7 +264,7 @@ final class MapData: Identifiable, ObservableObject {
     internal var state = MapState()
     
     // default initializer
-    init(file: String, info: String, name: String, unit: String, channel: Int, data: CpuMap) {
+    init(file: String, info: String, name: String, unit: String, channel: Int, data: Map) {
         self.file = file
         self.info = info
         self.name = name
