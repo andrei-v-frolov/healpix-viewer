@@ -116,7 +116,7 @@ kernel void colormix_comp(
     output.write(select(powr(hlg(compress(mixer*v)), 2.0*gamma), nan, any(isnan(v) or isinf(v))), gid.xy, gid.z);
 }
 
-kernel void colormix_clab(
+kernel void colormix_slab(
     texture2d_array<float,access::write> output [[ texture(0) ]],
     constant float *x                   [[ buffer(0) ]],
     constant float *y                   [[ buffer(1) ]],
@@ -132,7 +132,7 @@ kernel void colormix_clab(
     output.write(select(powr(saturate(v), gamma), nan, any(isnan(v) or isinf(v))), gid.xy, gid.z);
 }
 
-kernel void colormix_glab(
+kernel void colormix_hlab(
     texture2d_array<float,access::write> output [[ texture(0) ]],
     constant float *x                   [[ buffer(0) ]],
     constant float *y                   [[ buffer(1) ]],

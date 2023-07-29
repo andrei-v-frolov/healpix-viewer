@@ -66,8 +66,8 @@ struct ColorMixer {
     // compute pipeline
     let shader = (clip: MetalKernel(kernel: "colormix_clip"),
                   comp: MetalKernel(kernel: "colormix_comp"),
-                  clab: MetalKernel(kernel: "colormix_clab"),
-                  glab: MetalKernel(kernel: "colormix_glab"))
+                  clab: MetalKernel(kernel: "colormix_slab"),
+                  glab: MetalKernel(kernel: "colormix_hlab"))
     let buffer: (mixer: MTLBuffer, gamma: MTLBuffer, nan: MTLBuffer)
     
     init() {
@@ -97,7 +97,8 @@ struct ColorMixer {
         let shift = (decorrelate.avg-v)/(w-v) - S * decorrelate.avg
         
         // color space primaries (okLab or linear device RGB)
-        let lab = (primaries.mode == .blend), gamma = float4(float3(Float(exp2(primaries.gamma))), 1.0)
+        let lab = (primaries.mode == .blend), base = lab ? 3.0 : 1.0
+        let gamma = float4(float3(Float(base * exp2(primaries.gamma))), 1.0)
         let black = (lab ? float4(primaries.black.okLab) : pow(primaries.black.components, gamma))
         let white = (lab ? float4(primaries.white.okLab) : pow(primaries.white.components, gamma)) - black
         let r = (lab ? float4(primaries.r.okLab) : pow(primaries.r.components, gamma)) - black
