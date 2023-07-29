@@ -24,6 +24,9 @@ struct ComponentView: View {
     
     @State private var id = Inputs()
     
+    // separation strategy
+    @State private var separate = Separation.weights
+    
     var body: some View {
         VStack {
             Group {
@@ -33,6 +36,15 @@ struct ComponentView: View {
                 MapPicker(label: "Select channel 2", loaded: $loaded, selected: $id.y, nside: nside, exclude: [host]).labelsHidden()
                 MapPicker(label: "Select channel 3", loaded: $loaded, selected: $id.z, nside: nside, exclude: [host]).labelsHidden()
             }
+            Divider()
+            Group {
+                Text("Extract Based on...").font(.title3)
+                Picker("Strategy:", selection: $separate) {
+                    ForEach(Separation.allCases, id: \.self) {
+                        Text($0.rawValue).tag($0).help($0.description)
+                    }
+                }.pickerStyle(.segmented).labelsHidden().padding(.bottom, 5)
+            }.padding([.leading, .trailing], 10)
             Divider()
             HStack {
                 Button { } label: { Label("Reset", systemImage: "sparkles") }
