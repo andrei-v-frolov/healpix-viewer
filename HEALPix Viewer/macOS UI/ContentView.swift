@@ -28,6 +28,7 @@ struct ContentView: View {
     @State private var file = [HpxFile]()
     @State private var loaded = [MapData]()
     @State private var selected: UUID? = nil
+    @State private var host: UUID? = nil
     
     // save images
     @State private var saving = false
@@ -109,6 +110,8 @@ struct ContentView: View {
                         .help("Create false color image mixing data")
                         .disabled(selected == nil)
                         Button {
+                            guard let nside = loaded[selected]?.data.nside else { return }
+                            let map = component(nside: nside); loaded.append(map); host = map.id
                             withAnimation { sidebar = .ilc }
                         } label: {
                             Label("Separate", systemImage: "square.3.stack.3d")
@@ -126,14 +129,13 @@ struct ContentView: View {
                             .disabled(true)
                     }
                 }
-                if (sidebar == .mixer), let host = selected {
-                    ScrollView { MixerView(sidebar: $sidebar, loaded: $loaded, host: .constant(host)) }
+                if (sidebar == .mixer), let host = loaded[selected] {
+                    ScrollView { MixerView(sidebar: $sidebar, loaded: $loaded, host: host) }
                         .frame(minWidth: 210, maxWidth: .infinity)
                         .padding(.bottom, 10)
                 }
-                if (sidebar == .ilc), let host = selected {
-                    let binding = Binding { host } set: { self.selected = $0 }
-                    ScrollView { ComponentView(sidebar: $sidebar, loaded: $loaded, host: binding) }
+                if (sidebar == .ilc), let host = loaded[host] {
+                    ScrollView { ComponentView(sidebar: $sidebar, loaded: $loaded, selected: $selected, action: $action, host: host) }
                         .frame(minWidth: 210, maxWidth: .infinity)
                         .padding(.bottom, 10)
                 }
@@ -544,6 +546,16 @@ struct ContentView: View {
         let settings = settings ?? export
         guard let url = url ?? showSavePanel(type: settings.format.type) else { return }
         if let output = render(for: settings, size: view) { saveAsImage(output, url: url, format: settings.format) }
+    }
+    
+    // new component map
+    func component(nside: Int) -> MapData {
+        guard let buffer = metal.device.makeBuffer(length: MemoryLayout<Float>.size*(12*nside*nside))
+        else { fatalError("Could not allocate component buffer in component separator") }
+        
+        print("NEW COMPONENT")
+        let map = GpuMap(nside: nside, buffer: buffer, min: -1.0, max: 1.0)
+        return MapData(file: "extracted component", info: "", name: "PLACEHOLDER", unit: "", channel: 0, data: map)
     }
 }
 

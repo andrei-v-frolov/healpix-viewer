@@ -20,10 +20,10 @@ struct Decorrelator: Equatable {
 struct MixerView: View {
     @Binding var sidebar: Navigator
     @Binding var loaded: [MapData]
-    @Binding var host: UUID
+    var host: MapData
     
     // nside is restricted to that of host map
-    var nside: Int { loaded.first(where: { $0.id == host })?.data.nside ?? 0 }
+    var nside: Int { host.data.nside }
     
     // color mixer inputs
     private struct Inputs: Equatable {
@@ -108,7 +108,7 @@ struct MixerView: View {
                     .help("Close color mixer view")
             }.padding([.leading,.trailing], 10).padding([.top,.bottom], 5)
         }
-        .onAppear { id = Inputs(x: host, y: host, z: host) }
+        .onAppear { id = Inputs(x: host.id, y: host.id, z: host.id) }
         .onChange(of: id) { value in correlate(); colorize() }
         .onChange(of: decorrelate) { value in colorize() }
         .onChange(of: primaries) { value in colorize() }
@@ -125,10 +125,9 @@ struct MixerView: View {
     }
     
     func colorize(_ x: MapData? = nil, _ y: MapData? = nil, _ z: MapData? = nil, primaries: Primaries? = nil) {
-        guard let x = x ?? loaded[id.x], let y = y ?? loaded[id.y], let z = z ?? loaded[id.z],
-              let texture = loaded.first(where: { $0.id == host })?.texture else { return }
+        guard let x = x ?? loaded[id.x], let y = y ?? loaded[id.y], let z = z ?? loaded[id.z] else { return }
         
         let primaries = primaries ?? self.primaries
-        mixer.mix(x, y, z, decorrelate: decorrelate, primaries: primaries, nan: .gray, compress: compress, output: texture)
+        mixer.mix(x, y, z, decorrelate: decorrelate, primaries: primaries, nan: .gray, compress: compress, output: host.texture)
     }
 }
