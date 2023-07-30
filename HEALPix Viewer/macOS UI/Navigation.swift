@@ -29,7 +29,7 @@ struct NavigationRow: View {
 struct NavigationList: View {
     @Binding var loaded: [MapData]
     @Binding var selected: UUID?
-    @Binding var action: MenuAction
+    @Binding var action: Action
     
     func entry(_ map: MapData) -> some View {
         NavigationRow(map: map).contextMenu {

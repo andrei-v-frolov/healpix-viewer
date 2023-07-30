@@ -88,7 +88,7 @@ struct ContentView: View {
     private let mapper = ColorMapper()
     
     // variable signalling action
-    @Binding var action: MenuAction
+    @Binding var action: Action
     
     // registered observers binding to application state
     @State private var observers: Observers? = nil

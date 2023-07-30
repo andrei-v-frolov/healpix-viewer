@@ -17,7 +17,7 @@ let analysisQueue = DispatchQueue(label: "analysis", qos: .userInitiated, attrib
     
     // window stack, action requsts, and clipboard
     @State private var stack = [ProjectedView.ID]()
-    @State private var action: MenuAction = .none
+    @State private var action = Action.none
     @State private var clipboard = ViewState.value
     
     // most actions require available target

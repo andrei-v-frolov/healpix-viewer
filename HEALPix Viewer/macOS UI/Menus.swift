@@ -8,7 +8,7 @@
 import SwiftUI
 
 // variable signalling action
-enum MenuAction {
+enum Action {
     case none
     case open, save
     case copyStyle, pasteStyle, pasteView, pasteColor, pasteLight, pasteAll, resetAll
@@ -18,7 +18,7 @@ enum MenuAction {
 @available(macOS 13.0, *)
 struct OpenFile: View {
     @Environment(\.openWindow) var openWindow
-    @Binding var action: MenuAction
+    @Binding var action: Action
     @Binding var new: Bool
     
     var body: some View {
@@ -40,7 +40,7 @@ struct AddGradient: View {
 
 // file menu hierarchy
 struct FileMenus: Commands {
-    @Binding var action: MenuAction
+    @Binding var action: Action
     @Binding var targeted: Bool
 
     var body: some Commands {
@@ -55,7 +55,7 @@ struct FileMenus: Commands {
 
 // edit menu hierarchy
 struct EditMenus: Commands {
-    @Binding var action: MenuAction
+    @Binding var action: Action
     @Binding var targeted: Bool
     @AppStorage(lightingKey) var lighting = false
     
