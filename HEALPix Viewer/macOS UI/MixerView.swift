@@ -116,9 +116,7 @@ struct MixerView: View {
     }
     
     func correlate(_ x: MapData? = nil, _ y: MapData? = nil, _ z: MapData? = nil) {
-        guard let x = x ?? loaded.first(where: { $0.id == self.id.x }),
-              let y = y ?? loaded.first(where: { $0.id == self.id.y }),
-              let z = z ?? loaded.first(where: { $0.id == self.id.z }) else { return }
+        guard let x = x ?? loaded[id.x], let y = y ?? loaded[id.y], let z = z ?? loaded[id.z] else { return }
         
         guard let (avg,cov) = correlator.correlate(x.available, y.available, z.available) else { return }
         
@@ -127,9 +125,7 @@ struct MixerView: View {
     }
     
     func colorize(_ x: MapData? = nil, _ y: MapData? = nil, _ z: MapData? = nil, primaries: Primaries? = nil) {
-        guard let x = x ?? loaded.first(where: { $0.id == self.id.x }),
-              let y = y ?? loaded.first(where: { $0.id == self.id.y }),
-              let z = z ?? loaded.first(where: { $0.id == self.id.z }),
+        guard let x = x ?? loaded[id.x], let y = y ?? loaded[id.y], let z = z ?? loaded[id.z],
               let texture = loaded.first(where: { $0.id == host })?.texture else { return }
         
         let primaries = primaries ?? self.primaries

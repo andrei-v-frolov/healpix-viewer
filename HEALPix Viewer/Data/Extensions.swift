@@ -69,3 +69,9 @@ extension float3x3 {
         return (s, u, v)
     }
 }
+
+// shorthand for finding first identifiable occurance in array
+extension Array where Element: Identifiable {
+    subscript(id: Element.ID) -> Element? { self.first(where: { $0.id == id }) }
+    subscript(id: Element.ID?) -> Element? { self.first(where: { $0.id == id }) }
+}

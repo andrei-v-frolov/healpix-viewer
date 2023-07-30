@@ -400,7 +400,7 @@ struct ContentView: View {
     
     // load map with settings
     @MainActor func load(_ id: UUID? = nil) {
-        guard let map = loaded.first(where: { $0.id == id ?? selected }) else { return }
+        guard let map = loaded[id ?? selected] else { return }
         
         // stash current settings
         data?.settings = state

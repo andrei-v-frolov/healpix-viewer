@@ -102,7 +102,7 @@ struct MapPicker: View {
                 }
             }
         } label: {
-            if let map = loaded.first(where: { $0.id == selected }) { NavigationRow(map: map) }
+            if let map = loaded[selected] { NavigationRow(map: map) }
             else { Label(label, systemImage: "globe") }
         }.buttonStyle(.plain).padding(5)
     }
