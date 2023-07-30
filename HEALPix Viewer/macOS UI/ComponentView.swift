@@ -12,10 +12,9 @@ struct ComponentView: View {
     @Binding var loaded: [MapData]
     @Binding var selected: UUID?
     @Binding var action: Action
-    var host: MapData
     
     // nside is restricted to that of host map
-    var nside: Int { host.data.nside }
+    @State private var host: MapData? = nil
     
     // color mixer inputs
     private struct Inputs: Equatable {
@@ -37,9 +36,12 @@ struct ComponentView: View {
             Group {
                 Text("Component Separation").font(.title3)
                 Divider()
-                MapPicker(label: "Select channel 1", loaded: $loaded, selected: $id.x, nside: nside, exclude: [host.id]).labelsHidden()
-                MapPicker(label: "Select channel 2", loaded: $loaded, selected: $id.y, nside: nside, exclude: [host.id]).labelsHidden()
-                MapPicker(label: "Select channel 3", loaded: $loaded, selected: $id.z, nside: nside, exclude: [host.id]).labelsHidden()
+                if let host = host {
+                    let nside = host.data.nside, exclude = [host.id]
+                    MapPicker(label: "Select channel 1", loaded: $loaded, selected: $id.x, nside: nside, exclude: exclude).labelsHidden()
+                    MapPicker(label: "Select channel 2", loaded: $loaded, selected: $id.y, nside: nside, exclude: exclude).labelsHidden()
+                    MapPicker(label: "Select channel 3", loaded: $loaded, selected: $id.z, nside: nside, exclude: exclude).labelsHidden()
+                }
             }
             Divider()
             Group {
@@ -58,7 +60,21 @@ struct ComponentView: View {
                     .help("Close component separation view")
             }.padding([.leading,.trailing], 10).padding([.top,.bottom], 5)
         }
-        .onAppear { id = Inputs(x: selected, y: selected, z: selected); selected = host.id }
-        .onChange(of: id) { value in ilc(); action = .redraw }
+        .onAppear() {
+            if let like = loaded[selected] {
+                host = component(nside: like.data.nside)
+                id = Inputs(x: selected, y: selected, z: selected)
+            }
+        }
+        .onChange(of: id) { value in ilc() }
+    }
+    
+    // new map for separated component
+    func component(nside: Int) -> MapData {
+        guard let buffer = metal.device.makeBuffer(length: MemoryLayout<Float>.size*(12*nside*nside))
+        else { fatalError("Could not allocate component buffer in component separator") }
+        
+        let map = GpuMap(nside: nside, buffer: buffer, min: -1.0, max: 1.0)
+        return MapData(file: "extracted component", info: "", name: "PLACEHOLDER", unit: "", channel: 0, data: map)
     }
 }
