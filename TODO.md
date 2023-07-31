@@ -11,6 +11,7 @@
 - single face texture array per MapData, preallocate instead of lazy
 - support for integer type maps added (like HITS count in Planck maps)
 - BAD_DATA guard (replacing with NAN) fixed
+- libcfitsio updated to 4.3.0
 
 ### Compliance Issues
 
