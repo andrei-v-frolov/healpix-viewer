@@ -77,4 +77,12 @@ struct ComponentView: View {
         let map = GpuMap(nside: nside, buffer: buffer, min: -1.0, max: 1.0)
         return MapData(file: "extracted component", info: "", name: "PLACEHOLDER", unit: "", channel: 0, data: map)
     }
+    
+    // ...
+    func ilc(_ map: MapData? = nil, x: MapData? = nil, y: MapData? = nil, z: MapData? = nil) {
+        guard let map = map ?? host, let x = x ?? loaded[id.x], let y = y ?? loaded[id.y], let z = z ?? loaded[id.z] else { return }
+        
+        separator.ilc(map.data, x: x.data, y: y.data, z: z.data)
+        if (loaded[map.id] != nil) { action = .redraw } else { loaded.append(map); selected = map.id }
+    }
 }

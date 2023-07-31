@@ -266,6 +266,8 @@ struct ContentView: View {
             switch value {
                 case .open: open()
                 case .save: saving = true
+                case .redraw:
+                    transform(force: true)
                 case .copyStyle:
                     clipboard = state
                 case .pasteStyle:
@@ -413,10 +415,10 @@ struct ContentView: View {
     }
     
     // colorize map with specified settings
-    func colorize(_ map: MapData? = nil, color: Palette? = nil, range: Bounds? = nil) {
+    func colorize(_ map: MapData? = nil, color: Palette? = nil, range: Bounds? = nil, force: Bool = false) {
         guard let map = map ?? data else { return }
         let transform = map.transform, color = color ?? state.palette, range = range ?? state.range
-        guard (map.state.rendered != transform || map.state.palette != color || map.state.range != range) else { return }
+        guard (map.state.rendered != transform || map.state.palette != color || map.state.range != range || force) else { return }
         
         // dispatch color mapper
         mapper.colorize(map: map.available, color: color, range: range, output: map.texture)
@@ -426,9 +428,9 @@ struct ContentView: View {
     }
     
     // transform map with specified settings
-    func transform(_ map: MapData? = nil, transform: Transform? = nil) {
+    func transform(_ map: MapData? = nil, transform: Transform? = nil, force: Bool = false) {
         let transform = transform ?? state.transform
-        guard let map = map ?? data, map.state.transform != transform else { return }
+        guard let map = map ?? data, (map.state.transform != transform || force) else { return }
         
         // dispatch data transform
         switch transform.f {
@@ -444,7 +446,7 @@ struct ContentView: View {
         if (transform.f.mu || transform.f.sigma) { map.state.range = nil }
         
         // load transformed map (should always be available at this point)
-        if let data = map.transformed { load(data, range: map.state.range); colorize(map) }
+        if let data = map.transformed { load(data, range: map.state.range); colorize(map, force: force) }
     }
     
     // render map preview

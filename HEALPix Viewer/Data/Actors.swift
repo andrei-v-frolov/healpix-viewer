@@ -180,8 +180,8 @@ struct ComponentSeparator {
     }
     
     // component separation via simple ILC
-    func ilc(_ x: Map, _ y: Map, _ z: Map, weight: float4 = float4(1.0), analyze: Bool = true) {
-        let nside = x.nside; guard (y.nside == nside && z.nside == nside && nside >= self.nside<<3) else { return }
+    func ilc(_ map: Map, x: Map, y: Map, z: Map, weight: float4 = float4(1.0), analyze: Bool = true) {
+        let nside = map.nside; guard (nside >= self.nside<<3 && x.nside == nside && y.nside == nside && z.nside == nside) else { return }
         
         // covariance sampling in nside blocks
         let block = 2.0*log2(Double(nside)/Double(self.nside))
@@ -192,11 +192,13 @@ struct ComponentSeparator {
         guard let command = metal.queue.makeCommandBuffer() else { return }
         
         // block correlator computes local covariance matrix
-        if analyze { shader.cov.encode(command: command, buffers: [x.buffer, y.buffer, z.buffer, buffer.block, buffer.cov],
-                                       textures: [], threadsPerGrid: MTLSize(width: npix, height: 1, depth: 1)) }
+        if analyze { shader.cov.encode(command: command,
+            buffers: [x.buffer, y.buffer, z.buffer, buffer.block, buffer.cov],
+            textures: [], threadsPerGrid: MTLSize(width: self.npix, height: 1, depth: 1)) }
         // compute block ILC coefficients and corresponding linear combination
-        shader.ilc.encode(command: command, buffers: [buffer.cov, buffer.weight], textures: [coeffs])
-        shader.mix.encode(command: command, buffers: [x.buffer, y.buffer, z.buffer, buffer.block],
+        shader.ilc.encode(command: command, buffers: [buffer.cov, buffer.weight],
+            textures: [coeffs], threadsPerGrid: MTLSize(width: self.nside, height: self.nside, depth: 12))
+        shader.mix.encode(command: command, buffers: [x.buffer, y.buffer, z.buffer, buffer.block, map.buffer],
             textures: [coeffs], threadsPerGrid: MTLSize(width: 12*nside*nside, height: 1, depth: 1))
         command.commit(); command.waitUntilCompleted()
     }

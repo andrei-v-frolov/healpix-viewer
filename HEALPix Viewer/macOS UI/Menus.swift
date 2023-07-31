@@ -10,7 +10,7 @@ import SwiftUI
 // variable signalling action
 enum Action {
     case none
-    case open, save
+    case open, save, redraw
     case copyStyle, pasteStyle, pasteView, pasteColor, pasteLight, pasteAll, resetAll
 }
 
