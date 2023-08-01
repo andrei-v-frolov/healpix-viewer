@@ -15,6 +15,7 @@
 		50056E8B2A78C58A00812E95 /* Random.metal in Sources */ = {isa = PBXBuildFile; fileRef = 50056E8A2A78C58A00812E95 /* Random.metal */; };
 		50056E922A78CEC300812E95 /* Random.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50056E912A78CEC300812E95 /* Random.swift */; };
 		5009BB142912ECEB006DE835 /* ColorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5009BB132912ECEB006DE835 /* ColorView.swift */; };
+		500A9E422A798A1A0006FF08 /* Expression.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500A9E412A798A1A0006FF08 /* Expression.swift */; };
 		500EFDBD29270B66002B6057 /* Navigation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 500EFDBC29270B66002B6057 /* Navigation.swift */; };
 		500F99B3292553730097695C /* rawmap.c in Sources */ = {isa = PBXBuildFile; fileRef = 500F99B2292553730097695C /* rawmap.c */; };
 		50100CE02A67B6AC009D7D43 /* Gradient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50100CDF2A67B6AC009D7D43 /* Gradient.swift */; };
@@ -115,6 +116,7 @@
 		50056E8A2A78C58A00812E95 /* Random.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Random.metal; sourceTree = "<group>"; };
 		50056E912A78CEC300812E95 /* Random.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Random.swift; sourceTree = "<group>"; };
 		5009BB132912ECEB006DE835 /* ColorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorView.swift; sourceTree = "<group>"; };
+		500A9E412A798A1A0006FF08 /* Expression.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Expression.swift; sourceTree = "<group>"; };
 		500EFDBC29270B66002B6057 /* Navigation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Navigation.swift; sourceTree = "<group>"; };
 		500F99AE292553720097695C /* Bridging Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "Bridging Header.h"; sourceTree = "<group>"; };
 		500F99B1292553730097695C /* rawmap.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = rawmap.h; sourceTree = "<group>"; };
@@ -361,6 +363,7 @@
 				50C1FBBE2922B7C7009A3C99 /* FitsIO.swift */,
 				50BA47F52A732AF60032690A /* Actors.swift */,
 				50056E912A78CEC300812E95 /* Random.swift */,
+				500A9E412A798A1A0006FF08 /* Expression.swift */,
 				5000CDB32A665824005ABCBA /* Extensions.swift */,
 				500F99B1292553730097695C /* rawmap.h */,
 				500F99B2292553730097695C /* rawmap.c */,
@@ -539,6 +542,7 @@
 				50ECD2B028FF2A9C0008F915 /* Menus.swift in Sources */,
 				50563E592901E19A00B316CA /* MetalShader.swift in Sources */,
 				50563E5B2901E38F00B316CA /* Kernels.metal in Sources */,
+				500A9E422A798A1A0006FF08 /* Expression.swift in Sources */,
 				508F923B2923E96600E6DD73 /* FileIO.swift in Sources */,
 				50ECD2B228FF31260008F915 /* Toolbar.swift in Sources */,
 				50D29751291C39AA00E18C08 /* Map.swift in Sources */,
