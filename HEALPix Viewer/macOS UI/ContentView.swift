@@ -87,6 +87,9 @@ struct ContentView: View {
     // color mapper
     private let mapper = ColorMapper()
     
+    // random generator
+    private let random = RandomGenerator()
+    
     // variable signalling action
     @Binding var action: Action
     
@@ -266,8 +269,14 @@ struct ContentView: View {
             switch value {
                 case .open: open()
                 case .save: saving = true
-                case .redraw:
-                    transform(force: true)
+                case .redraw: transform(force: true)
+                case .random(let pdf):
+                    let seed = Int.random(in: 0...0xFFFF), nside = 256
+                    if let data = random.generate(nside: nside, pdf: pdf, seed: seed) {
+                        let dist = pdf.rawValue.uppercased(), info = random.info(nside: nside, distribution: dist, seed: seed)
+                        let map = MapData(file: "random field", info: info, name: dist, unit: "", channel: 0, data: data)
+                        loaded.append(map); selected = map.id
+                    }
                 case .copyStyle:
                     clipboard = state
                 case .pasteStyle:

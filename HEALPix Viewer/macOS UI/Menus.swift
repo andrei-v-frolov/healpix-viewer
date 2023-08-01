@@ -8,9 +8,10 @@
 import SwiftUI
 
 // variable signalling action
-enum Action {
+enum Action: Equatable {
     case none
     case open, save, redraw
+    case random(RandomField)
     case copyStyle, pasteStyle, pasteView, pasteColor, pasteLight, pasteAll, resetAll
 }
 
@@ -77,6 +78,7 @@ struct EditMenus: Commands {
 
 // view menu hierarchy
 struct ViewMenus: Commands {
+    @Binding var action: Action
     @Binding var targeted: Bool
     
     // application appearance
@@ -134,6 +136,9 @@ struct ViewMenus: Commands {
 
 // data menu hierarchy
 struct DataMenus: Commands {
+    @Binding var action: Action
+    @Binding var targeted: Bool
+    
     // data source and projection
     @AppStorage(DataSource.key) var dataSource = DataSource.defaultValue
     @AppStorage(LineConvolution.key) var convolution = LineConvolution.defaultValue
@@ -148,7 +153,7 @@ struct DataMenus: Commands {
     var body: some Commands {
         CommandMenu("Data") {
             Group {
-                Picker("Default Source", selection: $dataSource) {
+                Picker("Source", selection: $dataSource) {
                     ForEach(DataSource.temperature, id: \.self) {
                         Text($0.rawValue).tag($0)
                     }
@@ -161,6 +166,11 @@ struct DataMenus: Commands {
                         Text($0.rawValue).tag($0)
                     }
                 }
+                Menu("Generate") {
+                    ForEach(RandomField.allCases, id: \.self) { pdf in
+                        Button(pdf.rawValue + " Random Field") { action = .random(pdf) }
+                    }
+                }.disabled(!targeted)
                 Picker("Convolution", selection: $convolution) {
                     ForEach(LineConvolution.allCases, id: \.self) {
                         Text($0.rawValue).tag($0)

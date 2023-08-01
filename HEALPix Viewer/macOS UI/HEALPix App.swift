@@ -29,8 +29,8 @@ let analysisQueue = DispatchQueue(label: "analysis", qos: .userInitiated, attrib
         } .commands {
             FileMenus(action: $action, targeted: .constant(targeted))
             EditMenus(action: $action, targeted: .constant(targeted))
-            ViewMenus(targeted: .constant(targeted))
-            DataMenus()
+            ViewMenus(action: $action, targeted: .constant(targeted))
+            DataMenus(action: $action, targeted: .constant(targeted))
         }
         .onChange(of: action) { value in if (value != .none && !targeted) { action = .none } }
         if #available(macOS 13.0, *) {
