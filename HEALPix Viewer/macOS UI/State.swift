@@ -84,6 +84,9 @@ struct MapState: Equatable, Codable {
     }
 }
 
+// view state copy styles
+enum CopyStyle { case specified, view, color, light, all }
+
 // map view state
 struct ViewState: Equatable, Codable {
     var projection = Projection.defaultValue

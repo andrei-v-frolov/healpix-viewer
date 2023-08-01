@@ -12,7 +12,7 @@ enum Action: Equatable {
     case none
     case open, save, redraw
     case random(RandomField)
-    case copyStyle, pasteStyle, pasteView, pasteColor, pasteLight, pasteAll, resetAll
+    case copy, paste(CopyStyle), reset(CopyStyle)
 }
 
 // open window is only available on masOS 13+
@@ -62,15 +62,15 @@ struct EditMenus: Commands {
     
     var body: some Commands {
         CommandGroup(replacing: CommandGroupPlacement.pasteboard) {
-            Button("Copy Style") { action = .copyStyle }.keyboardShortcut("C", modifiers: [.command]).disabled(!targeted)
-            Button("Paste Style") {action = .pasteStyle }.keyboardShortcut("V", modifiers: [.command]).disabled(!targeted)
-            Button("Paste View") { action = .pasteView }.keyboardShortcut("V", modifiers: [.shift,.command]).disabled(!targeted)
-            Button("Paste Color") { action = .pasteColor }.keyboardShortcut("C", modifiers: [.shift,.command]).disabled(!targeted)
-            Button("Paste Light") { action = .pasteLight }.keyboardShortcut("L", modifiers: [.shift,.command])
+            Button("Copy Style") { action = .copy }.keyboardShortcut("C", modifiers: [.command]).disabled(!targeted)
+            Button("Paste Style") {action = .paste(.specified) }.keyboardShortcut("V", modifiers: [.command]).disabled(!targeted)
+            Button("Paste View") { action = .paste(.view) }.keyboardShortcut("V", modifiers: [.shift,.command]).disabled(!targeted)
+            Button("Paste Color") { action = .paste(.color) }.keyboardShortcut("C", modifiers: [.shift,.command]).disabled(!targeted)
+            Button("Paste Light") { action = .paste(.light) }.keyboardShortcut("L", modifiers: [.shift,.command])
                 .disabled(!lighting || !targeted)
             Divider()
-            Button("Paste All") { action = .pasteAll }.keyboardShortcut("V", modifiers: [.shift,.option,.command]).disabled(!targeted)
-            Button("Reset All") { action = .resetAll }.keyboardShortcut("R", modifiers: [.command]).disabled(!targeted)
+            Button("Paste All") { action = .paste(.all) }.keyboardShortcut("V", modifiers: [.shift,.option,.command]).disabled(!targeted)
+            Button("Reset All") { action = .reset(.all) }.keyboardShortcut("R", modifiers: [.command]).disabled(!targeted)
             Divider()
         }
     }

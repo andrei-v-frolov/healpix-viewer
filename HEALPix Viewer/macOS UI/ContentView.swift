@@ -277,22 +277,22 @@ struct ContentView: View {
                         let map = MapData(file: "random field", info: info, name: dist, unit: "", channel: 0, data: data)
                         loaded.append(map); selected = map.id
                     }
-                case .copyStyle:
+                case .copy:
                     clipboard = state
-                case .pasteStyle:
+                case .paste(.specified):
                     state.update(clipboard, mask: copyState)
-                case .pasteView:
+                case .paste(.view):
                     state.projection = clipboard.projection
                     state.view = clipboard.view
-                case .pasteColor:
+                case .paste(.color):
                     state.palette = clipboard.palette
                     state.transform = clipboard.transform
                     state.range = clipboard.range
-                case .pasteLight:
+                case .paste(.light):
                     state.light = clipboard.light
-                case .pasteAll:
+                case .paste(.all):
                     state = clipboard
-                case .resetAll:
+                case .reset(.all):
                     state = ViewState.value
                     state.range = Bounds(mode: .full, min: datamin, max: datamax)
                 default: break

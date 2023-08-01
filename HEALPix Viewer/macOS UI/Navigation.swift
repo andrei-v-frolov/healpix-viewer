@@ -41,7 +41,7 @@ struct NavigationList: View {
                 }
                 .help("Export rendered map")
                 Button {
-                    selected = map.id; action = .resetAll
+                    selected = map.id; action = .reset(.all)
                 } label: {
                     Label("Reset", systemImage: "sparkles")
                 }
