@@ -185,6 +185,11 @@ struct ContentView: View {
                             BarView(colorbar: .constant(state.palette.scheme.colormap.texture),
                                     background: .constant(state.palette.bg), barview: $barview)
                             .frame(height: 1.5*geometry.size.width/ColorbarView.aspect)
+                            .contextMenu {
+                                ForEach(ColorScheme.allCases, id: \.self) { scheme in
+                                    Button(scheme.rawValue) { state.palette.scheme = scheme }
+                                }
+                            }
                             .onDrag {
                                 guard let barview = barview, let url = tmpfile(type: drag.format.type) else { return NSItemProvider() }
                                 let w = dimensions(for: drag, size: geometry.size).width/drag.oversampling, h = Int(Double(w)/ColorbarView.aspect)
