@@ -12,7 +12,7 @@ using namespace metal;
 // Random123 library [https://github.com/DEShawResearch/random123]
 #include "../../random123/include/Random123/threefry.h"
 
-// MARK: fill data buffer with uniformly distributed random numbers
+// MARK: fill data buffer with uniformly distributed random field
 kernel void random_uniform(
     constant uint &seed                 [[ buffer(0) ]],
     device float4 *data                 [[ buffer(1) ]],
@@ -25,7 +25,7 @@ kernel void random_uniform(
     data[tid] = float4(u.i)/((float) UINT_MAX);
 }
 
-// MARK: fill data buffer with Gaussian random numbers
+// MARK: fill data buffer with Gaussian random field
 kernel void random_gaussian(
     constant uint &seed                 [[ buffer(0) ]],
     device float4 *data                 [[ buffer(1) ]],

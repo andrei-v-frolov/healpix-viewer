@@ -25,7 +25,7 @@ struct RandomGenerator {
     
     init() {
         let options: MTLResourceOptions = [.cpuCacheModeWriteCombined, .storageModeShared]
-        guard let buffer = metal.device.makeBuffer(length: MemoryLayout<uint>.size)
+        guard let buffer = metal.device.makeBuffer(length: MemoryLayout<uint>.size, options: options)
               else { fatalError("Could not allocate seed buffer in random generator") }
         
         self.buffer = buffer
