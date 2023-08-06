@@ -517,11 +517,12 @@ struct Primaries: Equatable, Codable {
     var white = Color(red:1.0, green: 1.0, blue: 1.0, opacity: 1.0)
     var gamma = 0.0 // log2 scale
     var mode = Mixing.defaultValue
+    var compress = false
 }
 
 extension Primaries: JsonRepresentable, Preference {
     enum CodingKeys: String, CodingKey {
-        case red, green, blue, black, white, gamma, mode
+        case red, green, blue, black, white, gamma, mode, compress
     }
     
     init(from decoder: Decoder) throws {
@@ -534,6 +535,7 @@ extension Primaries: JsonRepresentable, Preference {
         white = try container.decode(Color.self, forKey: .white)
         gamma = try container.decode(Double.self, forKey: .gamma)
         mode = try container.decode(Mixing.self, forKey: .mode)
+        compress = try container.decode(Bool.self, forKey: .compress)
     }
     
     func encode(to encoder: Encoder) throws {
@@ -546,6 +548,7 @@ extension Primaries: JsonRepresentable, Preference {
         try container.encode(white, forKey: .white)
         try container.encode(gamma, forKey: .gamma)
         try container.encode(mode, forKey: .mode)
+        try container.encode(compress, forKey: .compress)
     }
     
     // default value

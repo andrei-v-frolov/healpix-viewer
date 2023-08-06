@@ -40,9 +40,6 @@ struct MixerView: View {
     // color primaries
     @AppStorage(Primaries.key) var primaries: Primaries = .defaultValue
     
-    // compress color gamut?
-    @State private var compress = false
-    
     // color mixer and correlator
     private let mixer = ColorMixer()
     private let correlator = Correlator()
@@ -79,7 +76,7 @@ struct MixerView: View {
                     TextField("ɣ:", value: $primaries.gamma, formatter: TwoDigitNumber)
                         .frame(width: 35).multilineTextAlignment(.trailing).focused($focus)
                 }.padding(.bottom, 5)
-                Toggle(isOn: $compress) { Text("compress gamut") }
+                Toggle(isOn: $primaries.compress) { Text("compress gamut") }
                     .help("Avoid clipped and over-saturated colors")
             }.padding([.leading, .trailing], 10)
             Divider()
@@ -112,22 +109,21 @@ struct MixerView: View {
         .onChange(of: id) { value in correlate(); colorize() }
         .onChange(of: decorrelate) { value in colorize() }
         .onChange(of: primaries) { value in colorize() }
-        .onChange(of: compress) { value in colorize() }
     }
     
+    // compute average and covariance
     func correlate(_ x: MapData? = nil, _ y: MapData? = nil, _ z: MapData? = nil) {
-        guard let x = x ?? loaded[id.x], let y = y ?? loaded[id.y], let z = z ?? loaded[id.z] else { return }
-        
-        guard let (avg,cov) = correlator.correlate(x.available, y.available, z.available) else { return }
+        guard let x = x ?? loaded[id.x], let y = y ?? loaded[id.y], let z = z ?? loaded[id.z],
+              let (avg,cov) = correlator.correlate(x.available, y.available, z.available) else { return }
         
         decorrelate.avg = avg
         decorrelate.cov = cov
     }
     
+    // render false color map
     func colorize(_ x: MapData? = nil, _ y: MapData? = nil, _ z: MapData? = nil, primaries: Primaries? = nil) {
         guard let x = x ?? loaded[id.x], let y = y ?? loaded[id.y], let z = z ?? loaded[id.z] else { return }
         
-        let primaries = primaries ?? self.primaries
-        mixer.mix(x, y, z, decorrelate: decorrelate, primaries: primaries, nan: .gray, compress: compress, output: host.texture)
+        mixer.mix(x, y, z, decorrelate: decorrelate, primaries: primaries ?? self.primaries, nan: .gray, output: host.texture)
     }
 }
