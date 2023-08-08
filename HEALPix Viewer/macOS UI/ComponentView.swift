@@ -7,6 +7,37 @@
 
 import SwiftUI
 
+struct UnitsView: View {
+    @State private var f: Double = 100.0
+    @State private var band: Frequency = .defaultValue
+    @State private var units: Radiance = .defaultValue
+    
+    var body: some View {
+        HStack {
+            TextField("Frequency:", value: $f, formatter: TwoDigitNumber)
+                .frame(width: 50).multilineTextAlignment(.trailing)
+            Picker("Band Units:", selection: $band) {
+                ForEach(Frequency.allCases, id: \.self) {
+                    Text($0.rawValue).tag($0)
+                }
+            }.frame(width: 60)
+            Picker("Map Units:", selection: $units) {
+                ForEach(Radiance.CMB, id: \.self) {
+                    $0.label.tag($0)
+                }
+                Divider()
+                ForEach(Radiance.RJ, id: \.self) {
+                    $0.label.tag($0)
+                }
+                Divider()
+                ForEach(Radiance.JY, id: \.self) {
+                    $0.label.tag($0)
+                }
+            }.frame(width: 75)
+        }.labelsHidden()
+    }
+}
+
 struct ComponentView: View {
     @Binding var sidebar: Navigator
     @Binding var loaded: [MapData]
@@ -25,11 +56,8 @@ struct ComponentView: View {
     
     @State private var id = Inputs()
     
-    // separation strategy
-    @State private var separate = Separation.weights
-    
     // component separator
-    private let separator = ComponentSeparator(nside: 16)
+    private let separator = ComponentSeparator()
     
     var body: some View {
         VStack {
@@ -45,12 +73,19 @@ struct ComponentView: View {
             }
             Divider()
             Group {
+                Text("Map Frequencies").font(.title3)
+                UnitsView()
+                UnitsView()
+                UnitsView()
+            }
+            Divider()
+            Group {
                 Text("Extract Based on...").font(.title3)
-                Picker("Strategy:", selection: $separate) {
-                    ForEach(Separation.allCases, id: \.self) {
-                        Text($0.rawValue).tag($0).help($0.description)
-                    }
-                }.pickerStyle(.segmented).labelsHidden().padding(.bottom, 5)
+                //Picker("Strategy:", selection: $separate) {
+                //    ForEach(Separation.allCases, id: \.self) {
+                //        Text($0.rawValue).tag($0).help($0.description)
+                //    }
+                //}.pickerStyle(.segmented).labelsHidden().padding(.bottom, 5)
             }.padding([.leading, .trailing], 10)
             Divider()
             HStack {
@@ -82,7 +117,7 @@ struct ComponentView: View {
     func ilc(_ map: MapData? = nil, x: MapData? = nil, y: MapData? = nil, z: MapData? = nil) {
         guard let map = map ?? host, let x = x ?? loaded[id.x], let y = y ?? loaded[id.y], let z = z ?? loaded[id.z] else { return }
         
-        separator.ilc(map.data, x: x.data, y: y.data, z: z.data)
+        separator.extract(map.data, x: x.data, y: y.data, z: z.data)
         if (loaded[map.id] != nil) { action = .redraw } else { loaded.append(map); selected = map.id }
     }
 }

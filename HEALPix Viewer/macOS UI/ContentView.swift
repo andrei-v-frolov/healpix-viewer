@@ -114,9 +114,9 @@ struct ContentView: View {
                         Button {
                             withAnimation { sidebar = .ilc }
                         } label: {
-                            Label("Separate", systemImage: "square.3.stack.3d")
+                            Label("Extract", systemImage: "square.3.stack.3d")
                         }
-                        .help("Separate specific component via ILC")
+                        .help("Separate specific emission component")
                         .disabled(selected == nil)
                     }.padding(10)
                     if (false) {

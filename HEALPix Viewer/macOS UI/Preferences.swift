@@ -594,23 +594,6 @@ enum Mixing: String, CaseIterable, Codable, Preference {
     static let defaultValue: Self = .blend
 }
 
-// component separation preference
-enum Separation: String, CaseIterable, Codable, Preference {
-    case weights = "Weights"
-    case spectra = "Spectra"
-    
-    var description: String {
-        switch self {
-            case .weights:  return "Use channel weights"
-            case .spectra:  return "Use channel frequencies and spectral model"
-        }
-    }
-    
-    // default value
-    static let key = "separation"
-    static let defaultValue: Self = .weights
-}
-
 // encapsulates @AppStorage preference properties
 protocol Preference {
     static var key: String { get }
