@@ -157,50 +157,38 @@ struct ColorMixer {
     }
 }
 
-// component separator extracts common component given spectral weights
+// component separator extracts component given spectral weights
 struct ComponentSeparator {
     // compute pipeline
-    let shader = (cov: MetalKernel(kernel: "block_cov"), ilc: MetalKernel(kernel: "block_ilc"), mix: MetalKernel(kernel: "separate"))
-    let buffer: (cov: MTLBuffer, block: MTLBuffer, weight: MTLBuffer)
-    let coeffs: MTLTexture
-    let nside: Int
+    let shader = MetalKernel(kernel: "component")
+    let buffer: (units: MTLBuffer, model: MTLBuffer)
     
-    // computed properties
-    var npix: Int { 12*nside*nside }
-    
-    init(nside: Int) {
+    init() {
         let options: MTLResourceOptions = [.cpuCacheModeWriteCombined, .storageModeShared]
-        guard let cov = metal.device.makeBuffer(length: MemoryLayout<Float>.size*(72*nside*nside)),
-              let block = metal.device.makeBuffer(length: MemoryLayout<uint2>.size, options: options),
-              let weight = metal.device.makeBuffer(length: MemoryLayout<float4>.size, options: options)
+        guard let units = metal.device.makeBuffer(length: MemoryLayout<float3>.size, options: options),
+              let model = metal.device.makeBuffer(length: MemoryLayout<float3x3>.size, options: options)
               else { fatalError("Could not allocate parameter buffers in component separator") }
         
-        self.nside = nside
-        self.buffer = (cov, block, weight)
-        self.coeffs = HPXTexture(nside: nside, format: .rgba32Float, mipmapped: false)
+        self.buffer = (units, model)
     }
     
-    // component separation via simple ILC
-    func ilc(_ map: Map, x: Map, y: Map, z: Map, weight: float4 = float4(1.0), analyze: Bool = true) {
-        let nside = map.nside; guard (nside >= self.nside<<3 && x.nside == nside && y.nside == nside && z.nside == nside) else { return }
+    // component separation via simple likelihood optimizer
+    func extract(_ map: Map, x: Map, y: Map, z: Map) {
+        let nside = map.nside; guard (x.nside == nside && y.nside == nside && z.nside == nside) else { return }
         
-        // covariance sampling in nside blocks
-        let block = 2.0*log2(Double(nside)/Double(self.nside))
-        buffer.block.contents().storeBytes(of: uint2(uint(nside),uint(block)), as: uint2.self)
-        buffer.weight.contents().storeBytes(of: weight, as: float4.self)
+        let model = float3x3(
+            float3(1.0,0.02393734007,0.0004797050634),
+            float3(0.9775479181,0.7813123155,0.08107743521),
+            float3(0.01832344922,0.1084082024,0.5450341503)
+        )
+        
+        buffer.units.contents().storeBytes(of: float3(1.0), as: float3.self)
+        buffer.model.contents().storeBytes(of: model, as: float3x3.self)
         
         // initialize compute command buffer
         guard let command = metal.queue.makeCommandBuffer() else { return }
         
-        // block correlator computes local covariance matrix
-        if analyze { shader.cov.encode(command: command,
-            buffers: [x.buffer, y.buffer, z.buffer, buffer.block, buffer.cov],
-            textures: [], threadsPerGrid: MTLSize(width: self.npix, height: 1, depth: 1)) }
-        // compute block ILC coefficients and corresponding linear combination
-        shader.ilc.encode(command: command, buffers: [buffer.cov, buffer.weight],
-            textures: [coeffs], threadsPerGrid: MTLSize(width: self.nside, height: self.nside, depth: 12))
-        shader.mix.encode(command: command, buffers: [x.buffer, y.buffer, z.buffer, buffer.block, map.buffer],
-            textures: [coeffs], threadsPerGrid: MTLSize(width: 12*nside*nside, height: 1, depth: 1))
+        shader.encode(command: command, buffers: [x.buffer, y.buffer, z.buffer, buffer.units, buffer.model, map.buffer])
         command.commit(); command.waitUntilCompleted()
     }
 }
