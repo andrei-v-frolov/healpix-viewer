@@ -34,7 +34,7 @@ enum Frequency: String, CaseIterable {
 }
 
 // radiance units
-enum Radiance: Hashable, CaseIterable {
+enum Radiance: Hashable, CaseIterable, RawRepresentable {
     enum Temperature: String, CaseIterable {
         case uK = "µK", mK, K
         
@@ -63,7 +63,7 @@ enum Radiance: Hashable, CaseIterable {
     enum Flux: String, CaseIterable {
         case Jy = "Jy/sr", kJy = "kJy/sr", MJy = "MJy/sr", GJy = "GJy/sr"
         
-        // pivot flux is GJy/sr
+        // pivot flux density is GJy/sr
         func pivot(_ f: Double) -> Double {
             switch self {
                 case .Jy:  return f/1.0e9
@@ -88,8 +88,8 @@ enum Radiance: Hashable, CaseIterable {
     }
     
     case rj(Temperature)    // Rayleigh-Jeans temperature
-    case cmb(Temperature)   // black body temperature
-    case flux(Flux)         // spectral irradiance
+    case cmb(Temperature)   // brightness (black body) temperature
+    case flux(Flux)         // spectral radiance, aka flux density
     
     // pivot temperatures (K)
     static let Tcmb: Double = 2.755
@@ -107,16 +107,41 @@ enum Radiance: Hashable, CaseIterable {
         switch self {
             case .rj(let t):    return t.pivot(v)
             case .cmb(let t):   return t.pivot(v) * gamma(f)
-            case .flux(let u):  return u.pivot(v) * (f*f) * Radiance.TGJy
+            case .flux(let u):  return u.pivot(v) * Radiance.TGJy/(f*f)
         }
     }
     
-    // convert to different units
+    // convert to different units, pivot frequency is 100GHz
     func convert(_ v: Double, to: Radiance, f: Double = 1.0) -> Double {
         let v = pivot(v, f: f); switch to {
             case .rj(let t):    return Temperature.K.convert(v, to: t)
             case .cmb(let t):   return Temperature.K.convert(v, to: t)/gamma(f)
-            case .flux(let u):  return Flux.GJy.convert(v/Radiance.TGJy/(f*f), to: u)
+            case .flux(let u):  return Flux.GJy.convert(v/Radiance.TGJy * (f*f), to: u)
+        }
+    }
+    
+    // guess units from raw string
+    init?(rawValue: String) {
+        // flux
+        for f in Flux.allCases.reversed() { if rawValue.contains(f.rawValue) { self = .flux(f); return } }
+        
+        // Rayleigh-Jeans temperature
+        if rawValue.lowercased().contains("rj") {
+            for t in Temperature.allCases { if rawValue.contains(t.rawValue) { self = .rj(t); return } }
+        }
+        
+        // thermodynamic temperature by default
+        for t in Temperature.allCases { if rawValue.contains(t.rawValue) { self = .cmb(t); return } }
+        
+        return nil
+    }
+    
+    // raw value
+    var rawValue: String {
+        switch self {
+            case .rj(let t):    return "\(t.rawValue)[RJ]"
+            case .cmb(let t):   return "\(t.rawValue)[CMB]"
+            case .flux(let u):  return u.rawValue
         }
     }
     
@@ -139,9 +164,62 @@ enum Radiance: Hashable, CaseIterable {
     static let defaultValue: Self = .cmb(.K)
 }
 
-// spectral model
-enum Spectrum {
-    case power(Double)
-    case planck(Double)
-    case mbb(Double,Double)
+// map frequency band and units
+struct MapBand: Equatable  {
+    // bandpass
+    var nominal: Double = 100.0     // nominal frequency (band center)
+    var effective: Double = 100.0   // effective frequency
+    var bandwidth: Double = 0.0     // effective bandwidth
+    
+    // units
+    var frequency: Frequency = .GHz
+    var temperature: Radiance = .defaultValue
+    
+    // pivot values
+    var f: Double { frequency.pivot(effective) }
+    var gamma: Double { temperature.pivot(1.0, f: f) }
+}
+
+// simplified Commander 2018 model
+enum Components: String, CaseIterable {
+    case lf = "LF"
+    case cmb = "CMB"
+    case dust = "Dust"
+    
+    // reference frequency (in units of 100GHz)
+    var pivot: Double {
+        switch self {
+            case .lf:   return 0.30
+            case .cmb:  return 1.00
+            case .dust: return 8.57
+        }
+    }
+    
+    // model of emission at frequency f with specified parameters
+    func model(_ f: Double, s: SpectralModel) -> Double {
+        let f0 = pivot; switch self {
+            case .lf:   return pow(f/f0, s.alpha)
+            case .cmb:  return 1.0
+            case .dust: return pow(f/f0, s.beta+1.0)*(exp(Radiance.T100*f0/s.td) - 1.0)/(exp(Radiance.T100*f/s.td) - 1.0)
+        }
+    }
+    
+    // help string
+    var description: String {
+        switch self {
+            case .lf:   return "Low frequency component (synchrotron)"
+            case .cmb:  return "Cosmic microwave background (CMB)"
+            case .dust: return "Modified black body (thermal dust)"
+        }
+    }
+    
+    // default value
+    static let defaultValue: Self = .cmb
+}
+
+// spectral model state
+struct SpectralModel: Equatable {
+    var alpha: Double = -3.1    // Commander prior +- 0.5
+    var beta: Double = 1.55     // Commander prior +- 0.1
+    var td: Double = 19.5       // Commander prior +- 3K
 }

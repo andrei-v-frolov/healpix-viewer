@@ -173,16 +173,10 @@ struct ComponentSeparator {
     }
     
     // component separation via simple likelihood optimizer
-    func extract(_ map: Map, x: Map, y: Map, z: Map) {
+    func extract(_ map: Map, x: Map, y: Map, z: Map, units: float3, model: float3x3) {
         let nside = map.nside; guard (x.nside == nside && y.nside == nside && z.nside == nside) else { return }
         
-        let model = float3x3(
-            float3(1.0,0.02393734007,0.0004797050634),
-            float3(0.9775479181,0.7813123155,0.08107743521),
-            float3(0.01832344922,0.1084082024,0.5450341503)
-        )
-        
-        buffer.units.contents().storeBytes(of: float3(1.0), as: float3.self)
+        buffer.units.contents().storeBytes(of: units, as: float3.self)
         buffer.model.contents().storeBytes(of: model, as: float3x3.self)
         
         // initialize compute command buffer

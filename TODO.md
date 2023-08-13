@@ -36,6 +36,8 @@
 
 ### Feature Requests
 
+- close map menu item
+- load(MapData) action
 - magnifier glass
 - transparency mask?
 - save and load view state (also maybe mixer state?)
@@ -63,3 +65,6 @@
 - disable colorbar in false color map export
 - @MainActor broke thumbnail generation
 - fix focus state handling in ColorList...
+- CDF does not transform automatically when scheduled
+- map range get trashed when switching from component map
+- find the cause of lag in ComponentView (also related leak)

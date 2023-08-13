@@ -17,6 +17,17 @@ let IntegerNumber: NumberFormatter = {
 }()
 
 // number formatter common to most fields
+let OneDigitNumber: NumberFormatter = {
+    let format = NumberFormatter()
+    
+    format.minimumFractionDigits = 1
+    format.maximumFractionDigits = 1
+    format.isLenient = true
+    
+    return format
+}()
+
+// number formatter common to most fields
 let TwoDigitNumber: NumberFormatter = {
     let format = NumberFormatter()
     
