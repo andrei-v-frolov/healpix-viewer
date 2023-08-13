@@ -74,9 +74,9 @@ struct ComponentView: View {
                     .disabled(true)
             } label: { HStack { Spacer(); Text("Component Separation").font(.title3); Spacer() } }
             .padding([.leading,.trailing], 10)
-            Group {
-                if let host = host, expanded.maps {
-                    let nside = host.data.nside, exclude = [host.id]
+            if let host = host, expanded.maps {
+                let nside = host.data.nside, exclude = [host.id]
+                Group {
                     Divider()
                     ForEach(0..<nmaps, id: \.self) {
                         MapPicker(label: "Select channel \($0)", loaded: $loaded, selected: $id[$0], nside: nside, exclude: exclude).labelsHidden()

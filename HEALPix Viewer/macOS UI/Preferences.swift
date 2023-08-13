@@ -581,6 +581,7 @@ enum Mixing: String, CaseIterable, Codable, Preference {
     case mix = "Mix"
     case blend = "Blend"
     
+    // help string
     var description: String {
         switch self {
             case .add:      return "Co-add RGB primaries as they are"

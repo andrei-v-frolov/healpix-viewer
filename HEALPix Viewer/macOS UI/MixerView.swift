@@ -44,26 +44,32 @@ struct MixerView: View {
     private let mixer = ColorMixer()
     private let correlator = Correlator()
     
+    // disclosure state
+    @State private var expanded = (maps: true, decorrelate: true, primaries: false)
+    
     // focus state
     @FocusState private var focus: Bool
     
     var body: some View {
         VStack {
-            Group {
-                Text("Mix Data Channels").font(.title3)
-                Divider()
-                MapPicker(label: "Select channel 1", loaded: $loaded, selected: $id.x, nside: nside).labelsHidden()
-                MapPicker(label: "Select channel 2", loaded: $loaded, selected: $id.y, nside: nside).labelsHidden()
-                MapPicker(label: "Select channel 3", loaded: $loaded, selected: $id.z, nside: nside).labelsHidden()
+            DisclosureGroup(isExpanded: $expanded.maps) {}
+            label: { HStack { Spacer(); Text("Mix Data Channels").font(.title3); Spacer() } }
+            .padding([.leading,.trailing], 10)
+            if expanded.maps {
+                Group {
+                    Divider()
+                    MapPicker(label: "Select channel 1", loaded: $loaded, selected: $id.x, nside: nside)
+                    MapPicker(label: "Select channel 2", loaded: $loaded, selected: $id.y, nside: nside)
+                    MapPicker(label: "Select channel 3", loaded: $loaded, selected: $id.z, nside: nside)
+                }.labelsHidden()
             }
             Divider()
-            Group {
-                Text("Decorrelation").font(.title3)
+            DisclosureGroup(isExpanded: $expanded.decorrelate) {
                 Picker("Strategy:", selection: $decorrelate.mode) {
                     ForEach(Decorrelation.allCases, id: \.self) {
                         Text($0.rawValue).tag($0).help($0.description)
                     }
-                }.pickerStyle(.segmented).labelsHidden().padding(.bottom, 5)
+                }.pickerStyle(.segmented).labelsHidden().padding([.top,.bottom], 5)
                 HStack {
                     Slider(value: $decorrelate.beta, in: 0...1) { Text("β:") } onEditingChanged: { editing in focus = false }
                         .help("Overall expansion around mean value")
@@ -78,15 +84,15 @@ struct MixerView: View {
                 }.padding(.bottom, 5)
                 Toggle(isOn: $primaries.compress) { Text("compress gamut") }
                     .help("Avoid clipped and over-saturated colors")
-            }.padding([.leading, .trailing], 10)
+            } label: { HStack { Spacer(); Text("Decorrelation").font(.title3); Spacer() } }
+            .padding([.leading, .trailing], 10)
             Divider()
-            Group {
-                Text("Color Primaries").font(.title3)
+            DisclosureGroup(isExpanded: $expanded.primaries) {
                 Picker("Strategy:", selection: $primaries.mode) {
                     ForEach(Mixing.allCases, id: \.self) {
                         Text($0.rawValue).tag($0).help($0.description)
                     }
-                }.pickerStyle(.segmented).labelsHidden().padding(.bottom, 5)
+                }.pickerStyle(.segmented).labelsHidden().padding([.top,.bottom], 5)
                 HStack {
                     ColorPicker("R:", selection: $primaries.r, supportsOpacity: false)
                     ColorPicker("G:", selection: $primaries.g, supportsOpacity: false)
@@ -96,7 +102,8 @@ struct MixerView: View {
                     ColorPicker("Black Point:", selection: $primaries.black, supportsOpacity: false)
                     ColorPicker("White Point:", selection: $primaries.white, supportsOpacity: false).disabled(primaries.mode == .add)
                 }
-            }.padding([.leading, .trailing], 10).labelsHidden()
+            } label: { HStack { Spacer(); Text("Color Primaries").font(.title3); Spacer() } }
+            .padding([.leading, .trailing], 10).labelsHidden()
             Divider()
             HStack {
                 Button { focus = false; primaries = .defaultValue; decorrelate.beta = 0.5 } label: { Label("Reset", systemImage: "sparkles") }
