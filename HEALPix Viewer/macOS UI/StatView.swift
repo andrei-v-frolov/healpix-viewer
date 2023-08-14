@@ -160,7 +160,7 @@ struct StatView: View {
                             Text(String(format: format, stat.skewness))
                             Text(String(format: format, stat.kurtosis))
                         }
-                    }
+                    }.textSelection(.enabled)
                 }
                 Spacer()
                 VStack {
@@ -178,7 +178,7 @@ struct StatView: View {
                             Text(String(format: format, stat.tau3))
                             Text(String(format: format, stat.tau4))
                         }
-                    }
+                    }.textSelection(.enabled)
                 }
                 Spacer()
                 VStack {
@@ -196,7 +196,7 @@ struct StatView: View {
                             Text(String(format: format, percentile(0.8413447460)))
                             Text(String(format: format, percentile(0.9772498680)))
                         }
-                    }
+                    }.textSelection(.enabled)
                 }
                 Spacer()
             }

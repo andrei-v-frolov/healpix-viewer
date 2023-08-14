@@ -239,6 +239,7 @@ struct ContentView: View {
                         ScrollView {
                             Text(info ?? "")
                                 .lineLimit(nil)
+                                .textSelection(.enabled)
                                 .frame(width: geometry.size.width)
                                 .font(Font.system(size: 13).monospaced())
                         }

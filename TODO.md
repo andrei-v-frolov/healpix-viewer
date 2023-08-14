@@ -2,8 +2,9 @@
 
 ### Current Status (Build 009)
 
-- context menus in navigation view and color bar implemented
+- text in info overlays can be selected & copied
 - navigation map list can be rearranged on macOS 13+
+- context menus in navigation view and color bar implemented
 - false color map support (e.g. RGB = 100,147,217GHz) + decorrelation
 - color mixer modes: co-add, mix to specified white point, blend in okLab
 - gamut mapping with ACES gamut compressor and Rec.2100 HLG curves
