@@ -7,13 +7,13 @@
 - context menus in navigation view and color bar implemented
 - false color map support (e.g. RGB = 100,147,217GHz) + decorrelation
 - color mixer modes: co-add, mix to specified white point, blend in okLab
-- gamut mapping with ACES gamut compressor and Rec.2100 HLG curves
-- color gradient generation in okLab implemented
+- gamut mapping with ACES gamut compressor and filmic S-curves
+- color gradient generation (via blending in okLab) implemented
 - single face texture array per MapData, preallocate instead of lazy
 - support for integer type maps added (like HITS count in Planck maps)
-- BAD_DATA guard (replacing with NAN) fixed
+- BAD_DATA guard (replacing with NaN) fixed
+- random map generation implemented (using Random123)
 - libcfitsio updated to 4.3.0
-- random map generation implemented
 
 ### Compliance Issues
 
@@ -33,7 +33,7 @@
 - const arguments to all inline Metal functions?
 - use Picker sections? do I really need Picker id?
 - faster 3x3 SVD? e.g. port https://github.com/ericjang/svd3?
-- render using any texture in MapView, generate previews in packground
+- render using any texture in MapView, generate previews in background
 
 ### Feature Requests
 
