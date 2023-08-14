@@ -84,7 +84,7 @@ enum HpxCard: String, CaseIterable {
     case coords = "COORDSYS"    // ignored for now
     case temptype = "TEMPTYPE"  // ignored for now
     
-    // Planck frequency data
+    // Planck frequency data cards
     case freq = "FREQ"          // map frequency
     case band = "BNDCTR"        // band center
     case feff = "RESTFRQ"       // effective frequency
@@ -121,7 +121,7 @@ enum HpxCard: String, CaseIterable {
         }
     }
     
-    // mandatory values (if card is present, it must have this value)
+    // mandatory values (if card is present, it MUST have this value)
     var mandatory: FitsType? {
         switch self {
             case .naxis:    return FitsType.int(2)
@@ -131,7 +131,7 @@ enum HpxCard: String, CaseIterable {
         }
     }
     
-    // alternate cards (if card is absent, this card is tried)
+    // alternate cards (if card is absent, this card is tried instead)
     var alternate: Self? {
         switch self {
             case .feff:     return .falt
@@ -352,7 +352,7 @@ struct HpxFile {
     
     let nmaps: Int
     let header: String
-    let card: Cards?
+    let parsed: Cards
     
     let data: [CpuMap]
     let list: [MapData]
@@ -458,8 +458,8 @@ func read_hpxfile(url: URL) -> HpxFile? {
         var desc = "CHANNEL \(m)"; if let t = metadata[m]?[.type], case let .string(s) = t { desc = s }
         var unit = "UNKNOWN";      if let u = metadata[m]?[.unit], case let .string(s) = u { unit = s }
         
-        list.append(MapData(file: name, info: info, name: desc, unit: unit, channel: m, data: maps[m]))
+        list.append(MapData(file: name, info: info, parsed: card, name: desc, unit: unit, channel: m, data: maps[m]))
     }
     
-    return HpxFile(url: url, name: name, nmaps: nmaps, header: info, card: card, data: maps, list: list, metadata: metadata, channel: index)
+    return HpxFile(url: url, name: name, nmaps: nmaps, header: info, parsed: card, data: maps, list: list, metadata: metadata, channel: index)
 }

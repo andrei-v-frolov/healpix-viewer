@@ -281,7 +281,7 @@ struct ContentView: View {
                     let seed = Int.random(in: 0...0xFFFF), nside = 256
                     if let data = random.generate(nside: nside, pdf: pdf, seed: seed) {
                         let dist = pdf.rawValue.uppercased(), info = random.info(nside: nside, distribution: dist, seed: seed)
-                        let map = MapData(file: "random field", info: info, name: dist, unit: "", channel: 0, data: data)
+                        let map = MapData(file: "random field", info: info, parsed: Cards(), name: dist, unit: "", channel: 0, data: data)
                         loaded.append(map); selected = map.id
                     }
                 case .copy:

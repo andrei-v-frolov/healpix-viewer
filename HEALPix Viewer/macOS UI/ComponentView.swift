@@ -145,7 +145,7 @@ struct ComponentView: View {
         else { fatalError("Could not allocate component buffer in component separator") }
         
         let map = GpuMap(nside: nside, buffer: buffer, min: -1.0, max: 1.0)
-        return MapData(file: "extracted component", info: "", name: "PLACEHOLDER", unit: "", channel: 0, data: map)
+        return MapData(file: "extracted component", info: "", parsed: Cards(), name: "PLACEHOLDER", unit: "", channel: 0, data: map)
     }
     
     // ...

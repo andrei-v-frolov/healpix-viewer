@@ -213,9 +213,12 @@ final class MapData: Identifiable, ObservableObject {
     // unique map id
     let id = UUID()
     
-    // map metadata
+    // file metadata
     let file: String
     let info: String
+    let card: Cards
+    
+    // map metadata
     let name: String
     let unit: String
     let channel: Int
@@ -264,12 +267,9 @@ final class MapData: Identifiable, ObservableObject {
     internal var state = MapState()
     
     // default initializer
-    init(file: String, info: String, name: String, unit: String, channel: Int, data: Map) {
-        self.file = file
-        self.info = info
-        self.name = name
-        self.unit = unit
-        self.channel = channel
+    init(file: String, info: String, parsed: Cards, name: String, unit: String, channel: Int, data: Map) {
+        self.file = file; self.info = info; self.card = parsed
+        self.name = name; self.unit = unit; self.channel = channel
         self.data = data
         
         // maybe we should always allocate mipmaps?
