@@ -21,6 +21,7 @@ struct MixerView: View {
     @Binding var sidebar: Navigator
     @Binding var loaded: [MapData]
     var host: MapData
+    @Binding var action: Action
     
     // nside is restricted to that of host map
     var nside: Int { host.data.nside }
@@ -113,6 +114,7 @@ struct MixerView: View {
             }.padding([.leading,.trailing], 10).padding([.top,.bottom], 5)
         }
         .onAppear { id = Inputs(x: host.id, y: host.id, z: host.id) }
+        .onDisappear { action = .redraw }
         .onChange(of: id) { value in correlate(); colorize() }
         .onChange(of: decorrelate) { value in colorize() }
         .onChange(of: primaries) { value in colorize() }

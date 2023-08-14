@@ -130,7 +130,7 @@ struct ContentView: View {
                     }
                 }
                 if (sidebar == .mixer), let host = loaded[selected] {
-                    ScrollView { MixerView(sidebar: $sidebar, loaded: $loaded, host: host) }
+                    ScrollView { MixerView(sidebar: $sidebar, loaded: $loaded, host: host, action: $action) }
                         .frame(minWidth: 210, maxWidth: .infinity)
                         .padding(.bottom, 10)
                 }
