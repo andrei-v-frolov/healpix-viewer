@@ -84,6 +84,14 @@ enum HpxCard: String, CaseIterable {
     case coords = "COORDSYS"    // ignored for now
     case temptype = "TEMPTYPE"  // ignored for now
     
+    // Planck frequency data
+    case freq = "FREQ"          // map frequency
+    case band = "BNDCTR"        // band center
+    case feff = "RESTFRQ"       // effective frequency
+    case falt = "RESTFREQ"      // alternate spelling
+    case bandwidth = "BNDWID"   // approximate bandwidth
+    case funit = "UNITFREQ"     // frequency units
+    
     // my vector extensions
     case vector = "VECTOR"
     case vframe = "VFRAME"
@@ -93,18 +101,20 @@ enum HpxCard: String, CaseIterable {
                                    .healpix, .indexing, .ordering, .nside,
                                    .baddata, .polar, .polconv]
     static let optional: [Self] = [.firstpix, .lastpix]
-    static let extended: [Self] = [.vector, .vframe]
+    static let planck: [Self] = [.freq, .band, .feff, .bandwidth, .funit]
+    static let mine: [Self] = [.vector, .vframe]
+    static let extended: [Self] = planck + mine
     static let recommended: [Self] = [.object, .coords, .temptype]
     static let strict: [Self] = required + optional
-
+    
     // read card (returning a proper data type)
     func read(_ fptr: UnsafeMutablePointer<fitsfile>?) -> FitsType? {
         switch self {
         case .naxis, .naxis1, .naxis2, .fields, .nside, .firstpix, .lastpix:
             return FitsType.readInt(fptr, key: self.rawValue)
-        case .healpix, .indexing, .ordering, .object, .coords, .temptype, .polconv, .vframe:
+        case .healpix, .indexing, .ordering, .object, .coords, .temptype, .polconv, .funit, .vframe:
             return FitsType.readString(fptr, key: self.rawValue)
-        case .baddata:
+        case .baddata, .freq, .band, .feff, .falt, .bandwidth:
             return FitsType.readFloat(fptr, key: self.rawValue)
         case .polar, .vector:
             return FitsType.readBool(fptr, key: self.rawValue)
@@ -121,6 +131,14 @@ enum HpxCard: String, CaseIterable {
         }
     }
     
+    // alternate cards (if card is absent, this card is tried)
+    var alternate: Self? {
+        switch self {
+            case .feff:     return .falt
+            default:        return nil
+        }
+    }
+    
     // fallback values (if card is absent, this value is assumed)
     var fallback: FitsType? {
         switch self {
@@ -128,7 +146,7 @@ enum HpxCard: String, CaseIterable {
             case .baddata:  return FitsType.float(BAD_DATA)
             case .polar:    return FitsType.bool(false)
             case .polconv:  return FitsType.string("COSMO")
-            default: return nil
+            default:        return nil
         }
     }
     
@@ -137,7 +155,7 @@ enum HpxCard: String, CaseIterable {
         var card = [Self: FitsType]()
         
         for k in Self.allCases {
-            let value = k.read(fptr) ?? k.fallback
+            let value = k.read(fptr) ?? k.alternate?.read(fptr) ?? k.fallback
             if let x = k.mandatory { guard let v = value, v == x else { return nil } }
             if let v = value { card[k] = v }
         }
