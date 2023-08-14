@@ -10,7 +10,8 @@ import SwiftUI
 // variable signalling action
 enum Action: Equatable {
     case none
-    case open, save, redraw
+    case open, save, close
+    case load(MapData), redraw
     case random(RandomField)
     case copy, paste(CopyStyle), reset(CopyStyle)
 }
@@ -49,6 +50,7 @@ struct FileMenus: Commands {
             if #available(macOS 13.0, *) { OpenFile(action: $action, new: .constant(!targeted)) }
             else { Button("Open File...") { action = .open }.keyboardShortcut("O", modifiers: [.command]).disabled(!targeted) }
             Button("Export As...") { action = .save }.keyboardShortcut("S", modifiers: [.command]).disabled(!targeted)
+            Button("Close Map") { action = .close }.keyboardShortcut("W", modifiers: [.shift,.command]).disabled(!targeted)
             Divider()
         }
     }

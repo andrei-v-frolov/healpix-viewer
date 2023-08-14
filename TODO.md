@@ -36,8 +36,6 @@
 
 ### Feature Requests
 
-- close map menu item
-- load(MapData) action
 - magnifier glass
 - transparency mask?
 - save and load view state (also maybe mixer state?)

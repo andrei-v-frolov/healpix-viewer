@@ -34,7 +34,7 @@ struct NavigationList: View {
     func entry(_ map: MapData) -> some View {
         NavigationRow(map: map).contextMenu {
             VStack {
-                Button(role: .destructive) {
+                Button {
                     selected = map.id; action = .save
                 } label: {
                     Label("Export", systemImage: "square.and.arrow.down")

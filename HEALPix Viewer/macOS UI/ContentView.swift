@@ -274,6 +274,8 @@ struct ContentView: View {
             switch value {
                 case .open: open()
                 case .save: saving = true
+                case .close: close()
+                case .load(let map): load(map)
                 case .redraw: transform(force: true)
                 case .random(let pdf):
                     let seed = Int.random(in: 0...0xFFFF), nside = 256
@@ -559,6 +561,13 @@ struct ContentView: View {
         let settings = settings ?? export
         guard let url = url ?? showSavePanel(type: settings.format.type) else { return }
         if let output = render(for: settings, size: view) { saveAsImage(output, url: url, format: settings.format) }
+    }
+    
+    // close map and dismiss window if none remain
+    @Environment(\.dismiss) private var dismiss
+    @MainActor func close(_ id: UUID? = nil) {
+        guard let i = loaded.firstIndex(where: { $0.id == id ?? selected }) else { return }
+        loaded.remove(at: i); if (loaded.count > 0) { selected = loaded[max(i-1,0)].id } else { dismiss() }
     }
 }
 
