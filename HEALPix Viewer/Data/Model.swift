@@ -120,18 +120,16 @@ enum Radiance: Hashable, CaseIterable, RawRepresentable {
         }
     }
     
+    // guess units of particular radiance type
+    init?(rj u: String) { for t in Temperature.allCases { if u.contains(t.rawValue) { self = .rj(t); return } }; return nil }
+    init?(cmb u: String) { for t in Temperature.allCases { if u.contains(t.rawValue) { self = .cmb(t); return } }; return nil }
+    init?(flux u: String) { for f in Flux.allCases.reversed() { if u.contains(f.rawValue) { self = .flux(f); return } }; return nil }
+    
     // guess units from raw string
     init?(rawValue: String) {
-        // flux
-        for f in Flux.allCases.reversed() { if rawValue.contains(f.rawValue) { self = .flux(f); return } }
-        
-        // Rayleigh-Jeans temperature
-        if rawValue.lowercased().contains("rj") {
-            for t in Temperature.allCases { if rawValue.contains(t.rawValue) { self = .rj(t); return } }
-        }
-        
-        // thermodynamic temperature by default
-        for t in Temperature.allCases { if rawValue.contains(t.rawValue) { self = .cmb(t); return } }
+        if let flux = Self(flux: rawValue) { self = flux; return }
+        if rawValue.lowercased().contains("rj"), let antenna = Self(rj: rawValue) { self = antenna; return }
+        if rawValue.lowercased().contains("cmb"), let thermo = Self(cmb: rawValue) { self = thermo; return }
         
         return nil
     }

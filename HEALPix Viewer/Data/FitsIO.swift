@@ -82,7 +82,7 @@ enum HpxCard: String, CaseIterable {
     // HEALPix recommended cards
     case object = "OBJECT"      // checked if present
     case coords = "COORDSYS"    // ignored for now
-    case temptype = "TEMPTYPE"  // ignored for now
+    case temptype = "TEMPTYPE"  // checked when looking up temperature units
     
     // Planck frequency data cards
     case freq = "FREQ"          // map frequency
@@ -134,6 +134,7 @@ enum HpxCard: String, CaseIterable {
     // alternate cards (if card is absent, this card is tried instead)
     var alternate: Self? {
         switch self {
+            case .freq:     return .band
             case .feff:     return .falt
             default:        return nil
         }

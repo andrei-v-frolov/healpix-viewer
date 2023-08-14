@@ -48,9 +48,10 @@ struct ComponentView: View {
     @State private var host: MapData? = nil
     
     // component separator inputs
+    static private let mmaps = 9
     @State private var nmaps = 3
-    @State private var id = [UUID?](repeating: nil, count: 9)
-    @State private var band = [MapBand](repeating: MapBand(), count: 9)
+    @State private var id = [UUID?](repeating: nil, count: mmaps)
+    @State private var band = [MapBand](repeating: MapBand(), count: mmaps)
     
     // component to extract and spectral model
     @State private var extract = Components.defaultValue
@@ -130,13 +131,33 @@ struct ComponentView: View {
         .onAppear() {
             if let like = loaded[selected] {
                 host = component(nside: like.data.nside)
-                id = [UUID?](repeating: selected, count: 9)
+                id = [UUID?](repeating: selected, count: Self.mmaps)
             }
         }
         .onChange(of: id) { [id] value in
-            for i in 0..<9 { if value[i] != id[i], let s = loaded[value[i]]?.unit, let u = Radiance(rawValue: s) { band[i].temperature = u } }
+            for i in 0..<nmaps { if value[i] != id[i], let map = loaded[value[i]] { lookup(&band[i], from: map) } }
             extract()
         }
+    }
+    
+    // lookup frequency and units metadata (if available)
+    func lookup(_ band: inout MapBand, from map: MapData) {
+        // map frequency band
+        if let v = map.card[.freq], case let .float(f) = v { band.nominal = Double(f) }
+        if let v = map.card[.feff] ?? map.card[.freq], case let .float(f) = v { band.effective = Double(f) }
+        if let v = map.card[.bandwidth], case let .float(f) = v { band.bandwidth = Double(f) }
+        if let v = map.card[.funit], case let .string(s) = v, let u = Frequency(rawValue: s) { band.frequency = u }
+        
+        // map radiance units
+        if let v = map.card[.temptype], case let .string(s) = v {
+            switch s {
+                case "THERMO":  if let u = Radiance(cmb: map.unit) { band.temperature = u }
+                case "ANTENNA": if let u = Radiance(flux: map.unit) ?? Radiance(rj: map.unit) { band.temperature = u }
+                default: break
+            }
+        }
+        else if let u = Radiance(rawValue: map.unit) { band.temperature = u }
+        else if let u = Radiance(cmb: map.unit) { band.temperature = u }
     }
     
     // new map for separated component
