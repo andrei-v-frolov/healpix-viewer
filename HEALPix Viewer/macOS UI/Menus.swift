@@ -63,16 +63,17 @@ struct EditMenus: Commands {
     @AppStorage(lightingKey) var lighting = false
     
     var body: some Commands {
-        CommandGroup(replacing: CommandGroupPlacement.pasteboard) {
-            Button("Copy Style") { action = .copy }.keyboardShortcut("C", modifiers: [.command]).disabled(!targeted)
-            Button("Paste Style") {action = .paste(.specified) }.keyboardShortcut("V", modifiers: [.command]).disabled(!targeted)
-            Button("Paste View") { action = .paste(.view) }.keyboardShortcut("V", modifiers: [.shift,.command]).disabled(!targeted)
-            Button("Paste Color") { action = .paste(.color) }.keyboardShortcut("C", modifiers: [.shift,.command]).disabled(!targeted)
-            Button("Paste Light") { action = .paste(.light) }.keyboardShortcut("L", modifiers: [.shift,.command])
+        CommandGroup(after: CommandGroupPlacement.pasteboard) {
+            Divider()
+            Button("Copy Style") { action = .copy }.keyboardShortcut("C", modifiers: [.option]).disabled(!targeted)
+            Button("Paste Style") {action = .paste(.specified) }.keyboardShortcut("V", modifiers: [.option]).disabled(!targeted)
+            Button("Paste View") { action = .paste(.view) }.keyboardShortcut("V", modifiers: [.shift,.option]).disabled(!targeted)
+            Button("Paste Color") { action = .paste(.color) }.keyboardShortcut("C", modifiers: [.shift,.option]).disabled(!targeted)
+            Button("Paste Light") { action = .paste(.light) }.keyboardShortcut("L", modifiers: [.shift,.option])
                 .disabled(!lighting || !targeted)
             Divider()
-            Button("Paste All") { action = .paste(.all) }.keyboardShortcut("V", modifiers: [.shift,.option,.command]).disabled(!targeted)
-            Button("Reset All") { action = .reset(.all) }.keyboardShortcut("R", modifiers: [.command]).disabled(!targeted)
+            Button("Paste All") { action = .paste(.all) }.keyboardShortcut("A", modifiers: [.shift,.option]).disabled(!targeted)
+            Button("Reset All") { action = .reset(.all) }.keyboardShortcut("Z", modifiers: [.option]).disabled(!targeted)
             Divider()
         }
     }
@@ -113,25 +114,13 @@ struct ViewMenus: Commands {
                 }
             }
             Divider()
-            Toggle(isOn: $animate) {
-                Text("Animate Rotation")
-            }
-            .keyboardShortcut("A", modifiers: [.option, .command])
-            Toggle(isOn: $viewFromInside) {
-                Text("View From Inside")
-            }
-            .keyboardShortcut("I", modifiers: [.option, .command])
-            Toggle(isOn: $lighting) {
-                Text("Lighting Effects")
-            }
-            .keyboardShortcut("L", modifiers: [.option, .command])
-            Toggle(isOn: $cursor) {
-                Text("Cursor Readout")
-            }
-            .keyboardShortcut("R", modifiers: [.option, .command])
+            Toggle(isOn: $animate) { Text("Animate Rotation") }.keyboardShortcut("A", modifiers: [.control, .command])
+            Toggle(isOn: $viewFromInside) { Text("View From Inside") }.keyboardShortcut("I", modifiers: [.control, .command])
+            Toggle(isOn: $lighting) { Text("Lighting Effects") }.keyboardShortcut("L", modifiers: [.control, .command])
+            Toggle(isOn: $cursor) { Text("Cursor Readout") }.keyboardShortcut("R", modifiers: [.control, .command])
             Divider()
             Button(colorbar ? "Hide Color Bar" : "Show Color Bar") { colorbar = !colorbar }
-            .keyboardShortcut("B", modifiers: [.option, .command]).disabled(!targeted)
+            .keyboardShortcut("C", modifiers: [.control, .command]).disabled(!targeted)
         }
     }
 }
