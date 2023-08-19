@@ -97,7 +97,7 @@ enum Radiance: Hashable, CaseIterable, RawRepresentable {
     static let TGJy: Double = 0.2590110327
     
     // Planck spectrum derivative
-    func gamma(_ f: Double) -> Double {
+    static func gamma(_ f: Double) -> Double {
         let nu = (Radiance.T100/Radiance.Tcmb) * f, mu = exp(nu)
         return nu*nu*mu/pow(mu-1.0,2)
     }
@@ -106,7 +106,7 @@ enum Radiance: Hashable, CaseIterable, RawRepresentable {
     func pivot(_ v: Double, f: Double = 1.0) -> Double {
         switch self {
             case .rj(let t):    return t.pivot(v)
-            case .cmb(let t):   return t.pivot(v) * gamma(f)
+            case .cmb(let t):   return t.pivot(v) * Radiance.gamma(f)
             case .flux(let u):  return u.pivot(v) * Radiance.TGJy/(f*f)
         }
     }
@@ -115,7 +115,7 @@ enum Radiance: Hashable, CaseIterable, RawRepresentable {
     func convert(_ v: Double, to: Radiance, f: Double = 1.0) -> Double {
         let v = pivot(v, f: f); switch to {
             case .rj(let t):    return Temperature.K.convert(v, to: t)
-            case .cmb(let t):   return Temperature.K.convert(v, to: t)/gamma(f)
+            case .cmb(let t):   return Temperature.K.convert(v, to: t)/Radiance.gamma(f)
             case .flux(let u):  return Flux.GJy.convert(v/Radiance.TGJy * (f*f), to: u)
         }
     }
@@ -178,7 +178,7 @@ struct MapBand: Equatable  {
     var gamma: Double { temperature.pivot(1.0, f: f) }
 }
 
-// simplified Commander 2018 model
+// simplified Commander 2018 signal model
 enum Components: String, CaseIterable {
     case lf = "LF"
     case cmb = "CMB"
@@ -193,11 +193,11 @@ enum Components: String, CaseIterable {
         }
     }
     
-    // model of emission at frequency f with specified parameters
+    // emission at frequency f (for specified parameters)
     func model(_ f: Double, s: SpectralModel) -> Double {
         let f0 = pivot; switch self {
             case .lf:   return pow(f/f0, s.alpha)
-            case .cmb:  return 1.0
+            case .cmb:  return Radiance.gamma(f)
             case .dust: return pow(f/f0, s.beta+1.0)*(exp(Radiance.T100*f0/s.td) - 1.0)/(exp(Radiance.T100*f/s.td) - 1.0)
         }
     }

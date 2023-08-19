@@ -37,6 +37,7 @@
 
 ### Feature Requests
 
+- parameter and spatial correlation priors in component separator
 - magnifier glass
 - transparency mask?
 - save and load view state (also maybe mixer state?)
