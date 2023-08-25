@@ -63,7 +63,6 @@
 - thumbnails do not update in mixer
 - theta and phi swapped in healpix paper
 - disable colorbar in false color map export
-- @MainActor broke thumbnail generation
 - fix focus state handling in ColorList...
 - CDF does not transform automatically when scheduled
 - map range get trashed when switching from component map

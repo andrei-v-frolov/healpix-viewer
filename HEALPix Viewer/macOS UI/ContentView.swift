@@ -397,7 +397,7 @@ struct ContentView: View {
     }
     
     // load map data
-    func load(_ map: Map, range: Bounds? = nil) {
+    @MainActor func load(_ map: Map, range: Bounds? = nil) {
         lut = map; cdf = map.cdf; datamin = map.min; datamax = map.max
         if keepState.range, let range = range { self.state.range = range }
         else { self.state.range = Bounds(mode: .full, min: datamin, max: datamax) }
@@ -427,12 +427,12 @@ struct ContentView: View {
         if let settings = map.settings { state.update(settings, mask: keepState) }
         else { state.update(ViewState.value, mask: !keepState) }
         
-        // load map
-        load(map)
+        // load map and colorbar
+        load(map); DispatchQueue.main.async { barview?.draw() }
     }
     
     // colorize map with specified settings
-    func colorize(_ map: MapData? = nil, color: Palette? = nil, range: Bounds? = nil, force: Bool = false) {
+    @MainActor func colorize(_ map: MapData? = nil, color: Palette? = nil, range: Bounds? = nil, force: Bool = false) {
         guard let map = map ?? data else { return }
         let transform = map.transform, color = color ?? state.palette, range = range ?? state.range
         guard (map.state.rendered != transform || map.state.palette != color || map.state.range != range || force) else { return }
@@ -445,7 +445,7 @@ struct ContentView: View {
     }
     
     // transform map with specified settings
-    func transform(_ map: MapData? = nil, transform: Transform? = nil, force: Bool = false) {
+    @MainActor func transform(_ map: MapData? = nil, transform: Transform? = nil, force: Bool = false) {
         let transform = transform ?? state.transform
         guard let map = map ?? data, (map.state.transform != transform || force) else { return }
         
@@ -467,9 +467,9 @@ struct ContentView: View {
     }
     
     // render map preview
-    @MainActor func preview() {
+    func preview() {
         guard let map = data, let mapview = mapview else { return }
-        mapview.render(to: map.preview, magnification: 0.0, padding: 0.02, background: .clear); map.refresh()
+        DispatchQueue.main.async { mapview.render(to: map.preview, magnification: 0.0, padding: 0.02, background: .clear); map.refresh() }
     }
     
     // compute dimensions appropriate for rendered image components
