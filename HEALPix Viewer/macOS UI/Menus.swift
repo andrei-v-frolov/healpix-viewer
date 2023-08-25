@@ -14,6 +14,7 @@ enum Action: Equatable {
     case load(MapData), redraw
     case random(RandomField)
     case copy, paste(CopyStyle), reset(CopyStyle)
+    case abort(String), error(String, String)
 }
 
 // open window is only available on masOS 13+

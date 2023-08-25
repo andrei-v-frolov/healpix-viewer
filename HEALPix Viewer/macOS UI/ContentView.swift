@@ -303,6 +303,8 @@ struct ContentView: View {
                 case .reset(.all):
                     state = ViewState.value
                     state.range = Bounds(mode: .full, min: datamin, max: datamax)
+                case .error(let header, let message): error(header, message)
+                case .abort(let message): abort(message)
                 default: break
             }
             
