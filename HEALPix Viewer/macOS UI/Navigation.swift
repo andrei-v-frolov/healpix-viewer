@@ -85,9 +85,11 @@ struct MapPicker: View {
     // workaround for Menu stripping enclosed view styling
     @MainActor @available(macOS 13.0, *)
     func rendered(_ map: MapData) -> NSImage? {
-        let renderer = ImageRenderer(content: NavigationRow(map: map).frame(width: 210).padding(.leading,5))
-        renderer.scale = NSApplication.shared.keyWindow?.backingScaleFactor ?? 2.0
-        return renderer.nsImage
+        autoreleasepool {
+            let renderer = ImageRenderer(content: NavigationRow(map: map).frame(width: 210).padding(.leading,5))
+            renderer.scale = NSApplication.shared.keyWindow?.backingScaleFactor ?? 2.0
+            return renderer.nsImage
+        }
     }
     
     var body: some View {
