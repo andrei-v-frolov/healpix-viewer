@@ -66,15 +66,15 @@ struct EditMenus: Commands {
     var body: some Commands {
         CommandGroup(after: CommandGroupPlacement.pasteboard) {
             Divider()
-            Button("Copy Style") { action = .copy }.keyboardShortcut("C", modifiers: [.option]).disabled(!targeted)
-            Button("Paste Style") {action = .paste(.specified) }.keyboardShortcut("V", modifiers: [.option]).disabled(!targeted)
-            Button("Paste View") { action = .paste(.view) }.keyboardShortcut("V", modifiers: [.shift,.option]).disabled(!targeted)
-            Button("Paste Color") { action = .paste(.color) }.keyboardShortcut("C", modifiers: [.shift,.option]).disabled(!targeted)
-            Button("Paste Light") { action = .paste(.light) }.keyboardShortcut("L", modifiers: [.shift,.option])
+            Button("Copy Style") { action = .copy }.keyboardShortcut("C", modifiers: [.shift,.command]).disabled(!targeted)
+            Button("Paste Style") {action = .paste(.specified) }.keyboardShortcut("V", modifiers: [.shift,.command]).disabled(!targeted)
+            Button("Paste View") { action = .paste(.view) }.keyboardShortcut("V", modifiers: [.option,.command]).disabled(!targeted)
+            Button("Paste Color") { action = .paste(.color) }.keyboardShortcut("C", modifiers: [.option,.command]).disabled(!targeted)
+            Button("Paste Light") { action = .paste(.light) }.keyboardShortcut("L", modifiers: [.option,.command])
                 .disabled(!lighting || !targeted)
             Divider()
-            Button("Paste All") { action = .paste(.all) }.keyboardShortcut("A", modifiers: [.shift,.option]).disabled(!targeted)
-            Button("Reset All") { action = .reset(.all) }.keyboardShortcut("Z", modifiers: [.option]).disabled(!targeted)
+            Button("Paste All") { action = .paste(.all) }.keyboardShortcut("A", modifiers: [.option,.command]).disabled(!targeted)
+            Button("Reset All") { action = .reset(.all) }.keyboardShortcut("X", modifiers: [.shift,.command]).disabled(!targeted)
             Divider()
         }
     }
