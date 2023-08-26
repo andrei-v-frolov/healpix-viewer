@@ -92,14 +92,16 @@ struct MapPicker: View {
         }
     }
     
+    func labeled(_ map: MapData) -> some View {
+        return Label { Text(map.name) + Text("  [\(map.file)]").font(.footnote) } icon: { image(map.preview, oversample: 8)?.scaledToFit() }
+    }
+    
     var body: some View {
         Menu {
             ForEach(loaded, id: \.self) { map in
                 if ((map.data.nside == nside || nside == 0) && !exclude.contains(map.id)) {
                     Button { selected = map.id } label: {
-                        if #available(macOS 13.0, *), let entry = rendered(map) { Image(nsImage: entry) } else {
-                            Label { Text(map.name) + Text("  [\(map.file)]").font(.footnote) } icon: { image(map.preview, oversample: 8)?.scaledToFit() }
-                        }
+                        if #available(macOS 13.0, *), let entry = rendered(map) { Image(nsImage: entry) } else { labeled(map) }
                     }.labelStyle(.titleAndIcon)
                 }
             }
