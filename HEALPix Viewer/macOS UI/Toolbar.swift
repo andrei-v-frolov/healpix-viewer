@@ -17,10 +17,6 @@ struct Toolbar: CustomizableToolbarContent {
     @Binding var cdf: [Double]?
     @Binding var info: String?
     
-    private let havecharts: Bool = {
-        if #available(macOS 13.0, *) { return true } else { return false }
-    }()
-    
     var body: some CustomizableToolbarContent {
         ToolbarItem(id: "toggleSidebar", placement: .navigation, showsByDefault: true) {
             Button {
@@ -100,13 +96,15 @@ struct Toolbar: CustomizableToolbarContent {
         }
         Group {
             ToolbarItem(id: "statistics", placement: .principal, showsByDefault: true) {
-                Button {
-                    toggleStatView()
-                } label: {
-                    Label("Stats", systemImage: "waveform.path.ecg")
+                if #available(macOS 13.0, *) {
+                    Button {
+                        toggleStatView()
+                    } label: {
+                        Label("Stats", systemImage: "waveform.path.ecg")
+                    }
+                    .help("Data Statistics")
+                    .disabled(cdf == nil || sidebar == .mixer)
                 }
-                .help("Data Statistics")
-                .disabled(cdf == nil || sidebar == .mixer || !havecharts)
             }
             ToolbarItem(id: "info", placement: .principal, showsByDefault: true) {
                 Button {
