@@ -45,7 +45,7 @@ inline float4 lighted(float4 pixel, float4 light, float3 v) {
 #include "Shaders.metal"
 #undef PROJECTION
 
-#define PROJECTION(variant) isometric ## variant
+#define PROJECTION(variant) orthographic ## variant
 #include "Shaders.metal"
 #undef PROJECTION
 
@@ -57,7 +57,7 @@ inline float4 lighted(float4 pixel, float4 light, float3 v) {
 #include "Shaders.metal"
 #undef PROJECTION
 
-#define PROJECTION(variant) cylindrical ## variant
+#define PROJECTION(variant) cartesian ## variant
 #include "Shaders.metal"
 #undef PROJECTION
 

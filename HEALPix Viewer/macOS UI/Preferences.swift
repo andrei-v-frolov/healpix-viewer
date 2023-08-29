@@ -248,10 +248,10 @@ enum Projection: String, CaseIterable, Codable, Preference {
     case mollweide = "Mollweide"
     case hammer = "Hammer"
     case lambert = "Lambert"
-    case isometric = "Isometric"
+    case orthographic = "Orthographic"
     case gnomonic = "Gnomonic"
     case mercator = "Mercator"
-    case cylindrical = "Plate Carrée"
+    case cartesian = "Cartesian"
     case werner = "Werner"
     
     // default value
@@ -265,7 +265,7 @@ enum Projection: String, CaseIterable, Codable, Preference {
             case .hammer:               return (sqrt(8.0),sqrt(2.0))
             case .lambert, .gnomonic:   return (2,2)
             case .mercator:             return (Double.pi,2)
-            case .cylindrical:          return (Double.pi,Double.pi/2.0)
+            case .cartesian:            return (Double.pi,Double.pi/2.0)
             case .werner:               return (2.021610497,2.029609241)
             default:                    return (1,1)
         }
@@ -292,7 +292,7 @@ enum Projection: String, CaseIterable, Codable, Preference {
             case .lambert:
                 let q = 1.0 - (x*x + y*y)/4.0, z = sqrt(q)
                 return (q < 0.0) ? OUT_OF_BOUNDS : float3(Float(2.0*q-1.0),Float(z*x),Float(z*y))
-            case .isometric:
+            case .orthographic:
                 let q = 1.0 - (x*x + y*y)
                 return (q < 0.0) ? OUT_OF_BOUNDS : float3(Float(sqrt(q)),Float(x),Float(y))
             case .gnomonic:
@@ -300,7 +300,7 @@ enum Projection: String, CaseIterable, Codable, Preference {
             case .mercator:
                 let phi = x, theta = halfpi - atan(sinh(y))
                 return (phi < -pi || phi > pi) ? OUT_OF_BOUNDS : ang2vec(theta,phi)
-            case .cylindrical:
+            case .cartesian:
                 let phi = x, theta = halfpi - y
                 return (phi < -pi || phi > pi || theta < 0.0 || theta > pi) ? OUT_OF_BOUNDS : ang2vec(theta,phi)
             case .werner:

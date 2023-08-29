@@ -39,8 +39,8 @@ inline float3 lambert(float2 v) {
     return select(float3(2.0*q-1.0,sqrt(q)*v.x,sqrt(q)*v.y), OUT_OF_BOUNDS, q < 0.0);
 }
 
-// Isometric projection
-inline float3 isometric(float2 v) {
+// Isometric (aka orthographic) projection
+inline float3 orthographic(float2 v) {
     const float q = 1.0 - (v.x*v.x + v.y*v.y);
     return select(float3(sqrt(q),v.x,v.y), OUT_OF_BOUNDS, q < 0.0);
 }
@@ -57,7 +57,7 @@ inline float3 mercator(float2 v) {
 }
 
 // Equirectangular (aka cylindrical) projection
-inline float3 cylindrical(float2 v) {
+inline float3 cartesian(float2 v) {
     const float phi = v.x, theta = halfpi - v.y;
     return select(ang2vec(float2(theta,phi)), OUT_OF_BOUNDS, phi < -pi || phi > pi || theta < 0.0 || theta > pi);
 }

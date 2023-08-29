@@ -84,10 +84,10 @@ class ProjectedView: MTKView, NSWindowDelegate, Identifiable {
         .mollweide:     (MetalKernel(kernel: "mollweide_grid"),     MetalKernel(kernel: "mollweide_data")),
         .hammer:        (MetalKernel(kernel: "hammer_grid"),        MetalKernel(kernel: "hammer_data")),
         .lambert:       (MetalKernel(kernel: "lambert_grid"),       MetalKernel(kernel: "lambert_data")),
-        .isometric:     (MetalKernel(kernel: "isometric_grid"),     MetalKernel(kernel: "isometric_data")),
+        .orthographic:  (MetalKernel(kernel: "orthographic_grid"),  MetalKernel(kernel: "orthographic_data")),
         .gnomonic:      (MetalKernel(kernel: "gnomonic_grid"),      MetalKernel(kernel: "gnomonic_data")),
         .mercator:      (MetalKernel(kernel: "mercator_grid"),      MetalKernel(kernel: "mercator_data")),
-        .cylindrical:   (MetalKernel(kernel: "cylindrical_grid"),   MetalKernel(kernel: "cylindrical_data")),
+        .cartesian:     (MetalKernel(kernel: "cartesian_grid"),     MetalKernel(kernel: "cartesian_data")),
         .werner:        (MetalKernel(kernel: "werner_grid"),        MetalKernel(kernel: "werner_data"))
     ]
     
