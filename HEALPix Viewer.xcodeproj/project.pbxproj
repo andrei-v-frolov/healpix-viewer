@@ -65,7 +65,7 @@
 		50C513132907DFDC00BB6B51 /* OrientationView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C513122907DFDC00BB6B51 /* OrientationView.swift */; };
 		50C8AE8A2A47A73700EB9B1B /* MetalDevice.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50C8AE892A47A73700EB9B1B /* MetalDevice.swift */; };
 		50D29751291C39AA00E18C08 /* Map.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50D29750291C39AA00E18C08 /* Map.swift */; };
-		50E5EF9D2A9DF7B300B7734B /* HEALPix Mold.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50E5EF9A2A9DF7B200B7734B /* HEALPix Mold.swift */; };
+		50E5EF9F2A9E4C8900B7734B /* HEALPix Lime.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50E5EF9E2A9E4C8900B7734B /* HEALPix Lime.swift */; };
 		50EA05862A5FC861009F73C6 /* MixerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50EA05852A5FC861009F73C6 /* MixerView.swift */; };
 		50ECD2B028FF2A9C0008F915 /* Menus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50ECD2AF28FF2A9C0008F915 /* Menus.swift */; };
 		50ECD2B228FF31260008F915 /* Toolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50ECD2B128FF31260008F915 /* Toolbar.swift */; };
@@ -181,7 +181,7 @@
 		50C8AE892A47A73700EB9B1B /* MetalDevice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetalDevice.swift; sourceTree = "<group>"; };
 		50CB1444290B03B0006D59FA /* Shaders.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Shaders.metal; sourceTree = "<group>"; };
 		50D29750291C39AA00E18C08 /* Map.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Map.swift; sourceTree = "<group>"; };
-		50E5EF9A2A9DF7B200B7734B /* HEALPix Mold.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "HEALPix Mold.swift"; sourceTree = "<group>"; };
+		50E5EF9E2A9E4C8900B7734B /* HEALPix Lime.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "HEALPix Lime.swift"; sourceTree = "<group>"; };
 		50EA05852A5FC861009F73C6 /* MixerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MixerView.swift; sourceTree = "<group>"; };
 		50ECD2AF28FF2A9C0008F915 /* Menus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Menus.swift; sourceTree = "<group>"; };
 		50ECD2B128FF31260008F915 /* Toolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Toolbar.swift; sourceTree = "<group>"; };
@@ -335,7 +335,7 @@
 				508D56D129131E7E0099C3A0 /* HEALPix Grey.swift */,
 				508D56D329131EB80099C3A0 /* HEALPix Hot.swift */,
 				508D56D529131F050099C3A0 /* HEALPix Cold.swift */,
-				50E5EF9A2A9DF7B200B7734B /* HEALPix Mold.swift */,
+				50E5EF9E2A9E4C8900B7734B /* HEALPix Lime.swift */,
 				508D56D729131F7E0099C3A0 /* HEALPix GRV.swift */,
 				508D56D929131FBA0099C3A0 /* HEALPix BGRY.swift */,
 				5047FA962A69EDBF00FDCF98 /* CSS Colors.swift */,
@@ -544,6 +544,7 @@
 				501A6CDA292EC74400E931A3 /* Formatters.swift in Sources */,
 				50EA05862A5FC861009F73C6 /* MixerView.swift in Sources */,
 				50BA47F62A732AF60032690A /* Actors.swift in Sources */,
+				50E5EF9F2A9E4C8900B7734B /* HEALPix Lime.swift in Sources */,
 				5047FA952A69E83600FDCF98 /* Color Extensions.swift in Sources */,
 				50ECD2B028FF2A9C0008F915 /* Menus.swift in Sources */,
 				50563E592901E19A00B316CA /* MetalShader.swift in Sources */,
@@ -557,7 +558,6 @@
 				50C513132907DFDC00BB6B51 /* OrientationView.swift in Sources */,
 				508D56D829131F7E0099C3A0 /* HEALPix GRV.swift in Sources */,
 				50804B172A3E53560092EED1 /* State.swift in Sources */,
-				50E5EF9D2A9DF7B300B7734B /* HEALPix Mold.swift in Sources */,
 				50BA47F22A73271C0032690A /* ComponentView.swift in Sources */,
 				50056E8B2A78C58A00812E95 /* Random.metal in Sources */,
 				502F9D602A3A31050008FC42 /* FontPopUp.swift in Sources */,

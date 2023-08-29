@@ -351,7 +351,7 @@ enum ColorScheme: String, CaseIterable, Codable, Preference {
     case grey = "Greyscale"
     case hot = "Hot"
     case cold = "Cold"
-    case mold = "Mold"
+    case lime = "Lime"
     case grv = "GRV"
     case bgry = "BGRY"
     
@@ -369,7 +369,7 @@ enum ColorScheme: String, CaseIterable, Codable, Preference {
             case .grey:     return ColorMap.grey
             case .hot:      return ColorMap.hot
             case .cold:     return ColorMap.cold
-            case .mold:     return ColorMap.mold
+            case .lime:     return ColorMap.lime
             case .grv:      return ColorMap.GRV
             case .bgry:     return ColorMap.BGRY
         }

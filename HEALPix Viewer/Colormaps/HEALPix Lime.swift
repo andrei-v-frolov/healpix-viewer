@@ -1,5 +1,5 @@
 //
-//  HEALPix Mold.swift
+//  HEALPix Lime.swift
 //  HEALPix Viewer
 //
 //  Created by Andrei Frolov on 2023-08-29.
@@ -8,7 +8,7 @@
 import Foundation
 import MetalKit
 
-let HEALPix_Mold_LUT = [
+let HEALPix_Lime_LUT = [
     SIMD4<Float>(0.0/255.0, 0.0/255.0, 0.0/255.0, 1.0),
     SIMD4<Float>(0.0/255.0, 2.0/255.0, 0.0/255.0, 1.0),
     SIMD4<Float>(0.0/255.0, 7.0/255.0, 0.0/255.0, 1.0),
