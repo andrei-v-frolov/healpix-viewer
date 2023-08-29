@@ -20,6 +20,7 @@ final class ColorMap {
     static let grey = ColorMap(lut: HEALPix_Grey_LUT)
     static let hot = ColorMap(lut: HEALPix_Hot_LUT)
     static let cold = ColorMap(lut: HEALPix_Cold_LUT)
+    static let mold = ColorMap(lut: HEALPix_Mold_LUT)
     static let GRV = ColorMap(lut: HEALPix_GRV_LUT)
     static let BGRY = ColorMap(lut: HEALPix_BGRY_LUT)
     
