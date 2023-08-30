@@ -45,6 +45,11 @@ inline float3 orthographic(float2 v) {
     return select(float3(sqrt(q),v.x,v.y), OUT_OF_BOUNDS, q < 0.0);
 }
 
+// Stereographic projection
+inline float3 stereographic(float2 v) {
+    return 4.0/(4.0+v.x*v.x+v.y*v.y) * float3(2.0,v.x,v.y) - float3(1,0,0);
+}
+
 // Gnomonic projection
 inline float3 gnomonic(float2 v) {
     return normalize(float3(1.0,v.x,v.y));

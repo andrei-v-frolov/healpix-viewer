@@ -49,6 +49,10 @@ inline float4 lighted(float4 pixel, float4 light, float3 v) {
 #include "Shaders.metal"
 #undef PROJECTION
 
+#define PROJECTION(variant) stereographic ## variant
+#include "Shaders.metal"
+#undef PROJECTION
+
 #define PROJECTION(variant) gnomonic ## variant
 #include "Shaders.metal"
 #undef PROJECTION

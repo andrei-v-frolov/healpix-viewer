@@ -249,6 +249,7 @@ enum Projection: String, CaseIterable, Codable, Preference {
     case hammer = "Hammer"
     case lambert = "Lambert"
     case orthographic = "Orthographic"
+    case stereographic = "Stereographic"
     case gnomonic = "Gnomonic"
     case mercator = "Mercator"
     case cartesian = "Cartesian"
@@ -261,13 +262,15 @@ enum Projection: String, CaseIterable, Codable, Preference {
     // projection bounds
     var extent: (x: Double, y: Double) {
         switch self {
-            case .mollweide:            return (2,1)
-            case .hammer:               return (sqrt(8.0),sqrt(2.0))
-            case .lambert, .gnomonic:   return (2,2)
-            case .mercator:             return (Double.pi,2)
-            case .cartesian:            return (Double.pi,Double.pi/2.0)
-            case .werner:               return (2.021610497,2.029609241)
-            default:                    return (1,1)
+            case .mollweide:    return (2,1)
+            case .hammer:       return (sqrt(8.0),sqrt(2.0))
+            case .lambert,
+                 .stereographic,
+                 .gnomonic:     return (2,2)
+            case .mercator:     return (Double.pi,2)
+            case .cartesian:    return (Double.pi,Double.pi/2.0)
+            case .werner:       return (2.021610497,2.029609241)
+            default:            return (1,1)
         }
     }
     
@@ -295,6 +298,8 @@ enum Projection: String, CaseIterable, Codable, Preference {
             case .orthographic:
                 let q = 1.0 - (x*x + y*y)
                 return (q < 0.0) ? OUT_OF_BOUNDS : float3(Float(sqrt(q)),Float(x),Float(y))
+            case .stereographic:
+                return Float(4.0/(4.0+x*x+y*y)) * float3(2.0,Float(x),Float(y)) - float3(1,0,0)
             case .gnomonic:
                 return normalize(float3(1.0,Float(x),Float(y)))
             case .mercator:

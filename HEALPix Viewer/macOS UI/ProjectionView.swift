@@ -19,8 +19,8 @@ struct ProjectionToolbar: View {
                     Text($0.rawValue).tag($0)
                 }
             }
-            .frame(width: 190)
-            Spacer().frame(width: 30)
+            .frame(width: 191)
+            Spacer().frame(width: 29)
             Picker("Viewpoint:", selection: $orientation) {
                 ForEach(Orientation.galactic, id: \.self) {
                     Text($0.rawValue).tag($0)
