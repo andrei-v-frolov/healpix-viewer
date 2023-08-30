@@ -12,7 +12,7 @@ enum Action: Equatable {
     case none
     case open, save, close
     case load(MapData), redraw, clear
-    case random(RandomField)
+    case random(RandomField,Int)
     case copy, paste(CopyStyle), reset(CopyStyle)
     case abort(String), error(String, String)
 }

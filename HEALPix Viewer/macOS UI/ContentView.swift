@@ -277,8 +277,8 @@ struct ContentView: View {
                 case .load(let map): load(map)
                 case .redraw: transform(force: true)
                 case .clear: clear()
-                case .random(let pdf):
-                    let seed = Int.random(in: 0...0xFFFF), nside = 256
+                case .random(let pdf, let nside):
+                    let seed = Int.random(in: 0...0xFFFF)
                     if let data = random.generate(nside: nside, pdf: pdf, seed: seed) {
                         let dist = pdf.rawValue.uppercased(), info = random.info(nside: nside, distribution: dist, seed: seed)
                         let map = MapData(file: "random field", info: info, parsed: Cards(), name: dist, unit: "", channel: 0, data: data)

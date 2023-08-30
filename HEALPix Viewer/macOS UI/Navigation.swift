@@ -42,6 +42,12 @@ struct NavigationList: View {
                     Label("Duplicate", systemImage: "doc.on.doc")
                 }
                 .help("Duplicate loaded map")
+                Button {
+                    action = .random(.gaussian, map.data.nside)
+                } label: {
+                    Label("Random", systemImage: "dice")
+                }
+                .help("Generate random map")
                 Button(role: .destructive) {
                     loaded.removeAll(where: { $0.id == map.id })
                     if loaded.count == 0 { action = .clear }
