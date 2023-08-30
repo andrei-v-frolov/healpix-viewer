@@ -31,7 +31,9 @@
 - proxy map to improve percieved transform performance
 - switch to indirect buffers?
 - always allocate mipmaps?
+- conform to Transferable?
 - if out of VRAM, downsample on CPU?
+- [weak self] reference in async closures?
 - const arguments to all inline Metal functions?
 - use Picker sections? do I really need Picker id?
 - faster 3x3 SVD? e.g. port https://github.com/ericjang/svd3?
@@ -42,9 +44,12 @@
 - parameter and spatial correlation priors in component separator
 - magnifier glass
 - transparency mask?
+- free rotation mode?
 - save and load view state (also maybe mixer state?)
 - view from inside should be part of projection settings?
+- make compress gamut into global setting?
 - command line interface (via ArgumentParser)
+- make figure of space filling pixel order curves!
 
 ### Future Targets
 
@@ -68,3 +73,4 @@
 - fix focus state handling in ColorList...
 - map range get trashed when switching from component map
 - find the cause of lag in ComponentView (also related leak)
+- fix sampling of PDF tails in statistics overlay
