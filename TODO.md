@@ -65,6 +65,5 @@
 - theta and phi swapped in healpix paper
 - disable colorbar in false color map export
 - fix focus state handling in ColorList...
-- CDF does not transform automatically when scheduled
 - map range get trashed when switching from component map
 - find the cause of lag in ComponentView (also related leak)

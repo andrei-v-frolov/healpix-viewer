@@ -387,7 +387,8 @@ struct ContentView: View {
                 let m = map.data, n = Double(m.npix), workload = Int(n*log(1+n))
                 scheduled += workload; analysisQueue.async {
                     m.index(); map.ranked = m.ranked(); completed += workload
-                    DispatchQueue.main.async { load() }
+                    for f in Function.cdf { map.state.bounds[f] = nil }
+                    DispatchQueue.main.async { if map == self.data { load(map, force: true) } }
                 }
             }
             
@@ -406,7 +407,7 @@ struct ContentView: View {
     }
     
     // load map to view
-    @MainActor func load(_ map: MapData) {
+    @MainActor func load(_ map: MapData, force: Bool = false) {
         self.map = map.texture
         data = map; info = map.info
         ranked = (map.ranked != nil)
@@ -415,7 +416,7 @@ struct ContentView: View {
         mumin = map.data.min; mumax = map.data.max
         
         // load map data and process if needed
-        transform(map); load(map.available, range: map.range); colorize(map); preview()
+        transform(map, force: force); load(map.available, range: map.range); colorize(map); preview()
     }
     
     // load map with settings
