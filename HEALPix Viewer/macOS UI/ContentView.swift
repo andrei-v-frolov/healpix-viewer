@@ -276,6 +276,7 @@ struct ContentView: View {
                 case .close: close()
                 case .load(let map): load(map)
                 case .redraw: transform(force: true)
+                case .clear: clear()
                 case .random(let pdf):
                     let seed = Int.random(in: 0...0xFFFF), nside = 256
                     if let data = random.generate(nside: nside, pdf: pdf, seed: seed) {
@@ -395,6 +396,15 @@ struct ContentView: View {
                 if (MapCard.type(map.name) == DataSource.value) { self.selected = map.id; break }
             }
         }
+    }
+    
+    // clear map view
+    @MainActor func clear() {
+        map = nil; data = nil; info = nil
+        lut = nil; cdf = nil; ranked = false
+        annotation = "TEMPERATURE [μK]"
+        datamin = 0.0; mumin = 0.0
+        datamax = 0.0; mumax = 0.0
     }
     
     // load map data

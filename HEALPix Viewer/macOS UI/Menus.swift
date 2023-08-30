@@ -11,7 +11,7 @@ import SwiftUI
 enum Action: Equatable {
     case none
     case open, save, close
-    case load(MapData), redraw
+    case load(MapData), redraw, clear
     case random(RandomField)
     case copy, paste(CopyStyle), reset(CopyStyle)
     case abort(String), error(String, String)
