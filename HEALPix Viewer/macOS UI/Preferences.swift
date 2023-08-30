@@ -32,6 +32,9 @@ let annotationColorKey = "annotationColor"
 let cursorKey = "cursor"
 let showColorBarKey = "showColorBar"
 
+// settings - expressions
+let nsideKey = "nside"
+
 // application appearance
 enum Appearance: String, CaseIterable, Codable, Preference {
     case dark = "Dark Mode"

@@ -141,6 +141,9 @@ struct DataMenus: Commands {
     @AppStorage(ColorScheme.key) var colorScheme = ColorScheme.defaultValue
     @AppStorage(Function.key) var dataTransform = Function.defaultValue
     
+    // generated map size
+    @AppStorage(nsideKey) var nside = 256
+    
     // menu commands
     var body: some Commands {
         CommandMenu("Data") {
@@ -160,8 +163,12 @@ struct DataMenus: Commands {
                 }
                 Menu("Generate") {
                     ForEach(RandomField.allCases, id: \.self) { pdf in
-                        Button(pdf.rawValue + " Random Field") { action = .random(pdf) }
+                        Button(pdf.rawValue + " Random Field") { action = .random(pdf,nside) }
                     }
+                    Divider()
+                    Picker(selection: $nside) {
+                        ForEach((0...13).map { 1 << $0 }, id: \.self) { Text(String($0)).tag($0) }
+                    } label: { Text("N")+Text("side").font(.footnote)+Text(" = \(nside)") }
                 }.disabled(!targeted)
                 Picker("Convolution", selection: $convolution) {
                     ForEach(LineConvolution.allCases, id: \.self) {
