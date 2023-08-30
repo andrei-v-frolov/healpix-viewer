@@ -267,14 +267,17 @@ final class MapData: Identifiable, ObservableObject {
     internal var state = MapState()
     
     // default initializer
-    init(file: String, info: String, parsed: Cards, name: String, unit: String, channel: Int, data: Map) {
+    init(file: String, info: String, parsed: Cards, name: String, unit: String, channel: Int, data: Map, ranked: CpuMap? = nil) {
         self.file = file; self.info = info; self.card = parsed
         self.name = name; self.unit = unit; self.channel = channel
-        self.data = data
+        self.data = data; self.ranked = ranked
         
         // maybe we should always allocate mipmaps?
         self.texture = HPXTexture(nside: data.nside, mipmapped: AntiAliasing.value != .none)
     }
+    
+    // map duplicate sharing data
+    var copy: Self { Self(file: file, info: info, parsed: card, name: name, unit: unit, channel: channel, data: data, ranked: ranked) }
     
     // signal that map state changed
     func refresh() { self.objectWillChange.send() }

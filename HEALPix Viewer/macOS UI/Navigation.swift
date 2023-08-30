@@ -35,11 +35,21 @@ struct NavigationList: View {
         NavigationRow(map: map).contextMenu {
             VStack {
                 Button {
-                    selected = map.id; action = .save
+                    let copy = map.copy
+                    loaded.append(copy)
+                    selected = copy.id
                 } label: {
-                    Label("Export", systemImage: "square.and.arrow.down")
+                    Label("Duplicate", systemImage: "doc.on.doc")
                 }
-                .help("Export rendered map")
+                .help("Duplicate loaded map")
+                Button(role: .destructive) {
+                    loaded.removeAll(where: { $0.id == map.id })
+                    if loaded.count == 0 { action = .clear }
+                } label: {
+                    Label("Delete", systemImage: "trash")
+                }
+                .help("Remove loaded map")
+                Divider()
                 Button {
                     selected = map.id; action = .reset(.all)
                 } label: {
@@ -47,12 +57,12 @@ struct NavigationList: View {
                 }
                 .help("Reset view settings")
                 Divider()
-                Button(role: .destructive) {
-                    loaded.removeAll(where: { $0.id == map.id })
+                Button {
+                    selected = map.id; action = .save
                 } label: {
-                    Label("Close", systemImage: "xmark")
+                    Label("Export", systemImage: "square.and.arrow.down")
                 }
-                .help("Remove loaded map")
+                .help("Export rendered map")
             }
         }.labelStyle(.titleAndIcon)
     }
