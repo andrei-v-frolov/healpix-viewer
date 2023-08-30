@@ -382,14 +382,7 @@ struct ContentView: View {
             self.loaded += file.list
             
             // dispatch maps for analysis
-            for map in file.list {
-                let m = map.data, n = Double(m.npix), workload = Int(n*log(1+n))
-                scheduled += workload; analysisQueue.async {
-                    m.index(); map.ranked = m.ranked(); completed += workload
-                    for f in Function.cdf { map.state.bounds[f] = nil }
-                    DispatchQueue.main.async { if map == self.data { load(map, force: true) } }
-                }
-            }
+            for map in file.list { analyze(map) }
             
             // select default data source
             for map in file.list {
@@ -439,7 +432,19 @@ struct ContentView: View {
         else { state.update(ViewState.value, mask: !keepState) }
         
         // load map and colorbar
-        load(map); DispatchQueue.main.async { barview?.draw() }
+        analyze(map); load(map); DispatchQueue.main.async { barview?.draw() }
+    }
+    
+    // dispatch maps for analysis
+    func analyze(_ map: MapData) {
+        guard (map.ranked == nil) else { return }
+        
+        let m = map.data, n = Double(m.npix), workload = Int(n*log(1+n))
+        scheduled += workload; analysisQueue.async {
+            m.index(); map.ranked = m.ranked(); completed += workload
+            for f in Function.cdf { map.state.bounds[f] = nil }
+            DispatchQueue.main.async { if map == self.data { load(map, force: true) } }
+        }
     }
     
     // colorize map with specified settings
