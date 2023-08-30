@@ -229,12 +229,10 @@ struct ContentView: View {
                     }
                 }
                 Group {
-                    if #available(macOS 13.0, *) {
-                    if (overlay == .statview && sidebar != .mixer) {
-                        StatView(cdf: $cdf, range: $state.range)
-                        .background(.thinMaterial)
+                    if #available(macOS 13.0, *), (overlay == .statview && sidebar != .mixer) {
+                        StatView(cdf: $cdf, range: $state.range).background(.thinMaterial)
                         .onChange(of: cdf) { value in if (value == nil) { overlay = .none } }
-                    } }
+                    }
                     if (overlay == .infoview) {
                         ScrollView {
                             Text(info ?? "")
