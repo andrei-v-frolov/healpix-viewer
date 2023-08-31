@@ -38,6 +38,10 @@
 		50804B172A3E53560092EED1 /* State.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50804B162A3E53560092EED1 /* State.swift */; };
 		50811E5229023F280069B219 /* CFitsIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 50811E5029023EAF0069B219 /* CFitsIO.framework */; };
 		50811E5329023F280069B219 /* CFitsIO.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 50811E5029023EAF0069B219 /* CFitsIO.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
+		5083430A2AA08B0900BB4C3E /* Python Spectral.swift in Sources */ = {isa = PBXBuildFile; fileRef = 508343042AA08B0900BB4C3E /* Python Spectral.swift */; };
+		5083430B2AA08B0900BB4C3E /* Python Seismic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 508343072AA08B0900BB4C3E /* Python Seismic.swift */; };
+		5083430C2AA08B0900BB4C3E /* Python RdBu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 508343082AA08B0900BB4C3E /* Python RdBu.swift */; };
+		5083430D2AA08B0900BB4C3E /* Python Viridis.swift in Sources */ = {isa = PBXBuildFile; fileRef = 508343092AA08B0900BB4C3E /* Python Viridis.swift */; };
 		508910B2291B077E00E33CB6 /* ColorbarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 508910B1291B077E00E33CB6 /* ColorbarView.swift */; };
 		508BBA8B28FF2764004B1A9C /* HEALPix App.swift in Sources */ = {isa = PBXBuildFile; fileRef = 508BBA8A28FF2764004B1A9C /* HEALPix App.swift */; };
 		508BBA8D28FF2764004B1A9C /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 508BBA8C28FF2764004B1A9C /* ContentView.swift */; };
@@ -147,6 +151,10 @@
 		5065EE7F292044D000AD46CD /* Preferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Preferences.swift; sourceTree = "<group>"; };
 		50804B162A3E53560092EED1 /* State.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = State.swift; sourceTree = "<group>"; };
 		50811E4829023EAF0069B219 /* cfitsio.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = cfitsio.xcodeproj; path = cfitsio/cfitsio.xcodeproj; sourceTree = "<group>"; };
+		508343042AA08B0900BB4C3E /* Python Spectral.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Python Spectral.swift"; sourceTree = "<group>"; };
+		508343072AA08B0900BB4C3E /* Python Seismic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Python Seismic.swift"; sourceTree = "<group>"; };
+		508343082AA08B0900BB4C3E /* Python RdBu.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Python RdBu.swift"; sourceTree = "<group>"; };
+		508343092AA08B0900BB4C3E /* Python Viridis.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Python Viridis.swift"; sourceTree = "<group>"; };
 		508910B1291B077E00E33CB6 /* ColorbarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorbarView.swift; sourceTree = "<group>"; };
 		508BBA8728FF2764004B1A9C /* HEALPix Viewer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "HEALPix Viewer.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		508BBA8A28FF2764004B1A9C /* HEALPix App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HEALPix App.swift"; sourceTree = "<group>"; };
@@ -331,6 +339,10 @@
 				508D56C629131C270099C3A0 /* Planck Parchment.swift */,
 				508D56CD29131D530099C3A0 /* Planck FreqMap.swift */,
 				500338E82A3D8FBD001EC910 /* Python Difference.swift */,
+				508343082AA08B0900BB4C3E /* Python RdBu.swift */,
+				508343072AA08B0900BB4C3E /* Python Seismic.swift */,
+				508343042AA08B0900BB4C3E /* Python Spectral.swift */,
+				508343092AA08B0900BB4C3E /* Python Viridis.swift */,
 				508D56CF29131DB10099C3A0 /* HEALPix CMB.swift */,
 				508D56D129131E7E0099C3A0 /* HEALPix Grey.swift */,
 				508D56D329131EB80099C3A0 /* HEALPix Hot.swift */,
@@ -541,11 +553,13 @@
 				5065EE80292044D000AD46CD /* Preferences.swift in Sources */,
 				5009BB142912ECEB006DE835 /* ColorView.swift in Sources */,
 				50027AAE2A6797970049A0B4 /* Color Spaces.swift in Sources */,
+				5083430A2AA08B0900BB4C3E /* Python Spectral.swift in Sources */,
 				501A6CDA292EC74400E931A3 /* Formatters.swift in Sources */,
 				50EA05862A5FC861009F73C6 /* MixerView.swift in Sources */,
 				50BA47F62A732AF60032690A /* Actors.swift in Sources */,
 				50E5EF9F2A9E4C8900B7734B /* HEALPix Lime.swift in Sources */,
 				5047FA952A69E83600FDCF98 /* Color Extensions.swift in Sources */,
+				5083430B2AA08B0900BB4C3E /* Python Seismic.swift in Sources */,
 				50ECD2B028FF2A9C0008F915 /* Menus.swift in Sources */,
 				50563E592901E19A00B316CA /* MetalShader.swift in Sources */,
 				50563E5B2901E38F00B316CA /* Kernels.metal in Sources */,
@@ -553,6 +567,8 @@
 				508F923B2923E96600E6DD73 /* FileIO.swift in Sources */,
 				509873F72A81D49F000DC500 /* Model.swift in Sources */,
 				50ECD2B228FF31260008F915 /* Toolbar.swift in Sources */,
+				5083430C2AA08B0900BB4C3E /* Python RdBu.swift in Sources */,
+				5083430D2AA08B0900BB4C3E /* Python Viridis.swift in Sources */,
 				50D29751291C39AA00E18C08 /* Map.swift in Sources */,
 				500EFDBD29270B66002B6057 /* Navigation.swift in Sources */,
 				50C513132907DFDC00BB6B51 /* OrientationView.swift in Sources */,

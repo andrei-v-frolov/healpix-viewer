@@ -3,7 +3,8 @@
 ### Current Status (Build 009)
 
 - stereographic projection added
-- lime colormap added to complement hot and cold
+- lime colormap added to complement HEALPix hot and cold schemes
+- more Python colormaps added (viridis, spectral, seismic, RdBu)
 - text in info overlays can be selected & copied
 - navigation map list can be rearranged on macOS 13+
 - context menus in navigation view and color bar implemented

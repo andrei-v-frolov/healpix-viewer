@@ -354,14 +354,18 @@ enum Orientation: String, CaseIterable, Codable, Preference {
 enum ColorScheme: String, CaseIterable, Codable, Preference {
     case planck = "Planck"
     case cmb = "HEALPix"
+    case spectral = "Spectral"
+    case rdbu = "Faded"
     case diff = "Difference"
+    case seismic = "Seismic"
     case freq = "Frequency"
     case grey = "Greyscale"
     case hot = "Hot"
     case cold = "Cold"
     case lime = "Lime"
-    case grv = "GRV"
+    case viridis = "Viridis"
     case bgry = "BGRY"
+    case grv = "GRV"
     
     // default value
     static let key = "colorScheme"
@@ -372,14 +376,18 @@ enum ColorScheme: String, CaseIterable, Codable, Preference {
         switch self {
             case .planck:   return ColorMap.planck
             case .cmb:      return ColorMap.cmb
+            case .spectral: return ColorMap.spectral
+            case .rdbu:     return ColorMap.RdBu
             case .diff:     return ColorMap.diff
+            case .seismic:  return ColorMap.seismic
             case .freq:     return ColorMap.freq
             case .grey:     return ColorMap.grey
             case .hot:      return ColorMap.hot
             case .cold:     return ColorMap.cold
             case .lime:     return ColorMap.lime
-            case .grv:      return ColorMap.GRV
+            case .viridis:  return ColorMap.viridis
             case .bgry:     return ColorMap.BGRY
+            case .grv:      return ColorMap.GRV
         }
     }
 }

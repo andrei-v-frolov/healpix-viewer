@@ -14,15 +14,19 @@ final class ColorMap {
     
     // singleton colormaps
     static let planck = ColorMap(lut: Planck_Parchment_LUT)
-    static let freq = ColorMap(lut: Planck_FreqMap_LUT)
-    static let diff = ColorMap(lut: Python_Difference_LUT)
     static let cmb = ColorMap(lut: HEALPix_CMB_LUT)
+    static let spectral = ColorMap(lut: Python_Spectral_LUT)
+    static let RdBu = ColorMap(lut: Python_RdBu_LUT)
+    static let diff = ColorMap(lut: Python_Difference_LUT)
+    static let seismic = ColorMap(lut: Python_Seismic_LUT)
+    static let freq = ColorMap(lut: Planck_FreqMap_LUT)
     static let grey = ColorMap(lut: HEALPix_Grey_LUT)
     static let hot = ColorMap(lut: HEALPix_Hot_LUT)
     static let cold = ColorMap(lut: HEALPix_Cold_LUT)
     static let lime = ColorMap(lut: HEALPix_Lime_LUT)
-    static let GRV = ColorMap(lut: HEALPix_GRV_LUT)
+    static let viridis = ColorMap(lut: Python_Viridis_LUT)
     static let BGRY = ColorMap(lut: HEALPix_BGRY_LUT)
+    static let GRV = ColorMap(lut: HEALPix_GRV_LUT)
     
     // Metal texture representing colormap
     static func render(lut: [SIMD4<Float>]) -> MTLTexture {
