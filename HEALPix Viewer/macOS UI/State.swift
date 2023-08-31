@@ -45,6 +45,7 @@ struct Transform: Equatable, Codable {
     static var value: Self { Self(f: Function.value) }
     
     func eval(_ x: Double) -> Double { return f.eval(x, mu: mu, sigma: sigma) }
+    func annotate(_ x: String) -> String { return f.annotate(x, mu: mu, sigma: sigma) }
     
     static func == (a: Self, b: Self) -> Bool {
         return (a.f == b.f) &&

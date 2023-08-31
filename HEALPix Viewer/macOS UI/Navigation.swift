@@ -35,7 +35,7 @@ struct NavigationList: View {
         NavigationRow(map: map).contextMenu {
             VStack {
                 Button {
-                    let copy = map.copy
+                    let copy = map.duplicate
                     loaded.append(copy)
                     selected = copy.id
                 } label: {
