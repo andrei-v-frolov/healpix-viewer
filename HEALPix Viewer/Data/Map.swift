@@ -26,6 +26,9 @@ protocol Map {
     var idx: UnsafePointer<Int32> { get }
     var buffer: MTLBuffer { get }
     
+    // data copy
+    var copy: Self { get }
+    
     // data indexing
     func index()
 }
@@ -127,6 +130,9 @@ final class BaseMap: Map {
         self.max = max ?? Double(data.max() ?? 0.0)
     }
     
+    // map copy
+    var copy: Self { Self(nside: nside, data: data, min: min, max: max) }
+    
     // clean up on deinitialization
     private var allocated = false
     deinit { if allocated { idx.deallocate() } }
@@ -167,6 +173,13 @@ final class CpuMap: Map {
         self.max = max
     }
     
+    // map copy
+    var copy: Self {
+        let copy = UnsafeMutablePointer<Float>.allocate(capacity: npix)
+        copy.initialize(from: ptr, count: npix)
+        return Self(nside: nside, buffer: copy, min: min, max: max)
+    }
+    
     // clean up on deinitialization (we own passed pointer)
     private var allocated = false
     deinit { ptr.deallocate(); if allocated { idx.deallocate() } }
@@ -199,6 +212,9 @@ final class GpuMap: Map {
         self.min = min
         self.max = max
     }
+    
+    // map copy
+    var copy: Self { Self(nside: nside, buffer: buffer.copy, min: min, max: max) }
     
     // clean up on deinitialization
     private var allocated = false
@@ -276,8 +292,10 @@ final class MapData: Identifiable, ObservableObject {
         self.texture = HPXTexture(nside: data.nside, mipmapped: AntiAliasing.value != .none)
     }
     
-    // map duplicate sharing data
-    var copy: Self { Self(file: file, info: info, parsed: card, name: name, unit: unit, channel: channel, data: data, ranked: ranked) }
+    // map duplicate copying or sharing data
+    var copy: Self { Self(file: file, info: info, parsed: card, name: name, unit: unit, channel: channel, data: data.copy) }
+    var snapshot: Self { Self(file: file, info: info, parsed: card, name: transform.annotate(name), unit: unit, channel: channel, data: available.copy) }
+    var duplicate: Self { Self(file: file, info: info, parsed: card, name: name, unit: unit, channel: channel, data: data, ranked: ranked) }
     
     // signal that map state changed
     func refresh() { self.objectWillChange.send() }

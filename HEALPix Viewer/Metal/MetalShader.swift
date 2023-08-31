@@ -141,6 +141,17 @@ struct MetalKernel: MetalShader {
 // MARK: convenience extensions to MTLBuffer
 extension MTLBuffer {
     var size: MTLSize { return MTLSize(width: length/MemoryLayout<Float>.size, height: 1, depth: 1) }
+    
+    // copy buffer
+    var copy: MTLBuffer {
+        guard let buffer = metal.device.makeBuffer(length: length),
+              let command = metal.queue.makeCommandBuffer(),
+              let encoder = command.makeBlitCommandEncoder()
+              else { fatalError("Could not allocate buffer") }
+        
+        encoder.copy(from: self, sourceOffset: 0, to: buffer, destinationOffset: 0, size: length)
+        encoder.endEncoding(); command.commit(); return buffer
+    }
 }
 
 // MARK: convenience extensions to MTLTexture

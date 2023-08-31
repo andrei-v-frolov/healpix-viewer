@@ -456,6 +456,24 @@ enum Function: String, CaseIterable, Codable, Preference {
             default:        return x
         }
     }
+    
+    // annotate transform
+    func annotate(_ x: String, mu: Double = 0.0, sigma: Double = 0.0) -> String {
+        let shifted = (mu > 0.0) ? "\(x)-\(mu)" : ((mu < 0.0) ? "\(x)+\(-mu)" : x)
+        let scaled = (sigma == 0.0) ? shifted : ((mu != 0.0) ? "(\(shifted))/\(Foundation.exp(sigma))" : "\(x)/\(Foundation.exp(sigma))")
+        
+        switch self {
+            case .none:     return x
+            case .log:      return "ln[\(shifted)]"
+            case .asinh:    return "asinh[\(scaled)]"
+            case .atan:     return "atan[\(scaled)]"
+            case .tanh:     return "tanh[\(scaled)]"
+            case .power:    return (sigma == 0.0) ? shifted : "±|\(shifted)|^\(Foundation.exp(sigma))"
+            case .exp:      return "exp[\(scaled)]"
+            case .equalize: return "equalized[\(x)]"
+            case .normalize: return "normalized[\(x)]"
+        }
+    }
 }
 
 // line convolution
