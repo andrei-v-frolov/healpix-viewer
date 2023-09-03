@@ -7,6 +7,9 @@
 
 import SwiftUI
 
+// navigator panels
+enum Navigator { case list, mixer, component, convolution }
+
 // map summary view
 struct NavigationRow: View {
     @ObservedObject var map: MapData
@@ -29,19 +32,33 @@ struct NavigationRow: View {
 struct NavigationList: View {
     @Binding var loaded: [MapData]
     @Binding var selected: UUID?
+    @Binding var data: MapData?
+    @Binding var state: ViewState
     @Binding var action: Action
     
     func entry(_ map: MapData) -> some View {
         NavigationRow(map: map).contextMenu {
             VStack {
                 Button {
-                    let copy = map.duplicate
-                    loaded.append(copy)
-                    selected = copy.id
+                    data?.settings = state; data = nil
+                    let copy = map.duplicate; copy.settings = map.settings
+                    
+                    loaded.append(copy); selected = copy.id
                 } label: {
                     Label("Duplicate", systemImage: "doc.on.doc")
                 }
                 .help("Duplicate loaded map")
+                Button {
+                    data?.settings = state; data = nil
+                    let none = Transform(f: .none, mu: 0.0, sigma: 0.0)
+                    let copy = map.snapshot; copy.settings = map.settings
+                    copy.settings?.transform = none; state.transform = none
+                    
+                    loaded.append(copy); selected = copy.id
+                } label: {
+                    Label("Snapshot", systemImage: "camera.on.rectangle")
+                }
+                .help("Copy transformed map")
                 Button {
                     action = .random(.gaussian, map.data.nside)
                 } label: {
@@ -126,9 +143,4 @@ struct MapPicker: View {
             else { Label(label, systemImage: "globe") }
         }.buttonStyle(.plain).padding(5)
     }
-}
-
-// navigator panels
-enum Navigator {
-    case list, mixer, ilc, convolution
 }

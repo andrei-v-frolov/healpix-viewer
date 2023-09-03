@@ -101,7 +101,7 @@ struct ContentView: View {
         NavigationView {
             VStack(spacing: 0) {
                 if (sidebar == .list) {
-                    NavigationList(loaded: $loaded, selected: $selected, action: $action)
+                    NavigationList(loaded: $loaded, selected: $selected, data: $data, state: $state, action: $action)
                         .frame(minWidth: 210, maxWidth: .infinity)
                     HStack {
                         Button {
@@ -112,7 +112,7 @@ struct ContentView: View {
                         .help("Create false color image mixing data")
                         .disabled(selected == nil)
                         Button {
-                            withAnimation { sidebar = .ilc }
+                            withAnimation { sidebar = .component }
                         } label: {
                             Label("Extract", systemImage: "square.3.stack.3d")
                         }
@@ -134,7 +134,7 @@ struct ContentView: View {
                         .frame(minWidth: 210, maxWidth: .infinity)
                         .padding(.bottom, 10)
                 }
-                if (sidebar == .ilc), let host = loaded[selected] {
+                if (sidebar == .component), let host = loaded[selected] {
                     ScrollView { ComponentView(sidebar: $sidebar, loaded: $loaded, selected: $selected, action: $action) }
                         .frame(minWidth: 210, maxWidth: .infinity)
                         .padding(.bottom, 10)
