@@ -69,9 +69,29 @@
 - file load always crashes on external/discrete GPU
 - animation is disabled on cold start
 - thumbnails do not update in mixer
-- theta and phi swapped in healpix paper
 - disable colorbar in false color map export
 - fix focus state handling in ColorList...
 - map range get trashed when switching from component map
 - find the cause of lag in ComponentView (also related leak)
 - fix sampling of PDF tails in statistics overlay
+- ranking gets called twice on load?
+
+### Paper update
+
+- theta and phi swapped in healpix paper
+- add prominent GitHub link
+- native English speaker edit
+- emphasize HEALPix Viewer need, wih examples
+- discuss impact, with examples
+- external dependecies, with specific versions
+- sample HEALPix data files
+- user guide/manual/tutorial/best practices
+- examples of specific tasks
+- testing/validation, unit tests
+- benchmarks against existing tools, especially large maps
+- highlight unique selling points, specific use cases
+- limitations in separate section, future work
+- reiterate performance/claims to fame
+- memory usage?
+- strength table?
+- HIPS integration?
