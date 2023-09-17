@@ -93,7 +93,7 @@ struct ColorMixer {
         let scale = float3x3(diagonal: 1.0/(w-v))
         
         // decorrelation matrix
-        let S = pca(kind: decorrelate.mode, covariance: scale*decorrelate.cov*scale, beta: decorrelate.beta) * scale
+        let S = pca(covariance: scale*decorrelate.cov*scale, alpha: decorrelate.alpha, beta: decorrelate.beta) * scale
         let shift = (decorrelate.avg-v)/(w-v) - S * decorrelate.avg
         
         // color space primaries (okLab or linear device RGB)
@@ -128,31 +128,25 @@ struct ColorMixer {
         command.commit()
     }
     
-    // decorrelation matrix
-    func pca(kind: Decorrelation, covariance: float3x3, beta: Double = 0.5) -> float3x3 {
-        let identity = float3x3(1.0)
+    // decorrelation matrix [COV^(-alpha) if alpha < 1/2, or COR^(1/2-alpha)*COV(-1/2) if alpha > 1/2]
+    func pca(covariance: float3x3, alpha: Double = 0.5, beta: Double = 0.5) -> float3x3 {
+        let identity = float3x3(1.0), a = min(2*alpha,1.0), b = max(2*alpha-1.0,0.0), c = beta*exp2(1.0-a)
+        let scale = float3x3(diagonal: rsqrt(float3(covariance[0,0], covariance[1,1], covariance[2,2])))
+        guard let (s,u,v) = covariance.svd, let (S,U,V) = (scale*covariance*scale).svd else { return identity }
         
-        switch kind {
-            case .none: return Float(2.0*beta)*identity
-            case .cov: guard let (s,u,v) = covariance.svd else { return identity }
-                return u*float3x3(diagonal: Float(beta)*compress(s))*v
-            case .cor:
-                let scale = float3x3(diagonal: rsqrt(float3(covariance[0,0], covariance[1,1], covariance[2,2])))
-                guard let (s,u,v) = covariance.svd, let (S,U,V) = (scale*covariance*scale).svd else { return identity }
-                return (U*float3x3(diagonal: compress(S))*V)*(u*float3x3(diagonal: Float(beta)*compress(s))*v)
-        }
+        return Float(c) * (U*float3x3(diagonal: compress(S,b))*V) * (u*float3x3(diagonal: compress(s,a))*v)
     }
     
     // regularized inverse square root
-    func compress(_ s: float3) -> float3 {
+    func compress(_ s: float3, _ gamma: Double = 1.0) -> float3 {
         // limit ill-conditioned eigenvalues
-        let epsilon = s.x*s.x/1.0e8
+        let epsilon = s.x*s.x/1.0e8, k = Float(gamma)
         
         // asymptote from linear to rsqrt
         return float3(
-            s.x/pow(epsilon + s.x*s.x, 0.75),
-            s.y/pow(epsilon + s.y*s.y, 0.75),
-            s.z/pow(epsilon + s.z*s.z, 0.75)
+            pow(s.x/pow(epsilon + s.x*s.x, 0.75), k),
+            pow(s.y/pow(epsilon + s.y*s.y, 0.75), k),
+            pow(s.z/pow(epsilon + s.z*s.z, 0.75), k)
         )
     }
 }

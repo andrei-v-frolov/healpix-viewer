@@ -592,26 +592,7 @@ extension Primaries: JsonRepresentable, Preference {
     static let defaultValue = Self()
 }
 
-// component decorrelation preference
-enum Decorrelation: String, CaseIterable, Codable, Preference {
-    case none = "None"
-    case cov = "COV"
-    case cor = "COR"
-    
-    var description: String {
-        switch self {
-            case .none: return "Use simply scaled data"
-            case .cov:  return "Decorrelate using covariance matrix"
-            case .cor:  return "Decorrelate using correlation matrix"
-        }
-    }
-    
-    // default value
-    static let key = "decorrelation"
-    static let defaultValue: Self = .none
-}
-
-// component decorrelation preference
+// color mixing preference
 enum Mixing: String, CaseIterable, Codable, Preference {
     case add = "Add"
     case mix = "Mix"

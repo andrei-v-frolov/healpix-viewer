@@ -10,7 +10,7 @@ import MetalKit
 
 // decorrelator state
 struct Decorrelator: Equatable {
-    var mode: Decorrelation = .defaultValue
+    var alpha: Double = 0.5
     var beta: Double = 0.5
     var avg = float3(0.0)
     var cov = float3x3(0.0)
@@ -66,11 +66,12 @@ struct MixerView: View {
             }
             Divider()
             DisclosureGroup(isExpanded: $expanded.decorrelate) {
-                Picker("Strategy:", selection: $decorrelate.mode) {
-                    ForEach(Decorrelation.allCases, id: \.self) {
-                        Text($0.rawValue).tag($0).help($0.description)
-                    }
-                }.pickerStyle(.segmented).labelsHidden().padding([.top,.bottom], 5)
+                HStack {
+                    Slider(value: $decorrelate.alpha, in: 0...1) { Text("⍺:") } onEditingChanged: { editing in focus = false }
+                        .help("Amount of decorrelation applied")
+                    TextField("⍺:", value: $decorrelate.alpha, formatter: TwoDigitNumber)
+                        .frame(width: 35).multilineTextAlignment(.trailing).focused($focus)
+                }.padding([.top,.bottom], 5)
                 HStack {
                     Slider(value: $decorrelate.beta, in: 0...1) { Text("β:") } onEditingChanged: { editing in focus = false }
                         .help("Overall expansion around mean value")
@@ -107,7 +108,7 @@ struct MixerView: View {
             .padding([.leading, .trailing], 10).labelsHidden()
             Divider()
             HStack {
-                Button { focus = false; primaries = .defaultValue; decorrelate.beta = 0.5 } label: { Label("Reset", systemImage: "sparkles") }
+                Button { focus = false; primaries = .defaultValue; decorrelate.alpha = 0.5; decorrelate.beta = 0.5 } label: { Label("Reset", systemImage: "sparkles") }
                     .help("Reset to default settings")
                 Button { withAnimation { sidebar = .list } } label: { Label("Done", systemImage: "checkmark") }
                     .help("Close color mixer view")
