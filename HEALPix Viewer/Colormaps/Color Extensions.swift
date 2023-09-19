@@ -23,8 +23,14 @@ extension Color: RawRepresentable, Codable {
     }
     
     public init?(hexValue: String) {
-        guard let i = Int(hexValue.dropFirst(hexValue.first == "#" ? 1 : 0), radix: 16) else { return nil }
-        self = Self(hex: i)
+        let value = hexValue.dropFirst(hexValue.first == "#" ? 1 : 0)
+        guard let i = Int(value, radix: 16) else { return nil }
+        
+        switch value.count {
+            case 8: self = Self(hex: i)
+            case 6: self = Self(hex: (i << 8) + 0xFF)
+            default: return nil
+        }
     }
     
     public init?(name: String) {
@@ -60,7 +66,7 @@ extension Color: RawRepresentable, Codable {
     }
     
     public var hex: Int {
-        let rgba = SIMD4<Int>(clamp(self.sRGB, min: 0.0, max: 1.0) * 255.0)
+        let rgba = SIMD4<Int>(floor(clamp(self.sRGB, min: 0.0, max: 1.0) * 255.0 + 0.5))
         return (rgba[0] << 24) | (rgba[1] << 16) | (rgba[2] << 8) | rgba[3]
     }
     
@@ -106,7 +112,7 @@ class ColorFormatter: Formatter {
     }
     
     override func getObjectValue(_ object: AutoreleasingUnsafeMutablePointer<AnyObject?>?, for string: String, errorDescription error: AutoreleasingUnsafeMutablePointer<NSString?>?) -> Bool {
-        guard let color = Color(name: string) ?? Color(hexValue: string) else { return false }
+        guard let color = Color(name: string) else { return false }
         object?.pointee = color as AnyObject; return true
     }
 }
