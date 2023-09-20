@@ -9,9 +9,7 @@ import SwiftUI
 
 // gradient manager window view
 struct GradientManager: View {
-    @State private var grad = ColorGradient(name: "Test Gradient", [.black,.red])
-    @State private var palette = Palette()
-    @State private var name = ""
+    @ObservedObject var gradient = GradientContainer(.defaultValue)
     
     // associated views
     @State private var barview: ColorbarView? = nil
@@ -19,18 +17,16 @@ struct GradientManager: View {
     var body: some View {
         GeometryReader { geometry in
             VStack {
-                TextField(value: $name, formatter: AnyText(), prompt: Text("Gradient Name")) { Text("Color") }
-                    .autocorrectionDisabled(true).multilineTextAlignment(.leading).frame(minWidth: 90)
+                TextField(value: $gradient.name, formatter: AnyText(), prompt: Text("Gradient Name")) { Text("Color") }
+                    .autocorrectionDisabled(true).multilineTextAlignment(.leading).textFieldStyle(.roundedBorder).frame(minWidth: 90)
                     .padding([.leading,.trailing], 0.05*geometry.size.width+3).padding(.top, 5)
-                BarView(colorbar: .constant(palette.scheme.colormap.texture),
-                        background: .constant(palette.bg),
-                        barview: $barview, thickness: 2.0)
-                .frame(height: 2.0*geometry.size.width/ColorbarView.aspect)
-                    .padding([.leading,.trailing,.bottom], 5)
+                BarView(colorbar: .constant(gradient.colormap(256).texture),
+                        background: .constant(.clear), barview: $barview, thickness: 2.0)
+                .frame(height: 2.0*geometry.size.width/ColorbarView.aspect).padding([.leading,.trailing,.bottom], 5)
                 HStack {
-                    GradientList(barview: $barview)
+                    //GradientList(current: $current, barview: $barview)
                     Divider()
-                    ColorList()
+                    ColorList(gradient: gradient)
                 }
             }
         }
@@ -41,16 +37,23 @@ struct GradientManager: View {
     }
 }
 
-// gradient container for gradient editor
+// container of color anchors for gradient editor
 final class GradientContainer: Identifiable, Hashable, Equatable, ObservableObject {
     let id = UUID()
-    var gradient: ColorGradient
+    @Published var name: String
+    @Published var anchors: [ColorAnchor]
     let preview = IMGTexture(width: 256, height: Int(512/ColorbarView.aspect))
     
-    init(_ gradient: ColorGradient) { self.gradient = gradient }
+    // retrieve gradient and colormap
+    var colors: [Color] { anchors.map { $0.color } }
+    var gradient: ColorGradient { ColorGradient(name: name, colors) ?? .defaultValue }
+    func colormap(_ n: Int) -> ColorMap { ColorMap(lut: gradient.lut(n)) }
+    
+    init(_ name: String, colors: [Color]) { self.name = name; anchors = colors.map { ColorAnchor($0) } }
+    init(_ gradient: ColorGradient) { name = gradient.name; anchors = gradient.colors.map { ColorAnchor($0) } }
     func refresh() { self.objectWillChange.send() }
     func hash(into hasher: inout Hasher) { hasher.combine(id) }
-    static func == (a: GradientContainer, b: GradientContainer) -> Bool { a.id == b.id && a.gradient == b.gradient }
+    static func == (a: GradientContainer, b: GradientContainer) -> Bool { a.id == b.id && a.anchors == b.anchors }
 }
 
 // gradient selector view
@@ -115,59 +118,64 @@ struct GradientList: View {
 // color anchor for gradient editor
 final class ColorAnchor: Identifiable, Hashable, Equatable, ObservableObject {
     let id = UUID()
-    var color: Color
+    @Published var color: Color
     
     init(_ color: Color) { self.color = color }
     func refresh() { self.objectWillChange.send() }
     func hash(into hasher: inout Hasher) { hasher.combine(id) }
-    static func == (a: ColorAnchor, b: ColorAnchor) -> Bool { a.id == b.id && a.color == b.color }
+    static func == (a: ColorAnchor, b: ColorAnchor) -> Bool { a.id == b.id && a.color.hex == b.color.hex }
 }
 
 // color anchor editor view
 struct ColorRow: View {
+    @ObservedObject var gradient: GradientContainer
     @ObservedObject var anchor: ColorAnchor
+    
+    // text input focus state
+    @FocusState private var focus: Bool
     
     var body: some View {
         HStack{
-            let color = Binding<Color> { anchor.color } set: { anchor.color = $0; anchor.refresh() }
-            ColorPicker("Anchor:", selection: color).labelsHidden()
-            TextField(value: color, formatter: ColorFormatter(), prompt: Text("Hex RGBA")) { Text("Color") }
-                .autocorrectionDisabled(true).font(.body.monospaced())
-                .multilineTextAlignment(.leading).frame(minWidth: 90)
+            let pick = Binding<Color> { anchor.color } set: { focus = false; anchor.color = $0 }
+            let text = Binding<Color> { anchor.color } set: { if $0.hex != anchor.color.hex { anchor.color = $0 } }
+            
+            ColorPicker("Anchor:", selection: pick).labelsHidden().onHover { if $0 { focus = false } }
+            TextField(value: text, formatter: ColorFormatter(), prompt: Text("Hex RGBA")) { Text("Color") }
+                .autocorrectionDisabled(true).font(.body.monospaced()).textFieldStyle(.roundedBorder)
+                .multilineTextAlignment(.leading).focused($focus).frame(minWidth: 90)
         }
+        .onChange(of: anchor.color) { _ in gradient.refresh() }
     }
 }
 
-// color list view
+// gradient color list view
 struct ColorList: View {
-    @State private var anchors = [ColorAnchor(.red), ColorAnchor(.blue)]
+    @ObservedObject var gradient: GradientContainer
     @State private var selected: UUID? = nil
-    
-    // share focus state between lists
-    @FocusState private var focus: Bool
     
     var body: some View {
         VStack {
             if #available(macOS 13.0, *), let selected = selected {
                 let binding = Binding { selected } set: { self.selected = $0 }
-                List($anchors, editActions: .move, selection: binding) { $anchor in ColorRow(anchor: anchor) }.focused($focus)
+                List($gradient.anchors, editActions: .move, selection: binding) { $anchor in ColorRow(gradient: gradient, anchor: anchor) }
             } else {
-                List(anchors, selection: $selected) { anchor in ColorRow(anchor: anchor) }.focused($focus)
+                List(gradient.anchors, selection: $selected) { anchor in ColorRow(gradient: gradient, anchor: anchor) }
             }
             HStack {
                 Button {
-                    if let i = anchors.firstIndex(where: { $0.id == selected }) {
-                        withAnimation { anchors.insert(ColorAnchor(anchors[i].color), at: min(i+1,anchors.endIndex)) }
+                    if let i = gradient.anchors.firstIndex(where: { $0.id == selected }) {
+                        let new = ColorAnchor(gradient.anchors[i].color), k = min(i+1,gradient.anchors.endIndex)
+                        withAnimation { gradient.anchors.insert(new, at: k); selected = new.id }
                     }
                 } label: {
                     Label("Insert", systemImage: "plus")
                 }.disabled(selected == nil)
                     .help("Insert color anchor")
                 Button(role: .destructive) {
-                    withAnimation { anchors.removeAll(where: { $0.id == selected }); selected = nil }
+                    withAnimation { gradient.anchors.removeAll(where: { $0.id == selected }); selected = nil }
                 } label: {
                     Label("Remove", systemImage: "xmark")
-                }.disabled(selected == nil || anchors.count < 3)
+                }.disabled(selected == nil || gradient.anchors.count < 3)
                     .help("Remove color anchor")
             }.padding([.leading,.trailing,.bottom], 10)
         }
