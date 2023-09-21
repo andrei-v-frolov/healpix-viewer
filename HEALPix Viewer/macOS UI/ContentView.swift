@@ -385,9 +385,7 @@ struct ContentView: View {
             for map in file.list { analyze(map) }
             
             // select default data source
-            for map in file.list {
-                if (MapCard.type(map.name) == DataSource.value) { self.selected = map.id; break }
-            }
+            self.selected = (file.list.first(where: {MapCard.type($0.name) == DataSource.value}) ?? file.list.first)?.id
         }
     }
     
