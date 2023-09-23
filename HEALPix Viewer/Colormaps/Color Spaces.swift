@@ -84,9 +84,9 @@ extension Color {
     // SIMD4 components in okLab space
     var okLab: SIMD4<Double> {
         guard let color = NSColor(self).usingColorSpace(NSColorSpace.sRGB) else { return SIMD4<Double>(0.0) }
-        let lab = srgb2ok(SIMD3<Double>(color.redComponent, color.greenComponent, color.blueComponent)), a = color.alphaComponent
+        let lab = srgb2ok(SIMD3<Double>(color.redComponent, color.greenComponent, color.blueComponent))
         
-        return SIMD4<Double>(lab.x, lab.y, lab.z, a)
+        return SIMD4<Double>(lab.x, lab.y, lab.z, color.alphaComponent)
     }
     
     init(okLab lab: SIMD4<Double>) {

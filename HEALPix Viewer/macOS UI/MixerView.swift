@@ -12,8 +12,8 @@ import MetalKit
 struct Decorrelator: Equatable {
     var alpha: Double = 0.5
     var beta: Double = 0.5
-    var avg = float3(0.0)
-    var cov = float3x3(0.0)
+    var avg = double3(0.0)
+    var cov = double3x3(0.0)
 }
 
 // color mixer panel view

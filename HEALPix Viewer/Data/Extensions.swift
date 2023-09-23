@@ -70,6 +70,36 @@ extension float3x3 {
     }
 }
 
+// singular value decomposition for double3x3 matrices
+extension double3x3 {
+    var svd: (s: double3, u: double3x3, v: double3x3)? {
+        var a = self, s = double3(0), u = double3x3(0.0), v = double3x3(0.0)
+        
+        // memory layout
+        let p = MemoryLayout<double3>.size/MemoryLayout<Double>.size
+        let q = MemoryLayout<double3x3>.size/MemoryLayout<Double>.size
+        
+        // pointers to SIMD array data
+        let ap = UnsafeMutableRawPointer(&a).bindMemory(to: Double.self, capacity: q)
+        let sp = UnsafeMutableRawPointer(&s).bindMemory(to: Double.self, capacity: p)
+        let up = UnsafeMutableRawPointer(&u).bindMemory(to: Double.self, capacity: q)
+        let vp = UnsafeMutableRawPointer(&v).bindMemory(to: Double.self, capacity: q)
+        
+        // LAPACK sgesvd parameters
+        var jobu = Character("A").asciiValue!, jobv = jobu
+        var m = __CLPK_integer(3), n = m
+        var lda = __CLPK_integer(p), ldu = lda, ldv = lda
+        var lwork = __CLPK_integer(32), info = __CLPK_integer(0)
+        var work = [Double](repeating: 0, count: Int(lwork))
+        
+        // call LAPACK and check status
+        dgesvd_(&jobu, &jobv, &m, &n, ap, &lda, sp, up, &ldu, vp, &ldv, &work, &lwork, &info)
+        guard (info == 0) else { return nil }
+        
+        return (s, u, v)
+    }
+}
+
 // shorthand for finding first identifiable occurance in array
 extension Array where Element: Identifiable {
     subscript(id: Element.ID) -> Element? { self.first(where: { $0.id == id }) }

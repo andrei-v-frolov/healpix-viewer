@@ -29,7 +29,7 @@ struct Correlator {
         self.buffer = (pts, cov, range, npix)
     }
     
-    func correlate(_ x: Map, _ y: Map, _ z: Map) -> (avg: float3, cov: float3x3)? {
+    func correlate(_ x: Map, _ y: Map, _ z: Map) -> (avg: double3, cov: double3x3)? {
         let nside = x.nside, npix = x.npix; guard (y.nside == nside && z.nside == nside) else { return nil }
         
         // limit covariance sampling to nside=1024 subset and data within range
@@ -48,16 +48,17 @@ struct Correlator {
         
         // read off accumulated values
         let n = buffer.pts.contents().bindMemory(to: uint.self, capacity: threads)[0]
-        let A = matrix_scale(1.0/Float(n), buffer.cov.contents().bindMemory(to: float3x3.self, capacity: threads)[0])
+        let S = buffer.cov.contents().bindMemory(to: float3x3.self, capacity: threads)[0]
+        let A = double3(S[0])/Double(n), B = double3(S[1])/Double(n), C = double3(S[2])/Double(n)
         
         // covariance via König's formula (not the best way, but good enough)
-        let cov = float3x3(
-            float3(A[1][0] - A[0].x*A[0].x, A[2][0] - A[0].x*A[0].y, A[2][1] - A[0].x*A[0].z),
-            float3(A[2][0] - A[0].y*A[0].x, A[1][1] - A[0].y*A[0].y, A[2][2] - A[0].y*A[0].z),
-            float3(A[2][1] - A[0].z*A[0].x, A[2][2] - A[0].z*A[0].y, A[1][2] - A[0].z*A[0].z)
+        let cov = double3x3(
+            double3(B[0] - A.x*A.x, C[0] - A.x*A.y, C[1] - A.x*A.z),
+            double3(C[0] - A.y*A.x, B[1] - A.y*A.y, C[2] - A.y*A.z),
+            double3(C[1] - A.z*A.x, C[2] - A.z*A.y, B[2] - A.z*A.z)
         )
         
-        return (A[0], cov)
+        return (A, cov)
     }
 }
 
@@ -86,32 +87,31 @@ struct ColorMixer {
         // input data range
         let range = (x: x.range, y: y.range, z: z.range)
         let x = x.available, y = y.available, z = z.available
-        let v = float3(Float(range.x?.min ?? x.min), Float(range.y?.min ?? y.min), Float(range.z?.min ?? z.min))
-        let w = float3(Float(range.x?.max ?? x.max), Float(range.y?.max ?? y.max), Float(range.z?.max ?? z.max))
+        let v = double3(range.x?.min ?? x.min, range.y?.min ?? y.min, range.z?.min ?? z.min)
+        let w = double3(range.x?.max ?? x.max, range.y?.max ?? y.max, range.z?.max ?? z.max)
         
         // input data scaling
-        let scale = float3x3(diagonal: 1.0/(w-v))
+        let scale = double3x3(diagonal: 1.0/(w-v))
         
         // decorrelation matrix
         let S = pca(covariance: scale*decorrelate.cov*scale, alpha: decorrelate.alpha, beta: decorrelate.beta) * scale
         let shift = (decorrelate.avg-v)/(w-v) - S * decorrelate.avg
         
-        // color space primaries (okLab or linear device RGB)
-        let lab = (primaries.mode == .blend), base = lab ? 3.0 : 1.0
-        let gamma = float4(float3(Float(base * exp2(primaries.gamma))), 1.0)
-        let black = (lab ? float4(primaries.black.okLab) : pow(primaries.black.components, gamma))
-        let white = (lab ? float4(primaries.white.okLab) : pow(primaries.white.components, gamma)) - black
-        let r = (lab ? float4(primaries.r.okLab) : pow(primaries.r.components, gamma)) - black
-        let g = (lab ? float4(primaries.g.okLab) : pow(primaries.g.components, gamma)) - black
-        let b = (lab ? float4(primaries.b.okLab) : pow(primaries.b.components, gamma)) - black
+        // color space primaries (okLab or linear sRGB, no transparency support)
+        let lab = (primaries.mode == .blend), gamma = double4((lab ? 3.0 : 1.0) * exp2(primaries.gamma))
+        let black = (lab ? primaries.black.okLab : pow(primaries.black.sRGB, gamma))
+        let white = (lab ? primaries.white.okLab : pow(primaries.white.sRGB, gamma)) - black
+        let r = (lab ? primaries.r.okLab : pow(primaries.r.sRGB, gamma)) - black
+        let g = (lab ? primaries.g.okLab : pow(primaries.g.sRGB, gamma)) - black
+        let b = (lab ? primaries.b.okLab : pow(primaries.b.sRGB, gamma)) - black
         
         // color mixing matrix (optionally enforcing r+g+b = white)
-        let q = float3x3(r.xyz, g.xyz, b.xyz).inverse * white.xyz
-        let M = (primaries.mode != .add) ? float3x4(q.x*r, q.y*g, q.z*b) : float3x4(r,g,b)
-        let Q = M*S, mixer = float4x4(Q[0], Q[1], Q[2], black+M*shift)
+        let q = double3x3(r.xyz, g.xyz, b.xyz).inverse * white.xyz
+        let M = (primaries.mode != .add) ? double3x4(q.x*r, q.y*g, q.z*b) : double3x4(r,g,b)
+        let Q = M*S, mixer = float4x4(float4(Q[0]), float4(Q[1]), float4(Q[2]), float4(black+M*shift))
         
         buffer.mixer.contents().storeBytes(of: mixer, as: float4x4.self)
-        buffer.gamma.contents().storeBytes(of: 1.0/gamma, as: float4.self)
+        buffer.gamma.contents().storeBytes(of: float4(1.0/gamma), as: float4.self)
         buffer.nan.contents().storeBytes(of: nan.components, as: float4.self)
         
         // initialize compute command buffer
@@ -129,24 +129,24 @@ struct ColorMixer {
     }
     
     // decorrelation matrix [COV^(-alpha) if alpha < 1/2, or COR^(1/2-alpha)*COV(-1/2) if alpha > 1/2]
-    func pca(covariance: float3x3, alpha: Double = 0.5, beta: Double = 0.5) -> float3x3 {
-        let identity = float3x3(1.0), a = min(2*alpha,1.0), b = max(2*alpha-1.0,0.0), c = beta*exp2(1.0-a)
-        let scale = float3x3(diagonal: rsqrt(float3(covariance[0,0], covariance[1,1], covariance[2,2])))
+    func pca(covariance: double3x3, alpha: Double = 0.5, beta: Double = 0.5) -> double3x3 {
+        let identity = double3x3(1.0), a = min(2*alpha,1.0), b = max(2*alpha-1.0,0.0), c = beta*exp2(1.0-a)
+        let scale = double3x3(diagonal: rsqrt(double3(covariance[0,0], covariance[1,1], covariance[2,2])))
         guard let (s,u,v) = covariance.svd, let (S,U,V) = (scale*covariance*scale).svd else { return identity }
         
-        return Float(c) * (U*float3x3(diagonal: compress(S,b))*V) * (u*float3x3(diagonal: compress(s,a))*v)
+        return c * (U*double3x3(diagonal: compress(S,b))*V) * (u*double3x3(diagonal: compress(s,a))*v)
     }
     
     // regularized inverse square root
-    func compress(_ s: float3, _ gamma: Double = 1.0) -> float3 {
+    func compress(_ s: double3, _ gamma: Double = 1.0) -> double3 {
         // limit ill-conditioned eigenvalues
-        let epsilon = s.x*s.x/1.0e8, k = Float(gamma)
+        let epsilon = s.x*s.x/1.0e8
         
         // asymptote from linear to rsqrt
-        return float3(
-            pow(s.x/pow(epsilon + s.x*s.x, 0.75), k),
-            pow(s.y/pow(epsilon + s.y*s.y, 0.75), k),
-            pow(s.z/pow(epsilon + s.z*s.z, 0.75), k)
+        return double3(
+            pow(s.x/pow(epsilon + s.x*s.x, 0.75), gamma),
+            pow(s.y/pow(epsilon + s.y*s.y, 0.75), gamma),
+            pow(s.z/pow(epsilon + s.z*s.z, 0.75), gamma)
         )
     }
 }
