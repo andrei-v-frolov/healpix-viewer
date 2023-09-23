@@ -74,7 +74,6 @@
 - map range get trashed when switching from component map
 - find the cause of lag in ComponentView (also related leak)
 - fix sampling of PDF tails in statistics overlay
-- ranking gets called twice on load?
 
 ### Paper update
 

@@ -244,6 +244,9 @@ final class MapData: Identifiable, ObservableObject {
     var ranked: CpuMap? = nil
     var buffer: GpuMap? = nil
     
+    // analysis state
+    var analized = false
+    
     // access backing store
     subscript(f: Function) -> Map? {
         switch f {
