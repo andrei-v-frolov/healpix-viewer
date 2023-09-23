@@ -42,7 +42,7 @@ final class ColorMap {
               else { fatalError("Could not allocate color map texture") }
         
         // load texture contents
-        lut.withUnsafeBytes { data in texture.replace(region: MTLRegionMake1D(0, width), mipmapLevel: 0, withBytes: data.baseAddress!, bytesPerRow: size) }
+        lut.map { $0.premultiply }.withUnsafeBytes { data in texture.replace(region: MTLRegionMake1D(0, width), mipmapLevel: 0, withBytes: data.baseAddress!, bytesPerRow: size) }
         
         return texture
     }

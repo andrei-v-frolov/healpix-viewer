@@ -70,6 +70,9 @@ inline float4 compress(const float4 v) {
     return float4(a - grade(dist)*fabs(a), v.w);
 }
 
+// MARK: composite A over B
+inline float4 over(const float4 a, const float4 b) { return a + (1.0-a.w)*b; }
+
 // MARK: colorbar shader kernel
 kernel void colorbar(
     texture1d<float,access::sample>     palette [[ texture(0) ]],

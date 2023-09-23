@@ -608,7 +608,7 @@ func annotate(_ texture: MTLTexture, height h: Int, min: Double, max: Double, fo
     
     // clear or fill the background texture content
     let rect = CGRect(x: 0, y: 0, width: w, height: h)
-    if let background = background { context.setFillColor(background); context.fill(rect) } else { context.clear(rect) }
+    if let background = background { context.setFillColor(background); context.clear(rect); context.fill(rect) }
     
     // set up font for annotations
     let size = CGFloat(h)/1.1, scaled = font?.withSize(size)

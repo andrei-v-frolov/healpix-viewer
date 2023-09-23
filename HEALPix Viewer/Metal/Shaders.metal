@@ -37,6 +37,6 @@ kernel void PROJECTION(_data)(
         output.write(background, gid);
     } else {
         const uint3 f = uint3(xyz2xyf(map.get_width(lod), v));
-        output.write(lighted(map.read(f.xy, f.z, lod), light, u), gid);
+        output.write(over(lighted(map.read(f.xy, f.z, lod), light, u), background), gid);
     }
 }
