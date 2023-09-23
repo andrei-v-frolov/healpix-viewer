@@ -734,6 +734,7 @@
 				DEVELOPMENT_TEAM = 28GCAU455A;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
+				GCC_OPTIMIZATION_LEVEL = 3;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "HEALPix-Viewer-Info.plist";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.education";
@@ -767,6 +768,7 @@
 				DEVELOPMENT_TEAM = 28GCAU455A;
 				ENABLE_HARDENED_RUNTIME = YES;
 				ENABLE_PREVIEWS = YES;
+				GCC_OPTIMIZATION_LEVEL = 3;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = "HEALPix-Viewer-Info.plist";
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.education";
