@@ -17,10 +17,6 @@ using namespace metal;
 #include "Transforms.metal"
 #include "Projections.metal"
 
-// checkerboard grid colors
-constant const float4 DARK_TILE  = float4(0.6, 0.6, 0.6, 1.0);
-constant const float4 LIGHT_TILE = float4(0.7, 0.7, 0.7, 1.0);
-
 // checkerboard grid on spherical coordinates
 inline float4 grid(float2 ang) {
     const int2 b = int2(floor(8.0/halfpi * ang));

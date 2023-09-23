@@ -14,6 +14,7 @@ struct BarView: NSViewRepresentable {
     @Binding var background: Color
     @Binding var barview: ColorbarView?
     var thickness: Double = 1.0
+    var grid: Bool = false
     
     typealias NSViewType = ColorbarView
     var view = ColorbarView()
@@ -27,6 +28,7 @@ struct BarView: NSViewRepresentable {
         view.colorbar = colorbar
         view.background = background.components
         view.thickness = thickness
+        view.grid = grid
         
         view.draw()
     }
@@ -40,12 +42,13 @@ class ColorbarView: MTKView {
     private var buffers = [[MTLBuffer]]()
     
     // MARK: colorbar shader
-    let shader = MetalKernel(kernel: "colorbar")
+    let shader = (bar: MetalKernel(kernel: "colorbar"), grid: MetalKernel(kernel: "colorgrid"))
     
     // MARK: state variables
     var colorbar = ColorScheme.defaultValue.colormap.texture
     var thickness = 1.0
     var padding = 0.1
+    var grid = false
     
     // default geometry
     static let aspect = 30.0
@@ -115,7 +118,7 @@ class ColorbarView: MTKView {
         buffers[1].contents().storeBytes(of: background ?? self.background, as: float4.self)
         
         // render colorbar
-        let colorbar = colorbar ?? self.colorbar
+        let colorbar = colorbar ?? self.colorbar, shader = grid ? shader.grid : shader.bar
         shader.encode(command: command, buffers: buffers, textures: [colorbar, texture])
         command.addCompletedHandler { _ in self.semaphore.signal() }
     }

@@ -18,4 +18,8 @@ constant const float sqrt3 = 1.732050807568877293527446341505872366942805253810;
 // guard value when (xy) is out of projection range
 constant const float3 OUT_OF_BOUNDS = float3(0);
 
+// checkerboard grid colors
+constant const float4 DARK_TILE  = float4(0.6, 0.6, 0.6, 1.0);
+constant const float4 LIGHT_TILE = float4(0.7, 0.7, 0.7, 1.0);
+
 #endif /* __COMMON__ */

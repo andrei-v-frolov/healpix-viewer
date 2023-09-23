@@ -21,7 +21,7 @@ struct GradientManager: View {
                     .autocorrectionDisabled(true).multilineTextAlignment(.leading).textFieldStyle(.roundedBorder).frame(minWidth: 90)
                     .padding([.leading,.trailing], 0.05*geometry.size.width+3).padding(.top, 5)
                 BarView(colorbar: .constant(gradient.colormap(256).texture),
-                        background: .constant(.clear), barview: $barview, thickness: 2.0)
+                        background: .constant(.clear), barview: $barview, thickness: 2.0, grid: true)
                 .frame(height: 2.0*geometry.size.width/ColorbarView.aspect).padding([.leading,.trailing,.bottom], 5)
                 HStack {
                     //GradientList(current: $current, barview: $barview)
