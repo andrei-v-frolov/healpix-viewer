@@ -34,35 +34,11 @@ extension Color: RawRepresentable, Codable {
     }
     
     public init?(name: String) {
-        switch name.lowercased() {
-            // named colors
-            case "black":   self = .black
-            case "blue":    self = .blue
-            case "brown":   self = .brown
-            case "clear":   self = .clear
-            case "cyan":    self = .cyan
-            case "gray":    self = .gray
-            case "grey":    self = .gray
-            case "green":   self = .green
-            case "indigo":  self = .indigo
-            case "mint":    self = .mint
-            case "orange":  self = .orange
-            case "pink":    self = .pink
-            case "purple":  self = .purple
-            case "red":     self = .red
-            case "teal":    self = .teal
-            case "white":   self = .white
-            case "yellow":  self = .yellow
-            
-            // semantic colors
-            case "accent":      self = .accentColor
-            case "primary":     self = .primary
-            case "secondary":   self = .secondary
-            case "disabled":    self = .disabled
-            
-            // CSS or device RGBA color
-            default: if let color = Self(hexValue: color_names_lut[name.lowercased()] ?? name) { self = color } else { return nil }
-        }
+        let canonical = name.lowercased().filter{!$0.isWhitespace}
+        
+        if let color = named_color_lut[canonical] { self = color }
+        else if let color = Self(hexValue: name) { self = color }
+        else { return nil }
     }
     
     public var hex: Int {
@@ -71,37 +47,7 @@ extension Color: RawRepresentable, Codable {
     }
     
     public var hexValue: String { return String(format:"#%08X", hex) }
-    
-    public var rawValue: String {
-        switch self {
-            // named colors
-            case .black:    return "black"
-            case .blue:     return "blue"
-            case .brown:    return "brown"
-            case .clear:    return "clear"
-            case .cyan:     return "cyan"
-            case .gray:     return "gray"
-            case .green:    return "green"
-            case .indigo:   return "indigo"
-            case .mint:     return "mint"
-            case .orange:   return "orange"
-            case .pink:     return "pink"
-            case .purple:   return "purple"
-            case .red:      return "red"
-            case .teal:     return "teal"
-            case .white:    return "white"
-            case .yellow:   return "yellow"
-            
-            // semantic colors
-            case .accentColor:  return "accent"
-            case .primary:      return "primary"
-            case .secondary:    return "secondary"
-            case .disabled:     return "disabled"
-            
-            // CSS or device RGBA color
-            default: let value = hexValue; return color_values_lut[value] ?? value
-        }
-    }
+    public var rawValue: String { system_color_lut[self] ?? hex_color_lut[hex] ?? hexValue }
 }
 
 // color formatter for text input
