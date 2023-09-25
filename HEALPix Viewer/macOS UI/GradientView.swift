@@ -31,7 +31,7 @@ struct GradientManager: View {
             }
         }
         .frame(
-            minWidth:  400, idealWidth:  400, maxWidth:  .infinity,
+            minWidth:  420, idealWidth:  420, maxWidth:  .infinity,
             minHeight: 265, idealHeight: 600, maxHeight: .infinity
         )
     }
@@ -143,6 +143,13 @@ struct ColorRow: View {
             TextField(value: text, formatter: ColorFormatter(), prompt: Text("Hex RGBA")) { Text("Color") }
                 .autocorrectionDisabled(true).font(.body.monospaced()).textFieldStyle(.roundedBorder)
                 .multilineTextAlignment(.leading).focused($focus).frame(minWidth: 90)
+            Menu {
+                ForEach(named_colors, id: \.self) { name in
+                    if let color = Color(name: name) {
+                        Button { anchor.color = color } label: { Text("●  ").foregroundColor(color) + Text(name) }
+                    }
+                }
+            } label: {}.menuStyle(.borderlessButton).frame(width: 10)
         }
         .onChange(of: anchor.color) { _ in gradient.refresh() }
     }
