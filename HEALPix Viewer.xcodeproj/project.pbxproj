@@ -71,6 +71,7 @@
 		50D29751291C39AA00E18C08 /* Map.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50D29750291C39AA00E18C08 /* Map.swift */; };
 		50E5EF9F2A9E4C8900B7734B /* HEALPix Lime.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50E5EF9E2A9E4C8900B7734B /* HEALPix Lime.swift */; };
 		50EA05862A5FC861009F73C6 /* MixerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50EA05852A5FC861009F73C6 /* MixerView.swift */; };
+		50EAFF432AC11E44001DEDE0 /* Gradients.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50EAFF422AC11E44001DEDE0 /* Gradients.swift */; };
 		50ECD2B028FF2A9C0008F915 /* Menus.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50ECD2AF28FF2A9C0008F915 /* Menus.swift */; };
 		50ECD2B228FF31260008F915 /* Toolbar.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50ECD2B128FF31260008F915 /* Toolbar.swift */; };
 		50F1F27829134E2500FBF00D /* Color Map.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50F1F27729134E2500FBF00D /* Color Map.swift */; };
@@ -148,8 +149,8 @@
 		50563E582901E19A00B316CA /* MetalShader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetalShader.swift; sourceTree = "<group>"; };
 		50563E5A2901E38F00B316CA /* Kernels.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Kernels.metal; sourceTree = "<group>"; };
 		50655411290A64F400176790 /* ProjectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectionView.swift; sourceTree = "<group>"; };
-		5065EE7F292044D000AD46CD /* Preferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Preferences.swift; path = "../App Data/Preferences.swift"; sourceTree = "<group>"; };
-		50804B162A3E53560092EED1 /* State.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = State.swift; path = "../App Data/State.swift"; sourceTree = "<group>"; };
+		5065EE7F292044D000AD46CD /* Preferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Preferences.swift; sourceTree = "<group>"; };
+		50804B162A3E53560092EED1 /* State.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = State.swift; sourceTree = "<group>"; };
 		50811E4829023EAF0069B219 /* cfitsio.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = cfitsio.xcodeproj; path = cfitsio/cfitsio.xcodeproj; sourceTree = "<group>"; };
 		508343042AA08B0900BB4C3E /* Python Spectral.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Python Spectral.swift"; sourceTree = "<group>"; };
 		508343072AA08B0900BB4C3E /* Python Seismic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Python Seismic.swift"; sourceTree = "<group>"; };
@@ -191,6 +192,7 @@
 		50D29750291C39AA00E18C08 /* Map.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Map.swift; sourceTree = "<group>"; };
 		50E5EF9E2A9E4C8900B7734B /* HEALPix Lime.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "HEALPix Lime.swift"; sourceTree = "<group>"; };
 		50EA05852A5FC861009F73C6 /* MixerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MixerView.swift; sourceTree = "<group>"; };
+		50EAFF422AC11E44001DEDE0 /* Gradients.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Gradients.swift; sourceTree = "<group>"; };
 		50ECD2AF28FF2A9C0008F915 /* Menus.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Menus.swift; sourceTree = "<group>"; };
 		50ECD2B128FF31260008F915 /* Toolbar.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Toolbar.swift; sourceTree = "<group>"; };
 		50F1F27729134E2500FBF00D /* Color Map.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color Map.swift"; sourceTree = "<group>"; };
@@ -397,11 +399,11 @@
 		50EAFF2F2AC113FC001DEDE0 /* App Data */ = {
 			isa = PBXGroup;
 			children = (
+				50EAFF422AC11E44001DEDE0 /* Gradients.swift */,
 				5065EE7F292044D000AD46CD /* Preferences.swift */,
 				50804B162A3E53560092EED1 /* State.swift */,
 			);
-			name = "App Data";
-			path = "macOS UI";
+			path = "App Data";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -579,6 +581,7 @@
 				5083430C2AA08B0900BB4C3E /* Python RdBu.swift in Sources */,
 				5083430D2AA08B0900BB4C3E /* Python Viridis.swift in Sources */,
 				50D29751291C39AA00E18C08 /* Map.swift in Sources */,
+				50EAFF432AC11E44001DEDE0 /* Gradients.swift in Sources */,
 				500EFDBD29270B66002B6057 /* Navigation.swift in Sources */,
 				50C513132907DFDC00BB6B51 /* OrientationView.swift in Sources */,
 				508D56D829131F7E0099C3A0 /* HEALPix GRV.swift in Sources */,
