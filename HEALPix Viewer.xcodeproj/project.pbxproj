@@ -299,7 +299,7 @@
 			isa = PBXGroup;
 			children = (
 				50563E5C29023D7300B316CA /* macOS UI */,
-				50D29754291C3AAA00E18C08 /* Data */,
+				50D29754291C3AAA00E18C08 /* Map Data */,
 				508D56CA29131C2D0099C3A0 /* Colormaps */,
 				50A0D2582902F1BE00A29988 /* Metal */,
 				508BBA8E28FF2765004B1A9C /* Assets.xcassets */,
@@ -373,7 +373,7 @@
 			path = Metal;
 			sourceTree = "<group>";
 		};
-		50D29754291C3AAA00E18C08 /* Data */ = {
+		50D29754291C3AAA00E18C08 /* Map Data */ = {
 			isa = PBXGroup;
 			children = (
 				50D29750291C39AA00E18C08 /* Map.swift */,
@@ -392,7 +392,7 @@
 				50FC4A1229380BF800AC5D40 /* quadsort.c */,
 				500F99AE292553720097695C /* Bridging Header.h */,
 			);
-			path = Data;
+			path = "Map Data";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -747,7 +747,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "ca.sfu.cosmo.healpix-viewer";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_OBJC_BRIDGING_HEADER = "HEALPix Viewer/Data/Bridging Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "HEALPix Viewer/Map Data/Bridging Header.h";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 			};
@@ -781,7 +781,7 @@
 				PRODUCT_BUNDLE_IDENTIFIER = "ca.sfu.cosmo.healpix-viewer";
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_EMIT_LOC_STRINGS = YES;
-				SWIFT_OBJC_BRIDGING_HEADER = "HEALPix Viewer/Data/Bridging Header.h";
+				SWIFT_OBJC_BRIDGING_HEADER = "HEALPix Viewer/Map Data/Bridging Header.h";
 				SWIFT_VERSION = 5.0;
 			};
 			name = Release;
