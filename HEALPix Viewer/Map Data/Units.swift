@@ -1,5 +1,5 @@
 //
-//  Model.swift
+//  Units.swift
 //  HEALPix Viewer
 //
 //  Created by Andrei Frolov on 2023-08-07.
