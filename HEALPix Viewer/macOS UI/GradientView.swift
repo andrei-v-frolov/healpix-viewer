@@ -143,11 +143,14 @@ struct ColorList: View {
                     if let i = gradient.anchors.firstIndex(where: { $0.id == selected }) {
                         let new = ColorAnchor(gradient.anchors[i].color), k = min(i+1,gradient.anchors.endIndex)
                         withAnimation { gradient.anchors.insert(new, at: k); selected = new.id }
+                    } else {
+                        let new = ColorAnchor(gradient.anchors.last?.color ?? .defaultValue)
+                        withAnimation { gradient.anchors.append(new); selected = new.id }
                     }
                 } label: {
-                    Label("Insert", systemImage: "plus")
-                }.disabled(selected == nil)
-                    .help("Insert color anchor")
+                    Label("Add", systemImage: "plus")
+                }
+                    .help("Add color anchor")
                 Button(role: .destructive) {
                     withAnimation { gradient.anchors.removeAll(where: { $0.id == selected }); selected = nil }
                 } label: {
