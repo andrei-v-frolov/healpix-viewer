@@ -35,7 +35,7 @@
 		50563E5B2901E38F00B316CA /* Kernels.metal in Sources */ = {isa = PBXBuildFile; fileRef = 50563E5A2901E38F00B316CA /* Kernels.metal */; };
 		50655412290A64F400176790 /* ProjectionView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50655411290A64F400176790 /* ProjectionView.swift */; };
 		5065EE80292044D000AD46CD /* Preferences.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5065EE7F292044D000AD46CD /* Preferences.swift */; };
-		50804B172A3E53560092EED1 /* State.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50804B162A3E53560092EED1 /* State.swift */; };
+		50804B172A3E53560092EED1 /* Map State.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50804B162A3E53560092EED1 /* Map State.swift */; };
 		50811E5229023F280069B219 /* CFitsIO.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 50811E5029023EAF0069B219 /* CFitsIO.framework */; };
 		50811E5329023F280069B219 /* CFitsIO.framework in Embed Frameworks */ = {isa = PBXBuildFile; fileRef = 50811E5029023EAF0069B219 /* CFitsIO.framework */; settings = {ATTRIBUTES = (CodeSignOnCopy, RemoveHeadersOnCopy, ); }; };
 		5083430A2AA08B0900BB4C3E /* Python Spectral.swift in Sources */ = {isa = PBXBuildFile; fileRef = 508343042AA08B0900BB4C3E /* Python Spectral.swift */; };
@@ -150,7 +150,7 @@
 		50563E5A2901E38F00B316CA /* Kernels.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Kernels.metal; sourceTree = "<group>"; };
 		50655411290A64F400176790 /* ProjectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectionView.swift; sourceTree = "<group>"; };
 		5065EE7F292044D000AD46CD /* Preferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Preferences.swift; sourceTree = "<group>"; };
-		50804B162A3E53560092EED1 /* State.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = State.swift; sourceTree = "<group>"; };
+		50804B162A3E53560092EED1 /* Map State.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Map State.swift"; sourceTree = "<group>"; };
 		50811E4829023EAF0069B219 /* cfitsio.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = cfitsio.xcodeproj; path = cfitsio/cfitsio.xcodeproj; sourceTree = "<group>"; };
 		508343042AA08B0900BB4C3E /* Python Spectral.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Python Spectral.swift"; sourceTree = "<group>"; };
 		508343072AA08B0900BB4C3E /* Python Seismic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Python Seismic.swift"; sourceTree = "<group>"; };
@@ -401,7 +401,7 @@
 			children = (
 				50EAFF422AC11E44001DEDE0 /* Gradients.swift */,
 				5065EE7F292044D000AD46CD /* Preferences.swift */,
-				50804B162A3E53560092EED1 /* State.swift */,
+				50804B162A3E53560092EED1 /* Map State.swift */,
 			);
 			path = "App Data";
 			sourceTree = "<group>";
@@ -585,7 +585,7 @@
 				500EFDBD29270B66002B6057 /* Navigation.swift in Sources */,
 				50C513132907DFDC00BB6B51 /* OrientationView.swift in Sources */,
 				508D56D829131F7E0099C3A0 /* HEALPix GRV.swift in Sources */,
-				50804B172A3E53560092EED1 /* State.swift in Sources */,
+				50804B172A3E53560092EED1 /* Map State.swift in Sources */,
 				50BA47F22A73271C0032690A /* ComponentView.swift in Sources */,
 				50056E8B2A78C58A00812E95 /* Random.metal in Sources */,
 				502F9D602A3A31050008FC42 /* FontPopUp.swift in Sources */,

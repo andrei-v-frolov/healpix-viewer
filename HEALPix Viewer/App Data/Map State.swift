@@ -1,5 +1,5 @@
 //
-//  State.swift
+//  Map State.swift
 //  HEALPix Viewer
 //
 //  Created by Andrei Frolov on 2023-06-17.
