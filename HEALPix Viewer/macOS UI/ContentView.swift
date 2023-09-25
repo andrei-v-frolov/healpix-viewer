@@ -275,7 +275,7 @@ struct ContentView: View {
                 case .save: saving = true
                 case .close: close()
                 case .load(let map): load(map)
-                case .redraw: transform(force: true)
+                case .redraw: transform(force: true); preview()
                 case .clear: clear()
                 case .random(let pdf, let nside):
                     let seed = Int.random(in: 0...0xFFFF)
@@ -482,7 +482,7 @@ struct ContentView: View {
     
     // render map preview
     func preview() {
-        guard let map = data, let mapview = mapview else { return }
+        guard let map = data, let mapview = mapview, sidebar == .list else { return }
         DispatchQueue.main.async { mapview.render(to: map.preview, magnification: 0.0, padding: 0.02, background: .clear); map.refresh() }
     }
     
