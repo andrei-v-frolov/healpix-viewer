@@ -148,8 +148,8 @@
 		50563E582901E19A00B316CA /* MetalShader.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetalShader.swift; sourceTree = "<group>"; };
 		50563E5A2901E38F00B316CA /* Kernels.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Kernels.metal; sourceTree = "<group>"; };
 		50655411290A64F400176790 /* ProjectionView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectionView.swift; sourceTree = "<group>"; };
-		5065EE7F292044D000AD46CD /* Preferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Preferences.swift; sourceTree = "<group>"; };
-		50804B162A3E53560092EED1 /* State.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = State.swift; sourceTree = "<group>"; };
+		5065EE7F292044D000AD46CD /* Preferences.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = Preferences.swift; path = "../App Data/Preferences.swift"; sourceTree = "<group>"; };
+		50804B162A3E53560092EED1 /* State.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; name = State.swift; path = "../App Data/State.swift"; sourceTree = "<group>"; };
 		50811E4829023EAF0069B219 /* cfitsio.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = cfitsio.xcodeproj; path = cfitsio/cfitsio.xcodeproj; sourceTree = "<group>"; };
 		508343042AA08B0900BB4C3E /* Python Spectral.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Python Spectral.swift"; sourceTree = "<group>"; };
 		508343072AA08B0900BB4C3E /* Python Seismic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Python Seismic.swift"; sourceTree = "<group>"; };
@@ -251,8 +251,6 @@
 				5047FA922A69014600FDCF98 /* GradientView.swift */,
 				50ECD2B128FF31260008F915 /* Toolbar.swift */,
 				50ECD2AF28FF2A9C0008F915 /* Menus.swift */,
-				5065EE7F292044D000AD46CD /* Preferences.swift */,
-				50804B162A3E53560092EED1 /* State.swift */,
 				501A6CD9292EC74400E931A3 /* Formatters.swift */,
 				502F9D5B2A3A30EB0008FC42 /* FontPicker */,
 			);
@@ -299,6 +297,7 @@
 			isa = PBXGroup;
 			children = (
 				50563E5C29023D7300B316CA /* macOS UI */,
+				50EAFF2F2AC113FC001DEDE0 /* App Data */,
 				50D29754291C3AAA00E18C08 /* Map Data */,
 				508D56CA29131C2D0099C3A0 /* Colormaps */,
 				50A0D2582902F1BE00A29988 /* Metal */,
@@ -393,6 +392,16 @@
 				500F99AE292553720097695C /* Bridging Header.h */,
 			);
 			path = "Map Data";
+			sourceTree = "<group>";
+		};
+		50EAFF2F2AC113FC001DEDE0 /* App Data */ = {
+			isa = PBXGroup;
+			children = (
+				5065EE7F292044D000AD46CD /* Preferences.swift */,
+				50804B162A3E53560092EED1 /* State.swift */,
+			);
+			name = "App Data";
+			path = "macOS UI";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
