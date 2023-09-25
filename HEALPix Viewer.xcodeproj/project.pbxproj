@@ -399,9 +399,9 @@
 		50EAFF2F2AC113FC001DEDE0 /* App Data */ = {
 			isa = PBXGroup;
 			children = (
-				50EAFF422AC11E44001DEDE0 /* Gradients.swift */,
 				5065EE7F292044D000AD46CD /* Preferences.swift */,
 				50804B162A3E53560092EED1 /* Map State.swift */,
+				50EAFF422AC11E44001DEDE0 /* Gradients.swift */,
 			);
 			path = "App Data";
 			sourceTree = "<group>";
