@@ -48,6 +48,9 @@
 		508BBA8F28FF2765004B1A9C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 508BBA8E28FF2765004B1A9C /* Assets.xcassets */; };
 		508BBA9228FF2765004B1A9C /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 508BBA9128FF2765004B1A9C /* Preview Assets.xcassets */; };
 		508BBA9D28FF2765004B1A9C /* HEALPix Viewer Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 508BBA9C28FF2765004B1A9C /* HEALPix Viewer Tests.swift */; };
+		508C48C12AC374E200BF7676 /* Map View.swift in Sources */ = {isa = PBXBuildFile; fileRef = 508C48C02AC374E200BF7676 /* Map View.swift */; };
+		508C48C52AC374F200BF7676 /* Color Mixer.swift in Sources */ = {isa = PBXBuildFile; fileRef = 508C48C42AC374F200BF7676 /* Color Mixer.swift */; };
+		508C48C72AC3769600BF7676 /* Line Convolution.swift in Sources */ = {isa = PBXBuildFile; fileRef = 508C48C62AC3769600BF7676 /* Line Convolution.swift */; };
 		508D56BF291309DA0099C3A0 /* LightingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 508D56BE291309DA0099C3A0 /* LightingView.swift */; };
 		508D56C729131C270099C3A0 /* Planck Parchment.swift in Sources */ = {isa = PBXBuildFile; fileRef = 508D56C629131C270099C3A0 /* Planck Parchment.swift */; };
 		508D56CE29131D530099C3A0 /* Planck FreqMap.swift in Sources */ = {isa = PBXBuildFile; fileRef = 508D56CD29131D530099C3A0 /* Planck FreqMap.swift */; };
@@ -165,6 +168,9 @@
 		508BBA9328FF2765004B1A9C /* HEALPix_Viewer.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = HEALPix_Viewer.entitlements; sourceTree = "<group>"; };
 		508BBA9828FF2765004B1A9C /* HEALPix Viewer Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "HEALPix Viewer Tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		508BBA9C28FF2765004B1A9C /* HEALPix Viewer Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HEALPix Viewer Tests.swift"; sourceTree = "<group>"; };
+		508C48C02AC374E200BF7676 /* Map View.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Map View.swift"; sourceTree = "<group>"; };
+		508C48C42AC374F200BF7676 /* Color Mixer.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color Mixer.swift"; sourceTree = "<group>"; };
+		508C48C62AC3769600BF7676 /* Line Convolution.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Line Convolution.swift"; sourceTree = "<group>"; };
 		508D56BE291309DA0099C3A0 /* LightingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LightingView.swift; sourceTree = "<group>"; };
 		508D56C629131C270099C3A0 /* Planck Parchment.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Planck Parchment.swift"; sourceTree = "<group>"; };
 		508D56CD29131D530099C3A0 /* Planck FreqMap.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Planck FreqMap.swift"; sourceTree = "<group>"; };
@@ -400,8 +406,11 @@
 			isa = PBXGroup;
 			children = (
 				5065EE7F292044D000AD46CD /* Preferences.swift */,
+				508C48C02AC374E200BF7676 /* Map View.swift */,
 				50804B162A3E53560092EED1 /* Map State.swift */,
 				50EAFF422AC11E44001DEDE0 /* Gradients.swift */,
+				508C48C42AC374F200BF7676 /* Color Mixer.swift */,
+				508C48C62AC3769600BF7676 /* Line Convolution.swift */,
 			);
 			path = "App Data";
 			sourceTree = "<group>";
@@ -538,6 +547,7 @@
 				508D56D029131DB10099C3A0 /* HEALPix CMB.swift in Sources */,
 				50F1F27829134E2500FBF00D /* Color Map.swift in Sources */,
 				508910B2291B077E00E33CB6 /* ColorbarView.swift in Sources */,
+				508C48C12AC374E200BF7676 /* Map View.swift in Sources */,
 				50138E552937026500E8C33B /* ranking.c in Sources */,
 				50C8AE8A2A47A73700EB9B1B /* MetalDevice.swift in Sources */,
 				508D56D629131F050099C3A0 /* HEALPix Cold.swift in Sources */,
@@ -546,6 +556,7 @@
 				508BBA8D28FF2764004B1A9C /* ContentView.swift in Sources */,
 				50655412290A64F400176790 /* ProjectionView.swift in Sources */,
 				50A94798291B3AEB00F6F1BA /* RangeView.swift in Sources */,
+				508C48C52AC374F200BF7676 /* Color Mixer.swift in Sources */,
 				5000CDB42A665824005ABCBA /* Extensions.swift in Sources */,
 				50C1FBBF2922B7C7009A3C99 /* FitsIO.swift in Sources */,
 				501A6CD6292EBC9400E931A3 /* ExportView.swift in Sources */,
@@ -563,6 +574,7 @@
 				508D56CE29131D530099C3A0 /* Planck FreqMap.swift in Sources */,
 				5065EE80292044D000AD46CD /* Preferences.swift in Sources */,
 				5009BB142912ECEB006DE835 /* ColorView.swift in Sources */,
+				508C48C72AC3769600BF7676 /* Line Convolution.swift in Sources */,
 				50027AAE2A6797970049A0B4 /* Color Spaces.swift in Sources */,
 				5083430A2AA08B0900BB4C3E /* Python Spectral.swift in Sources */,
 				501A6CDA292EC74400E931A3 /* Formatters.swift in Sources */,
