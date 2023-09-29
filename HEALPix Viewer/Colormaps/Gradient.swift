@@ -13,7 +13,7 @@ struct ColorGradient: Equatable, Codable {
     var colors: [Color]
     
     // need at least two colors to make a gradient
-    init?(name: String, _ colors: [Color]) {
+    init?(_ name: String, colors: [Color]) {
         guard (colors.count > 1) else { return nil }
         self.name = name; self.colors = colors
     }
@@ -38,22 +38,21 @@ struct ColorGradient: Equatable, Codable {
     func colormap(_ n: Int) -> ColorMap { ColorMap(lut: lut(n)) }
     
     // default value
-    static let key = "gradient"
-    static let defaultValue = Self(name: "New Gradient", [Color.blue, Color.white, Color.red])!
+    static let defaultValue = Self("New Gradient", colors: [.blue, .white, .red])!
 }
 
 extension ColorGradient: JsonRepresentable {
-    enum CodingKeys: String, CodingKey { case name, gradient }
+    enum CodingKeys: String, CodingKey { case name, colors }
     
     init(from decoder: Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
         name = try container.decode(String.self, forKey: .name)
-        colors = try container.decode([Color].self, forKey: .gradient)
+        colors = try container.decode([Color].self, forKey: .colors)
     }
     
     func encode(to encoder: Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
         try container.encode(name, forKey: .name)
-        try container.encode(colors, forKey: .gradient)
+        try container.encode(colors, forKey: .colors)
     }
 }

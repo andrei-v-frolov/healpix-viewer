@@ -6,12 +6,60 @@
 //
 
 import SwiftUI
+import Combine
 
-// ...
-final class CustomGradients: ObservableObject {
+// gradient collection for gradient editor
+final class GradientCollection: ObservableObject {
     @Published var list: [GradientContainer]
+    @Published var selected: UUID? = nil
     
-    init(_ list: [GradientContainer]) { self.list = list }
+    // reference pool to keep sinks from deallocation
+    private var cancellables = [UUID: AnyCancellable]()
+    
+    // currently selected gradient
+    var current: GradientContainer { return list[selected] ?? list.first ?? append() }
+    
+    // default initializer
+    init(_ list: [GradientContainer]) { self.list = list.map { $0.observeChildren() } }
+    
+    // observation strategy
+    func refresh() { self.objectWillChange.send() }
+    
+    func observe(_ element: GradientContainer) {
+        cancellables[element.id] = element.objectWillChange.sink(receiveValue: { [weak self] _ in self?.refresh() })
+    }
+    
+    func observeChildren() -> Self { list.forEach { observe($0) }; return self }
+    
+    // content management
+    func remove(_ id: UUID?) {
+        guard let id = id else { return }
+        
+        list.removeAll(where: { $0.id == id })
+        cancellables.removeValue(forKey: id)
+        if selected == id { selected = nil }
+    }
+    
+    @discardableResult func insert(after id: UUID?, _ new: GradientContainer? = nil) -> GradientContainer {
+        guard let i = list.firstIndex(where: { $0.id == id }) else { return append(new) }
+        
+        let new = (new ?? list[i].copy).observeChildren()
+        list.insert(new, at: min(i+1,list.endIndex))
+        observe(new); selected = new.id; return new
+    }
+    
+    @discardableResult func insert(before id: UUID?, _ new: GradientContainer? = nil) -> GradientContainer {
+        guard let i = list.firstIndex(where: { $0.id == id }) else { return append(new) }
+        
+        let new = (new ?? list[i].copy).observeChildren()
+        list.insert(new, at: max(i-1,list.startIndex))
+        observe(new); selected = new.id; return new
+    }
+    
+    @discardableResult func append(_ new: GradientContainer? = nil) -> GradientContainer {
+        let new = (new ?? list.last?.copy ?? .defaultValue).observeChildren()
+        list.append(new); observe(new); selected = new.id; return new
+    }
 }
 
 // container of color anchors for gradient editor
@@ -19,29 +67,89 @@ final class GradientContainer: Identifiable, Hashable, Equatable, ObservableObje
     let id = UUID()
     @Published var name: String
     @Published var anchors: [ColorAnchor]
+    @Published var selected: UUID? = nil
+    
+    // reference pool to keep sinks from deallocation
+    private var cancellables = [UUID: AnyCancellable]()
+    
+    // ...
     let preview = IMGTexture(width: 256, height: Int(512/ColorbarView.aspect))
     
     // retrieve gradient and colormap
     var colors: [Color] { anchors.map { $0.color } }
-    var gradient: ColorGradient { ColorGradient(name: name, colors) ?? .defaultValue }
+    var gradient: ColorGradient { ColorGradient(name, colors: colors) ?? .defaultValue }
     func colormap(_ n: Int) -> ColorMap { ColorMap(lut: gradient.lut(n)) }
+    
+    // instance copy
+    var copy: Self { Self(name+" Copy", colors: anchors.map { $0.color }) }
     
     // protocol implementation
     init(_ name: String, colors: [Color]) { self.name = name; anchors = colors.map { ColorAnchor($0) } }
     init(_ gradient: ColorGradient) { name = gradient.name; anchors = gradient.colors.map { ColorAnchor($0) } }
-    func refresh() { self.objectWillChange.send() }
     func hash(into hasher: inout Hasher) { hasher.combine(id) }
     static func == (a: GradientContainer, b: GradientContainer) -> Bool { a.id == b.id && a.anchors == b.anchors }
     
-    // convenience wrappers
-    func copy(to: GradientContainer) { to.name = name; to.anchors = anchors }
-    func copy(from: GradientContainer) { name = from.name; anchors = from.anchors }
+    // observation strategy
+    func refresh() { self.objectWillChange.send() }
+    
+    func observe(_ element: ColorAnchor) {
+        cancellables[element.id] = element.objectWillChange.sink(receiveValue: { [weak self] _ in self?.refresh() })
+    }
+    
+    func observeChildren() -> Self { anchors.forEach { observe($0) }; return self }
+    
+    // content management
+    func remove(_ id: UUID?) {
+        guard let id = id else { return }
+        
+        anchors.removeAll(where: { $0.id == id })
+        cancellables.removeValue(forKey: id)
+        if selected == id { selected = nil }
+    }
+    
+    @discardableResult func insert(after id: UUID?, _ new: ColorAnchor? = nil) -> ColorAnchor {
+        guard let i = anchors.firstIndex(where: { $0.id == id }) else { return append(new) }
+        
+        let new = new ?? anchors[i].copy
+        anchors.insert(new, at: min(i+1,anchors.endIndex))
+        observe(new); selected = new.id; return new
+    }
+    
+    @discardableResult func insert(before id: UUID?, _ new: ColorAnchor? = nil) -> ColorAnchor {
+        guard let i = anchors.firstIndex(where: { $0.id == id }) else { return append(new) }
+        
+        let new = new ?? anchors[i].copy
+        anchors.insert(new, at: max(i-1,anchors.startIndex))
+        observe(new); selected = new.id; return new
+    }
+    
+    @discardableResult func append(_ new: ColorAnchor? = nil) -> ColorAnchor {
+        let new = new ?? anchors.last?.copy ?? ColorAnchor(.defaultValue)
+        anchors.append(new); observe(new); selected = new.id; return new
+    }
+}
+
+extension GradientContainer: RawRepresentable, Preference {
+    convenience init?(rawValue: String) {
+        guard let gradient = ColorGradient(rawValue: rawValue) else { return nil }
+        self.init(gradient)
+    }
+    
+    var rawValue: String { gradient.rawValue }
+    
+    // default values
+    static let key = "gradient"
+    static let shared = GradientContainer.value
+    static let defaultValue = GradientContainer(.defaultValue)
 }
 
 // color anchor for gradient editor
 final class ColorAnchor: Identifiable, Hashable, Equatable, ObservableObject {
     let id = UUID()
     @Published var color: Color
+    
+    // instance copy
+    var copy: Self { Self(color) }
     
     // protocol implementation
     init(_ color: Color) { self.color = color }

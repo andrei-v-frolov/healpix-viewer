@@ -59,7 +59,7 @@ final class ColorMap {
     
     // initialize colormap from color list
     init?(colors: [Color]) {
-        guard let gradient = ColorGradient(name: "gradient", colors) else { return nil }
+        guard let gradient = ColorGradient("gradient", colors: colors) else { return nil }
         self.lut = gradient.lut(1024); self.texture = ColorMap.render(lut: lut)
     }
     
