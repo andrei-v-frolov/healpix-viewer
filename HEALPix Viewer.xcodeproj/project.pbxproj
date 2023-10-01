@@ -42,7 +42,7 @@
 		5083430B2AA08B0900BB4C3E /* Python Seismic.swift in Sources */ = {isa = PBXBuildFile; fileRef = 508343072AA08B0900BB4C3E /* Python Seismic.swift */; };
 		5083430C2AA08B0900BB4C3E /* Python RdBu.swift in Sources */ = {isa = PBXBuildFile; fileRef = 508343082AA08B0900BB4C3E /* Python RdBu.swift */; };
 		5083430D2AA08B0900BB4C3E /* Python Viridis.swift in Sources */ = {isa = PBXBuildFile; fileRef = 508343092AA08B0900BB4C3E /* Python Viridis.swift */; };
-		508910B2291B077E00E33CB6 /* ColorbarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 508910B1291B077E00E33CB6 /* ColorbarView.swift */; };
+		508910B2291B077E00E33CB6 /* BarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 508910B1291B077E00E33CB6 /* BarView.swift */; };
 		508BBA8B28FF2764004B1A9C /* HEALPix App.swift in Sources */ = {isa = PBXBuildFile; fileRef = 508BBA8A28FF2764004B1A9C /* HEALPix App.swift */; };
 		508BBA8D28FF2764004B1A9C /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 508BBA8C28FF2764004B1A9C /* ContentView.swift */; };
 		508BBA8F28FF2765004B1A9C /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 508BBA8E28FF2765004B1A9C /* Assets.xcassets */; };
@@ -159,7 +159,7 @@
 		508343072AA08B0900BB4C3E /* Python Seismic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Python Seismic.swift"; sourceTree = "<group>"; };
 		508343082AA08B0900BB4C3E /* Python RdBu.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Python RdBu.swift"; sourceTree = "<group>"; };
 		508343092AA08B0900BB4C3E /* Python Viridis.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Python Viridis.swift"; sourceTree = "<group>"; };
-		508910B1291B077E00E33CB6 /* ColorbarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorbarView.swift; sourceTree = "<group>"; };
+		508910B1291B077E00E33CB6 /* BarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BarView.swift; sourceTree = "<group>"; };
 		508BBA8728FF2764004B1A9C /* HEALPix Viewer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "HEALPix Viewer.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		508BBA8A28FF2764004B1A9C /* HEALPix App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HEALPix App.swift"; sourceTree = "<group>"; };
 		508BBA8C28FF2764004B1A9C /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -248,8 +248,8 @@
 				508D56BE291309DA0099C3A0 /* LightingView.swift */,
 				5036E7F92932FC22006AE59E /* TransformView.swift */,
 				503C675D28FF89C1002D4314 /* MapView.swift */,
+				508910B1291B077E00E33CB6 /* BarView.swift */,
 				5041397129AFF1A2006D372C /* CursorView.swift */,
-				508910B1291B077E00E33CB6 /* ColorbarView.swift */,
 				50A94797291B3AEB00F6F1BA /* RangeView.swift */,
 				50EA05852A5FC861009F73C6 /* MixerView.swift */,
 				50BA47F12A73271C0032690A /* ComponentView.swift */,
@@ -546,7 +546,7 @@
 				508D56C729131C270099C3A0 /* Planck Parchment.swift in Sources */,
 				508D56D029131DB10099C3A0 /* HEALPix CMB.swift in Sources */,
 				50F1F27829134E2500FBF00D /* Color Map.swift in Sources */,
-				508910B2291B077E00E33CB6 /* ColorbarView.swift in Sources */,
+				508910B2291B077E00E33CB6 /* BarView.swift in Sources */,
 				508C48C12AC374E200BF7676 /* Map View.swift in Sources */,
 				50138E552937026500E8C33B /* ranking.c in Sources */,
 				50C8AE8A2A47A73700EB9B1B /* MetalDevice.swift in Sources */,

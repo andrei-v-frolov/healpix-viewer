@@ -1,5 +1,5 @@
 //
-//  ColorbarView.swift
+//  BarView.swift
 //  HEALPix Viewer
 //
 //  Created by Andrei Frolov on 2022-11-08.
