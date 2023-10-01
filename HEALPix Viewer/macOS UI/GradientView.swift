@@ -61,10 +61,9 @@ struct GradientRow: View {
     
     var body: some View {
         VStack(alignment: .center, spacing: 3) {
-            //image(gradient.preview)?.resizable()
             let nominal = width/ColorbarView.aspect, height = min(2.0*nominal, 15), thickness = height/nominal
             BarView(colorbar: .constant(gradient.colormap(16).texture), background: .constant(.clear),
-                    barview: $barview, thickness: thickness, padding: 0.0, grid: true).frame(height: height)
+                    barview: $barview, thickness: thickness, padding: 0.0, grid: true).rendered(width: width, height: height)
             Text(gradient.name).font(.footnote)
         }
     }

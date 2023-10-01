@@ -22,19 +22,30 @@ struct BarView: NSViewRepresentable {
     typealias NSViewType = ColorbarView
     var view = ColorbarView()
     
-    func makeNSView(context: Self.Context) -> Self.NSViewType {
-        DispatchQueue.main.async { barview = view }
-        view.awakeFromNib(); return view
-    }
-    
-    func updateNSView(_ view: Self.NSViewType, context: Self.Context) {
+    // pass parameters to ColorbarView
+    func pass(to view: Self.NSViewType) {
         view.colorbar = colorbar
         view.background = background.components
         view.thickness = thickness
         view.padding = padding
         view.grid = grid
+    }
+    
+    func makeNSView(context: Self.Context) -> Self.NSViewType {
+        DispatchQueue.main.async { barview = view }
+        view.awakeFromNib(); pass(to: view); return view
+    }
+    
+    func updateNSView(_ view: Self.NSViewType, context: Self.Context) {
+        pass(to: view); view.draw()
+    }
+    
+    func rendered(width: Double, height: Double) -> Image? {
+        view.awakeFromNib(); pass(to: view)
         
-        view.draw()
+        let scale = NSScreen.main?.backingScaleFactor ?? 2.0
+        let texture = IMGTexture(width: Int(width*scale), height: Int(height*scale))
+        view.render(to: texture); return image(texture, oversample: scale)?.resizable()
     }
 }
 
