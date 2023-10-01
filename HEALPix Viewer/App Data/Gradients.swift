@@ -21,11 +21,13 @@ final class GradientCollection: ObservableObject {
     
     // default initializer
     init(_ list: [GradientContainer]) { self.list = list.map { $0.observeChildren() } }
+    deinit { for (_, sink) in cancellables { sink.cancel() } }
     
     // observation strategy
     func refresh() { self.objectWillChange.send() }
     
     func observe(_ element: GradientContainer) {
+        guard cancellables[element.id] == nil else { return }
         cancellables[element.id] = element.objectWillChange.sink(receiveValue: { [weak self] _ in self?.refresh() })
     }
     
@@ -44,21 +46,24 @@ final class GradientCollection: ObservableObject {
         guard let i = list.firstIndex(where: { $0.id == id }) else { return append(new) }
         
         let new = (new ?? list[i].copy).observeChildren()
-        list.insert(new, at: min(i+1,list.endIndex))
-        observe(new); selected = new.id; return new
+        list.insert(new, at: i+1); observe(new); selected = new.id; return new
     }
     
     @discardableResult func insert(before id: UUID?, _ new: GradientContainer? = nil) -> GradientContainer {
-        guard let i = list.firstIndex(where: { $0.id == id }) else { return append(new) }
+        guard let i = list.firstIndex(where: { $0.id == id }) else { return prepend(new) }
         
         let new = (new ?? list[i].copy).observeChildren()
-        list.insert(new, at: max(i-1,list.startIndex))
-        observe(new); selected = new.id; return new
+        list.insert(new, at: i); observe(new); selected = new.id; return new
     }
     
     @discardableResult func append(_ new: GradientContainer? = nil) -> GradientContainer {
         let new = (new ?? list.last?.copy ?? .defaultValue).observeChildren()
         list.append(new); observe(new); selected = new.id; return new
+    }
+    
+    @discardableResult func prepend(_ new: GradientContainer? = nil) -> GradientContainer {
+        let new = (new ?? list.first?.copy ?? .defaultValue).observeChildren()
+        list.insert(new, at: 0); observe(new); selected = new.id; return new
     }
 }
 
@@ -72,9 +77,6 @@ final class GradientContainer: Identifiable, Hashable, Equatable, ObservableObje
     // reference pool to keep sinks from deallocation
     private var cancellables = [UUID: AnyCancellable]()
     
-    // ...
-    let preview = IMGTexture(width: 256, height: Int(512/ColorbarView.aspect))
-    
     // retrieve gradient and colormap
     var colors: [Color] { anchors.map { $0.color } }
     var gradient: ColorGradient { ColorGradient(name, colors: colors) ?? .defaultValue }
@@ -83,9 +85,12 @@ final class GradientContainer: Identifiable, Hashable, Equatable, ObservableObje
     // instance copy
     var copy: Self { Self(name+" Copy", colors: anchors.map { $0.color }) }
     
-    // protocol implementation
+    // default initializers
     init(_ name: String, colors: [Color]) { self.name = name; anchors = colors.map { ColorAnchor($0) } }
     init(_ gradient: ColorGradient) { name = gradient.name; anchors = gradient.colors.map { ColorAnchor($0) } }
+    deinit { for (_, sink) in cancellables { sink.cancel() } }
+    
+    // protocol implementation
     func hash(into hasher: inout Hasher) { hasher.combine(id) }
     static func == (a: GradientContainer, b: GradientContainer) -> Bool { a.id == b.id && a.anchors == b.anchors }
     
@@ -93,6 +98,7 @@ final class GradientContainer: Identifiable, Hashable, Equatable, ObservableObje
     func refresh() { self.objectWillChange.send() }
     
     func observe(_ element: ColorAnchor) {
+        guard cancellables[element.id] == nil else { return }
         cancellables[element.id] = element.objectWillChange.sink(receiveValue: { [weak self] _ in self?.refresh() })
     }
     
@@ -111,21 +117,24 @@ final class GradientContainer: Identifiable, Hashable, Equatable, ObservableObje
         guard let i = anchors.firstIndex(where: { $0.id == id }) else { return append(new) }
         
         let new = new ?? anchors[i].copy
-        anchors.insert(new, at: min(i+1,anchors.endIndex))
-        observe(new); selected = new.id; return new
+        anchors.insert(new, at: i+1); observe(new); selected = new.id; return new
     }
     
     @discardableResult func insert(before id: UUID?, _ new: ColorAnchor? = nil) -> ColorAnchor {
-        guard let i = anchors.firstIndex(where: { $0.id == id }) else { return append(new) }
+        guard let i = anchors.firstIndex(where: { $0.id == id }) else { return prepend(new) }
         
         let new = new ?? anchors[i].copy
-        anchors.insert(new, at: max(i-1,anchors.startIndex))
-        observe(new); selected = new.id; return new
+        anchors.insert(new, at: i); observe(new); selected = new.id; return new
     }
     
     @discardableResult func append(_ new: ColorAnchor? = nil) -> ColorAnchor {
         let new = new ?? anchors.last?.copy ?? ColorAnchor(.defaultValue)
         anchors.append(new); observe(new); selected = new.id; return new
+    }
+    
+    @discardableResult func prepend(_ new: ColorAnchor? = nil) -> ColorAnchor {
+        let new = new ?? anchors.first?.copy ?? ColorAnchor(.defaultValue)
+        anchors.insert(new, at: 0); observe(new); selected = new.id; return new
     }
 }
 
