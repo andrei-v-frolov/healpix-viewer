@@ -13,7 +13,10 @@ struct BarView: NSViewRepresentable {
     @Binding var colorbar: MTLTexture
     @Binding var background: Color
     @Binding var barview: ColorbarView?
+    
+    // optional parameters
     var thickness: Double = 1.0
+    var padding: Double = 0.1
     var grid: Bool = false
     
     typealias NSViewType = ColorbarView
@@ -28,6 +31,7 @@ struct BarView: NSViewRepresentable {
         view.colorbar = colorbar
         view.background = background.components
         view.thickness = thickness
+        view.padding = padding
         view.grid = grid
         
         view.draw()

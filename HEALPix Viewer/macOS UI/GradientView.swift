@@ -11,21 +11,13 @@ import SwiftUI
 struct GradientManager: View {
     @StateObject var gradient = GradientCollection([.value,.defaultValue, GradientContainer("Test Gradient", colors: [.black,.clear,.red])]).observeChildren()
     
-    // associated views
-    @State private var barview: ColorbarView? = nil
-    
     var body: some View {
         GeometryReader { geometry in
-            VStack {
-                let name = Binding { gradient.current.name } set: { gradient.current.name = $0 }
-                TextField(value: name, formatter: AnyText(), prompt: Text("Gradient Name")) { Text("Color") }
-                    .autocorrectionDisabled(true).multilineTextAlignment(.leading).textFieldStyle(.roundedBorder).frame(minWidth: 90)
-                    .padding([.leading,.trailing], 0.05*geometry.size.width+3).padding(.top, 5)
-                BarView(colorbar: .constant(gradient.current.colormap(256).texture),
-                        background: .constant(.clear), barview: $barview, thickness: 2.0, grid: true)
-                .frame(height: 2.0*geometry.size.width/ColorbarView.aspect).padding([.leading,.trailing,.bottom], 5)
+            VStack(spacing: 0) {
+                GradientEditor(gradient: gradient.current, width: geometry.size.width-20.0)
+                Divider()
                 HStack {
-                    GradientList(gradient: gradient)
+                    GradientList(gradient: gradient, width: geometry.size.width/2.0-20.0)
                     Divider()
                     ColorList(gradient: gradient.current)
                 }
@@ -33,18 +25,46 @@ struct GradientManager: View {
         }
         .frame(
             minWidth:  420, idealWidth:  420, maxWidth:  .infinity,
-            minHeight: 265, idealHeight: 600, maxHeight: .infinity
+            minHeight: 280, idealHeight: 600, maxHeight: .infinity
         )
     }
 }
 
-// gradient selector view
+// gradient editor view
+struct GradientEditor: View {
+    @ObservedObject var gradient: GradientContainer
+    @State private var barview: ColorbarView? = nil
+    
+    // gradient width
+    var width = 400.0
+    
+    var body: some View {
+        VStack {
+            let nominal = width/ColorbarView.aspect, height = min(2.0*nominal, 25), thickness = height/nominal
+            TextField(value: $gradient.name, formatter: AnyText(), prompt: Text("Gradient Name")) { Text("Color") }
+                .autocorrectionDisabled(true).multilineTextAlignment(.leading).textFieldStyle(.roundedBorder)
+                .frame(width: width).padding([.leading,.trailing,.top], 5)
+            BarView(colorbar: .constant(gradient.colormap(256).texture), background: .constant(.clear),
+                    barview: $barview, thickness: thickness, padding: 0.0, grid: true)
+                .frame(height: height).padding([.leading,.trailing,.bottom], 5)
+        }
+    }
+}
+
+// gradient selection view
 struct GradientRow: View {
     @ObservedObject var gradient: GradientContainer
+    @State private var barview: ColorbarView? = nil
+    
+    // gradient width
+    var width = 200.0
     
     var body: some View {
         VStack(alignment: .center, spacing: 3) {
-            image(gradient.preview)?.resizable()
+            //image(gradient.preview)?.resizable()
+            let nominal = width/ColorbarView.aspect, height = min(2.0*nominal, 15), thickness = height/nominal
+            BarView(colorbar: .constant(gradient.colormap(16).texture), background: .constant(.clear),
+                    barview: $barview, thickness: thickness, padding: 0.0, grid: true).frame(height: height)
             Text(gradient.name).font(.footnote)
         }
     }
@@ -54,13 +74,16 @@ struct GradientRow: View {
 struct GradientList: View {
     @ObservedObject var gradient: GradientCollection
     
+    // gradient width
+    var width = 200.0
+    
     var body: some View {
         VStack {
             if #available(macOS 13.0, *), let selected = gradient.selected {
                 let binding = Binding { selected } set: { gradient.selected = $0 }
-                List($gradient.list, editActions: .move, selection: binding) { $grad in GradientRow(gradient: grad) }
+                List($gradient.list, editActions: .move, selection: binding) { $grad in GradientRow(gradient: grad, width: width) }
             } else {
-                List(gradient.list, selection: $gradient.selected) { grad in GradientRow(gradient: grad) }
+                List(gradient.list, selection: $gradient.selected) { grad in GradientRow(gradient: grad, width: width) }
             }
             HStack {
                 Button {
