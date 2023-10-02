@@ -67,6 +67,27 @@ final class GradientCollection: ObservableObject {
     }
 }
 
+extension GradientCollection: Codable, JsonRepresentable {
+    enum CodingKeys: String, CodingKey { case gradients, selected }
+    
+    convenience init(from decoder: Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        
+        let list = try container.decode([ColorGradient].self, forKey: .gradients)
+        let name = try container.decode(String.self, forKey: .selected)
+        
+        self.init(list.map { GradientContainer($0) })
+        self.selected = self.list.first(where: { $0.name == name})?.id
+    }
+    
+    func encode(to encoder: Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        
+        try container.encode(list.map { $0.gradient }, forKey: .gradients)
+        try container.encode(current.name, forKey: .selected)
+    }
+}
+
 // container of color anchors for gradient editor
 final class GradientContainer: Identifiable, Hashable, Equatable, ObservableObject {
     let id = UUID()
@@ -148,7 +169,6 @@ extension GradientContainer: RawRepresentable, Preference {
     
     // default values
     static let key = "gradient"
-    static let shared = GradientContainer.value
     static let defaultValue = GradientContainer(.defaultValue)
 }
 
