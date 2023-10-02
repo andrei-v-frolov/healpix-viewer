@@ -95,12 +95,20 @@ final class GradientContainer: Identifiable, Hashable, Equatable, ObservableObje
     @Published var anchors: [ColorAnchor]
     @Published var selected: UUID? = nil
     
+    // gradient modifiers
+    @Published var brightness: Double = 0.0
+    @Published var saturation: Double = 1.0
+    @Published var contrast: Double = 1.0
+    
+    // edit lock
+    @Published var locked: Bool = true
+    
     // reference pool to keep sinks from deallocation
     private var cancellables = [UUID: AnyCancellable]()
     
     // retrieve gradient and colormap
     var colors: [Color] { anchors.map { $0.color } }
-    var gradient: ColorGradient { ColorGradient(name, colors: colors) ?? .defaultValue }
+    var gradient: ColorGradient { ColorGradient(name, colors: colors, brightness: brightness, saturation: saturation, contrast: contrast) ?? .defaultValue }
     func colormap(_ n: Int) -> ColorMap { ColorMap(lut: gradient.lut(n)) }
     
     // instance copy
@@ -156,6 +164,25 @@ final class GradientContainer: Identifiable, Hashable, Equatable, ObservableObje
     @discardableResult func prepend(_ new: ColorAnchor? = nil) -> ColorAnchor {
         let new = new ?? anchors.first?.copy ?? ColorAnchor(.defaultValue)
         anchors.insert(new, at: 0); observe(new); selected = new.id; return new
+    }
+    
+    // reset gradient modifiers
+    func reset() {
+        brightness = 0.0
+        saturation = 1.0
+        contrast = 1.0
+    }
+    
+    // adjust gradient modifiers for visual impact
+    func enhance() {}
+    
+    // subdivide color anchor list
+    func refine() {
+        var i = anchors.startIndex; while (i+1 < anchors.endIndex) {
+            let mix = (anchors[i].color.okLab + anchors[i+1].color.okLab)/2.0
+            let new = ColorAnchor(Color(okLab: mix)); observe(new)
+            anchors.insert(new, at: i+1); i += 2
+        }
     }
 }
 

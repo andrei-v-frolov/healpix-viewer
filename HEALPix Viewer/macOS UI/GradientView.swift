@@ -25,7 +25,7 @@ struct GradientManager: View {
         }
         .frame(
             minWidth:  420, idealWidth:  420, maxWidth:  .infinity,
-            minHeight: 280, idealHeight: 600, maxHeight: .infinity
+            minHeight: 505, idealHeight: 505, maxHeight: .infinity
         )
     }
 }
@@ -34,6 +34,9 @@ struct GradientManager: View {
 struct GradientEditor: View {
     @ObservedObject var gradient: GradientContainer
     @State private var barview: ColorbarView? = nil
+    
+    // focus state
+    @FocusState private var focus: Bool
     
     // gradient width
     var width = 400.0
@@ -46,7 +49,55 @@ struct GradientEditor: View {
                 .frame(width: width).padding([.leading,.trailing,.top], 5)
             BarView(colorbar: .constant(gradient.colormap(256).texture), background: .constant(.clear),
                     barview: $barview, thickness: thickness, padding: 0.0, grid: true)
-                .frame(height: height).padding([.leading,.trailing,.bottom], 5)
+                .frame(height: height).padding([.leading,.trailing], 5)
+            Divider()
+            HStack {
+                Slider(value: $gradient.brightness, in: -1.0...1.0) {
+                    Text("Brighness:").frame(width: 75, alignment: .trailing)
+                } onEditingChanged: { editing in focus = false }
+                TextField("Brighness", value: $gradient.brightness, formatter: TwoDigitNumber)
+                    .frame(width: 55).multilineTextAlignment(.trailing).focused($focus)
+            }.disabled(gradient.locked).padding([.leading,.trailing], 10)
+            HStack {
+                Slider(value: $gradient.saturation, in: 0.0...2.0) {
+                    Text("Saturation:").frame(width: 75, alignment: .trailing)
+                } onEditingChanged: { editing in focus = false }
+                TextField("Saturation", value: $gradient.saturation, formatter: TwoDigitNumber)
+                    .frame(width: 55).multilineTextAlignment(.trailing).focused($focus)
+            }.disabled(gradient.locked).padding([.leading,.trailing], 10)
+            HStack {
+                Slider(value: $gradient.contrast, in: 0.0...2.0) {
+                    Text("Contrast:").frame(width: 75, alignment: .trailing)
+                } onEditingChanged: { editing in focus = false }
+                TextField("Contrast", value: $gradient.contrast, formatter: TwoDigitNumber)
+                    .frame(width: 55).multilineTextAlignment(.trailing).focused($focus)
+            }.disabled(gradient.locked).padding([.leading,.trailing,.bottom], 10)
+            HStack {
+                Spacer().frame(width: 20)
+                Spacer()
+                Button {
+                    withAnimation { gradient.refine() }
+                } label: {
+                    Label("Refine", systemImage: "arrow.triangle.branch")
+                }.disabled(gradient.locked)
+                Spacer()
+                Button {
+                    withAnimation { gradient.enhance() }
+                } label: {
+                    Label("Enhance", systemImage: "wand.and.stars")
+                }.disabled(gradient.locked)
+                Spacer()
+                Button(role: .destructive) {
+                    withAnimation { gradient.reset() }
+                } label: {
+                    Label("Reset", systemImage: "sparkles")
+                }.disabled(gradient.locked)
+                Spacer()
+                Toggle(isOn: $gradient.locked) {
+                    Label("Locked", systemImage: gradient.locked ? "lock" : "lock.open").labelStyle(.iconOnly).frame(width: 20)
+                }
+                .toggleStyle(.button).buttonStyle(.plain)
+            }.padding([.leading,.trailing,.bottom], 10)
         }
     }
 }
@@ -64,7 +115,16 @@ struct GradientRow: View {
             let nominal = width/ColorbarView.aspect, height = min(2.0*nominal, 15), thickness = height/nominal
             BarView(colorbar: .constant(gradient.colormap(16).texture), background: .constant(.clear),
                     barview: $barview, thickness: thickness, padding: 0.0, grid: true).rendered(width: width, height: height)
-            Text(gradient.name).font(.footnote)
+            HStack {
+                Spacer().frame(width:15)
+                Spacer()
+                Text(gradient.name)
+                Spacer()
+                Toggle(isOn: $gradient.locked) {
+                    Label("Locked", systemImage: gradient.locked ? "lock" : "lock.open").labelStyle(.iconOnly).frame(width: 15)
+                }
+                .toggleStyle(.button).buttonStyle(.plain)
+            }.font(.footnote)
         }
     }
 }
@@ -78,6 +138,7 @@ struct GradientList: View {
     
     var body: some View {
         VStack {
+            Text("Custom Colormaps").font(.headline).padding(.top, 5)
             if #available(macOS 13.0, *), let selected = gradient.selected {
                 let binding = Binding { selected } set: { gradient.selected = $0 }
                 List($gradient.list, editActions: .move, selection: binding) { $grad in GradientRow(gradient: grad, width: width) }
@@ -86,7 +147,7 @@ struct GradientList: View {
             }
             HStack {
                 Button {
-                    withAnimation { _ = gradient.insert(after: gradient.selected) }
+                    withAnimation { let new = gradient.insert(after: gradient.selected); new.locked = false }
                 } label: {
                     Label("New", systemImage: "plus")
                 }
@@ -95,7 +156,7 @@ struct GradientList: View {
                     withAnimation { gradient.remove(gradient.selected) }
                 } label: {
                     Label("Remove", systemImage: "xmark")
-                }.disabled(gradient.selected == nil || gradient.list.count < 2)
+                }.disabled(gradient.selected == nil || gradient.list.count < 2 || gradient.current.locked)
                     .help("Remove gradient definition")
             }.padding([.leading,.trailing,.bottom], 10)
         }
@@ -141,6 +202,7 @@ struct ColorList: View {
     
     var body: some View {
         VStack {
+            Text(gradient.name).font(.headline).padding(.top, 5)
             if #available(macOS 13.0, *), let selected = gradient.selected {
                 let binding = Binding { selected } set: { gradient.selected = $0 }
                 List($gradient.anchors, editActions: .move, selection: binding) { $anchor in ColorRow(anchor: anchor) }
@@ -161,6 +223,6 @@ struct ColorList: View {
                 }.disabled(gradient.selected == nil || gradient.anchors.count < 3)
                     .help("Remove color anchor")
             }.padding([.leading,.trailing,.bottom], 10)
-        }
+        }.disabled(gradient.locked)
     }
 }
