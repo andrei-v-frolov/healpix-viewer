@@ -108,3 +108,14 @@ extension SIMD4 where Scalar: FloatingPoint {
     var premultiply: SIMD4<Scalar> { SIMD4<Scalar>(self.x*self.w, self.y*self.w, self.z*self.w, self.w) }
     var  demultiply: SIMD4<Scalar> { (self.w != Scalar(0)) ? SIMD4<Scalar>(self.x/self.w, self.y/self.w, self.z/self.w, self.w) : SIMD4<Scalar>(0) }
 }
+
+// in future versions, these will be part of standard library
+extension SIMD4 where Scalar: Comparable {
+    var max: Scalar { max(max(self.x,self.y), max(self.z,self.w)) }
+    var min: Scalar { min(min(self.x,self.y), min(self.z,self.w)) }
+}
+
+extension SIMD3 where Scalar: Comparable {
+    var max: Scalar { max(max(self.x,self.y), self.z) }
+    var min: Scalar { min(min(self.x,self.y), self.z) }
+}
