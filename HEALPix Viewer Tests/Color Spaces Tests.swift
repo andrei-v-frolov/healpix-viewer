@@ -52,6 +52,5 @@ final class ColorSpaces_Tests: XCTestCase {
             XCTAssertEqual(x[1], z[1], accuracy: epsilon)
             XCTAssertEqual(x[2], z[2], accuracy: epsilon)
         }
-
     }
 }

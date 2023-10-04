@@ -20,6 +20,9 @@
 		500F99B3292553730097695C /* rawmap.c in Sources */ = {isa = PBXBuildFile; fileRef = 500F99B2292553730097695C /* rawmap.c */; };
 		50100CE02A67B6AC009D7D43 /* Gradient.swift in Sources */ = {isa = PBXBuildFile; fileRef = 50100CDF2A67B6AC009D7D43 /* Gradient.swift */; };
 		50138E552937026500E8C33B /* ranking.c in Sources */ = {isa = PBXBuildFile; fileRef = 50138E542937026500E8C33B /* ranking.c */; };
+		5017285E2ACCB9FF0085F5D9 /* Interpolation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5017285D2ACCB9FF0085F5D9 /* Interpolation.swift */; };
+		5017285F2ACCB9FF0085F5D9 /* Interpolation.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5017285D2ACCB9FF0085F5D9 /* Interpolation.swift */; };
+		501728632ACCD2120085F5D9 /* Interpolation Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 501728622ACCD2120085F5D9 /* Interpolation Tests.swift */; };
 		501A6CD6292EBC9400E931A3 /* ExportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 501A6CD5292EBC9400E931A3 /* ExportView.swift */; };
 		501A6CDA292EC74400E931A3 /* Formatters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 501A6CD9292EC74400E931A3 /* Formatters.swift */; };
 		502A8B67293AA00A008CAE63 /* StatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 502A8B66293AA00A008CAE63 /* StatView.swift */; };
@@ -135,6 +138,8 @@
 		50100CE42A682817009D7D43 /* Colorize.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Colorize.metal; sourceTree = "<group>"; };
 		50138E532937026500E8C33B /* ranking.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = ranking.h; sourceTree = "<group>"; };
 		50138E542937026500E8C33B /* ranking.c */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.c; path = ranking.c; sourceTree = "<group>"; };
+		5017285D2ACCB9FF0085F5D9 /* Interpolation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Interpolation.swift; sourceTree = "<group>"; };
+		501728622ACCD2120085F5D9 /* Interpolation Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Interpolation Tests.swift"; sourceTree = "<group>"; };
 		501A6CD5292EBC9400E931A3 /* ExportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportView.swift; sourceTree = "<group>"; };
 		501A6CD9292EC74400E931A3 /* Formatters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Formatters.swift; sourceTree = "<group>"; };
 		502A8B66293AA00A008CAE63 /* StatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatView.swift; sourceTree = "<group>"; };
@@ -331,6 +336,7 @@
 			children = (
 				50AFD40C29216FED00994618 /* HEALPix Tests.swift */,
 				50027AB12A679EE50049A0B4 /* Color Spaces Tests.swift */,
+				501728622ACCD2120085F5D9 /* Interpolation Tests.swift */,
 				508BBA9C28FF2765004B1A9C /* HEALPix Viewer Tests.swift */,
 			);
 			path = "HEALPix Viewer Tests";
@@ -344,6 +350,7 @@
 				50027AAD2A6797970049A0B4 /* Color Spaces.swift */,
 				5047FA942A69E83600FDCF98 /* Color Extensions.swift */,
 				5047FA962A69EDBF00FDCF98 /* Named Colors.swift */,
+				5017285D2ACCB9FF0085F5D9 /* Interpolation.swift */,
 				508D56C629131C270099C3A0 /* Planck Parchment.swift */,
 				508D56CD29131D530099C3A0 /* Planck FreqMap.swift */,
 				500338E82A3D8FBD001EC910 /* Python Difference.swift */,
@@ -582,6 +589,7 @@
 				50BA47F62A732AF60032690A /* Actors.swift in Sources */,
 				50E5EF9F2A9E4C8900B7734B /* HEALPix Lime.swift in Sources */,
 				5047FA952A69E83600FDCF98 /* Color Extensions.swift in Sources */,
+				5017285E2ACCB9FF0085F5D9 /* Interpolation.swift in Sources */,
 				5083430B2AA08B0900BB4C3E /* Python Seismic.swift in Sources */,
 				50ECD2B028FF2A9C0008F915 /* Menus.swift in Sources */,
 				50563E592901E19A00B316CA /* MetalShader.swift in Sources */,
@@ -610,10 +618,12 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				5017285F2ACCB9FF0085F5D9 /* Interpolation.swift in Sources */,
 				508BBA9D28FF2765004B1A9C /* HEALPix Viewer Tests.swift in Sources */,
 				50027AB22A679EE50049A0B4 /* Color Spaces Tests.swift in Sources */,
 				50027AB62A67A6800049A0B4 /* Color Spaces.swift in Sources */,
 				50AFD40D29216FED00994618 /* HEALPix Tests.swift in Sources */,
+				501728632ACCD2120085F5D9 /* Interpolation Tests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
