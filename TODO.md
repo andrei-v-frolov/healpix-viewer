@@ -29,6 +29,8 @@
 
 ### Optimizations
 
+- move export from map state to preferences
+- factor out modified anchors in gradient
 - proxy map to improve percieved transform performance
 - switch to indirect buffers?
 - always allocate mipmaps?
@@ -42,6 +44,7 @@
 
 ### Feature Requests
 
+- render in HDR, output to HEIF10 and OpenEXR
 - parameter and spatial correlation priors in component separator
 - magnifier glass
 - transparency mask?
@@ -51,6 +54,8 @@
 - make compress gamut into global setting?
 - command line interface (via ArgumentParser)
 - make figure of space filling pixel order curves!
+- make okLab gamut plot
+- pigment mixing (https://scrtwpns.com/mixbox/docs)?
 
 ### Future Targets
 
@@ -60,6 +65,10 @@
 
 ### Bug Fixes
 
+- animation and HRD is disabled on cold start
+- AppStorageObserver gets notified twice from SwiftUI changes
+- reallocate texture in MapData if settings change?
+- button size changed in Export As dialog!?
 - modal NSOpenPanel and NSSavePanel are called within transaction
 - display alert if FITS format is not HEALPix (or unsupported scheme)
 - fix crash on out-of-memory, display alert and refuse to load instead
@@ -67,11 +76,15 @@
 - fallback for JSON parsers
 - RangeView got broken somehow...
 - file load always crashes on external/discrete GPU
-- animation is disabled on cold start
-- thumbnails do not update in mixer
+- thumbnails do not update in mixer (and update after done)
 - disable colorbar in false color map export
 - fix focus state handling in ColorList...
 - map range get trashed when switching from component map
 - find the cause of lag in ComponentView (also related leak)
 - fix sampling of PDF tails in statistics overlay
+- FontPopUp update broke default selection?
 
+### Random ideas
+- link to libsharp for CPU FFTs? but where are the docs?
+- chromaticity diagram for color mixer annotation?
+- polarization angle + hue colormap?
