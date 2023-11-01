@@ -44,7 +44,7 @@ let analysisQueue = DispatchQueue(label: "analysis", qos: .userInitiated, attrib
     }
     
     // application appearance
-    let appearanceObserver = AppStorageObserver(key: Appearance.key) { old, new in
+    let appearanceObserver = UserDefaultsObserver(key: Appearance.key) { old, new in
         guard let raw = new as? String, let mode = Appearance(rawValue: raw) else { return }
         
         NSApp.appearance = mode.appearance
@@ -62,18 +62,19 @@ class AppDelegate: NSObject, NSApplicationDelegate, ObservableObject {
 }
 
 // observer for UserDefaults changes
-class AppStorageObserver: NSObject {
+final class UserDefaultsObserver: NSObject {
     let key: String
     private var onChange: (Any, Any) -> Void
-
+    private var dispatched: [NSKeyValueChangeKey: Any]? = nil
+    
     init(key: String, onChange: @escaping (Any, Any) -> Void) {
         self.key = key; self.onChange = onChange; super.init()
         UserDefaults.standard.addObserver(self, forKeyPath: key, options: [.old, .new], context: nil)
     }
     
     override func observeValue(forKeyPath keyPath: String?, of object: Any?, change: [NSKeyValueChangeKey: Any]?, context: UnsafeMutableRawPointer?) {
-        guard let change = change, object != nil, keyPath == key else { return }
-        onChange(change[.oldKey] as Any, change[.newKey] as Any)
+        guard keyPath == key, let change = change, !(change as NSDictionary).isEqual(to: dispatched) else { return }
+        onChange(change[.oldKey] as Any, change[.newKey] as Any); dispatched = change
     }
     
     deinit {
@@ -83,9 +84,9 @@ class AppStorageObserver: NSObject {
 
 // unique observer container for SwiftUI views
 final class Observers {
-    var registered = [String: AppStorageObserver]()
+    var registered = [String: UserDefaultsObserver]()
     
     func add(key: String, onChange: @escaping (Any, Any) -> Void) {
-        registered.updateValue(AppStorageObserver(key: key, onChange: onChange), forKey: key)
+        registered.updateValue(UserDefaultsObserver(key: key, onChange: onChange), forKey: key)
     }
 }
