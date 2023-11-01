@@ -245,7 +245,7 @@ final class MapData: Identifiable, ObservableObject {
     var buffer: GpuMap? = nil
     
     // analysis state
-    var analized = false
+    var analyzed = false
     
     // access backing store
     subscript(f: Function) -> Map? {

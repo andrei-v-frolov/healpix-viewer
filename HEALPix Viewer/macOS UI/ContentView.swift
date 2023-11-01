@@ -435,7 +435,7 @@ struct ContentView: View {
     
     // dispatch maps for analysis
     func analyze(_ map: MapData) {
-        guard !map.analized else { return }; map.analized = true
+        guard !map.analyzed else { return }; map.analyzed = true
         
         let m = map.data, n = Double(m.npix), workload = Int(n*log(1+n))
         scheduled += workload; analysisQueue.async {
