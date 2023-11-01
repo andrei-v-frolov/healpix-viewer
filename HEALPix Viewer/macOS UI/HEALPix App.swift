@@ -41,6 +41,7 @@ let analysisQueue = DispatchQueue(label: "analysis", qos: .userInitiated, attrib
     
     init() {
         NSWindow.allowsAutomaticWindowTabbing = false
+        UserDefaults.standard.register(defaults: defaults)
     }
     
     // application appearance

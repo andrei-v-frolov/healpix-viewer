@@ -34,6 +34,15 @@ let showColorBarKey = "showColorBar"
 // settings - expressions
 let nsideKey = "nside"
 
+// user defaults not set in @AppStorage initializers
+let defaults: [String: Any] = [
+    animateKey: true,
+    lightingKey: false,
+    viewFromInsideKey: true,
+    showColorBarKey: false,
+    cursorKey: false
+]
+
 // application appearance
 enum Appearance: String, CaseIterable, Codable, Preference {
     case dark = "Dark Mode"

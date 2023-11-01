@@ -65,7 +65,6 @@
 
 ### Bug Fixes
 
-- animation and HRD is disabled on cold start
 - reallocate texture in MapData if settings change?
 - button size changed in Export As dialog!?
 - modal NSOpenPanel and NSSavePanel are called within transaction
