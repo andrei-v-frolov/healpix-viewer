@@ -193,3 +193,17 @@ extension MTLTexture {
         }
     }
 }
+
+// MARK: convenience extensions to MTKView
+extension MTKView {
+    var hdr: Bool {
+        get { (layer as? CAMetalLayer)?.wantsExtendedDynamicRangeContent ?? false }
+        set {
+            guard let layer = layer as? CAMetalLayer, newValue != layer.wantsExtendedDynamicRangeContent else { return }
+            
+            layer.wantsExtendedDynamicRangeContent = newValue
+            layer.pixelFormat = newValue ? .rgba16Float : .bgra8Unorm
+            layer.colorspace = CGColorSpace(name: newValue ? CGColorSpace.extendedDisplayP3 : CGColorSpace.sRGB)
+        }
+    }
+}

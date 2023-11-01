@@ -13,6 +13,7 @@ let mapWindowID = "map view"
 let gradientWindowID = "gradient editor"
 
 // settings - appearance
+let hdrKey = "hdr"
 let animateKey = "animate"
 let lightingKey = "lighting"
 let viewFromInsideKey = "viewFromInside"
@@ -36,6 +37,7 @@ let nsideKey = "nside"
 
 // user defaults not set in @AppStorage initializers
 let defaults: [String: Any] = [
+    hdrKey: true,
     animateKey: true,
     lightingKey: false,
     viewFromInsideKey: true,
@@ -140,7 +142,7 @@ enum TextureFormat: String, CaseIterable, Codable, Preference {
     
     // default value
     static let key = "pixel"
-    static let defaultValue: Self = .uint10
+    static let defaultValue: Self = .float16
     
     // backing texture format
     var pixel: MTLPixelFormat {

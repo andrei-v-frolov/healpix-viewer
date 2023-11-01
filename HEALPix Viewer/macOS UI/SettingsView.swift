@@ -11,9 +11,9 @@ struct SettingsView: View {
     // appearance tab
     @AppStorage(Appearance.key) var appearance = Appearance.defaultValue
     @AppStorage(Thumbnails.key) var thumbnails = Thumbnails.defaultValue
-    @AppStorage(viewFromInsideKey) var viewFromInside = true
-    @AppStorage(lightingKey) var lighting = false
+    @AppStorage(hdrKey) var hdr = true
     @AppStorage(animateKey) var animate = true
+    @AppStorage(lightingKey) var lighting = false
     
     // behavior tab
     @AppStorage(keepStateKey) var keepState = StateMask.keep
@@ -59,8 +59,8 @@ struct SettingsView: View {
                 VStack(alignment: .leading) {
                     Text("When rendering the map...").font(.title3)
                     Group {
+                        Toggle(" Render in HDR", isOn: $hdr)
                         Toggle(" Animate sphere rotation", isOn: $animate)
-                        Toggle(" View from inside (enable for CMB)", isOn: $viewFromInside)
                         Toggle(" Apply lighting effects (sphere shading)", isOn: $lighting)
                     }.padding(.leading, offset)
                 }.padding(corner).frame(width: 380, alignment: .center).overlay(

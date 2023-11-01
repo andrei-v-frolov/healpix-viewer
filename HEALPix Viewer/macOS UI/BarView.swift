@@ -80,6 +80,9 @@ class ColorbarView: MTKView {
     // MARK: arguments to shader
     var background = float4(0.0)
     
+    // MARK: registered observers
+    private var observer: UserDefaultsObserver? = nil
+    
     // MARK: initalize after being decoded
     override func awakeFromNib() {
         // initialize MTKView
@@ -101,6 +104,10 @@ class ColorbarView: MTKView {
         layer?.isOpaque = false
         framebufferOnly = false
         presentsWithTransaction = true
+        
+        // enable HDR output if desired
+        if UserDefaults.standard.bool(forKey: hdrKey) { hdr = true }
+        observer = UserDefaultsObserver(key: hdrKey) { [weak self] old, new in if let value = new as? Bool { self?.hdr = value }; self?.draw() }
         
         // redraw on notification
         isPaused = true

@@ -139,7 +139,7 @@ kernel void colormix_clip(
     const int p = xyf2nest(output.get_width(), int3(gid));
     const float4 v = float4(x[p],y[p],z[p],1.0);
     
-    output.write(select(powr(saturate(mixer*v), gamma), nan, any(isnan(v) or isinf(v))), gid.xy, gid.z);
+    output.write(select(powr(mixer*v, gamma), nan, any(isnan(v) or isinf(v))), gid.xy, gid.z);
 }
 
 kernel void colormix_comp(
@@ -171,7 +171,7 @@ kernel void colormix_clab(
     const int p = xyf2nest(output.get_width(), int3(gid));
     const float4 v = ok2lrgb(mixer*float4(x[p],y[p],z[p],1.0));
     
-    output.write(select(powr(saturate(v), gamma), nan, any(isnan(v) or isinf(v))), gid.xy, gid.z);
+    output.write(select(powr(v, gamma), nan, any(isnan(v) or isinf(v))), gid.xy, gid.z);
 }
 
 kernel void colormix_film(

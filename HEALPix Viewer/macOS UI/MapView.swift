@@ -171,6 +171,9 @@ class ProjectedView: MTKView, NSWindowDelegate, Identifiable {
         return min(now-last, 5.0/Double(preferredFramesPerSecond))
     }
     
+    // MARK: registered observers
+    private var observer: UserDefaultsObserver? = nil
+    
     // MARK: initalize after being decoded
     override func awakeFromNib() {
         // initialize MTKView
@@ -195,6 +198,10 @@ class ProjectedView: MTKView, NSWindowDelegate, Identifiable {
         layer?.isOpaque = false
         framebufferOnly = false
         presentsWithTransaction = true
+        
+        // enable HDR output if desired
+        if UserDefaults.standard.bool(forKey: hdrKey) { hdr = true }
+        observer = UserDefaultsObserver(key: hdrKey) { [weak self] old, new in if let value = new as? Bool { self?.hdr = value } }
         
         // respond to mouse movement events
         let tracking: NSTrackingArea.Options = [.mouseMoved, .cursorUpdate, .activeInKeyWindow, .inVisibleRect]

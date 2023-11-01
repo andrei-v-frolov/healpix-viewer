@@ -95,6 +95,7 @@ struct ViewMenus: Commands {
     @AppStorage(lightingKey) var lighting = false
     @AppStorage(cursorKey) var cursor = false
     @AppStorage(animateKey) var animate = true
+    @AppStorage(hdrKey) var hdr = true
     
     // menu commands
     var body: some Commands {
@@ -114,6 +115,7 @@ struct ViewMenus: Commands {
                     Text($0.rawValue).tag($0)
                 }
             }
+            Toggle(isOn: $hdr) { Text("Render in HDR") }.keyboardShortcut("H", modifiers: [.control, .command])
             Divider()
             Toggle(isOn: $animate) { Text("Animate Rotation") }.keyboardShortcut("A", modifiers: [.control, .command])
             Toggle(isOn: $viewFromInside) { Text("View From Inside") }.keyboardShortcut("I", modifiers: [.control, .command])
