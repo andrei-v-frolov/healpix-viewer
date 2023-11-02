@@ -82,6 +82,11 @@
 - fix sampling of PDF tails in statistics overlay
 - FontPopUp update broke default selection?
 
+### Needs Testing
+
+- check that Intel GPU textures are little-endian
+- check default CAMetalLayer backing format on Intel
+
 ### Random ideas
 - link to libsharp for CPU FFTs? but where are the docs?
 - chromaticity diagram for color mixer annotation?
