@@ -181,16 +181,32 @@ extension MTLTexture {
         }
     }
     
-    var layout: UInt32 {
+    var float: Bool {
         switch self.pixelFormat {
-            case .a8Unorm: return CGImageAlphaInfo.alphaOnly.rawValue
-            case .r8Unorm, .r8Uint, .r16Unorm, .r16Uint, .rg8Unorm, .rg8Uint, .r32Uint, .rg16Unorm, .rg16Uint, .rg32Uint: return CGImageAlphaInfo.none.rawValue
-            case .r16Float, .r32Float, .rg16Float, .rg32Float: return CGImageAlphaInfo.none.rawValue | CGBitmapInfo.floatComponents.rawValue
-            case .abgr4Unorm: return CGImageAlphaInfo.premultipliedFirst.rawValue
-            case .rgba8Unorm, .rgba8Uint, .bgra8Unorm, .rgba16Unorm, .rgba16Uint, .rgba32Uint: return CGImageAlphaInfo.premultipliedLast.rawValue
-            case .rgba16Float, .rgba32Float: return CGImageAlphaInfo.premultipliedLast.rawValue | CGBitmapInfo.floatComponents.rawValue
+            case .r16Float, .r32Float, .rg16Float, .rg32Float, .rgba16Float, .rgba32Float: return true
+            default: return false
+        }
+    }
+    
+    var layout: UInt32 {
+        var layout: UInt32 = self.float ? CGBitmapInfo.floatComponents.rawValue : 0
+        
+        switch (self.bits/self.components) {
+            case 16: layout |= CGBitmapInfo.byteOrder16Little.rawValue
+            case 32: layout |= CGBitmapInfo.byteOrder32Little.rawValue
+            default: break
+        }
+        
+        switch self.pixelFormat {
+            case .a8Unorm: layout |= CGImageAlphaInfo.alphaOnly.rawValue
+            case .r8Unorm, .r8Uint, .r16Unorm, .r16Uint, .r16Float, .rg8Unorm, .rg8Uint, .r32Uint, .r32Float, .rg16Unorm, .rg16Uint, .rg16Float, .rg32Uint, .rg32Float: layout |= CGImageAlphaInfo.none.rawValue
+            case .abgr4Unorm: layout |= CGImageAlphaInfo.premultipliedFirst.rawValue
+            case .rgba8Unorm, .rgba8Uint, .bgra8Unorm, .rgba16Unorm, .rgba16Uint, .rgba16Float, .rgba32Uint, .rgba32Float: layout |= CGImageAlphaInfo.premultipliedLast.rawValue
             default: fatalError("texture layout is not supported")
         }
+        
+        return layout
+    }
     }
 }
 
