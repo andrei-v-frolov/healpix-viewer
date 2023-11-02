@@ -193,8 +193,7 @@ struct ContentView: View {
                             .onDrag {
                                 guard let barview = barview, let url = tmpfile(type: drag.format.type) else { return NSItemProvider() }
                                 let w = dimensions(for: drag, size: geometry.size).width/drag.oversampling, h = Int(Double(w)/ColorbarView.aspect)
-                                let format: MTLPixelFormat = (drag.format == .tiff) ? .rgba16Unorm : .rgba8Unorm
-                                let image = IMGTexture(width: w, height: h, format: format); barview.render(to: image)
+                                let image = IMGTexture(width: w, height: h, format: drag.format.pixel); barview.render(to: image)
                                 saveAsImage(image, url: url, format: drag.format); tmpfiles.append(url)
                                 return NSItemProvider(contentsOf: url) ?? NSItemProvider()
                             }
@@ -529,44 +528,68 @@ struct ContentView: View {
         let settings = settings ?? export
         let oversampling = settings.oversampling
         let (w, h, t, shift) = dimensions(for: settings, size: view)
-        let format: MTLPixelFormat = (settings.format == .tiff) ? .rgba16Unorm : .rgba8Unorm
+        let format: MTLPixelFormat = settings.format.pixel
         
-        // render map texture and annotate it if requested
+        // render target and (optional) scaled output textures
         let texture = IMGTexture(width: w, height: h, format: format); mapview.render(to: texture, shift: (0,shift))
         let output = (oversampling > 1) ? IMGTexture(width: w/oversampling, height: h/oversampling, format: format) : texture
         
-        if (settings.colorbar && settings.range) {
-            let annotation = (state.transform.f == .none) ? annotation :
-                annotation + " (\(state.transform.f.rawValue.lowercased()) scale)"
-            annotate(texture, height: t, min: state.range.min, max: state.range.max, annotation: settings.annotation ? annotation : nil, font: font.nsFont, color: color.cgColor, background: state.palette.bg.cgColor)
+        // add complications if requested
+        guard (settings.colorbar || oversampling > 1) else { return output }
+        guard let command = metal.queue.makeCommandBuffer() else { return nil }
+        
+        // render colorbar and copy it in
+        if (settings.colorbar) {
+            guard let barview = barview, let encoder = command.makeBlitCommandEncoder() else { return nil }
+            let bar = IMGTexture(width: w, height: 2*t, format: format); barview.render(to: bar)
+            
+            encoder.copy(from: bar, sourceSlice: 0, sourceLevel: 0,
+                         sourceOrigin: MTLOriginMake(0,0,0), sourceSize: MTLSizeMake(w,2*t,1),
+                         to: texture, destinationSlice: 0, destinationLevel: 0,
+                         destinationOrigin: MTLOriginMake(0, settings.range ? t : 0, 0))
+            encoder.endEncoding()
         }
         
-        if (settings.colorbar || oversampling > 1) {
-            guard let command = metal.queue.makeCommandBuffer() else { return nil }
+        // annotate it if requested
+        if (settings.colorbar && settings.range) {
+            let convert = (format == .rgba16Float), label = convert ? IMGTexture(width: w, height: t, format: .rgba32Float) : texture
+            let text = (state.transform.f == .none) ? annotation : "\(annotation) (\(state.transform.f.rawValue.lowercased()) scale)"
+            annotate(label, height: t, min: state.range.min, max: state.range.max, text: settings.annotation ? text : nil,
+                     font: font.nsFont, color: color.cgColor, background: state.palette.bg.cgColor)
             
-            // render colorbar and copy it in
-            if (settings.colorbar) {
-                guard let barview = barview, let encoder = command.makeBlitCommandEncoder() else { return nil }
-                let bar = IMGTexture(width: w, height: 2*t, format: format); barview.render(to: bar)
+            if (convert) {
+                let target = IMGTexture(width: w, height: t, format: format)
+                let converter = MPSImageConversion(device: metal.device, srcAlpha: .premultiplied, destAlpha: .premultiplied, backgroundColor: nil, conversionInfo: nil)
                 
-                encoder.copy(from: bar, sourceSlice: 0, sourceLevel: 0,
-                             sourceOrigin: MTLOriginMake(0,0,0), sourceSize: MTLSizeMake(w,2*t,1),
+                converter.encode(commandBuffer: command, sourceTexture: label, destinationTexture: target)
+                
+                guard let encoder = command.makeBlitCommandEncoder() else { return nil }
+                encoder.copy(from: target, sourceSlice: 0, sourceLevel: 0,
+                             sourceOrigin: MTLOriginMake(0,0,0), sourceSize: MTLSizeMake(w,t,1),
                              to: texture, destinationSlice: 0, destinationLevel: 0,
-                             destinationOrigin: MTLOriginMake(0, settings.range ? t : 0, 0))
+                             destinationOrigin: MTLOriginMake(0, 0, 0))
                 encoder.endEncoding()
             }
-            
-            // scale down oversampled texture
-            if (oversampling > 1) {
-                let scaler = MPSImageLanczosScale(device: metal.device)
-                let input = MPSImage(texture: texture, featureChannels: 4)
-                let output = MPSImage(texture: output, featureChannels: 4)
-                
-                scaler.encode(commandBuffer: command, sourceImage: input, destinationImage: output)
-            }
-            
-            command.commit(); command.waitUntilCompleted()
         }
+        
+        // scale down oversampled texture
+        if (oversampling > 1) {
+            if (texture.float) {
+                let blur = MPSImageGaussianBlur(device: metal.device, sigma: Float(oversampling)/2.0)
+                let blurred = IMGTexture(width: w, height: h, format: format)
+                let scaler = MPSImageBilinearScale(device: metal.device)
+                
+                blur.encode(commandBuffer: command, sourceTexture: texture, destinationTexture: blurred)
+                scaler.encode(commandBuffer: command, sourceTexture: blurred, destinationTexture: output)
+            } else {
+                let scaler = MPSImageLanczosScale(device: metal.device)
+                
+                scaler.encode(commandBuffer: command, sourceTexture: texture, destinationTexture: output)
+            }
+        }
+        
+        // wait for processing to finish
+        command.commit(); command.waitUntilCompleted()
         
         return output
     }
@@ -587,13 +610,13 @@ struct ContentView: View {
 }
 
 // annotate bottom part of a texture with data range labels and (optionally) a string
-func annotate(_ texture: MTLTexture, height h: Int, min: Double, max: Double, format: String = "%+.6g", annotation: String? = nil, font: NSFont? = nil, fontname: String = "SF Compact", color: CGColor? = nil, background: CGColor? = nil) {
+func annotate(_ texture: MTLTexture, height h: Int, min: Double, max: Double, format: String = "%+.6g", text: String? = nil, font: NSFont? = nil, fontname: String = "SF Compact", color: CGColor? = nil, background: CGColor? = nil) {
     let bits = texture.bits, bytes = bits/8
     let w = texture.width, region = MTLRegionMake2D(0,0,w,h)
     
     // allocate buffer for the annotation region
     let buffer = UnsafeMutableRawPointer.allocate(byteCount: w*h*bytes, alignment: 8192)
-    texture.getBytes(buffer, bytesPerRow: w*bytes, from: region, mipmapLevel: 0)
+    //texture.getBytes(buffer, bytesPerRow: w*bytes, from: region, mipmapLevel: 0)
     defer { buffer.deallocate() }
     
     // create graphics context
@@ -602,13 +625,17 @@ func annotate(_ texture: MTLTexture, height h: Int, min: Double, max: Double, fo
                                   bitsPerComponent: bits/texture.components, bytesPerRow: w*bytes,
                                   space: srgb, bitmapInfo: texture.layout) else { return }
     
+    // enable antialiasing
+    context.setAllowsAntialiasing(true)
+    context.setShouldAntialias(true)
+    
     // set up coordinates for off-screen image
     context.translateBy(x: 0.0, y: CGFloat(h))
     context.scaleBy(x: 1.0, y: -1.0)
     
     // clear or fill the background texture content
-    let rect = CGRect(x: 0, y: 0, width: w, height: h)
-    if let background = background { context.setFillColor(background); context.clear(rect); context.fill(rect) }
+    let rect = CGRect(x: 0, y: 0, width: w, height: h); context.clear(rect)
+    if let background = background { context.setFillColor(background); context.fill(rect) }
     
     // set up font for annotations
     let size = CGFloat(h)/1.1, scaled = font?.withSize(size)
@@ -631,8 +658,8 @@ func annotate(_ texture: MTLTexture, height h: Int, min: Double, max: Double, fo
     context.textPosition = CGPoint(x: CGFloat(w)-maxrect.width-base, y: base); CTLineDraw(maxline, context)
     
     // render annotation if supplied
-    if let annotation = annotation {
-        let string = NSAttributedString(string: annotation, attributes: attr)
+    if let text = text {
+        let string = NSAttributedString(string: text, attributes: attr)
         let line = CTLineCreateWithAttributedString(string), rect = CTLineGetImageBounds(line, context)
         
         context.textPosition = CGPoint(x: (CGFloat(w)-rect.width)/2.0, y: base); CTLineDraw(line, context)

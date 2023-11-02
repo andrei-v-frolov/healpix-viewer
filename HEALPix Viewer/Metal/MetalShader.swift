@@ -207,6 +207,12 @@ extension MTLTexture {
         
         return layout
     }
+    
+    var hdr: Bool {
+        switch self.pixelFormat {
+            case .rgba16Float, .rgba32Float: return true
+            default: return false
+        }
     }
 }
 

@@ -183,6 +183,15 @@ enum ImageFormat: String, CaseIterable, Codable, Preference {
     case heif = "HEIF"
     case tiff = "TIFF"
     
+    // OpenEXR support is only available on macOS 14+
+    @available(macOS 14.0, *) case exr = "EXR"
+    
+    // CaseIterable conformance
+    static var allCases: [Self] {
+        if #available(macOS 14.0, *) { return [.gif, .png, .exr, .heif, .tiff] }
+        else { return [.gif, .png, .heif, .tiff] }
+    }
+    
     // default value
     static let key = "format"
     static let defaultValue: Self = .png
@@ -190,8 +199,9 @@ enum ImageFormat: String, CaseIterable, Codable, Preference {
     // associated file type
     var type: UTType {
         switch self {
-            case .gif: return .gif
-            case .png: return .png
+            case .gif:  return .gif
+            case .png:  return .png
+            case .exr:  return .exr
             case .heif: return .heif
             case .tiff: return .tiff
         }
@@ -200,6 +210,7 @@ enum ImageFormat: String, CaseIterable, Codable, Preference {
     // backing texture format
     var pixel: MTLPixelFormat {
         switch self {
+            case .exr:  return .rgba16Float
             case .tiff: return .rgba16Unorm
             default:    return .rgba8Unorm
         }

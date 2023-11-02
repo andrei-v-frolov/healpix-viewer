@@ -3,6 +3,7 @@
 ### Current Status (Build 009)
 
 - stereographic projection added
+- render in HDR, output to 16-bit float OpenEXR (on macOS 14+)
 - lime colormap added to complement HEALPix hot and cold schemes
 - more Python colormaps added (viridis, spectral, seismic, RdBu)
 - text in info overlays can be selected & copied
@@ -44,7 +45,6 @@
 
 ### Feature Requests
 
-- render in HDR, output to HEIF10 and OpenEXR
 - parameter and spatial correlation priors in component separator
 - magnifier glass
 - transparency mask?

@@ -10,6 +10,7 @@ import UniformTypeIdentifiers
 
 extension UTType {
     static var healpix: UTType { UTType(exportedAs: "public.data.fits.healpix") }
+    static var exr: UTType { UTType(filenameExtension: "exr", conformingTo: .image)! }
 }
 
 // list of temporary files to clean up
@@ -80,7 +81,7 @@ func tmpfile(name: String = UUID().uuidString, type: UTType = .png) -> URL? {
 
 // SwiftUI image from Metal texture
 func image(_ texture: MTLTexture, oversample s: Double = 2.0) -> Image? {
-    guard let srgb = CGColorSpace(name: CGColorSpace.sRGB),
+    guard let srgb = CGColorSpace(name: texture.hdr ? CGColorSpace.extendedSRGB : CGColorSpace.sRGB),
           let image = CIImage(mtlTexture: texture, options: [.colorSpace: srgb]) else { return nil }
     
     let nsimage = NSImage(size: NSSize(width: image.extent.width/s, height: image.extent.height/s))
@@ -90,7 +91,7 @@ func image(_ texture: MTLTexture, oversample s: Double = 2.0) -> Image? {
 
 // image data from Metal texture
 func imagedata(_ texture: MTLTexture, format: ImageFormat = .png) -> Data? {
-    guard let srgb = CGColorSpace(name: CGColorSpace.sRGB),
+    guard let srgb = CGColorSpace(name: texture.hdr ? CGColorSpace.extendedSRGB : CGColorSpace.sRGB),
           let image = CIImage(mtlTexture: texture, options: [.colorSpace: srgb]) else { return nil }
     
     switch format {
@@ -98,6 +99,7 @@ func imagedata(_ texture: MTLTexture, format: ImageFormat = .png) -> Data? {
         case .png: return NSBitmapImageRep(ciImage: image).representation(using: .png, properties: [:])
         case .heif: return CIContext().heifRepresentation(of: image, format: .RGBA8, colorSpace: srgb)
         case .tiff: return CIContext().tiffRepresentation(of: image, format: .RGBA16, colorSpace: srgb)
+        case .exr: if #available(macOS 14.0, *) { return try? CIContext().openEXRRepresentation(of: image) } else { return nil }
     }
 }
 
