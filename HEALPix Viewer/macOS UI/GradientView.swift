@@ -48,7 +48,7 @@ struct GradientEditor: View {
                 .autocorrectionDisabled(true).multilineTextAlignment(.leading).textFieldStyle(.roundedBorder)
                 .frame(width: width).padding([.leading,.trailing,.top], 5)
             BarView(colorbar: .constant(gradient.colormap(256).texture), background: .constant(.clear),
-                    barview: $barview, thickness: thickness, padding: 0.0, grid: true)
+                    barview: $barview, thickness: thickness, padding: 0.0, grid: true, zebra: true)
                 .frame(height: height).padding([.leading,.trailing], 5)
             Divider()
             HStack {

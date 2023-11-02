@@ -18,6 +18,7 @@ struct BarView: NSViewRepresentable {
     var thickness: Double = 1.0
     var padding: Double = 0.1
     var grid: Bool = false
+    var zebra: Bool = false
     
     typealias NSViewType = ColorbarView
     var view = ColorbarView()
@@ -29,6 +30,7 @@ struct BarView: NSViewRepresentable {
         view.thickness = thickness
         view.padding = padding
         view.grid = grid
+        view.zebra = zebra
     }
     
     func makeNSView(context: Self.Context) -> Self.NSViewType {
@@ -57,13 +59,16 @@ class ColorbarView: MTKView {
     private var buffers = [[MTLBuffer]]()
     
     // MARK: colorbar shader
-    let shader = (bar: MetalKernel(kernel: "colorbar"), grid: MetalKernel(kernel: "colorgrid"))
+    let shader = (bar: MetalKernel(kernel: "colorbar"), grid: MetalKernel(kernel: "colorbar_grid"), zebra: MetalKernel(kernel: "colorbar_zebra"))
     
     // MARK: state variables
     var colorbar = ColorScheme.defaultValue.colormap.texture
     var thickness = 1.0
     var padding = 0.1
     var grid = false
+    
+    // MARK: out-of-bounds warning
+    var zebra = false { didSet { isPaused = !zebra; enableSetNeedsDisplay = !zebra } }
     
     // default geometry
     static let aspect = 30.0
@@ -94,10 +99,11 @@ class ColorbarView: MTKView {
         
         for _ in 0..<Self.inflight {
             guard let transform = metal.device.makeBuffer(length: MemoryLayout<float3x2>.size, options: options),
-                  let bgcolor = metal.device.makeBuffer(length: MemoryLayout<float4>.size, options: options)
+                  let bgcolor = metal.device.makeBuffer(length: MemoryLayout<float4>.size, options: options),
+                  let alpha = metal.device.makeBuffer(length: MemoryLayout<Float>.size, options: options)
                   else { fatalError("Could not allocate parameter buffers in colorbar view") }
             
-            self.buffers.append([transform, bgcolor])
+            self.buffers.append([transform, bgcolor, alpha])
         }
         
         // view options
@@ -108,10 +114,6 @@ class ColorbarView: MTKView {
         // enable HDR output if desired
         if UserDefaults.standard.bool(forKey: hdrKey) { hdr = true }
         observer = UserDefaultsObserver(key: hdrKey) { [weak self] old, new in if let value = new as? Bool { self?.hdr = value }; self?.draw() }
-        
-        // redraw on notification
-        isPaused = true
-        enableSetNeedsDisplay = true
     }
     
     // MARK: render image in Metal view
@@ -138,9 +140,10 @@ class ColorbarView: MTKView {
         // load arguments to be passed to kernel
         buffers[0].contents().storeBytes(of: transform ?? self.transform(), as: float3x2.self)
         buffers[1].contents().storeBytes(of: background ?? self.background, as: float4.self)
+        buffers[2].contents().storeBytes(of: Float((1.0+sin(3.0*CACurrentMediaTime()))/2.0), as: Float.self)
         
         // render colorbar
-        let colorbar = colorbar ?? self.colorbar, shader = grid ? shader.grid : shader.bar
+        let colorbar = colorbar ?? self.colorbar, shader = zebra ? shader.zebra : (grid ? shader.grid : shader.bar)
         shader.encode(command: command, buffers: buffers, textures: [colorbar, texture])
         command.addCompletedHandler { _ in self.semaphore.signal() }
     }

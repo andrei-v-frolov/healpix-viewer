@@ -22,4 +22,9 @@ constant const float3 OUT_OF_BOUNDS = float3(0);
 constant const float4 DARK_TILE  = float4(0.6, 0.6, 0.6, 1.0);
 constant const float4 LIGHT_TILE = float4(0.7, 0.7, 0.7, 1.0);
 
+// zebra pattern colors
+constant const float4 ZEBRA_LOW    = float4(0.0, 0.0, 1.0, 1.0)*0.3;
+constant const float4 ZEBRA_HIGH   = float4(1.0, 0.0, 0.0, 1.0)*0.3;
+constant const float4 ZEBRA_STRIPE = float4(1.0, 1.0, 1.0, 1.0)*0.3;
+
 #endif /* __COMMON__ */

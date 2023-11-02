@@ -3,16 +3,17 @@
 ### Current Status (Build 009)
 
 - stereographic projection added
-- render in HDR, output to 16-bit float OpenEXR (on macOS 14+)
 - lime colormap added to complement HEALPix hot and cold schemes
 - more Python colormaps added (viridis, spectral, seismic, RdBu)
+- render in HDR, output to 16-bit float OpenEXR (on macOS 14+)
 - text in info overlays can be selected & copied
 - navigation map list can be rearranged on macOS 13+
 - context menus in navigation view and color bar implemented
 - false color map support (e.g. RGB = 100,147,217GHz) + decorrelation
 - color mixer modes: co-add, mix to specified white point, blend in okLab
 - gamut mapping with ACES gamut compressor and filmic S-curves
-- color gradient generation (via blending in okLab) implemented
+- custom gradient generation (via blending in okLab) implemented
+- animated zebra pattern for out of SDR gamut gradient colors
 - single face texture array per MapData, preallocate instead of lazy
 - support for integer type maps added (like HITS count in Planck maps)
 - BAD_DATA guard (replacing with NaN) fixed
