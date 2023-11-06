@@ -38,14 +38,6 @@ inline float4 hlg(const float4 v) {
     return float4(select(HLG_A*log(4.0*v.xyz-HLG_B) + HLG_C, HLG_D*sqrt(v.xyz), v.xyz <= 0.25), v.w);
 }
 
-// MARK: ACES filmic curve approximation (scaled to prevent clipping)
-// [https://knarkowicz.wordpress.com/2016/01/06/aces-filmic-tone-mapping-curve/]
-
-inline float4 film(const float4 v) {
-    const float3 x = v.xyz;
-    return float4((2.43/2.51)*(x*(2.51*x+0.03))/(x*(2.43*x+0.59)+0.14), v.w);
-}
-
 // MARK: ACES reference gamut compression
 // [https://docs.acescentral.com/guides/rgc-implementation/]
 // [https://github.com/ampas/aces-dev/blob/master/transforms/ctl/lmt/LMT.Academy.GamutCompress.ctl]
@@ -71,6 +63,13 @@ inline float4 acesrgc(const float4 v) {
     
     return float4(max(a-grade(dist)*fabs(a), 0.0), v.w);
 }
+
+// MARK: ACES filmic curve approximation (scaled to prevent highlight clipping)
+// [https://knarkowicz.wordpress.com/2016/01/06/aces-filmic-tone-mapping-curve/]
+
+inline float4 film(const float4 v) {
+    const float3 x = acesrgc(v).xyz;
+    return float4((2.43/2.51)*(x*(2.51*x+0.03))/(x*(2.43*x+0.59)+0.14), v.w);
 }
 
 // MARK: composite A over B
@@ -127,7 +126,7 @@ kernel void colormix_comp(
     const int p = xyf2nest(output.get_width(), int3(gid));
     const float4 v = float4(x[p],y[p],z[p],1.0);
     
-    output.write(select(powr(film(compress(mixer*v)), gamma), nan, any(isnan(v) or isinf(v))), gid.xy, gid.z);
+    output.write(select(powr(film(mixer*v), gamma), nan, any(isnan(v) or isinf(v))), gid.xy, gid.z);
 }
 
 kernel void colormix_clab(
@@ -159,7 +158,7 @@ kernel void colormix_film(
     const int p = xyf2nest(output.get_width(), int3(gid));
     const float4 v = ok2lrgb(mixer*float4(x[p],y[p],z[p],1.0));
     
-    output.write(select(powr(film(compress(v)), gamma), nan, any(isnan(v) or isinf(v))), gid.xy, gid.z);
+    output.write(select(powr(film(v), gamma), nan, any(isnan(v) or isinf(v))), gid.xy, gid.z);
 }
 
 // MARK: accumulate covariance of 3-channel data
