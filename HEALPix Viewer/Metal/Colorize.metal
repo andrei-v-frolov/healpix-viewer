@@ -46,28 +46,31 @@ inline float4 film(const float4 v) {
     return float4((2.43/2.51)*(x*(2.51*x+0.03))/(x*(2.43*x+0.59)+0.14), v.w);
 }
 
-// MARK: ACES gamut compression
+// MARK: ACES reference gamut compression
 // [https://docs.acescentral.com/guides/rgc-implementation/]
 // [https://github.com/ampas/aces-dev/blob/master/transforms/ctl/lmt/LMT.Academy.GamutCompress.ctl]
 
-constant const float3 GAMUT_LIM = float3(1.147,1.264,1.312);
-constant const float3 GAMUT_THR = float3(0.815,0.803,0.880);
 constant const float  GAMUT_PWR = 1.2;
+constant const float3 GAMUT_THR = float3(0.815,0.803,0.880);
+constant const float3 GAMUT_LIM = float3(1.147,1.264,1.312);
+
+// auxilliary computed parameters
+// GAMUT_INT = pow((GAMUT_LIM - GAMUT_THR)/(1.0 - GAMUT_THR), GAMUT_PWR);
+// GAMUT_SCL = (GAMUT_LIM - GAMUT_THR)/pow(GAMUT_INT - 1.0, 1.0/GAMUT_PWR);
+constant const float3 GAMUT_SCL = float3(0.3273018774677787, 0.2859380289271138, 0.1468214578384229);
 
 // compression grading curve
 inline float3 grade(const float3 dist) {
-    const float3 intersect = pow((GAMUT_LIM - GAMUT_THR)/(1.0 - GAMUT_THR), GAMUT_PWR);
-    const float3 scale = (GAMUT_LIM - GAMUT_THR)/pow(intersect - 1.0, 1.0/GAMUT_PWR);
-    const float3 x = (dist - GAMUT_THR)/scale;
-    
-    return select(GAMUT_THR + scale*x/pow(1.0 + pow(x, GAMUT_PWR), 1.0/GAMUT_PWR), dist, dist < GAMUT_THR);
+    const float3 scale = pow(1.0 + pow((dist - GAMUT_THR)/GAMUT_SCL, GAMUT_PWR), -1.0/GAMUT_PWR);
+    return select(GAMUT_THR + scale*(dist - GAMUT_THR), dist, dist < GAMUT_THR);
 }
 
-inline float4 compress(const float4 v) {
+inline float4 acesrgc(const float4 v) {
     const float a = max3(v.x,v.y,v.z);
-    const float3 dist = select((a-v.xyz)/fabs(a), float3(0.0), a == 0.0);
+    const float3 dist = select((a-v.xyz)/fabs(a), 0.0, a == 0.0);
     
-    return float4(a - grade(dist)*fabs(a), v.w);
+    return float4(max(a-grade(dist)*fabs(a), 0.0), v.w);
+}
 }
 
 // MARK: composite A over B
