@@ -25,19 +25,6 @@ inline float4 ok2lrgb(const float4 v) {
     return float4(M1*pow(M2*v.xyz, 3.0), v.w);
 }
 
-// MARK: Hybrid log-gamma (Rec. 2100)
-// [https://en.wikipedia.org/wiki/Hybrid_log–gamma]
-
-// stretched and scaled to match sqrt(x) at midtones (where average is mapped to)
-constant const float HLG_A = 0.19264464123396488699073686524675879;
-constant const float HLG_B = 0.28466890937220093748991475372557885;
-constant const float HLG_C = 0.60315455422596953825614647615458749;
-constant const float HLG_D = 1.07723343082931487010271121247405941;
-
-inline float4 hlg(const float4 v) {
-    return float4(select(HLG_A*log(4.0*v.xyz-HLG_B) + HLG_C, HLG_D*sqrt(v.xyz), v.xyz <= 0.25), v.w);
-}
-
 // MARK: ACES reference gamut compression
 // [https://docs.acescentral.com/guides/rgc-implementation/]
 // [https://github.com/ampas/aces-dev/blob/master/transforms/ctl/lmt/LMT.Academy.GamutCompress.ctl]
@@ -46,7 +33,7 @@ constant const float  GAMUT_PWR = 1.2;
 constant const float3 GAMUT_THR = float3(0.815,0.803,0.880);
 constant const float3 GAMUT_LIM = float3(1.147,1.264,1.312);
 
-// auxilliary computed parameters
+// auxilliary pre-computed parameters
 // GAMUT_INT = pow((GAMUT_LIM - GAMUT_THR)/(1.0 - GAMUT_THR), GAMUT_PWR);
 // GAMUT_SCL = (GAMUT_LIM - GAMUT_THR)/pow(GAMUT_INT - 1.0, 1.0/GAMUT_PWR);
 constant const float3 GAMUT_SCL = float3(0.3273018774677787, 0.2859380289271138, 0.1468214578384229);
@@ -70,6 +57,20 @@ inline float4 acesrgc(const float4 v) {
 inline float4 film(const float4 v) {
     const float3 x = acesrgc(v).xyz;
     return float4((2.43/2.51)*(x*(2.51*x+0.03))/(x*(2.43*x+0.59)+0.14), v.w);
+}
+
+// MARK: linearized Hybrid log-gamma (Rec. 2100)
+// [https://en.wikipedia.org/wiki/Hybrid_log–gamma]
+
+// stretched and scaled to match sqrt(x) at midtones (where average is mapped to)
+constant const float HLG_A = 0.19264464123396488699073686524675879;
+constant const float HLG_B = 0.28466890937220093748991475372557885;
+constant const float HLG_C = 0.60315455422596953825614647615458749;
+constant const float HLG_D = 1.16043186449629630482925925719925639;
+
+inline float4 hlg(const float4 v) {
+    const float3 x = acesrgc(v).xyz;
+    return float4(select(powr(HLG_A*log(4.0*x-HLG_B) + HLG_C, 2), HLG_D*x, x <= 0.25), v.w);
 }
 
 // MARK: composite A over B
