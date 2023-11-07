@@ -202,6 +202,7 @@
 		50C8AE892A47A73700EB9B1B /* MetalDevice.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MetalDevice.swift; sourceTree = "<group>"; };
 		50CB1444290B03B0006D59FA /* Shaders.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Shaders.metal; sourceTree = "<group>"; };
 		50D19B792AFABC38000702A6 /* CubeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CubeView.swift; sourceTree = "<group>"; };
+		50D19B7D2AFAC3BE000702A6 /* Colorcube.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Colorcube.metal; sourceTree = "<group>"; };
 		50D29750291C39AA00E18C08 /* Map.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Map.swift; sourceTree = "<group>"; };
 		50D2B1A92AF4509000E11F81 /* Colorbar.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Colorbar.metal; sourceTree = "<group>"; };
 		50E5EF9E2A9E4C8900B7734B /* HEALPix Lime.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "HEALPix Lime.swift"; sourceTree = "<group>"; };
@@ -380,6 +381,7 @@
 				50A0D2522902F1A300A29988 /* Healpix.metal */,
 				50100CE42A682817009D7D43 /* Colorize.metal */,
 				50D2B1A92AF4509000E11F81 /* Colorbar.metal */,
+				50D19B7D2AFAC3BE000702A6 /* Colorcube.metal */,
 				503AB6962A71D8D9007C5DB6 /* Components.metal */,
 				5036E7FD2933193B006AE59E /* Transforms.metal */,
 				50A0D2562902F1B200A29988 /* Projections.metal */,
