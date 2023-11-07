@@ -199,6 +199,9 @@ struct ContentView: View {
                             }
                             RangeToolbar(range: $state.range, datamin: $datamin, datamax: $datamax)
                         }
+                        if (colorbar && sidebar == .mixer) {
+                            CubeView()
+                        }
                     }
                     .sheet(isPresented: $loading) {
                         VStack(spacing: 10) {
