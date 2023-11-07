@@ -80,6 +80,7 @@ struct ContentView: View {
     // associated views
     @State private var mapview: ProjectedView? = nil
     @State private var barview: ColorbarView? = nil
+    @State private var cubeview: ColorCubeView? = nil
     
     // data transformer
     private let transformer = DataTransformer()
@@ -200,7 +201,14 @@ struct ContentView: View {
                             RangeToolbar(range: $state.range, datamin: $datamin, datamax: $datamax)
                         }
                         if (colorbar && sidebar == .mixer) {
-                            CubeView()
+                            CubeView(cubeview: $cubeview).frame(height: 1.0*geometry.size.width/ColorCubeView.aspect)
+                            .onDrag {
+                                guard let cubeview = cubeview, let url = tmpfile(type: drag.format.type) else { return NSItemProvider() }
+                                let w = dimensions(for: drag, size: geometry.size).width/drag.oversampling, h = Int(Double(w)/ColorCubeView.aspect)
+                                let image = IMGTexture(width: w, height: h, format: drag.format.pixel); cubeview.render(to: image)
+                                saveAsImage(image, url: url, format: drag.format); tmpfiles.append(url)
+                                return NSItemProvider(contentsOf: url) ?? NSItemProvider()
+                            }
                         }
                     }
                     .sheet(isPresented: $loading) {

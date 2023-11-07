@@ -10,6 +10,8 @@ import MetalKit
 
 // MARK: SwiftUI wrapper for ColorCubeView
 struct CubeView: NSViewRepresentable {
+    @Binding var cubeview: ColorCubeView?
+    
     typealias NSViewType = ColorCubeView
     var view = ColorCubeView()
     
@@ -17,7 +19,7 @@ struct CubeView: NSViewRepresentable {
     func pass(to view: Self.NSViewType) {}
     
     func makeNSView(context: Self.Context) -> Self.NSViewType {
-        //DispatchQueue.main.async { cubeview = view }
+        DispatchQueue.main.async { cubeview = view }
         view.awakeFromNib(); pass(to: view); return view
     }
     
@@ -127,7 +129,7 @@ class ColorCubeView: MTKView {
     
     // MARK: render image to off-screen texture
     func render(to texture: MTLTexture) {
-        let transform = transform(width: Double(texture.width), height: Double(texture.height), padding: 0.0)
+        let transform = transform(width: Double(texture.width), height: Double(texture.height), padding: 0.0, flipy: false)
         
         // initialize compute command buffer
         guard let command = metal.queue.makeCommandBuffer() else { return }
