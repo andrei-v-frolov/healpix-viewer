@@ -23,6 +23,10 @@ inline float3 upper_face(float2 v) {
     return float3(1.0);
 }
 
+inline float3 plane_cut(float2 v, float u) {
+    return float3(u-v.y-sqrt3*v.x, u+2.0*v.y, u-v.y+sqrt3*v.x)/3.0;
+}
+
 // MARK: color cube shader kernel
 kernel void colorcube(
     texture2d<float,access::write>      output [[ texture(0) ]],
@@ -31,7 +35,7 @@ kernel void colorcube(
     uint2 gid                           [[ thread_position_in_grid ]]
 ) {
     const float2 v = transform * float3(gid.x, gid.y, 1);
-    const float3 rgb = powr(upper_face(v), 1.0/2.2);
+    const float3 rgb = powr(plane_cut(v,2.0), 1.0/2.2);
     
     float4 pixel = select(over(float4(rgb,1), background), background, length(v) > 1.0);
     output.write(pixel, gid);
