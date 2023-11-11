@@ -100,7 +100,7 @@ struct Toolbar: CustomizableToolbarContent {
                     Button {
                         toggleStatView()
                     } label: {
-                        Label("Stats", systemImage: "waveform.path.ecg")
+                        Label { Text("Stats") } icon: { Curve.gaussian.frame(width: 20, height: 24) }
                     }
                     .help("Data Statistics")
                     .disabled(cdf == nil || sidebar == .mixer)

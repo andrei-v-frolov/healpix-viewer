@@ -35,6 +35,8 @@ struct GradientEditor: View {
     @ObservedObject var gradient: GradientContainer
     @State private var barview: ColorbarView? = nil
     
+    @State private var spline: Bool = false
+    
     // focus state
     @FocusState private var focus: Bool
     
@@ -58,6 +60,7 @@ struct GradientEditor: View {
                 TextField("Brighness", value: $gradient.brightness, formatter: TwoDigitNumber)
                     .frame(width: 55).multilineTextAlignment(.trailing).focused($focus)
             }.disabled(gradient.locked).padding([.leading,.trailing], 10)
+            .help("Scale overall brightness of the gradient")
             HStack {
                 Slider(value: $gradient.saturation, in: 0.0...2.0) {
                     Text("Saturation:").frame(width: 75, alignment: .trailing)
@@ -65,6 +68,7 @@ struct GradientEditor: View {
                 TextField("Saturation", value: $gradient.saturation, formatter: TwoDigitNumber)
                     .frame(width: 55).multilineTextAlignment(.trailing).focused($focus)
             }.disabled(gradient.locked).padding([.leading,.trailing], 10)
+            .help("Adjust overall saturation of the gradient")
             HStack {
                 Slider(value: $gradient.contrast, in: 0.0...2.0) {
                     Text("Contrast:").frame(width: 75, alignment: .trailing)
@@ -72,31 +76,34 @@ struct GradientEditor: View {
                 TextField("Contrast", value: $gradient.contrast, formatter: TwoDigitNumber)
                     .frame(width: 55).multilineTextAlignment(.trailing).focused($focus)
             }.disabled(gradient.locked).padding([.leading,.trailing,.bottom], 10)
+            .help("Adjust brightness contrast of the gradient")
             HStack {
-                Spacer().frame(width: 20)
+                Toggle(isOn: $spline) {
+                    Label { Text("Interpolation") } icon: { (spline ? Curve.spline : Curve.linear).frame(width: 20, height: 24) }
+                    .labelStyle(.iconOnly).frame(width: 20)
+                }
+                .toggleStyle(.button).buttonStyle(.plain).disabled(gradient.locked)
+                .help("Gradient interpolation method")
                 Spacer()
                 Button {
                     withAnimation { gradient.refine() }
                 } label: {
                     Label("Refine", systemImage: "arrow.triangle.branch")
                 }.disabled(gradient.locked)
-                Spacer()
-                Button {
-                    withAnimation { gradient.enhance() }
-                } label: {
-                    Label("Enhance", systemImage: "wand.and.stars")
-                }.disabled(gradient.locked)
+                .help("Insert intermediate color anchors")
                 Spacer()
                 Button(role: .destructive) {
                     withAnimation { gradient.reset() }
                 } label: {
                     Label("Reset", systemImage: "sparkles")
                 }.disabled(gradient.locked)
+                .help("Reset gradient modifiers to default values")
                 Spacer()
                 Toggle(isOn: $gradient.locked) {
                     Label("Locked", systemImage: gradient.locked ? "lock" : "lock.open").labelStyle(.iconOnly).frame(width: 20)
                 }
                 .toggleStyle(.button).buttonStyle(.plain)
+                .help("Gradient lock prevents accidental modification")
             }.padding([.leading,.trailing,.bottom], 10)
         }
     }

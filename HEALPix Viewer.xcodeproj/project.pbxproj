@@ -25,6 +25,7 @@
 		501728632ACCD2120085F5D9 /* Interpolation Tests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 501728622ACCD2120085F5D9 /* Interpolation Tests.swift */; };
 		501A6CD6292EBC9400E931A3 /* ExportView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 501A6CD5292EBC9400E931A3 /* ExportView.swift */; };
 		501A6CDA292EC74400E931A3 /* Formatters.swift in Sources */ = {isa = PBXBuildFile; fileRef = 501A6CD9292EC74400E931A3 /* Formatters.swift */; };
+		5021C9B22AFDAF9F00D0EEE2 /* Icons.swift in Sources */ = {isa = PBXBuildFile; fileRef = 5021C9B12AFDAF9F00D0EEE2 /* Icons.swift */; };
 		502A8B67293AA00A008CAE63 /* StatView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 502A8B66293AA00A008CAE63 /* StatView.swift */; };
 		502F9D602A3A31050008FC42 /* FontPopUp.swift in Sources */ = {isa = PBXBuildFile; fileRef = 502F9D5E2A3A31050008FC42 /* FontPopUp.swift */; };
 		502F9D612A3A31050008FC42 /* FontPicker.swift in Sources */ = {isa = PBXBuildFile; fileRef = 502F9D5F2A3A31050008FC42 /* FontPicker.swift */; };
@@ -143,6 +144,7 @@
 		501728622ACCD2120085F5D9 /* Interpolation Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Interpolation Tests.swift"; sourceTree = "<group>"; };
 		501A6CD5292EBC9400E931A3 /* ExportView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExportView.swift; sourceTree = "<group>"; };
 		501A6CD9292EC74400E931A3 /* Formatters.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Formatters.swift; sourceTree = "<group>"; };
+		5021C9B12AFDAF9F00D0EEE2 /* Icons.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Icons.swift; sourceTree = "<group>"; };
 		502A8B66293AA00A008CAE63 /* StatView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatView.swift; sourceTree = "<group>"; };
 		502F9D5E2A3A31050008FC42 /* FontPopUp.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = FontPopUp.swift; path = FontPopUp/Sources/FontPopUp/FontPopUp.swift; sourceTree = SOURCE_ROOT; };
 		502F9D5F2A3A31050008FC42 /* FontPicker.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; name = FontPicker.swift; path = FontPopUp/Sources/FontPopUp/FontPicker.swift; sourceTree = SOURCE_ROOT; };
@@ -269,6 +271,7 @@
 				5047FA922A69014600FDCF98 /* GradientView.swift */,
 				50ECD2B128FF31260008F915 /* Toolbar.swift */,
 				50ECD2AF28FF2A9C0008F915 /* Menus.swift */,
+				5021C9B12AFDAF9F00D0EEE2 /* Icons.swift */,
 				501A6CD9292EC74400E931A3 /* Formatters.swift */,
 				502F9D5B2A3A30EB0008FC42 /* FontPicker */,
 			);
@@ -568,6 +571,7 @@
 				508D56D629131F050099C3A0 /* HEALPix Cold.swift in Sources */,
 				5047FA972A69EDBF00FDCF98 /* Named Colors.swift in Sources */,
 				508D56D429131EB80099C3A0 /* HEALPix Hot.swift in Sources */,
+				5021C9B22AFDAF9F00D0EEE2 /* Icons.swift in Sources */,
 				508BBA8D28FF2764004B1A9C /* ContentView.swift in Sources */,
 				50655412290A64F400176790 /* ProjectionView.swift in Sources */,
 				50A94798291B3AEB00F6F1BA /* RangeView.swift in Sources */,

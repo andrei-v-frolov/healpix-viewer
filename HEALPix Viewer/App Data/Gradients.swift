@@ -173,9 +173,6 @@ final class GradientContainer: Identifiable, Hashable, Equatable, ObservableObje
         contrast = 1.0
     }
     
-    // adjust gradient modifiers for visual impact
-    func enhance() {}
-    
     // subdivide color anchor list
     func refine() {
         var i = anchors.startIndex; while (i+1 < anchors.endIndex) {
