@@ -70,16 +70,16 @@ class ColorbarView: MTKView {
     // MARK: out-of-bounds warning
     var zebra = false { didSet { isPaused = !zebra; enableSetNeedsDisplay = !zebra } }
     
-    // default geometry
+    // MARK: default geometry
     static let aspect = 30.0
     
     // MARK: affine tranform mapping screen to projection plane
-    func transform(width: Double? = nil, height: Double? = nil, padding: Double? = nil) -> float3x2 {
+    func transform(width: Double? = nil, height: Double? = nil, padding: Double? = nil, flipx: Bool = false, flipy: Bool = true) -> float3x2 {
         let w = width ?? drawableSize.width, h = height ?? drawableSize.height
         let aspect = ColorbarView.aspect/thickness, x = 1.0, y = x/aspect, p = padding ?? self.padding
-        let s = max((1.0+p) * x/w, y/h), dx = -s*w/2 + 0.5, dy = aspect*s*h/2 + 0.5
+        let s = max((1.0+p) * x/w, y/h), sx = flipx ? -s : s, sy = (flipy ? -s : s) * aspect
         
-        return simd.float3x2(float2(Float(s), 0.0), float2(0.0, -Float(aspect*s)), float2(Float(dx), Float(dy)))
+        return simd.float3x2(float2(Float(sx), 0.0), float2(0.0, Float(sy)), float2(Float(-sx*w/2 + 0.5), Float(-sy*h/2 + 0.5)))
     }
     
     // MARK: arguments to shader
@@ -124,14 +124,14 @@ class ColorbarView: MTKView {
             guard currentRenderPassDescriptor != nil, let drawable = currentDrawable else { return }
             
             // encode render command to drawable
-            encode(command, to: drawable.texture)
+            encode(command, to: drawable.texture, alpha: 0.15*(sin(3.0*CACurrentMediaTime())+1.0))
             command.commit(); command.waitUntilScheduled()
             drawable.present()
         }
     }
     
     // MARK: encode render to command buffer
-    func encode(_ command: MTLCommandBuffer, from colorbar: MTLTexture? = nil, to texture: MTLTexture, transform: float3x2? = nil, background: float4? = nil) {
+    func encode(_ command: MTLCommandBuffer, from colorbar: MTLTexture? = nil, to texture: MTLTexture, transform: float3x2? = nil, background: float4? = nil, alpha: Double = 1.0) {
         // wait for available buffer
         semaphore.wait()
         index = (index+1) % Self.inflight
@@ -140,7 +140,7 @@ class ColorbarView: MTKView {
         // load arguments to be passed to kernel
         buffers[0].contents().storeBytes(of: transform ?? self.transform(), as: float3x2.self)
         buffers[1].contents().storeBytes(of: background ?? self.background, as: float4.self)
-        buffers[2].contents().storeBytes(of: Float((1.0+sin(3.0*CACurrentMediaTime()))/2.0), as: Float.self)
+        buffers[2].contents().storeBytes(of: Float(alpha), as: Float.self)
         
         // render colorbar
         let colorbar = colorbar ?? self.colorbar, shader = zebra ? shader.zebra : (grid ? shader.grid : shader.bar)
@@ -150,7 +150,7 @@ class ColorbarView: MTKView {
     
     // MARK: render image to off-screen texture
     func render(from colorbar: MTLTexture? = nil, to texture: MTLTexture) {
-        let transform = transform(width: Double(texture.width), height: Double(texture.height), padding: 0.0)
+        let transform = transform(width: Double(texture.width), height: Double(texture.height), padding: 0.0, flipy: false)
         
         // initialize compute command buffer
         guard let command = metal.queue.makeCommandBuffer() else { return }

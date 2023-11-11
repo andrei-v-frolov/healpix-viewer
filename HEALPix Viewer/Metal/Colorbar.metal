@@ -26,8 +26,7 @@ kernel void colorbar(
     const float2 v = transform * float3(gid.x, gid.y, 1);
     constexpr sampler s(coord::normalized, address::clamp_to_edge, filter::linear);
     
-    float4 pixel = select(over(palette.sample(s, v.x), background), background, v.x < 0.0 | v.x > 1.0 | v.y < 0.0 | v.y > 1.0);
-    output.write(pixel, gid);
+    output.write(select(over(palette.sample(s, v.x), background), background, v.x < 0.0 | v.x > 1.0 | v.y < 0.0 | v.y > 1.0), gid);
 }
 
 // MARK: colorbar composed over backing grid
@@ -42,8 +41,7 @@ kernel void colorbar_grid(
     constexpr sampler s(coord::normalized, address::clamp_to_edge, filter::linear);
     const float4 tile = select(LIGHT_TILE, DARK_TILE, int(4*transform[1][1]/transform[0][0]*v.x)+int(4*v.y) & 0x01);
     
-    float4 pixel = select(over(palette.sample(s, v.x), tile), background, v.x < 0.0 | v.x > 1.0 | v.y < 0.0 | v.y > 1.0);
-    output.write(pixel, gid);
+    output.write(select(over(palette.sample(s, v.x), tile), background, v.x < 0.0 | v.x > 1.0 | v.y < 0.0 | v.y > 1.0), gid);
 }
 
 // MARK: colorbar composed over backing grid
@@ -59,8 +57,7 @@ kernel void colorbar_zebra(
     constexpr sampler s(coord::normalized, address::clamp_to_edge, filter::linear);
     const float4 tile = select(LIGHT_TILE, DARK_TILE, int(4*transform[1][1]/transform[0][0]*v.x)+int(4*v.y) & 0x01);
     
-    float4 pixel = select(over(zebra(palette.sample(s, v.x), alpha, gid.x+gid.y), tile), background, v.x < 0.0 | v.x > 1.0 | v.y < 0.0 | v.y > 1.0);
-    output.write(pixel, gid);
+    output.write(select(over(zebra(palette.sample(s, v.x), alpha, gid.x+gid.y), tile), background, v.x < 0.0 | v.x > 1.0 | v.y < 0.0 | v.y > 1.0), gid);
 }
 
 #endif /* __COLORBAR__ */

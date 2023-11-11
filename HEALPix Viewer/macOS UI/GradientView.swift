@@ -121,7 +121,7 @@ struct GradientRow: View {
         VStack(alignment: .center, spacing: 3) {
             let nominal = width/ColorbarView.aspect, height = min(2.0*nominal, 15), thickness = height/nominal
             BarView(colorbar: .constant(gradient.colormap(16).texture), background: .constant(.clear),
-                    barview: $barview, thickness: thickness, padding: 0.0, grid: true).rendered(width: width, height: height)
+                    barview: $barview, thickness: thickness, padding: 0.0, grid: true, zebra: true).rendered(width: width, height: height)
             HStack {
                 Spacer().frame(width:15)
                 Spacer()
