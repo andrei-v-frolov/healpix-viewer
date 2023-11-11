@@ -40,6 +40,12 @@ func erfinv(_ x: Double) -> Double {
     return p*x
 }
 
+// convert precision of SIMD matrices
+extension float4x4 { init(_ Q: double4x4) { self = float4x4(float4(Q[0]), float4(Q[1]), float4(Q[2]), float4(Q[3])) } }
+extension float4x3 { init(_ Q: double4x3) { self = float4x3(float3(Q[0]), float3(Q[1]), float3(Q[2]), float3(Q[3])) } }
+extension float3x4 { init(_ Q: double3x4) { self = float3x4(float4(Q[0]), float4(Q[1]), float4(Q[2])) } }
+extension float3x3 { init(_ Q: double3x3) { self = float3x3(float3(Q[0]), float3(Q[1]), float3(Q[2])) } }
+
 // singular value decomposition for float3x3 matrices
 extension float3x3 {
     var svd: (s: float3, u: float3x3, v: float3x3)? {

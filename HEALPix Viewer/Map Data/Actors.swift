@@ -97,26 +97,16 @@ struct ColorMixer {
         let S = pca(covariance: scale*decorrelate.cov*scale, alpha: decorrelate.alpha, beta: decorrelate.beta) * scale
         let shift = (decorrelate.avg-v)/(w-v) - S * decorrelate.avg
         
-        // color space primaries (okLab or linear sRGB, no transparency support)
-        let lab = (primaries.mode == .blend), gamma = double4((lab ? 3.0 : 1.0) * exp2(primaries.gamma))
-        let black = (lab ? primaries.black.okLab : pow(primaries.black.sRGB, gamma))
-        let white = (lab ? primaries.white.okLab : pow(primaries.white.sRGB, gamma)) - black
-        let r = (lab ? primaries.r.okLab : pow(primaries.r.sRGB, gamma)) - black
-        let g = (lab ? primaries.g.okLab : pow(primaries.g.sRGB, gamma)) - black
-        let b = (lab ? primaries.b.okLab : pow(primaries.b.sRGB, gamma)) - black
-        
         // color mixing matrix (optionally enforcing r+g+b = white)
-        let q = double3x3(r.xyz, g.xyz, b.xyz).inverse * white.xyz
-        let M = (primaries.mode != .add) ? double3x4(q.x*r, q.y*g, q.z*b) : double3x4(r,g,b)
-        let Q = M*S, mixer = float4x4(float4(Q[0]), float4(Q[1]), float4(Q[2]), float4(black+M*shift))
+        let mixer = primaries.mixer*double4x4(double4(S[0],0), double4(S[1],0), double4(S[2],0), double4(shift,1))
         
-        buffer.mixer.contents().storeBytes(of: mixer, as: float4x4.self)
-        buffer.gamma.contents().storeBytes(of: float4(1.0/gamma), as: float4.self)
+        buffer.mixer.contents().storeBytes(of: float4x4(mixer), as: float4x4.self)
+        buffer.gamma.contents().storeBytes(of: float4(primaries.gamma), as: float4.self)
         buffer.nan.contents().storeBytes(of: nan.components, as: float4.self)
         
         // initialize compute command buffer
         guard let command = metal.queue.makeCommandBuffer() else { return }
-        let shader = lab ? (primaries.compress ? shader.glab : shader.clab) : (primaries.compress ? shader.comp : shader.clip)
+        let shader = primaries.lab ? (primaries.compress ? shader.glab : shader.clab) : (primaries.compress ? shader.comp : shader.clip)
         
         shader.encode(command: command,
                 buffers: [x.buffer, y.buffer, z.buffer, buffer.mixer, buffer.gamma, buffer.nan],

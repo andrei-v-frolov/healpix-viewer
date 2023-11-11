@@ -201,7 +201,8 @@ struct ContentView: View {
                             RangeToolbar(range: $state.range, datamin: $datamin, datamax: $datamax)
                         }
                         if (colorbar && sidebar == .mixer) {
-                            CubeView(cubeview: $cubeview).frame(height: 1.0*geometry.size.width/ColorCubeView.aspect)
+                            CubeView(background: .constant(state.palette.bg), cubeview: $cubeview)
+                            .frame(height: 1.0*geometry.size.width/ColorCubeView.aspect)
                             .onDrag {
                                 guard let cubeview = cubeview, let url = tmpfile(type: drag.format.type) else { return NSItemProvider() }
                                 let w = dimensions(for: drag, size: geometry.size).width/drag.oversampling, h = Int(Double(w)/ColorCubeView.aspect)

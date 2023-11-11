@@ -10,13 +10,25 @@ import MetalKit
 
 // MARK: SwiftUI wrapper for ColorCubeView
 struct CubeView: NSViewRepresentable {
+    // color primaries
+    @AppStorage(Primaries.key) var primaries: Primaries = .defaultValue
+    
+    // view parameters
+    @Binding var background: Color
     @Binding var cubeview: ColorCubeView?
+    
+    // optional parameters
+    var padding: Double = 0.1
     
     typealias NSViewType = ColorCubeView
     var view = ColorCubeView()
     
     // pass parameters to ColorCubeView
-    func pass(to view: Self.NSViewType) {}
+    func pass(to view: Self.NSViewType) {
+        view.background = background.components
+        view.primaries = primaries
+        view.padding = padding
+    }
     
     func makeNSView(context: Self.Context) -> Self.NSViewType {
         DispatchQueue.main.async { cubeview = view }
@@ -65,6 +77,7 @@ class ColorCubeView: MTKView {
     }
     
     // MARK: arguments to shader
+    var primaries: Primaries = .defaultValue
     var background = float4(0.0)
     
     // MARK: registered observers
@@ -81,10 +94,12 @@ class ColorCubeView: MTKView {
         
         for _ in 0..<Self.inflight {
             guard let transform = metal.device.makeBuffer(length: MemoryLayout<float3x2>.size, options: options),
+                  let mixer = metal.device.makeBuffer(length: MemoryLayout<float4x4>.size, options: options),
+                  let gamma = metal.device.makeBuffer(length: MemoryLayout<float4>.size, options: options),
                   let bgcolor = metal.device.makeBuffer(length: MemoryLayout<float4>.size, options: options)
                   else { fatalError("Could not allocate parameter buffers in colorbar view") }
             
-            self.buffers.append([transform, bgcolor])
+            self.buffers.append([transform, mixer, gamma, bgcolor])
         }
         
         // view options
@@ -112,7 +127,7 @@ class ColorCubeView: MTKView {
     }
     
     // MARK: encode render to command buffer
-    func encode(_ command: MTLCommandBuffer, to texture: MTLTexture, transform: float3x2? = nil, background: float4? = nil) {
+    func encode(_ command: MTLCommandBuffer, to texture: MTLTexture, transform: float3x2? = nil, mixer: float4x4? = nil, gamma: float4? = nil, background: float4? = nil) {
         // wait for available buffer
         semaphore.wait()
         index = (index+1) % Self.inflight
@@ -120,7 +135,9 @@ class ColorCubeView: MTKView {
         
         // load arguments to be passed to kernel
         buffers[0].contents().storeBytes(of: transform ?? self.transform(), as: float3x2.self)
-        buffers[1].contents().storeBytes(of: background ?? self.background, as: float4.self)
+        buffers[1].contents().storeBytes(of: mixer ?? float4x4(primaries.mixer), as: float4x4.self)
+        buffers[2].contents().storeBytes(of: gamma ?? float4(primaries.gamma), as: float4.self)
+        buffers[3].contents().storeBytes(of: background ?? self.background, as: float4.self)
         
         // render color cube
         shader.encode(command: command, buffers: buffers, textures: [texture])

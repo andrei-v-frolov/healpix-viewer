@@ -6,22 +6,44 @@
 //
 
 import SwiftUI
+import MetalKit
 
-// color mixer primaries
+// color mixer primaries and attributes
 struct Primaries: Equatable, Codable {
     var r = Color(red:1.0, green: 0.0, blue: 0.0, opacity: 1.0)
     var g = Color(red:0.0, green: 1.0, blue: 0.0, opacity: 1.0)
     var b = Color(red:0.0, green: 0.0, blue: 1.0, opacity: 1.0)
     var black = Color(red:0.0, green: 0.0, blue: 0.0, opacity: 1.0)
     var white = Color(red:1.0, green: 1.0, blue: 1.0, opacity: 1.0)
-    var gamma = 0.0 // log2 scale
+    var scale = 0.0 // base gamma correction on log2 scale
     var mode = Mixing.defaultValue
     var compress = false
+    
+    // blend in okLab?
+    var lab: Bool { mode == .blend }
+    
+    // color mixing matrix
+    var mixer: double4x4 {
+        // color space primaries (okLab or linear sRGB, no transparency support)
+        let lab = self.lab, gamma = double4((lab ? 3.0 : 1.0) * exp2(scale))
+        let black = (lab ? black.okLab : pow(black.sRGB, gamma))
+        let white = (lab ? white.okLab : pow(white.sRGB, gamma)) - black
+        let r = (lab ? r.okLab : pow(r.sRGB, gamma)) - black
+        let g = (lab ? g.okLab : pow(g.sRGB, gamma)) - black
+        let b = (lab ? b.okLab : pow(b.sRGB, gamma)) - black
+        
+        // color mixing matrix (optionally enforcing r+g+b = white)
+        let q = double3x3(r.xyz, g.xyz, b.xyz).inverse * white.xyz
+        return (mode != .add) ? double4x4(q.x*r, q.y*g, q.z*b, black) : double4x4(r,g,b,black)
+    }
+    
+    // power law correction to be applied to the mix
+    var gamma: double4 { double4((lab ? 1.0/3.0 : 1.0) * exp2(-scale)) }
 }
 
 extension Primaries: JsonRepresentable, Preference {
     enum CodingKeys: String, CodingKey {
-        case red, green, blue, black, white, gamma, mode, compress
+        case red, green, blue, black, white, scale, mode, compress
     }
     
     init(from decoder: Decoder) throws {
@@ -32,7 +54,7 @@ extension Primaries: JsonRepresentable, Preference {
         b = try container.decode(Color.self, forKey: .blue)
         black = try container.decode(Color.self, forKey: .black)
         white = try container.decode(Color.self, forKey: .white)
-        gamma = try container.decode(Double.self, forKey: .gamma)
+        scale = try container.decode(Double.self, forKey: .scale)
         mode = try container.decode(Mixing.self, forKey: .mode)
         compress = try container.decode(Bool.self, forKey: .compress)
     }
@@ -45,7 +67,7 @@ extension Primaries: JsonRepresentable, Preference {
         try container.encode(b, forKey: .blue)
         try container.encode(black, forKey: .black)
         try container.encode(white, forKey: .white)
-        try container.encode(gamma, forKey: .gamma)
+        try container.encode(scale, forKey: .scale)
         try container.encode(mode, forKey: .mode)
         try container.encode(compress, forKey: .compress)
     }

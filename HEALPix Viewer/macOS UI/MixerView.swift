@@ -79,9 +79,9 @@ struct MixerView: View {
                         .frame(width: 35).multilineTextAlignment(.trailing).focused($focus)
                 }.padding(.bottom, 5)
                 HStack {
-                    Slider(value: $primaries.gamma, in: -2.0...2.0) { Text("ɣ:") } onEditingChanged: { editing in focus = false }
+                    Slider(value: $primaries.scale, in: -2.0...2.0) { Text("ɣ:") } onEditingChanged: { editing in focus = false }
                         .help("Power law exponent applied when mixing colors")
-                    TextField("ɣ:", value: $primaries.gamma, formatter: TwoDigitNumber)
+                    TextField("ɣ:", value: $primaries.scale, formatter: TwoDigitNumber)
                         .frame(width: 35).multilineTextAlignment(.trailing).focused($focus)
                 }.padding(.bottom, 5)
                 Toggle(isOn: $primaries.compress) { Text("compress gamut") }
