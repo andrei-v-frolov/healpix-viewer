@@ -18,6 +18,7 @@ using namespace metal;
 #include "Components.metal"
 #include "Transforms.metal"
 #include "Projections.metal"
+#include "Reductions.metal"
 
 // checkerboard grid on spherical coordinates
 inline float4 grid(float2 ang) {

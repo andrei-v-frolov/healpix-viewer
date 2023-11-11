@@ -12,21 +12,21 @@ import MetalKit
 struct Correlator {
     // compute pipeline
     let shader = MetalKernel(kernel: "covariance")
-    let buffer: (pts: MTLBuffer, cov: MTLBuffer, range: MTLBuffer, npix: MTLBuffer)
+    let buffer: (range: MTLBuffer, npix: MTLBuffer, cov: MTLBuffer, pts: MTLBuffer)
     let threads: Int
     
     init() {
         // wider than this will break covariance kernel barriers
         let threads = metal.device.maxThreadsPerThreadgroup.width
         let options: MTLResourceOptions = [.cpuCacheModeWriteCombined, .storageModeShared]
-        guard let pts = metal.device.makeBuffer(length: MemoryLayout<uint>.size*threads),
+        guard let range = metal.device.makeBuffer(length: MemoryLayout<float2x3>.size, options: options),
+              let npix = metal.device.makeBuffer(length: MemoryLayout<uint2>.size, options: options),
               let cov = metal.device.makeBuffer(length: MemoryLayout<float3x3>.size*threads),
-              let range = metal.device.makeBuffer(length: MemoryLayout<float2x3>.size, options: options),
-              let npix = metal.device.makeBuffer(length: MemoryLayout<uint2>.size, options: options)
+              let pts = metal.device.makeBuffer(length: MemoryLayout<uint>.size*threads)
               else { fatalError("Could not allocate parameter buffers in correlator") }
         
         self.threads = threads
-        self.buffer = (pts, cov, range, npix)
+        self.buffer = (range, npix, cov, pts)
     }
     
     func correlate(_ x: Map, _ y: Map, _ z: Map) -> (avg: double3, cov: double3x3)? {
@@ -42,7 +42,7 @@ struct Correlator {
         // initialize compute command buffer
         guard let command = metal.queue.makeCommandBuffer() else { return nil }
         
-        shader.encode(command: command, buffers: [x.buffer, y.buffer, z.buffer, buffer.pts, buffer.cov, buffer.range, buffer.npix],
+        shader.encode(command: command, buffers: [x.buffer, y.buffer, z.buffer, buffer.range, buffer.npix, buffer.cov, buffer.pts],
             textures: [], threadsPerGrid: MTLSize(width: threads, height: 1, depth: 1))
         command.commit(); command.waitUntilCompleted()
         

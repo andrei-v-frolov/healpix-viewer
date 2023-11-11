@@ -167,6 +167,7 @@
 		508343072AA08B0900BB4C3E /* Python Seismic.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Python Seismic.swift"; sourceTree = "<group>"; };
 		508343082AA08B0900BB4C3E /* Python RdBu.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Python RdBu.swift"; sourceTree = "<group>"; };
 		508343092AA08B0900BB4C3E /* Python Viridis.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = "Python Viridis.swift"; sourceTree = "<group>"; };
+		5088120C2B0047C80043B7F3 /* Reductions.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Reductions.metal; sourceTree = "<group>"; };
 		508910B1291B077E00E33CB6 /* BarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BarView.swift; sourceTree = "<group>"; };
 		508BBA8728FF2764004B1A9C /* HEALPix Viewer.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "HEALPix Viewer.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		508BBA8A28FF2764004B1A9C /* HEALPix App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HEALPix App.swift"; sourceTree = "<group>"; };
@@ -388,6 +389,7 @@
 				503AB6962A71D8D9007C5DB6 /* Components.metal */,
 				5036E7FD2933193B006AE59E /* Transforms.metal */,
 				50A0D2562902F1B200A29988 /* Projections.metal */,
+				5088120C2B0047C80043B7F3 /* Reductions.metal */,
 				50CB1444290B03B0006D59FA /* Shaders.metal */,
 				50563E5A2901E38F00B316CA /* Kernels.metal */,
 				50056E8A2A78C58A00812E95 /* Random.metal */,
