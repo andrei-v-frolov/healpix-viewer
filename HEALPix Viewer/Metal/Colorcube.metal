@@ -29,7 +29,7 @@ inline float3 four_panel(const float2 u) {
     { const float2 v = u + float2(1.25,0.0); if (length(v) < 1.0) return plane_cut(v, 1.0); }
     { const float2 v = u - float2(1.25,0.0); if (length(v) < 1.0) return plane_cut(v, 2.0); }
     { const float2 v = u - float2(3.75,0.0); if (length(v) < 1.0) return upper_face(v); }
-    return float3(0.0);
+    return INVALID;
 }
 
 // MARK: color cube shader kernel

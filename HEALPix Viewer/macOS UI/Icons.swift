@@ -11,7 +11,7 @@ import SwiftUI
 enum Curve {
     static let width = 1.5
     
-    // Gaussian
+    // Gaussian statistics icon
     static let gaussian = Canvas { context, size in
         let path = Path { path in
             path.move(to: CGPoint(x: -4.0, y: 0.0))
@@ -63,6 +63,25 @@ enum Curve {
             path.addLine(to: CGPoint(x: 0.0, y: 0.0))
             path.addLine(to: CGPoint(x: 1.0, y: 1.0))
             path.addLine(to: CGPoint(x: 2.0, y: 1.0))
+        }
+        .applying(CGAffineTransform(scaleX: 6, y: -12))
+        .applying(CGAffineTransform(translationX: 7, y: 18))
+        context.stroke(path, with: .foreground, lineWidth: width)
+    }
+    
+    // filmic transfer, clipped from below
+    static let film = Canvas { context, size in
+        let path = Path { path in
+            path.move(to: CGPoint(x: -1.0, y: 0.0))
+            path.addCurve(to: CGPoint(x: -0.7, y: 0.0),
+                          control1: CGPoint(x:  0.0, y: 0.0),
+                          control2: CGPoint(x: -1.0, y: 0.0))
+            path.addCurve(to: CGPoint(x: 1.7, y: 1.0),
+                          control1: CGPoint(x: 1.0, y: 0.0),
+                          control2: CGPoint(x: 0.0, y: 1.0))
+            path.addCurve(to: CGPoint(x: 2.0, y: 1.0),
+                          control1: CGPoint(x: 1.0, y: 1.0),
+                          control2: CGPoint(x: 2.0, y: 1.0))
         }
         .applying(CGAffineTransform(scaleX: 6, y: -12))
         .applying(CGAffineTransform(translationX: 7, y: 18))

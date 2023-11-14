@@ -79,11 +79,14 @@ struct MixerView: View {
                         .frame(width: 35).multilineTextAlignment(.trailing).focused($focus)
                 }.padding(.bottom, 5)
                 HStack {
-                    Slider(value: $primaries.scale, in: -2.0...2.0) { Text("ɣ:") } onEditingChanged: { editing in focus = false }
+                    Slider(value: $primaries.midtone, in: -2.0...2.0) { Text("ɣ:") } onEditingChanged: { editing in focus = false }
                         .help("Power law exponent applied when mixing colors")
-                    TextField("ɣ:", value: $primaries.scale, formatter: TwoDigitNumber)
+                    TextField("ɣ:", value: $primaries.midtone, formatter: TwoDigitNumber)
                         .frame(width: 35).multilineTextAlignment(.trailing).focused($focus)
                 }.padding(.bottom, 5)
+                Picker("Gamut:", selection: $primaries.gamut) {
+                    ForEach(Gamut.allCases, id: \.self) { $0.label.tag($0).help($0.description) }
+                }.pickerStyle(.segmented).labelsHidden()
                 Toggle(isOn: $primaries.compress) { Text("compress gamut") }
                     .help("Avoid clipped and over-saturated colors")
             } label: { HStack { Spacer(); Text("Decorrelation").font(.title3); Spacer() } }

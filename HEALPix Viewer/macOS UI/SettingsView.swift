@@ -11,6 +11,7 @@ struct SettingsView: View {
     // appearance tab
     @AppStorage(Appearance.key) var appearance = Appearance.defaultValue
     @AppStorage(Thumbnails.key) var thumbnails = Thumbnails.defaultValue
+    @AppStorage(Primaries.key) var primaries = Primaries.defaultValue
     @AppStorage(hdrKey) var hdr = true
     @AppStorage(animateKey) var animate = true
     @AppStorage(lightingKey) var lighting = false
@@ -59,7 +60,15 @@ struct SettingsView: View {
                 VStack(alignment: .leading) {
                     Text("When rendering the map...").font(.title3)
                     Group {
-                        Toggle(" Render in HDR", isOn: $hdr)
+                        HStack {
+                            Toggle(" Render in HDR", isOn: $hdr)
+                            .onChange(of: hdr) { value in if (value != primaries.gamut.extended) { primaries.gamut = value ? .hdr : .clip } }
+                            Spacer()
+                            Picker("Gamut:", selection: $primaries.gamut) {
+                                ForEach(Gamut.allCases, id: \.self) { $0.label.tag($0) }
+                            }.frame(width: 113).padding([.leading,.trailing], 15)
+                            .onChange(of: primaries.gamut) { value in if value.extended { hdr = true } }
+                        }
                         Toggle(" Animate sphere rotation", isOn: $animate)
                         Toggle(" Apply lighting effects (sphere shading)", isOn: $lighting)
                     }.padding(.leading, offset)
