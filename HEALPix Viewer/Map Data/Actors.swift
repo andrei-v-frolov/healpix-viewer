@@ -65,10 +65,7 @@ struct Correlator {
 // color mixer transforms data to false color texture array
 struct ColorMixer {
     // compute pipeline
-    let shader = (clip: MetalKernel(kernel: "colormix_clip"),
-                  comp: MetalKernel(kernel: "colormix_comp"),
-                  clab: MetalKernel(kernel: "colormix_clab"),
-                  glab: MetalKernel(kernel: "colormix_film"))
+    let shader = Primaries.shaders(kernel: "mix")
     let buffer: (mixer: MTLBuffer, gamma: MTLBuffer, nan: MTLBuffer)
     
     init() {
@@ -105,8 +102,8 @@ struct ColorMixer {
         buffer.nan.contents().storeBytes(of: nan.components, as: float4.self)
         
         // initialize compute command buffer
-        guard let command = metal.queue.makeCommandBuffer() else { return }
-        let shader = primaries.lab ? (primaries.compress ? shader.glab : shader.clab) : (primaries.compress ? shader.comp : shader.clip)
+        guard let shader = shader[primaries.shader],
+              let command = metal.queue.makeCommandBuffer() else { return }
         
         shader.encode(command: command,
                 buffers: [x.buffer, y.buffer, z.buffer, buffer.mixer, buffer.gamma, buffer.nan],

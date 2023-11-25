@@ -13,8 +13,6 @@ using namespace metal;
 #include "Common.metal"
 #include "Healpix.metal"
 #include "Colorize.metal"
-#include "Colorbar.metal"
-#include "Colorcube.metal"
 #include "Components.metal"
 #include "Transforms.metal"
 #include "Projections.metal"

@@ -26,7 +26,7 @@ struct Primaries: Equatable, Codable {
     // color mixing matrix
     var mixer: double4x4 {
         // color space primaries (okLab or linear sRGB, no transparency support)
-        let lab = self.lab, gamma = double4((lab ? 3.0 : 1.0) * exp2(midtone))
+        let lab = self.lab, gamma = double4(exp2(midtone))
         let black = (lab ? black.okLab : pow(black.sRGB, gamma))
         let white = (lab ? white.okLab : pow(white.sRGB, gamma)) - black
         let r = (lab ? r.okLab : pow(r.sRGB, gamma)) - black
@@ -39,7 +39,35 @@ struct Primaries: Equatable, Codable {
     }
     
     // power law correction to be applied to the mix
-    var gamma: double4 { double4((lab ? 1.0/3.0 : 1.0) * exp2(-midtone)) }
+    var gamma: double4 { double4(exp2(-midtone)/3.0) }
+    
+    // backing color space
+    enum Space { case rgb, lab }
+    var space: Space { mode == .blend ? .lab : .rgb }
+    
+    // Metal shader index
+    struct Shader: Hashable { let space: Space, compress: Bool, gamut: Gamut }
+    var shader: Shader { Shader(space: space, compress: compress, gamut: gamut) }
+    
+    // Metal shader variants
+    static func shaders(kernel f: String) -> [Primaries.Shader: MetalKernel] { [
+        Shader(space: .rgb, compress: false, gamut: .clip) : MetalKernel(kernel: "rgb\(f)_clip"),
+        Shader(space: .rgb, compress: false, gamut: .film) : MetalKernel(kernel: "rgb\(f)_film"),
+        Shader(space: .rgb, compress: false, gamut: .hlg)  : MetalKernel(kernel: "rgb\(f)_hlg"),
+        Shader(space: .rgb, compress: false, gamut: .hdr)  : MetalKernel(kernel: "rgb\(f)_hdr"),
+        Shader(space: .lab, compress: false, gamut: .clip) : MetalKernel(kernel: "lab\(f)_clip"),
+        Shader(space: .lab, compress: false, gamut: .film) : MetalKernel(kernel: "lab\(f)_film"),
+        Shader(space: .lab, compress: false, gamut: .hlg)  : MetalKernel(kernel: "lab\(f)_hlg"),
+        Shader(space: .lab, compress: false, gamut: .hdr)  : MetalKernel(kernel: "lab\(f)_hdr"),
+        Shader(space: .rgb, compress: true,  gamut: .clip) : MetalKernel(kernel: "crgb\(f)_clip"),
+        Shader(space: .rgb, compress: true,  gamut: .film) : MetalKernel(kernel: "crgb\(f)_film"),
+        Shader(space: .rgb, compress: true,  gamut: .hlg)  : MetalKernel(kernel: "crgb\(f)_hlg"),
+        Shader(space: .rgb, compress: true,  gamut: .hdr)  : MetalKernel(kernel: "crgb\(f)_hdr"),
+        Shader(space: .lab, compress: true,  gamut: .clip) : MetalKernel(kernel: "clab\(f)_clip"),
+        Shader(space: .lab, compress: true,  gamut: .film) : MetalKernel(kernel: "clab\(f)_film"),
+        Shader(space: .lab, compress: true,  gamut: .hlg)  : MetalKernel(kernel: "clab\(f)_hlg"),
+        Shader(space: .lab, compress: true,  gamut: .hdr)  : MetalKernel(kernel: "clab\(f)_hdr")
+    ] }
 }
 
 extension Primaries: JsonRepresentable, Preference {

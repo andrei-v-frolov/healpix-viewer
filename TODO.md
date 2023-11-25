@@ -12,6 +12,7 @@
 - false color map support (e.g. RGB = 100,147,217GHz) + decorrelation
 - color mixer modes: co-add, mix to specified white point, blend in okLab
 - gamut mapping with ACES gamut compressor and filmic S-curves
+- chromaticity diagram for color mixer showing color cube gamut
 - custom gradient generation (via blending in okLab) implemented
 - animated zebra pattern for out of SDR gamut gradient colors
 - single face texture array per MapData, preallocate instead of lazy
@@ -55,7 +56,6 @@
 - make compress gamut into global setting?
 - command line interface (via ArgumentParser)
 - make figure of space filling pixel order curves!
-- make okLab gamut plot
 - pigment mixing (https://scrtwpns.com/mixbox/docs)?
 
 ### Future Targets
@@ -90,5 +90,4 @@
 
 ### Random ideas
 - link to libsharp for CPU FFTs? but where are the docs?
-- chromaticity diagram for color mixer annotation?
 - polarization angle + hue colormap?

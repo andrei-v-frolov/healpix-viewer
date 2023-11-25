@@ -130,6 +130,7 @@
 		500338E82A3D8FBD001EC910 /* Python Difference.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Python Difference.swift"; sourceTree = "<group>"; };
 		50056E8A2A78C58A00812E95 /* Random.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Random.metal; sourceTree = "<group>"; };
 		50056E912A78CEC300812E95 /* Random.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Random.swift; sourceTree = "<group>"; };
+		5007B9E82B086D81008E4149 /* Curves.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Curves.metal; sourceTree = "<group>"; };
 		5009BB132912ECEB006DE835 /* ColorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ColorView.swift; sourceTree = "<group>"; };
 		500A9E412A798A1A0006FF08 /* Expression.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Expression.swift; sourceTree = "<group>"; };
 		500EFDBC29270B66002B6057 /* Navigation.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Navigation.swift; sourceTree = "<group>"; };
@@ -195,6 +196,7 @@
 		50A0D2562902F1B200A29988 /* Projections.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Projections.metal; sourceTree = "<group>"; };
 		50A94797291B3AEB00F6F1BA /* RangeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RangeView.swift; sourceTree = "<group>"; };
 		50AFD40C29216FED00994618 /* HEALPix Tests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "HEALPix Tests.swift"; sourceTree = "<group>"; };
+		50B232752B040CCD00DDCA44 /* Mixers.metal */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.metal; path = Mixers.metal; sourceTree = "<group>"; };
 		50BA47F12A73271C0032690A /* ComponentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ComponentView.swift; sourceTree = "<group>"; };
 		50BA47F52A732AF60032690A /* Actors.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Actors.swift; sourceTree = "<group>"; };
 		50BAE19A291F43380024FD5C /* Credits.rtf */ = {isa = PBXFileReference; lastKnownFileType = text.rtf; path = Credits.rtf; sourceTree = "<group>"; };
@@ -390,6 +392,8 @@
 				5036E7FD2933193B006AE59E /* Transforms.metal */,
 				50A0D2562902F1B200A29988 /* Projections.metal */,
 				5088120C2B0047C80043B7F3 /* Reductions.metal */,
+				5007B9E82B086D81008E4149 /* Curves.metal */,
+				50B232752B040CCD00DDCA44 /* Mixers.metal */,
 				50CB1444290B03B0006D59FA /* Shaders.metal */,
 				50563E5A2901E38F00B316CA /* Kernels.metal */,
 				50056E8A2A78C58A00812E95 /* Random.metal */,

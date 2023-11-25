@@ -9,6 +9,7 @@
 #define __COLORIZE__
 
 // MARK: okLab color space
+// [https://bottosson.github.io/posts/oklab/]
 constant const float3x3 M1 = {
     float3( 4.07675841355650,  -1.26818108516240, -0.00409840771803133),
     float3(-3.30722798739447,   2.60929321028564, -0.703503660102417),
@@ -22,7 +23,7 @@ constant const float3x3 M2 = {
 };
 
 inline float4 ok2lrgb(const float4 v) {
-    return float4(M1*pow(M2*v.xyz, 3.0), v.w);
+    return float4(M1*pow(M2*v.xyz, 3), v.w);
 }
 
 // MARK: ACES reference gamut compression
@@ -31,11 +32,11 @@ inline float4 ok2lrgb(const float4 v) {
 
 constant const float  GAMUT_PWR = 1.2;
 constant const float3 GAMUT_THR = float3(0.815,0.803,0.880);
-constant const float3 GAMUT_LIM = float3(1.147,1.264,1.312);
+// constant const float3 GAMUT_LIM = float3(1.147,1.264,1.312);
 
 // auxilliary pre-computed parameters
-// GAMUT_INT = pow((GAMUT_LIM - GAMUT_THR)/(1.0 - GAMUT_THR), GAMUT_PWR);
-// GAMUT_SCL = (GAMUT_LIM - GAMUT_THR)/pow(GAMUT_INT - 1.0, 1.0/GAMUT_PWR);
+// constant const float3 GAMUT_INT = pow((GAMUT_LIM - GAMUT_THR)/(1.0 - GAMUT_THR), GAMUT_PWR);
+// constant const float3 GAMUT_SCL = (GAMUT_LIM - GAMUT_THR)/pow(GAMUT_INT - 1.0, 1.0/GAMUT_PWR);
 constant const float3 GAMUT_SCL = float3(0.3273018774677787, 0.2859380289271138, 0.1468214578384229);
 
 // compression grading curve
@@ -48,32 +49,32 @@ inline float4 acesrgc(const float4 v) {
     const float a = max3(v.x,v.y,v.z);
     const float3 dist = select((a-v.xyz)/fabs(a), 0.0, a == 0.0);
     
-    return float4(max(a-grade(dist)*fabs(a), 0.0), v.w);
+    return float4(a-grade(dist)*fabs(a), v.w);
 }
 
 // MARK: ACES filmic curve approximation (scaled to prevent highlight clipping)
 // [https://knarkowicz.wordpress.com/2016/01/06/aces-filmic-tone-mapping-curve/]
 
 inline float4 film(const float4 v) {
-    const float3 x = acesrgc(v).xyz;
+    const float3 x = v.xyz;
     return float4((2.43/2.51)*(x*(2.51*x+0.03))/(x*(2.43*x+0.59)+0.14), v.w);
 }
 
 // MARK: linearized Hybrid log-gamma (Rec. 2100)
 // [https://en.wikipedia.org/wiki/Hybrid_log–gamma]
 
-// stretched and scaled to match sqrt(x) at midtones (where average is mapped to)
+// stretched and scaled to match midtones (where average is mapped to)
 constant const float HLG_A = 0.19264464123396488699073686524675879;
 constant const float HLG_B = 0.28466890937220093748991475372557885;
 constant const float HLG_C = 0.60315455422596953825614647615458749;
 constant const float HLG_D = 1.16043186449629630482925925719925639;
 
 inline float4 hlg(const float4 v) {
-    const float3 x = acesrgc(v).xyz;
+    const float3 x = v.xyz;
     return float4(select(powr(HLG_A*log(4.0*x-HLG_B) + HLG_C, 2), HLG_D*x, x <= 0.25), v.w);
 }
 
-// MARK: composite A over B
+// MARK: pre-multiplied transparency composite A over B
 inline float4 over(const float4 a, const float4 b) { return a + (1.0-a.w)*b; }
 
 // MARK: colormap data to texture array
@@ -97,69 +98,33 @@ kernel void colorize(
     output.write(palette.sample(s, v), gid.xy, gid.z);
 }
 
-// MARK: colormix 3-channel data to texture array
-kernel void colormix_clip(
-    texture2d_array<float,access::write> output [[ texture(0) ]],
-    constant float *x                   [[ buffer(0) ]],
-    constant float *y                   [[ buffer(1) ]],
-    constant float *z                   [[ buffer(2) ]],
-    constant float4x4 &mixer            [[ buffer(3) ]],
-    constant float4 &gamma              [[ buffer(4) ]],
-    constant float4 &nan                [[ buffer(5) ]],
-    uint3 gid                           [[ thread_position_in_grid ]]
-) {
-    const int p = xyf2nest(output.get_width(), int3(gid));
-    const float4 v = float4(x[p],y[p],z[p],1.0);
-    
-    output.write(select(powr(mixer*v, gamma), nan, any(isnan(v) or isinf(v))), gid.xy, gid.z);
-}
+// MARK: color scale annotations
+#include "Colorbar.metal"
+#include "Colorcube.metal"
 
-kernel void colormix_comp(
-    texture2d_array<float,access::write> output [[ texture(0) ]],
-    constant float *x                   [[ buffer(0) ]],
-    constant float *y                   [[ buffer(1) ]],
-    constant float *z                   [[ buffer(2) ]],
-    constant float4x4 &mixer            [[ buffer(3) ]],
-    constant float4 &gamma              [[ buffer(4) ]],
-    constant float4 &nan                [[ buffer(5) ]],
-    uint3 gid                           [[ thread_position_in_grid ]]
-) {
-    const int p = xyf2nest(output.get_width(), int3(gid));
-    const float4 v = float4(x[p],y[p],z[p],1.0);
-    
-    output.write(select(powr(film(mixer*v), gamma), nan, any(isnan(v) or isinf(v))), gid.xy, gid.z);
-}
+// MARK: color mixing kernel variants
+#define GAMUT(name) rgb ## name
+#define RGBA(v) pow(v, 3)
+#include "Curves.metal"
+#undef RGBA
+#undef GAMUT
 
-kernel void colormix_clab(
-    texture2d_array<float,access::write> output [[ texture(0) ]],
-    constant float *x                   [[ buffer(0) ]],
-    constant float *y                   [[ buffer(1) ]],
-    constant float *z                   [[ buffer(2) ]],
-    constant float4x4 &mixer            [[ buffer(3) ]],
-    constant float4 &gamma              [[ buffer(4) ]],
-    constant float4 &nan                [[ buffer(5) ]],
-    uint3 gid                           [[ thread_position_in_grid ]]
-) {
-    const int p = xyf2nest(output.get_width(), int3(gid));
-    const float4 v = ok2lrgb(mixer*float4(x[p],y[p],z[p],1.0));
-    
-    output.write(select(powr(v, gamma), nan, any(isnan(v) or isinf(v))), gid.xy, gid.z);
-}
+#define GAMUT(name) crgb ## name
+#define RGBA(v) acesrgc(pow(v, 3))
+#include "Curves.metal"
+#undef RGBA
+#undef GAMUT
 
-kernel void colormix_film(
-    texture2d_array<float,access::write> output [[ texture(0) ]],
-    constant float *x                   [[ buffer(0) ]],
-    constant float *y                   [[ buffer(1) ]],
-    constant float *z                   [[ buffer(2) ]],
-    constant float4x4 &mixer            [[ buffer(3) ]],
-    constant float4 &gamma              [[ buffer(4) ]],
-    constant float4 &nan                [[ buffer(5) ]],
-    uint3 gid                           [[ thread_position_in_grid ]]
-) {
-    const int p = xyf2nest(output.get_width(), int3(gid));
-    const float4 v = ok2lrgb(mixer*float4(x[p],y[p],z[p],1.0));
-    
-    output.write(select(powr(film(v), gamma), nan, any(isnan(v) or isinf(v))), gid.xy, gid.z);
-}
+#define GAMUT(name) lab ## name
+#define RGBA(v) ok2lrgb(v)
+#include "Curves.metal"
+#undef RGBA
+#undef GAMUT
+
+#define GAMUT(name) clab ## name
+#define RGBA(v) acesrgc(ok2lrgb(v))
+#include "Curves.metal"
+#undef RGBA
+#undef GAMUT
 
 #endif /* __COLORIZE__ */

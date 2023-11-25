@@ -55,19 +55,19 @@ class ColorCubeView: MTKView {
     private var semaphore = DispatchSemaphore(value: inflight)
     private var buffers = [[MTLBuffer]]()
     
-    // MARK: color cube shader
-    let shader = MetalKernel(kernel: "colorcube")
+    // MARK: color cube shaders
+    let shader = Primaries.shaders(kernel: "cube")
     
     // MARK: state variables
     var padding = 0.1
     
     // MARK: default geometry
-    static let aspect = 4.75
+    static let aspect = 3.5
     
     // MARK: affine tranform mapping screen to projection plane
     func transform(width: Double? = nil, height: Double? = nil, padding: Double? = nil, anchor: Anchor = .c, flipx: Bool? = nil, flipy: Bool = true, shiftx: Double = 0.0, shifty: Double = 0.0) -> float3x2 {
         let flipx = flipx ?? false, p = padding ?? self.padding
-        let (x,y) = (4.75,1.0), signx = flipx ? -1.0 : 1.0, signy = flipy ? -1.0 : 1.0
+        let (x,y) = (Self.aspect,1.0), signx = flipx ? -1.0 : 1.0, signy = flipy ? -1.0 : 1.0
         let w = width ?? drawableSize.width, h = height ?? drawableSize.height
         let s = 2.0 * (1.0+p) * max(x/w, y/h), x0 = -s*w/2, y0 = -s*h/2
         let dx = signx*(x0 + anchor.halign*(x0+x) - s*shiftx)
@@ -128,6 +128,8 @@ class ColorCubeView: MTKView {
     
     // MARK: encode render to command buffer
     func encode(_ command: MTLCommandBuffer, to texture: MTLTexture, transform: float3x2? = nil, mixer: float4x4? = nil, gamma: float4? = nil, background: float4? = nil) {
+        guard let shader = shader[primaries.shader] else { return }
+        
         // wait for available buffer
         semaphore.wait()
         index = (index+1) % Self.inflight
