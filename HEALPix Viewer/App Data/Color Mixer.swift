@@ -25,17 +25,21 @@ struct Primaries: Equatable, Codable {
     
     // color mixing matrix
     var mixer: double4x4 {
-        // color space primaries (okLab or linear sRGB, no transparency support)
-        let lab = self.lab, gamma = double4(exp2(midtone))
-        let black = (lab ? black.okLab : pow(black.sRGB, gamma))
-        let white = (lab ? white.okLab : pow(white.sRGB, gamma)) - black
-        let r = (lab ? r.okLab : pow(r.sRGB, gamma)) - black
-        let g = (lab ? g.okLab : pow(g.sRGB, gamma)) - black
-        let b = (lab ? b.okLab : pow(b.sRGB, gamma)) - black
+        // color space primaries (okLab or linear sRGB, no transparency)
+        let lab = self.lab, gamma = double3(exp2(midtone))
+        let black = { lab ? srgb2ok($0) : $0 }(pow(black.sRGB.xyz, gamma))
+        let white = { lab ? srgb2ok($0) : $0 }(pow(white.sRGB.xyz, gamma))
+        let r = { lab ? srgb2ok($0) : $0 }(pow(r.sRGB.xyz, gamma))
+        let g = { lab ? srgb2ok($0) : $0 }(pow(g.sRGB.xyz, gamma))
+        let b = { lab ? srgb2ok($0) : $0 }(pow(b.sRGB.xyz, gamma))
         
-        // color mixing matrix (optionally enforcing r+g+b = white)
-        let q = double3x3(r.xyz, g.xyz, b.xyz).inverse * white.xyz
-        return (mode != .add) ? double4x4(q.x*r, q.y*g, q.z*b, black) : double4x4(r,g,b,black)
+        // color mixing matrix
+        if (mode == .add) { return double4x4(double4(r,0), double4(g,0), double4(b,0), double4(black,1)) }
+        
+        // optionally scale (r+g+b) + black = white
+        let q = double3x3(r,g,b).inverse * (white + 2.0*black)
+        let x = q.x*r-black, y = q.y*g-black, z = q.z*b-black
+        return double4x4(double4(x,0), double4(y,0), double4(z,0), double4(black,1))
     }
     
     // power law correction to be applied to the mix

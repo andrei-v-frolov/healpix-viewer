@@ -34,8 +34,8 @@ kernel void VARIANT(cube)(
     const float3 v = three_panel(transform * float3(gid.x, gid.y, 1));
     if (any(isinf(v))) { output.write(background, gid); return; }
     
-    const float4 p = RGBA(mixer*float4(v, 1.0));
-    if (any(p < 0.0 || p > 1.0)) { output.write(select(LIGHT_TILE, DARK_TILE, ((gid.x >> 4) + (gid.y >> 4)) & 0x01), gid); return; }
+    //const float4 p = RGBA(mixer*float4(v, 1.0));
+    //if (any(p < 0.0 || p > 1.0)) { output.write(select(LIGHT_TILE, DARK_TILE, ((gid.x >> 4) + (gid.y >> 4)) & 0x01), gid); return; }
     
-    output.write(over(powr(CURVE(p), gamma), background), gid);
+    output.write(powr(CURVE(RGBA(mixer*float4(v, 1.0))), gamma), gid);
 }
