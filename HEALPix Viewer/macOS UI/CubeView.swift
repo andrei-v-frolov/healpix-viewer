@@ -107,6 +107,10 @@ class ColorCubeView: MTKView {
         framebufferOnly = false
         presentsWithTransaction = true
         
+        // draw on notification
+        isPaused = true
+        enableSetNeedsDisplay = true
+        
         // enable HDR output if desired
         if UserDefaults.standard.bool(forKey: hdrKey) { hdr = true }
         observer = UserDefaultsObserver(key: hdrKey) { [weak self] old, new in if let value = new as? Bool { self?.hdr = value }; self?.draw() }
