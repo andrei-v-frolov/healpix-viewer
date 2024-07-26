@@ -19,7 +19,7 @@
 - support for integer type maps added (like HITS count in Planck maps)
 - BAD_DATA guard (replacing with NaN) fixed
 - random map generation implemented (using Random123)
-- libcfitsio updated to 4.3.0
+- CFITSIO updated to 4.4.1, zlib updated to 1.3.1
 
 ### Compliance Issues
 
