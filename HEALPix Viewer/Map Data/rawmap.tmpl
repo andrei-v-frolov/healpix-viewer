@@ -6,7 +6,7 @@
 //
 
 // full-sky buffer in RING ordering, no sign flip
-RAW_FRP {
+RAW_RP {
     float minval = FLT_MAX, maxval = -FLT_MAX;
     
     for (long i = 0; i < 12*nside*nside; i++) {
@@ -24,7 +24,7 @@ RAW_FRP {
 }
 
 // full-sky buffer in RING ordering, sign flip
-RAW_FRN {
+RAW_RN {
     float minval = FLT_MAX, maxval = -FLT_MAX;
     
     for (long i = 0; i < 12*nside*nside; i++) {
@@ -42,7 +42,7 @@ RAW_FRN {
 }
 
 // full-sky buffer in NESTED ordering, no sign flip
-RAW_FNP {
+RAW_NP {
     float minval = FLT_MAX, maxval = -FLT_MAX;
     
     for (long i = 0; i < 12*nside*nside; i++) {
@@ -59,7 +59,7 @@ RAW_FNP {
 }
 
 // full-sky buffer in NESTED ordering, sign flip
-RAW_FNN {
+RAW_NN {
     float minval = FLT_MAX, maxval = -FLT_MAX;
     
     for (long i = 0; i < 12*nside*nside; i++) {
