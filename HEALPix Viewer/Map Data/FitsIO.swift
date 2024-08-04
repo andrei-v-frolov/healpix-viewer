@@ -11,6 +11,19 @@ import CFitsIO
 // HEALPix bad data guard value
 let BAD_DATA: Float = -1.6375000E+30
 
+// HEALPix ordering string literals
+let NESTED = "NESTED", RING = "RING"
+
+// CFITSIO data type sizes
+private let sizeof = [
+    TFLOAT:     MemoryLayout<Float>.size,
+    TDOUBLE:    MemoryLayout<Double>.size,
+    TSHORT:     MemoryLayout<Int16>.size,
+    TINT:       MemoryLayout<Int32>.size,
+    TLONG:      MemoryLayout<Int>.size,
+    TLONGLONG:  MemoryLayout<Int64>.size
+]
+
 // enumeration encapsulating FITS data types
 enum FitsType: Equatable {
     case int(Int)
@@ -58,17 +71,6 @@ enum FitsType: Equatable {
         guard (status == 0) else { return nil }
         
         return .bool(value != 0)
-    }
-    
-    // bridge to Objective C
-    var value: NSObject {
-        switch self {
-            case let .int(i): return NSNumber(value: i)
-            case let .float(x): return NSNumber(value: x)
-            case let .double(x): return NSNumber(value: x)
-            case let .string(s): return NSString(string: s)
-            case let .bool(b): return NSNumber(value: b)
-        }
     }
 }
 
@@ -257,6 +259,7 @@ private func read_bintable(_ fptr: UnsafeMutablePointer<fitsfile>?, npix: Int, n
         if let v = metadata[m]?[.format], case let .string(s) = v {
             s.withCString { s in let _ = ffbnfm(UnsafeMutablePointer(mutating: s), &type[m], &count[m], &width[m], &status) }
         }
+        width[m] = sizeof[type[m]] ?? 0
         guard (status == 0 && count[m] > 0 && width[m] > 0) else { return nil }
         //if (count[m]*nrows != npix) { print("row count mismatch for column \(m+1)?") }
         
@@ -282,9 +285,8 @@ private func read_bintable(_ fptr: UnsafeMutablePointer<fitsfile>?, npix: Int, n
 }
 
 // convert raw full-sky map data into canonical format (full-sky NESTED float)
-private func raw2map(_ ptr: UnsafeRawPointer, nside: Int, type: Int32, order: FitsType, flip: Bool) -> CpuMap? {
+private func raw2map(_ ptr: UnsafeRawPointer, nside: Int, type: Int32, order: String, flip: Bool) -> CpuMap? {
     let npix = 12*nside*nside; var cleanup = true, minval = 0.0, maxval = 0.0
-    guard case let .string(order) = order else { return nil }
     
     // allocate output buffer
     let output = UnsafeMutablePointer<Float>.allocate(capacity: npix)
@@ -293,42 +295,50 @@ private func raw2map(_ ptr: UnsafeRawPointer, nside: Int, type: Int32, order: Fi
     switch type {
         case TFLOAT: let buffer = ptr.bindMemory(to: Float.self, capacity: npix)
             switch (order, flip) {
-                case ("RING",   false): raw2map_frp(buffer, output, nside, &minval, &maxval)
-                case ("RING",   true ): raw2map_frn(buffer, output, nside, &minval, &maxval)
-                case ("NESTED", false): raw2map_fnp(buffer, output, nside, &minval, &maxval)
-                case ("NESTED", true ): raw2map_fnn(buffer, output, nside, &minval, &maxval)
+                case (RING,   false): raw2map_frp(buffer, output, nside, &minval, &maxval)
+                case (RING,   true ): raw2map_frn(buffer, output, nside, &minval, &maxval)
+                case (NESTED, false): raw2map_fnp(buffer, output, nside, &minval, &maxval)
+                case (NESTED, true ): raw2map_fnn(buffer, output, nside, &minval, &maxval)
                 default: return nil
             }
         case TDOUBLE: let buffer = ptr.bindMemory(to: Double.self, capacity: npix)
             switch (order, flip) {
-                case ("RING",   false): raw2map_drp(buffer, output, nside, &minval, &maxval)
-                case ("RING",   true ): raw2map_drn(buffer, output, nside, &minval, &maxval)
-                case ("NESTED", false): raw2map_dnp(buffer, output, nside, &minval, &maxval)
-                case ("NESTED", true ): raw2map_dnn(buffer, output, nside, &minval, &maxval)
+                case (RING,   false): raw2map_drp(buffer, output, nside, &minval, &maxval)
+                case (RING,   true ): raw2map_drn(buffer, output, nside, &minval, &maxval)
+                case (NESTED, false): raw2map_dnp(buffer, output, nside, &minval, &maxval)
+                case (NESTED, true ): raw2map_dnn(buffer, output, nside, &minval, &maxval)
                 default: return nil
             }
         case TSHORT: let buffer = ptr.bindMemory(to: Int16.self, capacity: npix)
             switch (order, flip) {
-                case ("RING",   false): raw2map_srp(buffer, output, nside, &minval, &maxval)
-                case ("RING",   true ): raw2map_srn(buffer, output, nside, &minval, &maxval)
-                case ("NESTED", false): raw2map_snp(buffer, output, nside, &minval, &maxval)
-                case ("NESTED", true ): raw2map_snn(buffer, output, nside, &minval, &maxval)
+                case (RING,   false): raw2map_srp(buffer, output, nside, &minval, &maxval)
+                case (RING,   true ): raw2map_srn(buffer, output, nside, &minval, &maxval)
+                case (NESTED, false): raw2map_snp(buffer, output, nside, &minval, &maxval)
+                case (NESTED, true ): raw2map_snn(buffer, output, nside, &minval, &maxval)
                 default: return nil
             }
-        case TINT32BIT: let buffer = ptr.bindMemory(to: Int32.self, capacity: npix)
+        case TINT: let buffer = ptr.bindMemory(to: Int32.self, capacity: npix)
             switch (order, flip) {
-                case ("RING",   false): raw2map_irp(buffer, output, nside, &minval, &maxval)
-                case ("RING",   true ): raw2map_irn(buffer, output, nside, &minval, &maxval)
-                case ("NESTED", false): raw2map_inp(buffer, output, nside, &minval, &maxval)
-                case ("NESTED", true ): raw2map_inn(buffer, output, nside, &minval, &maxval)
+                case (RING,   false): raw2map_irp(buffer, output, nside, &minval, &maxval)
+                case (RING,   true ): raw2map_irn(buffer, output, nside, &minval, &maxval)
+                case (NESTED, false): raw2map_inp(buffer, output, nside, &minval, &maxval)
+                case (NESTED, true ): raw2map_inn(buffer, output, nside, &minval, &maxval)
+                default: return nil
+            }
+        case TLONG: let buffer = ptr.bindMemory(to: Int.self, capacity: npix)
+            switch (order, flip) {
+                case (RING,   false): raw2map_lrp(buffer, output, nside, &minval, &maxval)
+                case (RING,   true ): raw2map_lrn(buffer, output, nside, &minval, &maxval)
+                case (NESTED, false): raw2map_lnp(buffer, output, nside, &minval, &maxval)
+                case (NESTED, true ): raw2map_lnn(buffer, output, nside, &minval, &maxval)
                 default: return nil
             }
         case TLONGLONG: let buffer = ptr.bindMemory(to: Int64.self, capacity: npix)
             switch (order, flip) {
-                case ("RING",   false): raw2map_lrp(buffer, output, nside, &minval, &maxval)
-                case ("RING",   true ): raw2map_lrn(buffer, output, nside, &minval, &maxval)
-                case ("NESTED", false): raw2map_lnp(buffer, output, nside, &minval, &maxval)
-                case ("NESTED", true ): raw2map_lnn(buffer, output, nside, &minval, &maxval)
+                case (RING,   false): raw2map_xrp(buffer, output, nside, &minval, &maxval)
+                case (RING,   true ): raw2map_xrn(buffer, output, nside, &minval, &maxval)
+                case (NESTED, false): raw2map_xnp(buffer, output, nside, &minval, &maxval)
+                case (NESTED, true ): raw2map_xnn(buffer, output, nside, &minval, &maxval)
                 default: return nil
             }
         default: return nil
@@ -395,7 +405,7 @@ func read_hpxfile(url: URL) -> HpxFile? {
     // typeset and parse header
     let info = typeset_header(header, nkeys: nkeys)
     guard let card = HpxCard.parse(fptr) else { return nil }
-    guard let order = card[.ordering] else { return nil }
+    guard case let .string(order) = card[.ordering] else { return nil }
     let iau = (card[.polar] == .bool(true)) && (card[.polconv] == .string("IAU"))
     
     // find nmaps and nside values
@@ -420,7 +430,7 @@ func read_hpxfile(url: URL) -> HpxFile? {
         if let object = card[.object] { guard object == .string("FULLSKY") else { return nil } }
         
         // diagnostic output
-        print("Full sky map (nside = \(nside), nmaps = \(nmaps), \(order.value) ordering), \(npix) pixels")
+        print("Full sky map (nside = \(nside), nmaps = \(nmaps), \(order) ordering), \(npix) pixels")
         
         // read in raw HEALPix data (we own these UnsafeBuffers!)
         guard let (type, data) = read_bintable(fptr, npix: npix, nmaps: nmaps, nrows: nrows, metadata: metadata) else { return nil }

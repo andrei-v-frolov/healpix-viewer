@@ -35,9 +35,15 @@ void raw2map_inp(const int *in, float *out, long nside, double *min, double *max
 void raw2map_inn(const int *in, float *out, long nside, double *min, double *max);
 
 // full-sky conversion primitives, signed 64-bit integer
-void raw2map_lrp(const long long *in, float *out, long nside, double *min, double *max);
-void raw2map_lrn(const long long *in, float *out, long nside, double *min, double *max);
-void raw2map_lnp(const long long *in, float *out, long nside, double *min, double *max);
-void raw2map_lnn(const long long *in, float *out, long nside, double *min, double *max);
+void raw2map_lrp(const long *in, float *out, long nside, double *min, double *max);
+void raw2map_lrn(const long *in, float *out, long nside, double *min, double *max);
+void raw2map_lnp(const long *in, float *out, long nside, double *min, double *max);
+void raw2map_lnn(const long *in, float *out, long nside, double *min, double *max);
+
+// full-sky conversion primitives, signed 64-bit integer
+void raw2map_xrp(const long long *in, float *out, long nside, double *min, double *max);
+void raw2map_xrn(const long long *in, float *out, long nside, double *min, double *max);
+void raw2map_xnp(const long long *in, float *out, long nside, double *min, double *max);
+void raw2map_xnn(const long long *in, float *out, long nside, double *min, double *max);
 
 #endif /* rawmap_h */

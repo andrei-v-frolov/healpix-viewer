@@ -13,7 +13,7 @@
 // low-level backends to bring the HEALPix map into canonical form,
 // namely NESTED float single-precision data suitable for GPU and Metal
 // fullsky primitives are named raw2map_???, with three letters corresponding to
-//   f = float data, d = double data, s = 16-bit int, i = 32-bit int, l = 64-bit int
+//   f = float data, d = double data, s = 16-bit int, i = 32-bit int, l/x = 64-bit int
 //   r = 'RING' ordering, n = 'NESTED' ordering
 //   p = no sign flip, n = sign flip (for IAU polarization convention)
 
@@ -62,10 +62,21 @@
 #undef RAW_NN
 
 // MARK: full-sky conversion primitives, signed 64-bit integer
-#define RAW_RP void raw2map_lrp(const long long *in, float *out, long nside, double *min, double *max)
-#define RAW_RN void raw2map_lrn(const long long *in, float *out, long nside, double *min, double *max)
-#define RAW_NP void raw2map_lnp(const long long *in, float *out, long nside, double *min, double *max)
-#define RAW_NN void raw2map_lnn(const long long *in, float *out, long nside, double *min, double *max)
+#define RAW_RP void raw2map_lrp(const long *in, float *out, long nside, double *min, double *max)
+#define RAW_RN void raw2map_lrn(const long *in, float *out, long nside, double *min, double *max)
+#define RAW_NP void raw2map_lnp(const long *in, float *out, long nside, double *min, double *max)
+#define RAW_NN void raw2map_lnn(const long *in, float *out, long nside, double *min, double *max)
+#include "rawmap.tmpl"
+#undef RAW_RP
+#undef RAW_RN
+#undef RAW_NP
+#undef RAW_NN
+
+// MARK: full-sky conversion primitives, signed 64-bit integer
+#define RAW_RP void raw2map_xrp(const long long *in, float *out, long nside, double *min, double *max)
+#define RAW_RN void raw2map_xrn(const long long *in, float *out, long nside, double *min, double *max)
+#define RAW_NP void raw2map_xnp(const long long *in, float *out, long nside, double *min, double *max)
+#define RAW_NN void raw2map_xnn(const long long *in, float *out, long nside, double *min, double *max)
 #include "rawmap.tmpl"
 #undef RAW_RP
 #undef RAW_RN
