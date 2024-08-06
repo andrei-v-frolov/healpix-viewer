@@ -74,3 +74,67 @@ RAW_NN {
     *min = minval;
     *max = maxval;
 }
+
+// indexed buffer, no sign flip
+IDX_P {
+    float minval = FLT_MAX, maxval = -FLT_MAX;
+    
+    for (long i = 0; i < nobs; i++) {
+        float v = in[i]; if (v == BAD_DATA) { continue; }
+        
+        out[idx[i]] = v;
+        
+        if (v < minval) { minval = v; }
+        if (v > maxval) { maxval = v; }
+    }
+    
+    *min = minval;
+    *max = maxval;
+}
+
+// indexed buffer, sign flip
+IDX_N {
+    float minval = FLT_MAX, maxval = -FLT_MAX;
+    
+    for (long i = 0; i < nobs; i++) {
+        float v = in[i]; if (v == BAD_DATA) { continue; }
+        
+        v = -v; out[idx[i]] = v;
+        
+        if (v < minval) { minval = v; }
+        if (v > maxval) { maxval = v; }
+    }
+    
+    *min = minval;
+    *max = maxval;
+}
+
+// validate and map RING pixel index (to NESTED long)
+#ifdef MAP_R
+MAP_R {
+    long npix = 12*nside*nside;
+    
+    for (long i = 0; i < nobs; i++) {
+        const long p = in[i];
+        if (p < 0 || p >= npix) { return -1; }
+        ring2nest(nside, p, &idx[i]);
+    }
+    
+    return 0;
+}
+#endif
+
+// validate and map NESTED pixel index (to NESTED long)
+#ifdef MAP_N
+MAP_N {
+    long npix = 12*nside*nside;
+    
+    for (long i = 0; i < nobs; i++) {
+        const long p = in[i];
+        if (p < 0 || p >= npix) { return -1; }
+        idx[i] = p;
+    }
+    
+    return 0;
+}
+#endif

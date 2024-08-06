@@ -146,6 +146,7 @@ enum HpxCard: String, CaseIterable {
     // alternate cards (if card is absent, this card is tried instead)
     static let alternate: [Self: Self] = [
         .indexing:  .object,
+        .observed:  .naxis2,
         .freq:      .band,
         .feff:      .falt
     ]
@@ -239,53 +240,40 @@ private func typeset_header(_ header: UnsafePointer<CChar>, nkeys: Int32) -> Str
     return info
 }
 
+// read BINTABLE format, returning CFITSIO numeric types
+private func read_format(_ fptr: UnsafeMutablePointer<fitsfile>?, metadata: Metadata) -> [Int32] {
+    return metadata.map {
+        var type: Int32 = 0, status: Int32 = 0; guard case let .string(s) = $0?[.format] else { return 0 }
+        s.withCString { s in let _ = ffbnfm(UnsafeMutablePointer(mutating: s), &type, nil, nil, &status) }
+        return (status == 0) ? type : 0
+    }
+}
+
 // read BINTABLE content, returning data as raw byte arrays
-private func read_bintable(_ fptr: UnsafeMutablePointer<fitsfile>?, npix: Int, nmaps: Int, nrows: Int, metadata: Metadata) -> (type: [Int32], data: [UnsafeRawPointer])? {
-    var status: Int32 = 0, cleanup = true
+private func read_table(_ fptr: UnsafeMutablePointer<fitsfile>?, npix: Int, nmaps: Int, nrows: Int, type: [Int32]) -> [UnsafeRawPointer]? {
+    var type = type, status: Int32 = 0, cleanup = true
     
-    // determine optimal row chunk size (according to cfitsio)
-    var chunk = 0; ffgrsz(fptr, &chunk, &status); chunk = max(chunk,1)
-    guard (status == 0) else { return nil }
-    
-    // parse data layout for all columns & allocate data buffers
-    var type = [Int32](repeating: 0, count: nmaps)
-    var count = [Int](repeating: 0, count: nmaps)
-    var width = [Int](repeating: 0, count: nmaps)
-    
-    var data = [UnsafeMutableRawPointer](); data.reserveCapacity(nmaps)
-    defer { if (cleanup) { for p in data { p.deallocate() } } }
+    // allocate buffer storage
+    var data = [UnsafeMutableRawPointer?](); data.reserveCapacity(nmaps)
+    defer { if (cleanup) { for p in data { if let p = p { p.deallocate() } } } }
     
     for m in 0..<nmaps {
-        if let v = metadata[m]?[.format], case let .string(s) = v {
-            s.withCString { s in let _ = ffbnfm(UnsafeMutablePointer(mutating: s), &type[m], &count[m], &width[m], &status) }
-        }
-        width[m] = sizeof[type[m]] ?? 0
-        guard (status == 0 && count[m] > 0 && width[m] > 0) else { return nil }
-        //if (count[m]*nrows != npix) { print("row count mismatch for column \(m+1)?") }
-        
-        data.append(UnsafeMutableRawPointer.allocate(byteCount: npix*width[m], alignment: 8))
+        guard let width = sizeof[type[m]] else { return nil }
+        data.append(UnsafeMutableRawPointer.allocate(byteCount: npix*width, alignment: 32))
     }
     
-    // read chunked column data into buffers
-    var i = [Int](repeating: 0, count: nmaps)
-    var j = [Int](repeating: 0, count: nmaps)
+    // read entire table in
+    var cols = Array(1...Int32(nmaps))
+    var nuls = [UnsafeMutableRawPointer?](repeating: nil, count: nmaps)
     
-    for frow in stride(from: 1, through: nrows, by: chunk) {
-        for m in 0..<nmaps {
-            j[m] = min(i[m]+chunk*count[m], npix) - 1; let n = j[m]-i[m]+1
-            ffgcv(fptr, type[m], Int32(m+1), Int64(frow), 1, Int64(n), nil, data[m] + i[m]*width[m], nil, &status)
-            guard (status == 0) else { return nil }
-            i[m] = j[m]+1
-        }
-    }
+    ffgcvn(fptr, Int32(nmaps), &type, &cols, 1, Int64(nrows), &nuls, &data, nil, &status)
+    guard status == 0, data.allSatisfy({ $0 != nil }) else { return nil }
     
-    //if !(i.allSatisfy {$0 == npix}) { print("something went wrong during piecewise read?") }
-    
-    cleanup = false; return (type, data.map { UnsafeRawPointer($0) } )
+    cleanup = false; return data.map { UnsafeRawPointer($0!) }
 }
 
 // convert raw full-sky map data into canonical format (full-sky NESTED float)
-private func raw2map(_ ptr: UnsafeRawPointer, nside: Int, type: Int32, order: String, flip: Bool) -> CpuMap? {
+private func raw2map(_ ptr: UnsafeRawPointer, nside: Int, type: Int32, order: String, flip: Bool = false) -> CpuMap? {
     let npix = 12*nside*nside; var cleanup = true, minval = 0.0, maxval = 0.0
     
     // allocate output buffer
@@ -345,6 +333,91 @@ private func raw2map(_ ptr: UnsafeRawPointer, nside: Int, type: Int32, order: St
     }
     
     cleanup = false; return CpuMap(nside: nside, buffer: output, min: minval, max: maxval)
+}
+
+// convert indexed partial map data into canonical format (full-sky NESTED float)
+private func idx2map(_ idx: UnsafePointer<Int>, _ ptr: UnsafeRawPointer, nobs: Int, nside: Int, type: Int32, flip: Bool = false) -> CpuMap? {
+    let npix = 12*nside*nside; var cleanup = true, minval = 0.0, maxval = 0.0
+    
+    // allocate output buffer (and initialize to NaN)
+    let output = UnsafeMutablePointer<Float>.allocate(capacity: npix)
+    output.initialize(repeating: .nan, count: npix)
+    defer { if (cleanup) { output.deallocate() } }
+    
+    switch type {
+        case TFLOAT: let buffer = ptr.bindMemory(to: Float.self, capacity: nobs)
+            switch flip {
+                case false: idx2map_fp(idx, buffer, output, nobs, &minval, &maxval)
+                case true:  idx2map_fn(idx, buffer, output, nobs, &minval, &maxval)
+            }
+        case TDOUBLE: let buffer = ptr.bindMemory(to: Double.self, capacity: nobs)
+            switch flip {
+                case false: idx2map_dp(idx, buffer, output, nobs, &minval, &maxval)
+                case true:  idx2map_dn(idx, buffer, output, nobs, &minval, &maxval)
+            }
+        case TSHORT: let buffer = ptr.bindMemory(to: Int16.self, capacity: nobs)
+            switch flip {
+                case false: idx2map_sp(idx, buffer, output, nobs, &minval, &maxval)
+                case true:  idx2map_sn(idx, buffer, output, nobs, &minval, &maxval)
+            }
+        case TINT: let buffer = ptr.bindMemory(to: Int32.self, capacity: nobs)
+            switch flip {
+                case false: idx2map_ip(idx, buffer, output, nobs, &minval, &maxval)
+                case true:  idx2map_in(idx, buffer, output, nobs, &minval, &maxval)
+            }
+        case TLONG: let buffer = ptr.bindMemory(to: Int.self, capacity: nobs)
+            switch flip {
+                case false: idx2map_lp(idx, buffer, output, nobs, &minval, &maxval)
+                case true:  idx2map_ln(idx, buffer, output, nobs, &minval, &maxval)
+            }
+        case TLONGLONG: let buffer = ptr.bindMemory(to: Int64.self, capacity: nobs)
+            switch flip {
+                case false: idx2map_xp(idx, buffer, output, nobs, &minval, &maxval)
+                case true:  idx2map_xn(idx, buffer, output, nobs, &minval, &maxval)
+            }
+        default: return nil
+    }
+    
+    cleanup = false; return CpuMap(nside: nside, buffer: output, min: minval, max: maxval)
+}
+
+// validate and convert pixel index into canonical format (NESTED Int)
+private func reindex(_ ptr: UnsafeRawPointer, nobs: Int, nside: Int, type: Int32, order: String) -> UnsafePointer<Int>? {
+    var cleanup = true
+    
+    // allocate pixel index LUT
+    let idx = UnsafeMutablePointer<Int>.allocate(capacity: nobs)
+    defer { if (cleanup) { idx.deallocate() } }
+    
+    switch type {
+        case TSHORT: let buffer = ptr.bindMemory(to: Int16.self, capacity: nobs)
+            switch order {
+                case RING:   guard reindex_sr(buffer, idx, nobs, nside) == 0 else { return nil }
+                case NESTED: guard reindex_sn(buffer, idx, nobs, nside) == 0 else { return nil }
+                default: return nil
+            }
+        case TINT: let buffer = ptr.bindMemory(to: Int32.self, capacity: nobs)
+            switch order {
+                case RING:   guard reindex_ir(buffer, idx, nobs, nside) == 0 else { return nil }
+                case NESTED: guard reindex_in(buffer, idx, nobs, nside) == 0 else { return nil }
+                default: return nil
+            }
+        case TLONG: let buffer = ptr.bindMemory(to: Int.self, capacity: nobs)
+            switch order {
+                case RING:   guard reindex_lr(buffer, idx, nobs, nside) == 0 else { return nil }
+                case NESTED: guard reindex_ln(buffer, idx, nobs, nside) == 0 else { return nil }
+                default: return nil
+            }
+        case TLONGLONG: let buffer = ptr.bindMemory(to: Int64.self, capacity: nobs)
+            switch order {
+                case RING:   guard reindex_xr(buffer, idx, nobs, nside) == 0 else { return nil }
+                case NESTED: guard reindex_xn(buffer, idx, nobs, nside) == 0 else { return nil }
+                default: return nil
+            }
+        default: return nil
+    }
+    
+    cleanup = false; return UnsafePointer(idx)
 }
 
 // structure encapsulating contents of HEALPix file
@@ -409,19 +482,16 @@ func read_hpxfile(url: URL) -> HpxFile? {
     let iau = (card[.polar] == .bool(true)) && (card[.polconv] == .string("IAU"))
     
     // find nmaps and nside values
-    var nside = 0; if let v = card[.nside], case let .int(n) = v { nside = n }
-    var nmaps = 0; if let v = card[.fields], case let .int(n) = v { nmaps = n }
-    var nrows = 0; if let v = card[.naxis2], case let .int(n) = v { nrows = n }
+    var nside = 0; if case let .int(n) = card[.nside]  { nside = n }
+    var nmaps = 0; if case let .int(n) = card[.fields] { nmaps = n }
+    var nrows = 0; if case let .int(n) = card[.naxis2] { nrows = n }
     guard nside > 0, nmaps > 0, nrows > 0 else { return nil }
     
-    // number of pixels in a map
-    let npix = 12*nside*nside
-    
     // process metadata for all maps
-    var metadata = Metadata(); metadata.reserveCapacity(nmaps)
-    for i in 1...nmaps { metadata.append(MapCard.parse(fptr, map: i)) }
+    var metadata = (1...nmaps).map { MapCard.parse(fptr, map: $0) }
     
     // maps contained in the file (we will own their UnsafeBuffers!)
+    let type = read_format(fptr, metadata: metadata)
     var maps = [CpuMap](); maps.reserveCapacity(nmaps)
     var list = [MapData](); list.reserveCapacity(nmaps)
     
@@ -429,11 +499,14 @@ func read_hpxfile(url: URL) -> HpxFile? {
     if card[.indexing] == .string("IMPLICIT") || card[.indexing] == .string("FULLSKY") {
         if let object = card[.object] { guard object == .string("FULLSKY") else { return nil } }
         
+        // number of pixels in a map
+        let npix = 12*nside*nside
+        
         // diagnostic output
         print("Full sky map (nside = \(nside), nmaps = \(nmaps), \(order) ordering), \(npix) pixels")
         
         // read in raw HEALPix data (we own these UnsafeBuffers!)
-        guard let (type, data) = read_bintable(fptr, npix: npix, nmaps: nmaps, nrows: nrows, metadata: metadata) else { return nil }
+        guard let data = read_table(fptr, npix: npix, nmaps: nmaps, nrows: nrows, type: type) else { return nil }
         defer { for p in data { p.deallocate() } }
         
         // convert to canonical map format
@@ -444,15 +517,31 @@ func read_hpxfile(url: URL) -> HpxFile? {
         }
     }
     else
-    // partial sky map (first column contains pixel index)
-    if card[.indexing] == .string("EXPLICIT") && nmaps > 1 {
-        if let object = card[.object] { guard object == .string("PARTIAL") else { return nil } }
+    // indexed sky map (first column contains pixel index)
+    if card[.indexing] == .string("EXPLICIT") || card[.indexing] == .string("PARTIAL") {
+        //if let object = card[.object] { guard object == .string("PARTIAL") else { return nil } }
+        guard nmaps > 1, let idx = metadata.first, idx?[.type] == .string("PIXEL") else { return nil }
+        guard case let .int(nobs) = card[.observed] else { return nil }
         
-        // check that the first column format is integer
-        let idx = metadata.removeFirst(); nmaps -= 1
-        if let format = idx?[.format] { guard format == .string("J") || format == .string("K") else { return nil } }
+        // diagnostic output
+        print("Indexed sky map (nside = \(nside), nmaps = \(nmaps-1), \(order) ordering), \(nobs) pixels")
         
-        print("Partial sky map is not supported yet..."); return nil
+        // read in raw HEALPix data (we own these UnsafeBuffers!)
+        guard let data = read_table(fptr, npix: nobs, nmaps: nmaps, nrows: nrows, type: type) else { return nil }
+        defer { for p in data { p.deallocate() } }
+        
+        // reindex pixels to canonical ordering (we own this UnsafeBuffer!)
+        guard let idx = reindex(data[0], nobs: nobs, nside: nside, type: type[0], order: order) else { return nil }
+        defer { idx.deallocate() }
+        
+        // convert to canonical map format
+        for m in 1..<nmaps {
+            let flip = iau && (MapCard.type(metadata[m]?[.type]) == .u)
+            
+            if let c = idx2map(idx, data[m], nobs: nobs, nside: nside, type: type[m], flip: flip) { maps.append(c) } else { return nil }
+        }
+        
+        metadata.removeFirst(); nmaps -= 1
     } else { return nil }
     
     // index named data channels
