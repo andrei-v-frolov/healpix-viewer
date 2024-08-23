@@ -18,7 +18,7 @@
 - single face texture array per MapData, preallocate instead of lazy
 - support for integer type maps added (like HITS count in Planck maps)
 - support for indexed partial sky maps added (like SPIDER and BOOMERanG)
-- BAD_DATA guard (replacing with NaN) fixed
+- BAD_DATA guard (replacing with NaN) fixed, ignored in statistics
 - random map generation implemented (using Random123)
 - CFITSIO updated to 4.4.1, zlib updated to 1.3.1
 

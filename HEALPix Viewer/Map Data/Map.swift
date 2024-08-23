@@ -15,21 +15,21 @@ protocol Map {
     var npix: Int { get }
     var size: Int { get }
     
-    // data stats
+    // data bounds
     var min: Double { get }
     var max: Double { get }
-    var cdf: [Double]? { get }
     
     // data access
     var data: [Float] { get }
     var ptr: UnsafePointer<Float> { get }
-    var idx: UnsafePointer<Int32> { get }
     var buffer: MTLBuffer { get }
     
-    // data copy
+    // copy data
     var copy: Self { get }
     
     // data indexing
+    var idx: UnsafeBufferPointer<Int32> { get }
+    var cdf: [Double]? { get }
     func index()
 }
 
@@ -38,18 +38,19 @@ extension Map {
     var npix: Int { return 12*nside*nside }
     var size: Int { npix * MemoryLayout<Float>.size }
     
-    // create index of map values
-    func makeidx() -> UnsafePointer<Int32> {
+    // create index of map values (32-bit for performance, good to nside = 8192)
+    func makeidx() -> UnsafeBufferPointer<Int32> {
         let idx = UnsafeMutablePointer<Int32>.allocate(capacity: npix)
-        index_map(ptr, idx, Int32(npix)); return UnsafePointer(idx)
+        var nobs: Int32 = 0; index_map(ptr, Int32(npix), idx, &nobs)
+        return UnsafeBufferPointer(start: idx, count: Int(nobs))
     }
     
     // decimate index to produce light-weight CDF representation
-    func makecdf(intervals n: Int) -> [Double] {
+    func makecdf(intervals n: Int) -> [Double]? {
         var cdf = [Double](); cdf.reserveCapacity(n+1)
         
-        for i in stride(from: 0, through: npix, by: Swift.max(npix/n,1)) {
-            let j = Swift.min(i,npix-1), x = (ptr + Int(idx[j])).pointee
+        for i in stride(from: 0, through: idx.count, by: Swift.max(idx.count/n,1)) {
+            let j = Swift.min(i,idx.count-1), x = (ptr + Int(idx[j])).pointee
             if (x.isFinite) { cdf.append(Double(x)) }
         }
         
@@ -59,8 +60,8 @@ extension Map {
     // ranked map (i.e. PDF equalization)
     func ranked() -> CpuMap {
         let ranked = UnsafeMutablePointer<Float>.allocate(capacity: npix)
-        rank_map(idx, ranked, Int32(npix))
-        
+        ranked.initialize(repeating: .nan, count: npix)
+        rank_map(ptr, idx.baseAddress, Int32(idx.count), ranked)
         return CpuMap(nside: nside, buffer: ranked, min: 0.0, max: 1.0)
     }
 }
@@ -110,7 +111,7 @@ final class BaseMap: Map {
     var cdf: [Double]? = nil
     
     // data representations
-    lazy var idx: UnsafePointer<Int32> = { allocated = true; return makeidx() }()
+    lazy var idx: UnsafeBufferPointer<Int32> = { indexed = true; return makeidx() }()
     lazy var ptr: UnsafePointer<Float> = { data.withUnsafeBufferPointer { $0.baseAddress! } }()
     
     // Metal buffer containing map data
@@ -134,8 +135,8 @@ final class BaseMap: Map {
     var copy: Self { Self(nside: nside, data: data, min: min, max: max) }
     
     // clean up on deinitialization
-    private var allocated = false
-    deinit { if allocated { idx.deallocate() } }
+    private var indexed = false
+    deinit { if indexed { idx.deallocate() } }
     
     // index map (i.e. compute CDF)
     func index() { cdf = makecdf(intervals: 1<<12) }
@@ -153,7 +154,7 @@ final class CpuMap: Map {
     var cdf: [Double]? = nil
     
     // data representations
-    lazy var idx: UnsafePointer<Int32> = { allocated = true; return makeidx() }()
+    lazy var idx: UnsafeBufferPointer<Int32> = { indexed = true; return makeidx() }()
     lazy var data: [Float] = { Array(UnsafeBufferPointer(start: ptr, count: npix)) }()
     
     // Metal buffer containing map data
@@ -181,8 +182,8 @@ final class CpuMap: Map {
     }
     
     // clean up on deinitialization (we own passed pointer)
-    private var allocated = false
-    deinit { ptr.deallocate(); if allocated { idx.deallocate() } }
+    private var indexed = false
+    deinit { ptr.deallocate(); if indexed { idx.deallocate() } }
     
     // index map (i.e. compute CDF)
     func index() { cdf = makecdf(intervals: 1<<12) }
@@ -202,7 +203,7 @@ final class GpuMap: Map {
     // data representations
     lazy var ptr: UnsafePointer<Float> = { UnsafePointer(buffer.contents().bindMemory(to: Float.self, capacity: npix)) }()
     lazy var data: [Float] = { Array(UnsafeBufferPointer(start: ptr, count: npix)) }()
-    lazy var idx: UnsafePointer<Int32> = { allocated = true; return makeidx() }()
+    lazy var idx: UnsafeBufferPointer<Int32> = { indexed = true; return makeidx() }()
     
     // initialize map from buffer
     init(nside: Int, buffer: MTLBuffer, min: Double, max: Double) {
@@ -217,8 +218,8 @@ final class GpuMap: Map {
     var copy: Self { Self(nside: nside, buffer: buffer.copy, min: min, max: max) }
     
     // clean up on deinitialization
-    private var allocated = false
-    deinit { if allocated { idx.deallocate() } }
+    private var indexed = false
+    deinit { if indexed { idx.deallocate() } }
     
     // index map (i.e. compute CDF)
     func index() { cdf = makecdf(intervals: 1<<12) }
