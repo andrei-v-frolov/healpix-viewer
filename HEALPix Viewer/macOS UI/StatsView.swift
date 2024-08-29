@@ -1,5 +1,5 @@
 //
-//  StatView.swift
+//  StatsView.swift
 //  HEALPix Viewer
 //
 //  Created by Andrei Frolov on 2022-12-02.
@@ -9,7 +9,7 @@ import SwiftUI
 import Charts
 
 // CDF and PDF data point for charts
-struct Distribution: Identifiable {
+struct DataPoint: Identifiable {
     var id: Double { return x }
     
     let x: Double
@@ -73,9 +73,9 @@ struct StatView: View {
     private let format = "%+.8g"
     
     // summary chart data from CDF compendium
-    var data: [Distribution] {
-        guard let cdf = cdf, cdf.count > 2 else { return [Distribution]() }
-        let n = cdf.count; var dist = [Distribution](); dist.reserveCapacity(n)
+    var data: [DataPoint] {
+        guard let cdf = cdf, cdf.count > 2 else { return [DataPoint]() }
+        let n = cdf.count; var dist = [DataPoint](); dist.reserveCapacity(n)
         var delta = 0.0, k = -1, regular = [Double](); regular.reserveCapacity(n)
         
         // extract delta-like contributions to CDF
@@ -237,10 +237,10 @@ struct StatView: View {
     }
     
     // decimate a regulat chunk of CDF data
-    func decimate(_ cdf: [Double], from samples: Int, by k: Int, offset: Int = 0) -> [Distribution] {
-        let n = cdf.count; var dist = [Distribution](); dist.reserveCapacity(n/k + 1)
+    func decimate(_ cdf: [Double], from samples: Int, by k: Int, offset: Int = 0) -> [DataPoint] {
+        let n = cdf.count; var dist = [DataPoint](); dist.reserveCapacity(n/k + 1)
         
-        if (n > 0) { dist.append(Distribution(x: cdf[0], cdf: Double(offset)/Double(samples-1), pdf: (offset == 0 ? 0.0 : -1.0), delta: 0.0)) }
+        if (n > 0) { dist.append(DataPoint(x: cdf[0], cdf: Double(offset)/Double(samples-1), pdf: (offset == 0 ? 0.0 : -1.0), delta: 0.0)) }
         
         for i in stride(from: (n/2) % k, to: n, by: k) {
             if (i-k >= 0 && i+k < n) {
@@ -248,23 +248,23 @@ struct StatView: View {
                 let F = Double(i+offset)/Double(samples-1)
                 let P = 2.0/(cdf[i+k]-cdf[i-k])
                 
-                dist.append(Distribution(x: x, cdf: F, pdf: P, delta: 0.0))
+                dist.append(DataPoint(x: x, cdf: F, pdf: P, delta: 0.0))
             }
         }
         
-        if (n > 1) { dist.append(Distribution(x: cdf[n-1], cdf: Double(n-1+offset)/Double(samples-1), pdf: (n+offset == samples ? 0.0 : -1.0), delta: 0.0)) }
+        if (n > 1) { dist.append(DataPoint(x: cdf[n-1], cdf: Double(n-1+offset)/Double(samples-1), pdf: (n+offset == samples ? 0.0 : -1.0), delta: 0.0)) }
         
         return dist
     }
     
     // rescale PDF data
-    func rescale(_ p: Distribution, maxpdf: Double) -> Distribution {
-        return p.pdf > 0.0 ? Distribution(x: p.x, cdf: p.cdf, pdf: p.pdf/maxpdf, delta: p.delta) : p
+    func rescale(_ p: DataPoint, maxpdf: Double) -> DataPoint {
+        return p.pdf > 0.0 ? DataPoint(x: p.x, cdf: p.cdf, pdf: p.pdf/maxpdf, delta: p.delta) : p
     }
     
     // delta-like contribution to CDF is represented as a bar
-    func dbar(x: Double, delta: Double) -> Distribution {
-        return Distribution(x: x, cdf: -1.0, pdf: -1.0, delta: delta)
+    func dbar(x: Double, delta: Double) -> DataPoint {
+        return DataPoint(x: x, cdf: -1.0, pdf: -1.0, delta: delta)
     }
     
     // squish off-screen arguments so that the total span is no more than twice as wide as visible part
@@ -277,8 +277,8 @@ struct StatView: View {
         return x
     }
     
-    func squish(_ data: [Distribution]) -> [Distribution] {
-        return data.map { Distribution(x: squish($0.x), cdf: $0.cdf, pdf: $0.pdf, delta: $0.delta) }
+    func squish(_ data: [DataPoint]) -> [DataPoint] {
+        return data.map { DataPoint(x: squish($0.x), cdf: $0.cdf, pdf: $0.pdf, delta: $0.delta) }
     }
     
     // render chart content to an URL

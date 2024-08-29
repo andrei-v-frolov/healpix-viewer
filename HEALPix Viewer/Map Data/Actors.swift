@@ -241,7 +241,6 @@ struct DataTransformer {
         
         // transformed CDF and bounds
         if (transform.f == .normalize) {
-            let sqrt2 = 1.414213562373095048801688724209698078569671875377
             let delta = 2.0/Double(map.npix-1)
             output.min = sqrt2 * erfinv(delta - 1.0)
             output.max = sqrt2 * erfinv(Double(map.npix-2)*delta - 1.0)

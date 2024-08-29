@@ -44,7 +44,6 @@ struct RandomGenerator {
         switch pdf {
             case .uniform:  return (0.0, 1.0)
             case .gaussian:
-                let sqrt2 = 1.414213562373095048801688724209698078569671875377
                 let delta = sqrt2 * erfinv(2.0/Double(12*nside*nside-1) - 1.0)
                 return (-fabs(delta), fabs(delta))
         }
