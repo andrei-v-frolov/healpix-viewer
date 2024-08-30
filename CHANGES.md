@@ -12,7 +12,7 @@
 - selectable color texture precision (i.e. memory footprint)
 - selectable GPU device (e.g. discrete/external unit)
 - (optional) map thumbnails added to navigation panel
-- CFITSIO updated to 4.4.1, zlib updated to 1.3.1
+- CFITSIO updated to 4.5.0, zlib updated to 1.3.1
 
 ### Version 1.0 (Build 007)
 
