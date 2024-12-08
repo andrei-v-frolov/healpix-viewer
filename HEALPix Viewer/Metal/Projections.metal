@@ -26,11 +26,18 @@ inline float3 mollweide(float2 v) {
     return select(ang2vec(float2(theta,phi)), OUT_OF_BOUNDS, v.y < -1.0 || v.y > 1.0 || phi < -pi || phi > pi);
 }
 
-// Hammer-Aitoff projection
+// Hammer projection
 inline float3 hammer(float2 v) {
     const float p = v.x*v.x/4.0 + v.y*v.y, q = 1.0 - p/4.0, z = sqrt(q);
     const float theta = acos(z*v.y), phi = 2.0*atan(z*v.x/(2.0*q-1.0)/2.0);
     return select(ang2vec(float2(theta,phi)), OUT_OF_BOUNDS, p > 2.0);
+}
+
+// Aitoff projection
+inline float3 aitoff(float2 v) {
+    const float a = sqrt(v.x*v.x/4.0 + v.y*v.y), sinc = a > 0.0 ? sin(a)/a : 1.0;
+    const float z = v.y*sinc, r = sqrt(1.0-z*z), phi = 2.0*asin(0.5*v.x*sinc/r);
+    return select(float3(r*cos(phi),r*sin(phi),z), OUT_OF_BOUNDS, a > pi/2.0);
 }
 
 // Lambert projection

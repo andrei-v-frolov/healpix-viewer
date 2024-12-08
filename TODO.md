@@ -2,7 +2,7 @@
 
 ### Current Status (Build 009)
 
-- stereographic projection added
+- stereographic and Aitoff projections added
 - lime colormap added to complement HEALPix hot and cold schemes
 - more Python colormaps added (viridis, spectral, seismic, RdBu)
 - render in HDR, output to 16-bit float OpenEXR (on macOS 14+)

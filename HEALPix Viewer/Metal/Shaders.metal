@@ -16,7 +16,7 @@ kernel void PROJECTION(_grid)(
 ) {
     const float3 u = PROJECTION()(transform * float3(gid.x, gid.y, 1)), v = rotation * u;
     
-    float4 pixel = select(grid(vec2ang(v)), background, all(v == OUT_OF_BOUNDS));
+    const float4 pixel = select(grid(vec2ang(v)), background, all(v == OUT_OF_BOUNDS));
     output.write(lighted(pixel, light, u), gid);
 }
 

@@ -19,7 +19,7 @@ using namespace metal;
 #include "Reductions.metal"
 
 // checkerboard grid on spherical coordinates
-inline float4 grid(float2 ang) {
+inline float4 grid(const float2 ang) {
     const int2 b = int2(floor(8.0/halfpi * ang));
     return select(LIGHT_TILE, DARK_TILE, (b.x+b.y) & 0x01);
 }
@@ -35,6 +35,10 @@ inline float4 lighted(float4 pixel, float4 light, float3 v) {
 #undef PROJECTION
 
 #define PROJECTION(variant) hammer ## variant
+#include "Shaders.metal"
+#undef PROJECTION
+
+#define PROJECTION(variant) aitoff ## variant
 #include "Shaders.metal"
 #undef PROJECTION
 

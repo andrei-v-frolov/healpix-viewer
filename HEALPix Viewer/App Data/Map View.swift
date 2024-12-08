@@ -34,6 +34,7 @@ enum DataSource: String, CaseIterable, Codable, Preference {
 enum Projection: String, CaseIterable, Codable, Preference {
     case mollweide = "Mollweide"
     case hammer = "Hammer"
+    case aitoff = "Aitoff"
     case lambert = "Lambert"
     case orthographic = "Orthographic"
     case stereographic = "Stereographic"
@@ -55,7 +56,8 @@ enum Projection: String, CaseIterable, Codable, Preference {
                  .stereographic,
                  .gnomonic:     return (2,2)
             case .mercator:     return (Double.pi,2)
-            case .cartesian:    return (Double.pi,Double.pi/2.0)
+            case .aitoff,
+                 .cartesian:    return (Double.pi,Double.pi/2.0)
             case .werner:       return (2.021610497,2.029609241)
             default:            return (1,1)
         }
@@ -79,6 +81,10 @@ enum Projection: String, CaseIterable, Codable, Preference {
                 let p = x*x/4.0 + y*y, q = 1.0 - p/4.0, z = sqrt(q)
                 let theta = acos(z*y), phi = 2.0*atan(z*x/(2.0*q-1.0)/2.0)
                 return (p > 2.0) ? OUT_OF_BOUNDS : ang2vec(theta,phi)
+            case .aitoff:
+                let a = sqrt(x*x/4.0 + y*y), sinc = a > 0.0 ? sin(a)/a : 1.0
+                let z = y*sinc, r = sqrt(1.0-z*z), phi = 2.0*asin(0.5*x*sinc/r)
+                return (a > halfpi) ? OUT_OF_BOUNDS : float3(Float(r*cos(phi)),Float(r*sin(phi)),Float(z))
             case .lambert:
                 let q = 1.0 - (x*x + y*y)/4.0, z = sqrt(q)
                 return (q < 0.0) ? OUT_OF_BOUNDS : float3(Float(2.0*q-1.0),Float(z*x),Float(z*y))
@@ -86,9 +92,9 @@ enum Projection: String, CaseIterable, Codable, Preference {
                 let q = 1.0 - (x*x + y*y)
                 return (q < 0.0) ? OUT_OF_BOUNDS : float3(Float(sqrt(q)),Float(x),Float(y))
             case .stereographic:
-                return Float(4.0/(4.0+x*x+y*y)) * float3(2.0,Float(x),Float(y)) - float3(1,0,0)
+                return float3(4.0/(4.0+x*x+y*y) * double3(2.0,x,y) - double3(1,0,0))
             case .gnomonic:
-                return normalize(float3(1.0,Float(x),Float(y)))
+                return float3(normalize(double3(1.0,x,y)))
             case .mercator:
                 let phi = x, theta = halfpi - atan(sinh(y))
                 return (phi < -pi || phi > pi) ? OUT_OF_BOUNDS : ang2vec(theta,phi)
