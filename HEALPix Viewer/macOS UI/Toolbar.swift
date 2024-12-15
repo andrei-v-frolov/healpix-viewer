@@ -91,11 +91,8 @@ struct Toolbar: CustomizableToolbarContent {
                 .disabled(!lighting)
             }
         }
-        ToolbarItem(id: "spacer", placement: .principal, showsByDefault: true) {
-            Spacer()
-        }
         Group {
-            ToolbarItem(id: "statistics", placement: .principal, showsByDefault: true) {
+            ToolbarItem(id: "statistics", placement: .automatic, showsByDefault: true) {
                 if #available(macOS 13.0, *) {
                     Button {
                         toggleStatView()
@@ -106,7 +103,7 @@ struct Toolbar: CustomizableToolbarContent {
                     .disabled(cdf == nil || sidebar == .mixer)
                 }
             }
-            ToolbarItem(id: "info", placement: .principal, showsByDefault: true) {
+            ToolbarItem(id: "info", placement: .automatic, showsByDefault: true) {
                 Button {
                     toggleInfoView()
                 } label: {
