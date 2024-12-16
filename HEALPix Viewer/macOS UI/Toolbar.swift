@@ -92,7 +92,7 @@ struct Toolbar: CustomizableToolbarContent {
             }
         }
         Group {
-            ToolbarItem(id: "statistics", placement: .automatic, showsByDefault: true) {
+            ToolbarItem(id: "statistics", placement: .principal, showsByDefault: true) {
                 if #available(macOS 13.0, *) {
                     Button {
                         toggleStatView()
