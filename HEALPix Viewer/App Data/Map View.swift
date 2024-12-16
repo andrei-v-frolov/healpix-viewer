@@ -33,8 +33,8 @@ enum DataSource: String, CaseIterable, Codable, Preference {
 // spherical projection
 enum Projection: String, CaseIterable, Codable, Preference {
     case mollweide = "Mollweide"
-    case hammer = "Hammer"
     case aitoff = "Aitoff"
+    case hammer = "Hammer"
     case lambert = "Lambert"
     case orthographic = "Orthographic"
     case stereographic = "Stereographic"
@@ -51,13 +51,13 @@ enum Projection: String, CaseIterable, Codable, Preference {
     var extent: (x: Double, y: Double) {
         switch self {
             case .mollweide:    return (2,1)
+            case .aitoff,
+                 .cartesian:    return (Double.pi,Double.pi/2.0)
             case .hammer:       return (sqrt(8.0),sqrt(2.0))
             case .lambert,
                  .stereographic,
                  .gnomonic:     return (2,2)
             case .mercator:     return (Double.pi,2)
-            case .aitoff,
-                 .cartesian:    return (Double.pi,Double.pi/2.0)
             case .werner:       return (2.021610497,2.029609241)
             default:            return (1,1)
         }
