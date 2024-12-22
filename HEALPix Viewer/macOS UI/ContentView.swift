@@ -144,7 +144,7 @@ struct ContentView: View {
                     Divider()
                     Text("Analyzing Data...").padding([.top], 5)
                     ProgressView(value: progress).padding([.leading,.trailing], 10).padding([.bottom], 2)
-                    .onChange(of: progress) { value in if (value == 1.0) { scheduled = 0; completed = 0 } }
+                    .onChange(of: progress) { value in if (completed == scheduled) { scheduled = 0; completed = 0 } }
                 }
             }
             GeometryReader { geometry in
@@ -325,7 +325,7 @@ struct ContentView: View {
         .onChange(of: lighting) { value in
             if (!value && toolbar == .lighting) { withAnimation { toolbar = .none } }; preview()
         }
-        .onDrop(of: [UTType.fileURL], isTargeted: $targeted) { provider in
+        .onDrop(of: [UTType.fileURL], isTargeted: $targeted) { provider, point in
             guard let type = UTType.healpix.tags[UTTagClass.filenameExtension] else { return false }
             
             var dispatched = false
@@ -335,7 +335,7 @@ struct ContentView: View {
                     guard let url = object as? URL? else { return }
                     guard let ext = url?.pathExtension.lowercased(), type.contains(ext) else { return }
                     
-                    open(url); dispatched = true
+                    Task { await open(url) }; dispatched = true
                 }
             }
             
@@ -441,7 +441,7 @@ struct ContentView: View {
         else { state.update(ViewState.value, mask: !keepState) }
         
         // load map and colorbar
-        analyze(map); load(map); DispatchQueue.main.async { barview?.draw() }
+        analyze(map); load(map); Task { barview?.draw() }
     }
     
     // dispatch maps for analysis
@@ -450,9 +450,9 @@ struct ContentView: View {
         
         let m = map.data, n = Double(m.npix), workload = Int(n*log(1+n))
         scheduled += workload; analysisQueue.async {
-            m.index(); map.ranked = m.ranked(); completed += workload
+            m.index(); map.ranked = m.ranked()
             for f in Function.cdf { map.state.bounds[f] = nil }
-            DispatchQueue.main.async { if map == self.data { load(map, force: true) } }
+            Task { @MainActor in completed += workload; if map == self.data { load(map, force: true) } }
         }
     }
     
@@ -494,7 +494,7 @@ struct ContentView: View {
     // render map preview
     func preview() {
         guard let map = data, let mapview = mapview, sidebar == .list else { return }
-        DispatchQueue.main.async { mapview.render(to: map.preview, magnification: 0.0, padding: 0.02, background: .clear); map.refresh() }
+        Task { mapview.render(to: map.preview, magnification: 0.0, padding: 0.02, background: .clear); map.refresh() }
     }
     
     // compute dimensions appropriate for rendered image components

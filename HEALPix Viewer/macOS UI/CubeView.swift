@@ -31,8 +31,7 @@ struct CubeView: NSViewRepresentable {
     }
     
     func makeNSView(context: Self.Context) -> Self.NSViewType {
-        DispatchQueue.main.async { cubeview = view }
-        view.awakeFromNib(); pass(to: view); return view
+        view.awakeFromNib(); pass(to: view); Task { cubeview = view }; return view
     }
     
     func updateNSView(_ view: Self.NSViewType, context: Self.Context) {

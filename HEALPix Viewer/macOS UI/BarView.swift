@@ -34,8 +34,7 @@ struct BarView: NSViewRepresentable {
     }
     
     func makeNSView(context: Self.Context) -> Self.NSViewType {
-        DispatchQueue.main.async { barview = view }
-        view.awakeFromNib(); pass(to: view); return view
+        view.awakeFromNib(); pass(to: view); Task { barview = view }; return view
     }
     
     func updateNSView(_ view: Self.NSViewType, context: Self.Context) {

@@ -65,7 +65,6 @@
 
 - reallocate texture in MapData if settings change?
 - button size changed in Export As dialog!?
-- modal NSOpenPanel and NSSavePanel are called within transaction
 - display alert if FITS format is not HEALPix (or unsupported scheme)
 - fix crash on out-of-memory, display alert and refuse to load instead
 - adjust LOD level for different projections

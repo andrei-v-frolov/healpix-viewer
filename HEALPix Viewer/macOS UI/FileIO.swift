@@ -42,7 +42,7 @@ func abort(_ message: String) -> Never {
 }
 
 // show modal Open File panel
-func showOpenPanel() -> URL? {
+@MainActor func showOpenPanel() -> URL? {
     let panel = NSOpenPanel()
     
     panel.canChooseFiles = true
@@ -58,7 +58,7 @@ func showOpenPanel() -> URL? {
 }
 
 // show modal Save File panel
-func showSavePanel(type: UTType = .png) -> URL? {
+@MainActor func showSavePanel(type: UTType = .png) -> URL? {
     let panel = NSSavePanel()
     
     panel.canCreateDirectories = true
@@ -104,7 +104,7 @@ func imagedata(_ texture: MTLTexture, format: ImageFormat = .png) -> Data? {
 }
 
 // save Metal texture to image file
-func saveAsImage(_ texture: MTLTexture, url: URL? = nil, format: ImageFormat = .png) {
+@MainActor func saveAsImage(_ texture: MTLTexture, url: URL? = nil, format: ImageFormat = .png) {
     guard let url = url ?? showSavePanel(type: format.type) else { return }
-    userTaskQueue.async { try? imagedata(texture, format: format)?.write(to: url) }
+    Task { try? imagedata(texture, format: format)?.write(to: url) }
 }

@@ -26,7 +26,7 @@ struct OpenFile: View {
     
     var body: some View {
         Button("Open File...") {
-            if new { openWindow(id: mapWindowID) }; DispatchQueue.main.async { action = .open }
+            if new { openWindow(id: mapWindowID) }; Task { action = .open }
         }.keyboardShortcut("O", modifiers: [.command])
     }
 }

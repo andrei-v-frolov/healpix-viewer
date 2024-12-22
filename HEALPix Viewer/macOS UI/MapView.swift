@@ -29,12 +29,9 @@ struct MapView: NSViewRepresentable {
     var view = ProjectedView()
     
     func makeNSView(context: Self.Context) -> Self.NSViewType {
-        DispatchQueue.main.async {
-            view.mapview = self
-            view.window?.delegate = view
-            mapview = view; raise(view.id)
-        }
-        view.awakeFromNib(); return view
+        view.awakeFromNib(); view.mapview = self
+        Task { mapview = view; raise(view.id) }
+        return view
     }
     
     func updateNSView(_ view: Self.NSViewType, context: Self.Context) {
@@ -179,7 +176,8 @@ class ProjectedView: MTKView, NSWindowDelegate, Identifiable {
     override func awakeFromNib() {
         // initialize MTKView
         super.awakeFromNib()
-        self.device = metal.device
+        device = metal.device
+        window?.delegate = self
         
         // initialize compute pipeline buffers
         let options: MTLResourceOptions = [.cpuCacheModeWriteCombined, .storageModeShared]
