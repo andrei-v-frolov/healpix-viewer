@@ -56,7 +56,7 @@ let SizeFormatter: NumberFormatter = {
     let n = IntegerNumber
     
     n.minimum = 0
-    n.maximum = NSNumber(value: maxTextureSize)
+    n.maximum = NSNumber(value: metal.maxTextureSize)
     
     return n
 }()

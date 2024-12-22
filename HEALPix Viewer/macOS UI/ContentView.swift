@@ -526,7 +526,7 @@ struct ContentView: View {
         
         // clamp down to maximal supported texture size (Lancosz kernel needs a few extra pixels)
         let extra = [0,12,16,24][settings.oversampling-1]
-        let ratio = max(width,height)*scale/Double(maxTextureSize-extra); if (ratio > 1.0) { scale /= ratio }
+        let ratio = max(width,height)*scale/Double(metal.maxTextureSize-extra); if (ratio > 1.0) { scale /= ratio }
         
         // return dimensions of image components for rendering
         return (Int(width*scale), Int(height*scale), Int(thickness*scale), shift*scale)

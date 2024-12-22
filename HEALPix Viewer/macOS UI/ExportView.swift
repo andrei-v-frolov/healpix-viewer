@@ -65,9 +65,9 @@ struct ExportView: View {
                     }
                     Picker("@", selection: $settings.oversampling) {
                         Text("1x").tag(1)
-                        if (settings.dimension*2 <= maxTextureSize) { Text("2x").tag(2) }
-                        if (settings.dimension*3 <= maxTextureSize) { Text("3x").tag(3) }
-                        if (settings.dimension*4 <= maxTextureSize) { Text("4x").tag(4) }
+                        if (settings.dimension*2 <= metal.maxTextureSize) { Text("2x").tag(2) }
+                        if (settings.dimension*3 <= metal.maxTextureSize) { Text("3x").tag(3) }
+                        if (settings.dimension*4 <= metal.maxTextureSize) { Text("4x").tag(4) }
                     }.labelsHidden().frame(width: 50)
                 }.frame(height: 24)
                 HStack(alignment: .bottom) {

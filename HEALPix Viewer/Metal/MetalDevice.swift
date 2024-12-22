@@ -9,18 +9,18 @@ import Foundation
 import MetalKit
 
 let metal = MetalDevice()
-let maxTextureSize = 1 << 14
 
 final class MetalDevice {
     let device: MTLDevice
     let queue: MTLCommandQueue
+    let maxTextureSize: Int
     
     init() {
         guard let device = PreferredGPU.value.device,
               let queue = device.makeCommandQueue()
               else { abort("Metal framework could not be initalized") }
         
-        self.device = device
-        self.queue = queue
+        self.device = device; self.queue = queue
+        maxTextureSize = device.supportsFamily(.apple3) ? 1 << 14 : 1 << 13
     }
 }

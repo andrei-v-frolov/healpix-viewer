@@ -192,7 +192,7 @@ extension StateMask: RawRepresentable {
 struct Export: Equatable, Codable {
     var format: ImageFormat = .png
     var prefer: PreferredSize = .specificWidth
-    var dimension: Int = 1920 { didSet { if (dimension > 0) { oversampling.clamp(1, maxTextureSize/dimension) } } }
+    var dimension: Int = 1920 { didSet { if (dimension > 0) { oversampling.clamp(1, metal.maxTextureSize/dimension) } } }
     var oversampling: Int = 1
     var colorbar: Bool = false
     var range: Bool = false
