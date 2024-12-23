@@ -63,16 +63,43 @@ enum Projection: String, CaseIterable, Codable, Preference {
         }
     }
     
+    // relative level of detail
+    var lod: Double {
+        switch self {
+            case .mollweide,
+                 .orthographic,
+                 .stereographic,
+                 .werner:       return 0.625
+            case .aitoff,
+                 .mercator:     return 0.875
+            case .hammer:       return 0.750
+            case .lambert:      return 0.500
+            case .gnomonic:     return 1.750
+            default:            return 0.000
+        }
+    }
+    
     // recommended aspect ratio
     func height(width: Double) -> Double { let (x,y) = extent; return y*width/x }
     func width(height: Double) -> Double { let (x,y) = extent; return x*height/y }
     
     // projection out of bounds
-    static let outOfBounds = float3(0)
+    static let outOfBounds = SIMD3<Double>.zero
+    
+    // spherical coordinates to unit vector
+    func ang2vec(_ theta: Double, _ phi: Double) -> SIMD3<Double> {
+        let z = cos(theta), r = sin(theta)
+        return SIMD3<Double>(r*cos(phi), r*sin(phi), z)
+    }
+    
+    // unit vector to spherical coordinates
+    func vec2ang(_ v: SIMD3<Double>) -> SIMD2<Double> {
+        return SIMD2<Double>(atan2(sqrt(v.x*v.x+v.y*v.y),v.z), atan2(v.y,v.x))
+    }
     
     // transform projection plane coordinates to a vector on a unit sphere
-    func xyz(x: Double, y: Double) -> float3 {
-        let pi = Double.pi, halfpi = Double.pi/2.0, OUT_OF_BOUNDS = Projection.outOfBounds
+    func xyz(x: Double, y: Double) -> SIMD3<Double> {
+        let pi = Double.pi, halfpi = Double.pi/2.0, OUT_OF_BOUNDS = Self.outOfBounds
         switch self {
             case .mollweide:
                 let psi = asin(y), phi = halfpi*x/cos(psi), theta = acos((2.0*psi + sin(2.0*psi))/pi)
@@ -84,17 +111,17 @@ enum Projection: String, CaseIterable, Codable, Preference {
             case .aitoff:
                 let a = sqrt(x*x/4.0 + y*y), sinc = a > 0.0 ? sin(a)/a : 1.0
                 let z = y*sinc, r = sqrt(1.0-z*z), phi = 2.0*asin(0.5*x*sinc/r)
-                return (a > halfpi) ? OUT_OF_BOUNDS : float3(Float(r*cos(phi)),Float(r*sin(phi)),Float(z))
+                return (a > halfpi) ? OUT_OF_BOUNDS : SIMD3<Double>(r*cos(phi),r*sin(phi),z)
             case .lambert:
                 let q = 1.0 - (x*x + y*y)/4.0, z = sqrt(q)
-                return (q < 0.0) ? OUT_OF_BOUNDS : float3(Float(2.0*q-1.0),Float(z*x),Float(z*y))
+                return (q < 0.0) ? OUT_OF_BOUNDS : SIMD3<Double>(2.0*q-1.0,z*x,z*y)
             case .orthographic:
                 let q = 1.0 - (x*x + y*y)
-                return (q < 0.0) ? OUT_OF_BOUNDS : float3(Float(sqrt(q)),Float(x),Float(y))
+                return (q < 0.0) ? OUT_OF_BOUNDS : SIMD3<Double>(sqrt(q),x,y)
             case .stereographic:
-                return float3(4.0/(4.0+x*x+y*y) * double3(2.0,x,y) - double3(1,0,0))
+                return 4.0/(4.0+x*x+y*y) * SIMD3<Double>(2.0,x,y) - SIMD3<Double>(1,0,0)
             case .gnomonic:
-                return float3(normalize(double3(1.0,x,y)))
+                return normalize(SIMD3<Double>(1.0,x,y))
             case .mercator:
                 let phi = x, theta = halfpi - atan(sinh(y))
                 return (phi < -pi || phi > pi) ? OUT_OF_BOUNDS : ang2vec(theta,phi)
@@ -106,6 +133,44 @@ enum Projection: String, CaseIterable, Codable, Preference {
                 return (theta > pi || phi < -pi || phi > pi) ? OUT_OF_BOUNDS : ang2vec(theta,phi)
         }
     }
+    
+    /*
+    // Jacobian of the projection onto spherical coordinates
+    func jacobian(x: Double, y: Double, epsilon: Double = 1.0e-8) -> double2x2 {
+        let dx = vec2ang(xyz(x: x+epsilon, y: y)) - vec2ang(xyz(x: x-epsilon, y: y))
+        let dy = vec2ang(xyz(x: x, y: y+epsilon)) - vec2ang(xyz(x: x, y: y-epsilon))
+
+        return double2x2(dx/(2.0*epsilon), dy/(2.0*epsilon))
+    }
+    
+    // principal direction stretch factor
+    func stretch(x: Double, y: Double) -> Double {
+        let M = jacobian(x: x, y: y)
+        let a = M[0,1], b = M[1,1], c = -M[0,0], d = -M[1,0]
+        let phi = atan2(b-c,a+d), psi = atan2(b+c,a-d)
+        let u = (a+d)/cos(phi), v = (d-a)/cos(psi)
+        let p = (u+v)/2.0, q = (u-v)/2.0
+        
+        return -log2(min(abs(p),abs(q)))
+    }
+    
+    // median level of detail over the full view
+    func scan_lod(granularity n: Int = 1024, percentile f: Double = 0.75) {
+        let (x,y) = extent, dx = max(x,y)/Double(n+1)
+        let nx = Int(floor(x/dx)), ny = Int(floor(y/dx))
+        let scale = log2(max(x,2.0*y)/Double.pi)
+        
+        var lod = [Double](); lod.reserveCapacity(4*n*n)
+        
+        for i in -nx...nx { let x = Double(i)*dx
+        for j in -ny...ny { let y = Double(j)*dx
+            if xyz(x: x, y: y) == Self.outOfBounds { continue }
+            lod.append(stretch(x: x, y: y) - scale)
+        } }
+        
+        lod.sort(); print(lod[Int(f*Double(lod.count))])
+    }
+    */
 }
 
 // orientation presets

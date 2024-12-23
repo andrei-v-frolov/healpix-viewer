@@ -67,7 +67,6 @@
 - button size changed in Export As dialog!?
 - display alert if FITS format is not HEALPix (or unsupported scheme)
 - fix crash on out-of-memory, display alert and refuse to load instead
-- adjust LOD level for different projections
 - fallback for JSON parsers
 - RangeView got broken somehow...
 - file load always crashes on external/discrete GPU

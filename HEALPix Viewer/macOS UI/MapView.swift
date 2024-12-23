@@ -116,8 +116,8 @@ class ProjectedView: MTKView, NSWindowDelegate, Identifiable {
     
     // MARK: antialiasing LOD
     func lod(_ nside: Int, transform: float3x2? = nil) -> Int {
-        let t = transform ?? self.transform(), det = t[0,0]*t[1,1] - t[0,1]*t[1,0]
-        let scale = sqrt(abs(det)), lod = Int(log2(scale*sqrt(2.0)*Float(nside))+0.5)
+        let t = transform ?? self.transform(), det = Double(t[0,0]*t[1,1] - t[0,1]*t[1,0])
+        let lod = Int(log2(sqrt(abs(det))*Double(nside)) - projection.lod + 0.5)
         
         switch AntiAliasing.value {
             case .none: return 0
