@@ -46,6 +46,10 @@ inline float4 lighted(float4 pixel, float4 light, float3 v) {
 #include "Shaders.metal"
 #undef PROJECTION
 
+#define PROJECTION(variant) equidistant ## variant
+#include "Shaders.metal"
+#undef PROJECTION
+
 #define PROJECTION(variant) orthographic ## variant
 #include "Shaders.metal"
 #undef PROJECTION

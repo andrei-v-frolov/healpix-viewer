@@ -79,9 +79,10 @@ class ProjectedView: MTKView, NSWindowDelegate, Identifiable {
     // MARK: projection shaders
     let shaders: [Projection: (grid: MetalKernel, data: MetalKernel)] = [
         .mollweide:     (MetalKernel(kernel: "mollweide_grid"),     MetalKernel(kernel: "mollweide_data")),
-        .hammer:        (MetalKernel(kernel: "hammer_grid"),        MetalKernel(kernel: "hammer_data")),
         .aitoff:        (MetalKernel(kernel: "aitoff_grid"),        MetalKernel(kernel: "aitoff_data")),
+        .hammer:        (MetalKernel(kernel: "hammer_grid"),        MetalKernel(kernel: "hammer_data")),
         .lambert:       (MetalKernel(kernel: "lambert_grid"),       MetalKernel(kernel: "lambert_data")),
+        .equidistant:   (MetalKernel(kernel: "equidistant_grid"),   MetalKernel(kernel: "equidistant_data")),
         .orthographic:  (MetalKernel(kernel: "orthographic_grid"),  MetalKernel(kernel: "orthographic_data")),
         .stereographic: (MetalKernel(kernel: "stereographic_grid"), MetalKernel(kernel: "stereographic_data")),
         .gnomonic:      (MetalKernel(kernel: "gnomonic_grid"),      MetalKernel(kernel: "gnomonic_data")),

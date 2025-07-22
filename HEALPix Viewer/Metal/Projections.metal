@@ -46,6 +46,12 @@ inline float3 lambert(float2 v) {
     return select(float3(2.0*q-1.0,sqrt(q)*v.x,sqrt(q)*v.y), OUT_OF_BOUNDS, q < 0.0);
 }
 
+// Equidistant projection
+inline float3 equidistant(float2 v) {
+    const float theta = sqrt(v.x*v.x + v.y*v.y), phi = atan2(v.x,v.y);
+    return select(ang2vec(float2(theta,phi)).zyx, OUT_OF_BOUNDS, theta > pi);
+}
+
 // Isometric (aka orthographic) projection
 inline float3 orthographic(float2 v) {
     const float q = 1.0 - (v.x*v.x + v.y*v.y);

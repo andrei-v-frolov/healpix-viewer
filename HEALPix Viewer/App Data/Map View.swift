@@ -36,6 +36,7 @@ enum Projection: String, CaseIterable, Codable, Preference {
     case aitoff = "Aitoff"
     case hammer = "Hammer"
     case lambert = "Lambert"
+    case equidistant = "Equidistant"
     case orthographic = "Orthographic"
     case stereographic = "Stereographic"
     case gnomonic = "Gnomonic"
@@ -54,6 +55,7 @@ enum Projection: String, CaseIterable, Codable, Preference {
             case .aitoff,
                  .cartesian:    return (Double.pi,Double.pi/2.0)
             case .hammer:       return (sqrt(8.0),sqrt(2.0))
+            case .equidistant:  return (Double.pi,Double.pi)
             case .lambert,
                  .stereographic,
                  .gnomonic:     return (2,2)
@@ -72,7 +74,8 @@ enum Projection: String, CaseIterable, Codable, Preference {
                  .werner:       return 0.625
             case .aitoff,
                  .mercator:     return 0.875
-            case .hammer:       return 0.750
+            case .hammer,
+                 .equidistant:  return 0.750
             case .lambert:      return 0.500
             case .gnomonic:     return 1.750
             default:            return 0.000
@@ -115,6 +118,9 @@ enum Projection: String, CaseIterable, Codable, Preference {
             case .lambert:
                 let q = 1.0 - (x*x + y*y)/4.0, z = sqrt(q)
                 return (q < 0.0) ? OUT_OF_BOUNDS : SIMD3<Double>(2.0*q-1.0,z*x,z*y)
+            case .equidistant:
+                let theta = sqrt(x*x + y*y), phi = atan2(x,y), v = ang2vec(theta,phi)
+                return (theta > pi) ? OUT_OF_BOUNDS : SIMD3<Double>(v.z,v.y,v.x)
             case .orthographic:
                 let q = 1.0 - (x*x + y*y)
                 return (q < 0.0) ? OUT_OF_BOUNDS : SIMD3<Double>(sqrt(q),x,y)
